@@ -40,7 +40,7 @@
       "id": "afternoon_boundary",
       "name": "03: Afternoon Boundary",
       "anchor": "16:00",
-      "objective": "Enforce the caffeine cutoff 10 hours before target bedtime.",
+      "objective": "Lock tonight's decisions while you still can: dinner timing, shutdown time, kombucha cutoff.",
       "enabled": true,
       "type": "fact"
     },

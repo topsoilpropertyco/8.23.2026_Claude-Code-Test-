@@ -4,14 +4,14 @@ Last updated: 2026-08-23
 
 ---
 
-## Where we are right now
+## Where we are
 
-**Phase 1 is built, tested, and pushed. It is not yet running on its own.**
+**Phases 1 and 1.6 are built and proven end to end.** Cards deliver, replies
+come back, nights get logged, the coach responds, the journal records it.
+All of it has been demonstrated live on Seth's phone.
 
-Everything works — the bot is live, four cards have been delivered to Telegram
-successfully, 18 tests pass. The single thing standing between "built" and
-"running" is two repository secrets that have not been added yet. Until they
-are, the engine only fires when triggered by hand from a session.
+**None of it runs on its own yet.** One task remains, and it is not a
+build task: two secrets in GitHub repository settings.
 
 | | |
 |---|---|
@@ -20,139 +20,124 @@ are, the engine only fires when triggered by hand from a session.
 | Bot | `@SleepOSMissionTopOnePercent_Bot` |
 | Chat | `8760828708` (Salus) |
 | Timezone | `America/Detroit` |
-| Library | 55 facts — 40 sleep science, 15 lucid |
+| Target bedtime | 22:30 |
+| Library | 55 facts · 28 journal prompts · 7 morning prompts |
+| Tests | 40 passing, zero runtime dependencies |
 
 ---
 
-## The five phases
+## Phase 1 — Reminder engine · **BUILT**
 
-### Phase 1 — Reminder engine · **BUILT, NOT LIVE**
+Seven slots a day: a 6 AM intake plus six fact cards, drawn from a 55-fact
+library that cycles fully before repeating.
 
-The core product. Six cadenced nudges a day pulled from the fact library and
-delivered to Telegram.
+- Rotation with no repeats until the pool is exhausted (~9.2 days at full cadence)
+- Slot affinity at 93–100% on-theme
+- Jackpot drops on ~1 in 7 sends, restricted to the 23 high-intensity cards
+- Gaussian jitter to ±20 min on fact slots; the intake stays fixed so it can
+  become a habit
+- DST-safe wall-clock scheduling in `America/Detroit`
+- GitHub Actions polls every 10 minutes and sends whatever is due
+- CLI: `today`, `preview`, `dispatch`, `send`, `whoami`, `stats`, `journal`
 
-Done:
-- 55 facts captured verbatim, five-field card structure preserved
-- Rotation that cycles the whole pool before repeating (~9.2 days at 6/day)
-- Slot affinity (~92% on-theme), jackpot drops on ~1 in 7 sends
-- Gaussian jitter to ±20 min, deterministic per day
-- DST-safe wall-clock scheduling
-- CLI: `today`, `preview`, `dispatch`, `send`, `whoami`, `stats`
-- GitHub Actions workflow polling every 10 minutes
-- 18 tests, zero runtime dependencies
+## Phase 1.6 — Journal, intake and coach · **BUILT**
 
-Remaining:
-- [ ] Add `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` to repo secrets
-- [ ] Decide public vs private repo (Actions minutes)
-- [ ] Confirm phone notifications actually surface
-- [ ] Revoke and replace the bot token (it was pasted into a chat transcript)
+- 28 prompts across 12 named behaviour-change mechanisms, one per card,
+  rotating independently of the facts and never repeating a mechanism twice
+  running
+- Reply capture through `getUpdates` polling on the existing schedule — no
+  webhook, no server, no public endpoint
+- Replies matched back to the card that prompted them
+- 6:00 AM manual intake with a forgiving parse
+- Rule-based morning coach with confidence tiers, so no statistic is claimed
+  before the record supports it; every recommendation is drawn from a real
+  fact's move
 
-### Phase 1.6 — Journal, intake and coach · **BUILT**
+## Phase 1.5 — Content hardening · **CLOSED**
 
-- 28 journal prompts across 12 named behaviour-change mechanisms, attached to
-  every delivered card and rotating independently of the fact cycle
-- Reply capture via getUpdates polling on the existing schedule — no webhook
-- 6:00 AM manual intake, unjittered so it can become a habit
-- Rule-based morning coach: positions the night against the user's own history
-  and offers one lever, drawn from a real fact's move
-- Confidence tiers so no statistic is claimed before the record supports it
-- `/help`, `/log`, `journal` CLI command
-- 22 further tests
+- ~~Citations for the 40 sleep facts~~ — dropped. Solo build, not needed.
+- ~~More caffeine facts~~ — resolved differently. Seth does not drink coffee,
+  so the 4 PM slot was repointed at the boundaries that actually apply to him:
+  dinner timing, locking tonight's shutdown, and an occasional kombucha cutoff
+  at 12:30 PM. Pool widened from 5 facts to 9; on-theme rate 67% → 93%.
 
-Remaining:
-- [ ] Needs the repo secrets before replies are processed automatically
+---
 
-### Phase 1.5 — Content hardening · **NOT STARTED**
+## Phase 2 — Oura ingestion · **NEXT UP**
 
-Cheap, high-value, no new infrastructure.
+**Needs from Seth:** an Oura Personal Access Token.
 
-- [ ] Add 3–4 caffeine/adenosine facts — `afternoon_boundary` has only 5 tagged
-      facts, so it runs off-theme a third of the time versus ~100% elsewhere
-- [ ] Add citations to the 40 sleep science facts (the `[cite: ]` placeholders
-      came through empty; the lucid library does have sources)
-- [ ] Optional: tighten the reframe voice toward the punchier example
-      ("60 extra minutes in bed eliminates nearly 40% of your daily stress
-      load") rather than the longer "Imagine a pharmaceutical company..." form
+- Oura API v2 client with bearer auth and 429 handling
+- **Full historical backfill on day one.** The endpoints accept date ranges, so
+  an entire year of history lands immediately rather than accumulating over
+  months. This is what makes Phase 3 useful the day it ships instead of the
+  following season.
+- Daily pull at 11:00 AM local with exponential-backoff retry until the ring
+  has synced
+- Reconciliation against the manual log — the manual entry stays, because
+  writing it down by hand is the behavioural point; Oura becomes the source of
+  truth for the analytics
 
-### Phase 2 — Oura ingestion · **NOT STARTED**
+Note: Oura webhooks need a registered OAuth application and cannot be driven by
+a Personal Access Token, so this is cron-only. The original spec already
+designs that fallback.
 
-Needs: an Oura Personal Access Token.
+## Phase 3 — Analytics · **AFTER PHASE 2**
 
-- [ ] Oura API v2 client with bearer auth and 429 handling
-- [ ] **Full historical backfill on day one** — the endpoints accept date
-      ranges, so an entire year of history lands immediately instead of waiting
-      months to accumulate. This is what makes Phase 3 useful straight away.
-- [ ] Daily pull at 11:00 AM local with exponential-backoff retry until the
-      ring has synced
-- [ ] Telemetry storage alongside the existing state files
+- Rolling mean and standard deviation, z-scores, percentile ranks
+- Trailing windows T7 / T30 / T90 / T180 / T365 with ticker deltas
+- MSRI composite index with EWMA smoothing
+- The morning coach upgrades from manual score to full biometric context
 
-Note: Oura webhooks require a registered OAuth application; a Personal Access
-Token cannot subscribe to them. Plan is cron-only, which the original spec
-already designs a fallback for.
+Three decisions still open before MSRI can be implemented properly:
 
-### Phase 3 — Analytics · **NOT STARTED**
+1. `CDF_Percentile_Multiplier` is referenced in the spec but never defined.
+2. The autonomic and architecture factors are unbounded above, so the index is
+   not actually bounded 0–100 as claimed. Even with caps it currently pins near
+   95 on an average night and cannot discriminate.
+3. The EWMA has no seed value for the first night.
 
-Depends on Phase 2. All pure computation, no new dependencies.
+Also settled in passing: the coach already uses an **empirical** percentile
+rank rather than a normal CDF, because sleep scores are bounded at 100 and
+left-skewed. Phase 3 should keep that choice.
 
-- [ ] Rolling 90-day mean and standard deviation
-- [ ] Z-scores and percentile ranks
-- [ ] Trailing windows: T7, T30, T90, T180, T365
-- [ ] Ticker deltas with direction and colour
-- [ ] MSRI composite signal index with EWMA smoothing
-- [ ] Morning brief delivered to Telegram
+## Phase 4 — Live dashboard · **AFTER PHASE 3**
 
-Three decisions needed before MSRI can be implemented, all flagged earlier:
-`CDF_Percentile_Multiplier` is referenced but never defined; the autonomic and
-architecture factors are unbounded above so the index is not actually bounded
-0–100 as specified; and the EWMA has no seed value for the first night.
+The preview at `web/dashboard.html` already exists and is wired to the live
+engine. Making it real means pointing it at actual history instead of seeded
+telemetry, then publishing to GitHub Pages — free, no server, rebuilt on every
+workflow run.
 
-Also worth revisiting: sleep scores are bounded at 100 and left-skewed, so a
-normal-distribution CDF will distort percentiles at the top end. An empirical
-percentile rank against actual history is simpler and more honest.
+The original spec called for Next.js, Supabase, auth and an onboarding wizard.
+For a solo app that is a great deal of machinery for very little; a static page
+reading the same JSON delivers the visible value at a fraction of the cost.
+Revisit only if other people are going to sign up.
 
-### Phase 4 — Public surface · **NOT STARTED**
+## Phase 5 — Deeper engagement · **LARGELY ALREADY BUILT**
 
-Two possible shapes, and the cheaper one may be the right one:
+Phase 1.6 delivered most of what this was going to be. What is left:
 
-**Option A (cheap).** A static site on GitHub Pages reading the same fact JSON.
-Landing page, Science Vault with category filters, the brand palette. No
-database, no auth, no hosting cost. Days of work, not weeks.
-
-**Option B (full).** Next.js + Supabase + auth + onboarding wizard + multi-user
-dashboards, per the original super prompts. Only worth it if other people are
-actually going to sign up.
-
-Given this is a solo build and a free public good, Option A delivers most of the
-visible value for a fraction of the work. Revisit when Phases 1–3 are proven.
-
-### Phase 5 — Behavioural engagement · **NOT STARTED**
-
-The identity-based micro-journaling layer. Telegram inline keyboards make this
-genuinely cheap — tap a habit, complete a sentence stem, log a reflection, all
-inside the notification. No app, no web page.
-
-Depends on Phase 3 for the Z-score-driven prompt routing (identity
-consolidation when high, atomic micro-steps at baseline, attribution correction
-when low).
+- Z-score-driven prompt routing (identity consolidation on strong nights,
+  atomic micro-steps at baseline, attribution correction on poor ones) — needs
+  Phase 3
+- Weekly, monthly and quarterly milestone deep-dives
+- Streak tracking and compounding visualisations
 
 ---
 
 ## Recommended order
 
-1. **Set the two secrets.** Two minutes. Nothing else is worth doing until the
-   engine actually interrupts you at 9 PM unprompted, because that is the whole
-   thesis.
-2. **Live for a week.** Learn which slots you act on and which you ignore.
-3. **Phase 1.5** in parallel — content work needs no infrastructure.
-4. **Phase 2 + 3 together.** Backfill makes them land as one useful thing
-   rather than two half-features.
-5. **Phase 4 and 5** once the daily loop is proven.
-
----
+1. **Add the two repo secrets.** Two minutes. Nothing downstream is worth
+   building until cards arrive unprompted.
+2. **Live with it for a week.** Which slots get acted on, whether the prompts
+   stay interesting, whether nine days is too tight a loop.
+3. **Phase 2 + 3 together**, once there is an Oura token. Backfill makes them
+   land as one useful thing rather than two half-features.
+4. **Phase 4**, then the rest of Phase 5.
 
 ## Open questions
 
-- Public or private repo?
-- Voice pass on the fact library — punchier reframes, or leave as authored?
-- MSRI formula decisions (see Phase 3)
-- Phase 4: static Science Vault, or the full Next.js application?
+- Public or private repo? (Public gives unlimited Actions minutes and matches
+  the open-source manifesto.)
+- Revoke and replace the bot token, which was pasted into a chat transcript.
+- MSRI formula decisions (see Phase 3).
