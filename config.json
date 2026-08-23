@@ -1,0 +1,58 @@
+{
+  "timezone": "America/Detroit",
+  "targetBedtime": "22:30",
+  "jitter": {
+    "enabled": true,
+    "maxMinutes": 20,
+    "sigmaMinutes": 10
+  },
+  "jackpot": {
+    "enabled": true,
+    "odds": 0.142857
+  },
+  "maxLatenessMinutes": 75,
+  "slots": [
+    {
+      "id": "morning_reflection",
+      "name": "01: Morning Reflection",
+      "anchor": "08:00",
+      "objective": "Re-anchor identity as a high-performance sleeper upon waking.",
+      "enabled": true
+    },
+    {
+      "id": "midday_essentialism",
+      "name": "02: Midday Essentialism",
+      "anchor": "12:00",
+      "objective": "Front-load execution so work does not spill into the evening.",
+      "enabled": true
+    },
+    {
+      "id": "afternoon_boundary",
+      "name": "03: Afternoon Boundary",
+      "anchor": "16:00",
+      "objective": "Enforce the caffeine cutoff 10 hours before target bedtime.",
+      "enabled": true
+    },
+    {
+      "id": "evening_winddown",
+      "name": "04: Evening Wind-Down",
+      "anchor": "19:00",
+      "objective": "Begin light reduction and thermal drop.",
+      "enabled": true
+    },
+    {
+      "id": "work_shutdown",
+      "name": "05: Hard Work Shutdown",
+      "anchor": "21:00",
+      "objective": "Non-negotiable shutdown on laptops and work communications.",
+      "enabled": true
+    },
+    {
+      "id": "terminal_bedtime",
+      "name": "06: Terminal Bedtime Anchor",
+      "anchor": "22:00",
+      "objective": "Immediate screen shutdown and final transition to bed.",
+      "enabled": true
+    }
+  ]
+}
