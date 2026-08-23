@@ -9,7 +9,9 @@ import { getUpdates, sendMessage } from './telegram.js';
 import { parseEntry, buildCoachResponse } from './coach.js';
 import { addJournalEntry, addSleepEntry, sleepSeries, readJournal } from './journal.js';
 import { morningPrompt } from './prompts.js';
-import { localDateString } from './time.js';
+import { localDateString, localTimeString, formatClock12 } from './time.js';
+import { buildDaySchedule } from './schedule.js';
+import { loadLibraries } from './facts.js';
 
 const PENDING_KEEP = 12;
 
@@ -40,13 +42,114 @@ function helpText() {
   return [
     'SLEEP OS  //  COMMANDS',
     '',
-    '/today   today\'s cadence and what has fired',
-    '/stats   rotation, streak and journal totals',
+    '/status  is the engine alive, and what fires next',
+    '/today   today\'s full cadence and what has fired',
+    '/stats   library, rotation and journal totals',
     '/log 84  log last night (score, optional hours, optional 1-5 feel)',
     '/help    this message',
     '',
     'Any other reply is logged as a journal entry against the last card sent.',
   ].join('\n');
+}
+
+function since(ms) {
+  const m = Math.round(ms / 60000);
+  if (m < 60) return `${m}m`;
+  const h = Math.floor(m / 60);
+  return h < 48 ? `${h}h ${m % 60}m` : `${Math.floor(h / 24)}d`;
+}
+
+/**
+ * The health check. Answering this over Telegram is deliberate -- it means the
+ * only tool needed to confirm the engine is alive is the same phone the
+ * notifications land on. A reply proves the workflow ran, reached GitHub's
+ * runner, read the inbox and sent a message, which is the whole chain.
+ */
+function statusText({ config, state, now }) {
+  const dateString = localDateString(now, config.timezone);
+  const schedule = buildDaySchedule(config, dateString);
+  const records = state.sends?.[dateString] ?? {};
+  const delivered = Object.values(records).filter((r) => r.status === 'sent');
+  const next = schedule.find((s) => !records[s.id] && now < s.targetAt);
+
+  const allSends = Object.entries(state.sends ?? {})
+    .flatMap(([d, slots]) => Object.entries(slots).map(([id, r]) => ({ date: d, id, ...r })))
+    .filter((r) => r.status === 'sent' && r.at)
+    .sort((a, b) => b.at.localeCompare(a.at));
+  const last = allSends[0];
+
+  const lines = [
+    'SLEEP OS  //  STATUS',
+    '',
+    `Engine alive · ${localTimeString(now, config.timezone)} ${dateString}`,
+    '',
+    `Today: ${delivered.length} of ${schedule.length} delivered`,
+  ];
+
+  if (next) {
+    lines.push(`Next: ${next.name.replace(/^\d+:\s*/, '')} at ${next.targetLabel} (in ${since(next.targetAt - now)})`);
+  } else {
+    lines.push('Next: cadence complete, resets at 6:00 AM');
+  }
+
+  if (last) {
+    lines.push('');
+    lines.push(`Last send: ${last.targetLabel ?? last.id} · ${last.factId ?? last.kind} · ${since(now - new Date(last.at))} ago`);
+  }
+
+  const { facts } = loadLibraries();
+  lines.push('');
+  lines.push(`Rotation: cycle ${state.cycle ?? 0} · ${state.remaining?.length ?? facts.length}/${facts.length} facts left`);
+  lines.push(`Journal: ${readJournal().length} entries · ${sleepSeries().length} nights logged`);
+
+  return lines.join('\n');
+}
+
+function todayText({ config, state, now }) {
+  const dateString = localDateString(now, config.timezone);
+  const schedule = buildDaySchedule(config, dateString);
+  const records = state.sends?.[dateString] ?? {};
+
+  const lines = [`SLEEP OS  //  ${dateString}`, ''];
+  for (const slot of schedule) {
+    const r = records[slot.id];
+    const mark = r?.status === 'sent' ? '[x]' : r?.status === 'missed' ? '[-]' : now >= slot.targetAt ? '[!]' : '[ ]';
+    const detail = r?.factId ? ` ${r.factId}${r.jackpot ? ' JACKPOT' : ''}` : '';
+    lines.push(`${mark} ${slot.targetLabel.padStart(8)}  ${slot.name.replace(/^\d+:\s*/, '')}${detail}`);
+  }
+  return lines.join('\n');
+}
+
+function statsText({ state }) {
+  const { facts } = loadLibraries();
+  const nights = sleepSeries();
+  const journal = readJournal();
+
+  const mechanisms = {};
+  for (const e of journal) if (e.mechanism) mechanisms[e.mechanism] = (mechanisms[e.mechanism] ?? 0) + 1;
+  const top = Object.entries(mechanisms).sort((a, b) => b[1] - a[1]).slice(0, 3);
+
+  const lines = [
+    'SLEEP OS  //  STATS',
+    '',
+    `Library: ${facts.length} facts · ${facts.filter((f) => f.library === 'sleep').length} sleep / ${facts.filter((f) => f.library === 'lucid').length} lucid`,
+    `Cycle ${state.cycle ?? 0} · ${state.remaining?.length ?? facts.length} facts remaining`,
+    `Full loop: ${(facts.length / 7).toFixed(1)} days at current cadence`,
+    '',
+    `Journal: ${journal.length} entries`,
+    `Nights logged: ${nights.length}`,
+  ];
+  if (nights.length) {
+    const scores = nights.map((n) => n.score).filter((s) => typeof s === 'number');
+    if (scores.length) {
+      lines.push(`Average score: ${(scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1)}`);
+    }
+  }
+  if (top.length) {
+    lines.push('');
+    lines.push(`Most answered: ${top.map(([m, n]) => `${m.replace(/_/g, ' ')} ×${n}`).join(', ')}`);
+  }
+  return lines.join('\n');
 }
 
 async function handleSleepEntry({ token, chatId, text, state, dateString, log }) {
@@ -107,9 +210,19 @@ export async function processInbox({ config, state, token, chatId, now = new Dat
         handled.push(await handleSleepEntry({ token, chatId, text: body, state, dateString, log }));
         continue;
       }
-      if (cmd === '/today' || cmd === '/stats') {
-        // Rendered by the dispatcher, which already holds the schedule.
-        handled.push({ type: 'command', cmd, defer: true });
+      if (cmd === '/status') {
+        await sendMessage(token, chatId, statusText({ config, state, now }));
+        handled.push({ type: 'command', cmd });
+        continue;
+      }
+      if (cmd === '/today') {
+        await sendMessage(token, chatId, todayText({ config, state, now }));
+        handled.push({ type: 'command', cmd });
+        continue;
+      }
+      if (cmd === '/stats') {
+        await sendMessage(token, chatId, statsText({ state }));
+        handled.push({ type: 'command', cmd });
         continue;
       }
       await sendMessage(token, chatId, `Unknown command ${cmd}.\n\n${helpText()}`);
