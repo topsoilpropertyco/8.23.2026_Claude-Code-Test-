@@ -41,7 +41,12 @@ export async function getMe(token) {
   return call(token, 'getMe');
 }
 
-/** Reads recent updates so setup can discover the chat id without a webhook. */
-export async function getUpdates(token) {
-  return call(token, 'getUpdates', { timeout: 0, limit: 20 });
+/**
+ * Reads pending updates. Passing an offset acknowledges everything before it,
+ * which is how the queue is drained without a webhook.
+ */
+export async function getUpdates(token, offset = 0) {
+  const payload = { timeout: 0, limit: 50 };
+  if (offset) payload.offset = offset;
+  return call(token, 'getUpdates', payload);
 }

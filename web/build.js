@@ -13,6 +13,8 @@ import { loadLibraries, loadConfig, ROOT } from '../src/facts.js';
 import { buildDaySchedule } from '../src/schedule.js';
 import { selectFact } from '../src/selector.js';
 import { rngFrom, gaussian } from '../src/rng.js';
+import { readJournal, sleepSeries } from '../src/journal.js';
+import { loadPrompts } from '../src/prompts.js';
 import { localDateString } from '../src/time.js';
 
 const { facts } = loadLibraries();
@@ -101,11 +103,27 @@ const cycleRemaining = scratch.remaining.length;
 
 /* ----------------------------------------------------------------- journal */
 
-const journal = [
-  { date: 'Yesterday', stem: 'As a world-class sleeper, when my T7 score shifts by −2.4, my non-negotiable recovery action tonight is', answer: 'kitchen closed at 7, laptop in the drawer by 9.', tag: 'Identity' },
-  { date: '2 days ago', stem: 'My score was impacted by sleep latency. I acknowledge this data point and commit to', answer: 'ten minutes of down-regulation breathing before lights out.', tag: 'Attribution' },
-  { date: '3 days ago', stem: 'Total sleep time last night was 7h 27m. To optimize my circadian baseline today, I will complete my daylight walk at', answer: '7:15am, right after drop-off.', tag: 'Micro-habit' },
-];
+// Real entries once they exist; otherwise a worked example of the shape, so
+// the section is never an empty box on a fresh install.
+const { prompts: promptDefs } = loadPrompts();
+const promptById = new Map(promptDefs.map((p) => [p.id, p]));
+const realJournal = readJournal();
+const journalIsReal = realJournal.length > 0;
+
+const journal = journalIsReal
+  ? realJournal.slice(-4).reverse().map((e) => ({
+      date: e.date,
+      stem: promptById.get(e.promptId)?.text ?? 'Unprompted entry',
+      answer: e.text,
+      tag: (e.mechanism ?? 'note').replace(/_/g, ' '),
+    }))
+  : [
+      { date: 'example', stem: 'Name the exact moment tonight this is most likely to break. Finish the sentence: When ______ happens, I will ______.', answer: 'When the 9pm alert lands mid-email, I close the lid and finish it at 6am.', tag: 'implementation intention' },
+      { date: 'example', stem: 'Which version of yourself did today\'s choices vote for? The operator, or the one who stays up?', answer: 'Operator. Kitchen shut at 7, phone out of the bedroom.', tag: 'identity' },
+      { date: 'example', stem: 'Why does this one actually matter to you? Not in general. To you, this week.', answer: 'Because I was short with the kids twice this week and both times I was under seven hours.', tag: 'elaborative interrogation' },
+    ];
+
+const loggedNights = sleepSeries();
 
 /* -------------------------------------------------------------------- chart */
 
@@ -398,7 +416,7 @@ footer strong{color:var(--ice);font-weight:600}
   <section>
     <div class="head">
       <h2 class="eyebrow">Journal</h2>
-      <span class="eyebrow">Answered in Telegram</span>
+      <span class="eyebrow">${journalIsReal ? `${realJournal.length} entries · answered in Telegram` : 'Example entries · none logged yet'}</span>
     </div>
     <div class="card">
       ${journal.map((j) => `<div class="entry">

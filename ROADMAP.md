@@ -47,6 +47,21 @@ Remaining:
 - [ ] Confirm phone notifications actually surface
 - [ ] Revoke and replace the bot token (it was pasted into a chat transcript)
 
+### Phase 1.6 — Journal, intake and coach · **BUILT**
+
+- 28 journal prompts across 12 named behaviour-change mechanisms, attached to
+  every delivered card and rotating independently of the fact cycle
+- Reply capture via getUpdates polling on the existing schedule — no webhook
+- 6:00 AM manual intake, unjittered so it can become a habit
+- Rule-based morning coach: positions the night against the user's own history
+  and offers one lever, drawn from a real fact's move
+- Confidence tiers so no statistic is claimed before the record supports it
+- `/help`, `/log`, `journal` CLI command
+- 22 further tests
+
+Remaining:
+- [ ] Needs the repo secrets before replies are processed automatically
+
 ### Phase 1.5 — Content hardening · **NOT STARTED**
 
 Cheap, high-value, no new infrastructure.

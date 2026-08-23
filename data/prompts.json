@@ -1,0 +1,59 @@
+{
+  "note": "Journal prompts attached to every delivered fact. Each is grounded in a named behaviour-change mechanism rather than generic reflection. Placeholders: {move} = the fact's Tonight's 1% Move, {truth} = its Root Truth, {category} = its category. Prompts rotate on their own cycle, independent of the fact rotation, so the same fact rarely arrives with the same question twice.",
+  "mechanisms": {
+    "implementation_intention": "Gollwitzer. Specifying when/where/how roughly doubles follow-through versus intention alone. The strongest single effect in the literature.",
+    "identity": "Clear. Anchoring the behaviour to self-concept rather than outcome, so it survives low motivation.",
+    "elaborative_interrogation": "Asking why a fact matters to you specifically. Deepens encoding and makes the reason personally retrievable later.",
+    "prospective_regret": "Loss framing against a concrete future moment. Losses move people more than equivalent gains.",
+    "mental_contrasting": "Oettingen's WOOP. Pairing the desired outcome with the real obstacle beats visualising success alone.",
+    "anchoring": "Fogg. Attaching a tiny new behaviour to an existing reliable one.",
+    "self_efficacy": "Bandura. Recalling a past success is the strongest source of belief that you can do it again.",
+    "attribution": "Separating what you controlled from what you did not, so a bad night does not become evidence of failure.",
+    "commitment": "Converting a vague intention into a stated commitment raises follow-through.",
+    "episodic_future_thinking": "Vividly simulating the future self who benefits, which makes the delayed reward feel present.",
+    "subtraction": "Removing friction beats adding willpower.",
+    "minimum_viable": "Defining the floor version you would do on your worst night, so the streak never fully breaks."
+  },
+  "prompts": [
+    { "id": "p01", "mechanism": "implementation_intention", "slots": ["work_shutdown", "evening_winddown", "terminal_bedtime"], "text": "Name the exact moment tonight this is most likely to break. Finish the sentence: When ______ happens, I will ______." },
+    { "id": "p02", "mechanism": "implementation_intention", "slots": ["morning_reflection", "midday_essentialism"], "text": "Where will you physically be at 9:00 PM tonight, and what will your hands be doing? Be specific." },
+    { "id": "p03", "mechanism": "implementation_intention", "slots": ["afternoon_boundary", "evening_winddown"], "text": "Pick the time you will do this, not the intention. What time, exactly?" },
+    { "id": "p04", "mechanism": "identity", "slots": ["morning_reflection", "terminal_bedtime"], "text": "Finish this: someone who genuinely sleeps like a top 1% operator would, right now, ______." },
+    { "id": "p05", "mechanism": "identity", "slots": ["work_shutdown", "terminal_bedtime"], "text": "Which version of yourself did today's choices vote for? The operator, or the one who stays up?" },
+    { "id": "p06", "mechanism": "identity", "slots": ["morning_reflection"], "text": "Say it in the present tense, not the future: I am someone who ______." },
+    { "id": "p07", "mechanism": "elaborative_interrogation", "slots": ["morning_reflection", "midday_essentialism", "afternoon_boundary", "evening_winddown", "work_shutdown", "terminal_bedtime"], "text": "Why does this one actually matter to you? Not in general. To you, this week." },
+    { "id": "p08", "mechanism": "elaborative_interrogation", "slots": ["morning_reflection", "midday_essentialism"], "text": "What does this make you think about last night specifically?" },
+    { "id": "p09", "mechanism": "elaborative_interrogation", "slots": ["afternoon_boundary", "evening_winddown", "work_shutdown"], "text": "Where have you already seen this play out in your own body? Give one real example." },
+    { "id": "p10", "mechanism": "prospective_regret", "slots": ["work_shutdown", "terminal_bedtime"], "text": "If you ignore this tonight, name the specific cost tomorrow. Not vague tiredness — the actual thing you will do worse." },
+    { "id": "p11", "mechanism": "prospective_regret", "slots": ["evening_winddown", "work_shutdown"], "text": "What will you have traded away by 11:30 PM if nothing changes tonight?" },
+    { "id": "p12", "mechanism": "prospective_regret", "slots": ["midday_essentialism", "afternoon_boundary"], "text": "Who gets the worse version of you tomorrow if tonight goes badly?" },
+    { "id": "p13", "mechanism": "mental_contrasting", "slots": ["morning_reflection", "terminal_bedtime"], "text": "Best case if you hold this for 30 nights — then, immediately, the single obstacle most likely to stop you tonight." },
+    { "id": "p14", "mechanism": "mental_contrasting", "slots": ["midday_essentialism", "evening_winddown"], "text": "What is the one thing most likely to push tonight's bedtime? Name it now, while you can still act on it." },
+    { "id": "p15", "mechanism": "anchoring", "slots": ["morning_reflection", "afternoon_boundary", "evening_winddown"], "text": "Anchor it to something you already do without thinking. Finish: After I ______, I will ______." },
+    { "id": "p16", "mechanism": "anchoring", "slots": ["terminal_bedtime", "work_shutdown"], "text": "What existing habit could carry this one on its back?" },
+    { "id": "p17", "mechanism": "self_efficacy", "slots": ["morning_reflection", "midday_essentialism"], "text": "Name one night this month you got this exactly right. What made it work?" },
+    { "id": "p18", "mechanism": "self_efficacy", "slots": ["terminal_bedtime"], "text": "What is the longest streak you have held on this? What broke it?" },
+    { "id": "p19", "mechanism": "attribution", "slots": ["morning_reflection"], "text": "Last night's result — how much was inside your control and how much was not? Be honest about the split." },
+    { "id": "p20", "mechanism": "attribution", "slots": ["morning_reflection", "midday_essentialism"], "text": "Name one thing you controlled well last night, and one you did not. No self-criticism, just the data." },
+    { "id": "p21", "mechanism": "commitment", "slots": ["evening_winddown", "work_shutdown", "terminal_bedtime"], "text": "State it as a commitment, not an intention. Write the actual sentence you would be embarrassed to break." },
+    { "id": "p22", "mechanism": "commitment", "slots": ["afternoon_boundary", "work_shutdown"], "text": "What time tonight is genuinely non-negotiable? Commit to it in writing, right now." },
+    { "id": "p23", "mechanism": "episodic_future_thinking", "slots": ["work_shutdown", "terminal_bedtime"], "text": "Picture 6:30 AM tomorrow having done this tonight. What is concretely different about that version of the morning?" },
+    { "id": "p24", "mechanism": "episodic_future_thinking", "slots": ["morning_reflection", "midday_essentialism"], "text": "Picture yourself a year from now having held this. What has compounded?" },
+    { "id": "p25", "mechanism": "subtraction", "slots": ["midday_essentialism", "afternoon_boundary", "evening_winddown"], "text": "What would you have to stop doing to make this automatic instead of effortful?" },
+    { "id": "p26", "mechanism": "subtraction", "slots": ["work_shutdown"], "text": "What friction is standing between you and this move? Remove one piece of it tonight." },
+    { "id": "p27", "mechanism": "minimum_viable", "slots": ["evening_winddown", "work_shutdown", "terminal_bedtime"], "text": "What is the 30-second version of this move — the one you would still do on your worst night?" },
+    { "id": "p28", "mechanism": "minimum_viable", "slots": ["morning_reflection", "afternoon_boundary"], "text": "Set the floor, not the ceiling. What is the smallest version of this that still counts?" }
+  ],
+  "intake": {
+    "request": "Log last night before the day starts. Reply with your sleep score, and optionally hours slept and how you feel 1-5.\n\nExamples:\n  84\n  84 7.5\n  84 7.5 4\n\nThe ring already knows. Writing it down yourself is the point.",
+    "prompts": [
+      { "id": "m01", "mechanism": "attribution", "text": "One thing you controlled last night, and one you did not." },
+      { "id": "m02", "mechanism": "identity", "text": "Finish it: today I am someone who ______." },
+      { "id": "m03", "mechanism": "implementation_intention", "text": "What time is tonight's shutdown, and what will you be doing right before it?" },
+      { "id": "m04", "mechanism": "self_efficacy", "text": "What did you do right last night that is worth repeating?" },
+      { "id": "m05", "mechanism": "mental_contrasting", "text": "What is the single most likely thing to wreck tonight's bedtime?" },
+      { "id": "m06", "mechanism": "episodic_future_thinking", "text": "If tonight goes exactly right, what is different at 6:30 AM tomorrow?" },
+      { "id": "m07", "mechanism": "minimum_viable", "text": "What is your floor tonight — the version you would hit even on the worst day?" }
+    ]
+  }
+}

@@ -18,6 +18,7 @@ person, one Telegram chat, six nudges a day.
 | Phase | Scope | State |
 |---|---|---|
 | **1** | Fact library, rotation engine, Telegram delivery, scheduler | **Built** |
+| **1.6** | Journal prompts, 6 AM intake, morning coach, reply capture | **Built** |
 | 2 | Oura API v2 ingestion + full historical backfill | Not started |
 | 3 | Z-scores, percentiles, trailing tickers, MSRI, morning brief | Not started |
 | 4 | Public web app: landing page, Science Vault, onboarding | Not started |
@@ -76,6 +77,7 @@ else to deploy.
 
 ```bash
 npm run today                       # today's jittered schedule + what has fired
+npm run journal                     # journal entries and the manual sleep log
 npm run preview                     # render all six of today's cards, send nothing
 npm run send -- terminal_bedtime    # force one slot immediately
 npm run send -- work_shutdown --dry-run
@@ -96,6 +98,7 @@ notifications never become predictable wallpaper.
 
 | Slot | Anchor | Objective |
 |---|---|---|
+| Morning Intake | 6:00 AM | Log last night by hand (no jitter — this one wants to be a habit) |
 | Morning Reflection | 8:00 AM | Re-anchor identity as a high-performance sleeper |
 | Midday Essentialism | 12:00 PM | Front-load execution so work does not spill into the evening |
 | Afternoon Boundary | 4:00 PM | Caffeine cutoff, 10 hours before target bedtime |
@@ -143,6 +146,63 @@ Two refinements sit on top of plain rotation:
   holds. Measured on-theme rate is ~92%.
 - **Jackpot drops.** Roughly 1 send in 7 is flagged as a jackpot and pulls a
   high-intensity card (23 of the 55 qualify) with its own header.
+
+### The journal loop
+
+Every delivered card ends with **one question**. Not generic reflection — each
+prompt is grounded in a named behaviour-change mechanism, and they rotate on
+their own cycle independent of the facts, so the same fact rarely arrives with
+the same question twice.
+
+28 prompts across 12 mechanisms:
+
+| Mechanism | Why it is in here |
+|---|---|
+| Implementation intention | Specifying when/where/how roughly doubles follow-through. The strongest single effect in the literature. |
+| Identity | Anchors the behaviour to self-concept, so it survives low motivation. |
+| Elaborative interrogation | Asking why it matters *to you* deepens encoding. |
+| Prospective regret | Loss framing against a concrete future moment. |
+| Mental contrasting | Outcome paired with the real obstacle beats visualising success. |
+| Anchoring | Attaches a tiny behaviour to an existing reliable one. |
+| Self-efficacy | Recalling past success is the strongest source of belief. |
+| Attribution | Separates what you controlled from what you did not. |
+| Commitment | Converts intention into a stated commitment. |
+| Episodic future thinking | Makes the delayed reward feel present. |
+| Subtraction | Removing friction beats adding willpower. |
+| Minimum viable | Defines the floor you would hit on your worst night. |
+
+Replying in Telegram logs the entry against the fact and prompt that produced
+it. Replies are picked up by the same polling loop that sends — no webhook, no
+server, no public endpoint.
+
+### The 6 AM intake and the coach
+
+At 6:00 AM sharp — deliberately unjittered, because this one should become
+automatic — Sleep OS asks you to log last night by hand:
+
+```
+84          score only
+84 7.5      score and hours
+84 7.5 4    score, hours, and how you feel 1-5
+```
+
+The ring already knows. Writing it down yourself is the point.
+
+The coach replies immediately with your night positioned against your own
+history, and **one lever for tonight**. It claims nothing the record cannot
+support:
+
+| Nights logged | What it will say |
+|---|---|
+| under 3 | Acknowledges and asks you to keep logging |
+| 3–6 | Average and delta |
+| 7–13 | Adds trailing windows |
+| 14–29 | Adds z-score |
+| 30+ | Adds empirical percentile |
+
+The recommendation is always drawn from a real fact's *Tonight's 1% Move*, so
+the coaching stays tied to the same evidence base as the nudges and can never
+invent a statistic.
 
 ### Adding facts
 

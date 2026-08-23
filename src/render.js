@@ -16,7 +16,7 @@ export function renderCard(fact) {
  * Full notification body: a thin context header, then the card.
  * The header is the only Sleep OS voice in the message; the card is the source.
  */
-export function renderMessage({ fact, slot, jackpot }) {
+export function renderMessage({ fact, slot, jackpot, prompt }) {
   const lines = [];
 
   if (jackpot) {
@@ -28,7 +28,21 @@ export function renderMessage({ fact, slot, jackpot }) {
   lines.push('');
   lines.push(renderCard(fact));
 
+  // One question per card. Reflection is what turns a read fact into a
+  // decision, so the prompt travels with the evidence rather than arriving
+  // separately where it would be ignored.
+  if (prompt) {
+    lines.push('');
+    lines.push('─────');
+    lines.push(prompt.text);
+  }
+
   return lines.join('\n');
+}
+
+/** The 6 AM intake ask. No fact -- this slot collects rather than delivers. */
+export function renderIntake({ slot, request }) {
+  return [`SLEEP OS  //  ${slot.name}`, `${slot.targetLabel}  ·  ${slot.objective}`, '', request].join('\n');
 }
 
 /** One-line summary for logs and the CLI. */

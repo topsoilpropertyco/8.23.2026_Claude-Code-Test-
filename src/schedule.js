@@ -16,7 +16,7 @@ export function buildDaySchedule(config, dateString) {
     .map((slot) => {
       const anchorMinutes = parseClock(slot.anchor);
       let offset = 0;
-      if (jitter?.enabled) {
+      if (jitter?.enabled && slot.jitter !== false && slot.type !== 'intake') {
         const rng = rngFrom(`sleep-os:jitter:${dateString}:${slot.id}`);
         offset = Math.round(gaussian(rng, jitter.sigmaMinutes ?? 10, jitter.maxMinutes ?? 20));
       }

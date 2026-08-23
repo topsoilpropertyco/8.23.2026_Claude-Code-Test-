@@ -11,7 +11,9 @@
 import { loadLibraries, loadConfig } from '../src/facts.js';
 import { buildDaySchedule } from '../src/schedule.js';
 import { selectFact } from '../src/selector.js';
-import { renderMessage } from '../src/render.js';
+import { selectPrompt, intakeRequest } from '../src/prompts.js';
+import { renderMessage, renderIntake } from '../src/render.js';
+import { readJournal, sleepSeries } from '../src/journal.js';
 import { dispatch } from '../src/dispatch.js';
 import { getMe, getUpdates } from '../src/telegram.js';
 import { loadState, sentSlotsFor, readHistory } from '../src/state.js';
@@ -62,12 +64,25 @@ async function cmdPreview() {
 
   // Preview walks a scratch copy of state so it never consumes the rotation.
   let scratch = { ...loadState() };
+  let lastMechanism = null;
   banner(`Preview · ${dateString} · ${config.timezone}`);
   for (const slot of schedule) {
-    const choice = selectFact({ facts, state: scratch, slotId: slot.id, dateString, config });
-    scratch = { ...scratch, cycle: choice.cycle, remaining: choice.remaining };
     console.log(`\n${'─'.repeat(66)}`);
-    console.log(renderMessage({ fact: choice.fact, slot, jackpot: choice.jackpot }));
+    if (slot.type === 'intake') {
+      console.log(renderIntake({ slot, request: intakeRequest() }));
+      continue;
+    }
+    const choice = selectFact({ facts, state: scratch, slotId: slot.id, dateString, config });
+    const p = selectPrompt({ state: scratch, slotId: slot.id, lastMechanism });
+    scratch = {
+      ...scratch,
+      cycle: choice.cycle,
+      remaining: choice.remaining,
+      promptCycle: p.promptCycle,
+      promptRemaining: p.promptRemaining,
+    };
+    lastMechanism = p.prompt.mechanism;
+    console.log(renderMessage({ fact: choice.fact, slot, jackpot: choice.jackpot, prompt: p.prompt }));
   }
   console.log(`\n${'─'.repeat(66)}`);
   console.log('\nPreview only. Rotation state was not advanced.');
@@ -104,6 +119,25 @@ async function cmdWhoami() {
     console.log(`  ${String(chat.id).padEnd(16)} ${name}`);
   }
   console.log('\n  Use the id above as TELEGRAM_CHAT_ID.');
+}
+
+async function cmdJournal() {
+  const entries = readJournal().slice(-15).reverse();
+  const nights = sleepSeries();
+
+  banner(`Journal · ${readJournal().length} entries`);
+  if (entries.length === 0) {
+    console.log('  none yet — reply to any card in Telegram and it lands here');
+  }
+  for (const e of entries) {
+    console.log(`\n  ${e.date}  ${e.mechanism ?? 'unprompted'}${e.factId ? `  (${e.factId})` : ''}`);
+    console.log(`  ${e.text}`);
+  }
+
+  banner(`Sleep log · ${nights.length} nights`);
+  for (const n of nights.slice(-10)) {
+    console.log(`  ${n.date}  score ${String(n.score ?? '—').padStart(3)}  ${n.hours ? n.hours + 'h' : '   '}  ${n.feel ? 'feel ' + n.feel : ''}`);
+  }
 }
 
 async function cmdStats() {
@@ -163,8 +197,11 @@ try {
     case 'stats':
       await cmdStats();
       break;
+    case 'journal':
+      await cmdJournal();
+      break;
     default:
-      console.error(`Unknown command "${command}". Try: today, preview, dispatch, send, whoami, stats`);
+      console.error(`Unknown command "${command}". Try: today, preview, dispatch, send, whoami, stats, journal`);
       process.exit(1);
   }
 } catch (err) {
