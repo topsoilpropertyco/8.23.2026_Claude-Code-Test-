@@ -77,11 +77,23 @@
         "mechanism": "implementation_intention",
         "targetLabel": "10:08 PM",
         "at": "2026-08-23T15:47:24.013Z"
+      },
+      "morning_reflection": {
+        "status": "missed",
+        "at": "2026-08-23T15:56:03.456Z"
       }
     }
   },
-  "inboxOffset": 697606349,
+  "inboxOffset": 697606351,
   "pending": [
+    {
+      "messageId": 12,
+      "kind": "morning-prompt",
+      "promptId": "m01",
+      "mechanism": "attribution",
+      "slot": "intake",
+      "at": "2026-08-23T15:56:04.486Z"
+    },
     {
       "messageId": 9,
       "kind": "fact",
@@ -130,5 +142,6 @@
     "p11",
     "p24",
     "p07"
-  ]
+  ],
+  "coachRotation": 1
 }
