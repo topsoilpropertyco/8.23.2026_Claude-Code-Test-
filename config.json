@@ -68,5 +68,6 @@
       "enabled": true,
       "type": "fact"
     }
-  ]
+  ],
+  "ouraPullFromHour": 11
 }

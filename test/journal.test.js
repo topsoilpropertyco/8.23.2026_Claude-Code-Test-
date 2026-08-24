@@ -234,3 +234,65 @@ test('writing without a key fails loudly instead of writing plaintext', async ()
   assert.throws(() => encryptLine('anything'), MissingKeyError);
   process.env.SLEEPOS_DATA_KEY = saved;
 });
+
+/* -------------------------------------------------------------- telemetry */
+
+test('a night normalises to summary fields only, never the raw arrays', async () => {
+  const { normalise } = await import('../src/telemetry.js');
+  const record = normalise({
+    day: '2026-08-23',
+    sleep: { score: 88, contributors: { deep_sleep: 95 } },
+    readiness: { score: 85, temperature_deviation: 0.11 },
+    stress: { day_summary: 'normal', stress_high: 3600, recovery_high: 1800 },
+    periods: [
+      { type: 'long_sleep', total_sleep_duration: 27870, deep_sleep_duration: 5340, average_hrv: 37,
+        lowest_heart_rate: 55, efficiency: 94, heart_rate: { items: new Array(500).fill(60) },
+        movement_30_sec: '1'.repeat(1000), sleep_phase_30_sec: '4'.repeat(1000) },
+    ],
+  });
+
+  assert.equal(record.sleep_score, 88);
+  assert.equal(record.average_hrv, 37);
+  assert.equal(record.stress_summary, 'normal');
+  // The bulky per-interval series must not be carried into storage.
+  assert.equal(record.heart_rate, undefined);
+  assert.equal(record.movement_30_sec, undefined);
+  assert.equal(record.sleep_phase_30_sec, undefined);
+  assert.ok(JSON.stringify(record).length < 900, 'record is far larger than a summary should be');
+});
+
+test('the main sleep is chosen over naps', async () => {
+  const { normalise } = await import('../src/telemetry.js');
+  const r = normalise({
+    day: '2026-08-23',
+    periods: [
+      { type: 'sleep', total_sleep_duration: 1800, efficiency: 50 },
+      { type: 'long_sleep', total_sleep_duration: 27870, efficiency: 94 },
+    ],
+  });
+  assert.equal(r.efficiency, 94);
+});
+
+test('a night with no sleep period still yields a record rather than throwing', async () => {
+  const { normalise } = await import('../src/telemetry.js');
+  const r = normalise({ day: '2026-08-23', sleep: { score: 70 } });
+  assert.equal(r.date, '2026-08-23');
+  assert.equal(r.sleep_score, 70);
+  assert.equal(r.average_hrv, null);
+});
+
+test('percentiles read as ordinals, not "81th"', async () => {
+  const { buildCoachResponse, parseEntry } = await import('../src/coach.js');
+  const history = Array.from({ length: 40 }, (_, i) => ({ date: `2026-07-${String(i + 1).padStart(2, '0')}`, score: 60 + i }));
+  const text = buildCoachResponse({ entry: parseEntry('95'), history, useOura: false }).text;
+  assert.doesNotMatch(text, /\d(1th|2th|3th)\b/, 'malformed ordinal');
+  assert.match(text, /\d+(st|nd|rd|th) percentile/);
+});
+
+test('the coach falls back to the manual log when Oura has no record', async () => {
+  const { buildCoachResponse, parseEntry } = await import('../src/coach.js');
+  const history = Array.from({ length: 20 }, (_, i) => ({ date: `2026-06-${String(i + 1).padStart(2, '0')}`, score: 75 + (i % 5) }));
+  const r = buildCoachResponse({ entry: parseEntry('84'), history, date: '1999-01-01' });
+  assert.ok(r.factId, 'no lever offered');
+  assert.doesNotMatch(r.text, /Oura says/);
+});

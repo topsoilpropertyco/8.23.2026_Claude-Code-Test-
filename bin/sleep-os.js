@@ -15,6 +15,8 @@ import { selectPrompt, intakeRequest } from '../src/prompts.js';
 import { renderMessage, renderIntake } from '../src/render.js';
 import { readJournal, sleepSeries } from '../src/journal.js';
 import { authorizeUrl, exchangeCode, isAuthorised, readTokens, SCOPES, REDIRECT_URI } from '../src/oura.js';
+import { backfill, ingestRecent } from '../src/ingest.js';
+import { readTelemetry, scoreSeries, compactTelemetry } from '../src/telemetry.js';
 import { dispatch } from '../src/dispatch.js';
 import { getMe, getUpdates } from '../src/telegram.js';
 import { loadState, sentSlotsFor, readHistory } from '../src/state.js';
@@ -167,6 +169,23 @@ async function cmdOura(action, code) {
     return;
   }
 
+  if (action === 'backfill') {
+    await backfill({ years: Number(code) || 3 });
+    return;
+  }
+
+  if (action === 'pull') {
+    await ingestRecent({ days: Number(code) || 5 });
+    return;
+  }
+
+  if (action === 'compact') {
+    const r = compactTelemetry();
+    banner('Compacted');
+    console.log(`  ${r.before} lines → ${r.after} nights`);
+    return;
+  }
+
   banner('Oura');
   if (!isAuthorised()) {
     console.log('  not connected — run: npm run oura -- url');
@@ -174,6 +193,13 @@ async function cmdOura(action, code) {
   }
   const t = readTokens();
   console.log(`  connected · access token expires ${t.expires_at}`);
+
+  const series = scoreSeries();
+  if (series.length) {
+    console.log(`  ${series.length} scored nights · ${series[0].date} → ${series[series.length - 1].date}`);
+  } else {
+    console.log('  no telemetry yet — run: npm run oura -- backfill');
+  }
 }
 
 async function cmdStats() {

@@ -164,7 +164,7 @@ async function handleSleepEntry({ token, chatId, text, state, dateString, log })
 
   const rotation = state.coachRotation ?? 0;
   const prompt = morningPrompt(rotation);
-  const response = buildCoachResponse({ entry: parsed, history, rotation, morningPrompt: prompt });
+  const response = buildCoachResponse({ entry: parsed, history, rotation, morningPrompt: prompt, date: dateString });
 
   const sent = await sendMessage(token, chatId, response.text);
   state.coachRotation = rotation + 1;

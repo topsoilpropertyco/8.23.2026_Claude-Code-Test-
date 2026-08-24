@@ -16,6 +16,9 @@ import { sendMessage } from './telegram.js';
 import { processInbox, trackPending } from './inbox.js';
 import { loadState, saveState, sentSlotsFor, recordSend } from './state.js';
 import { localDateString, localTimeString } from './time.js';
+import { ingestRecent } from './ingest.js';
+import { isAuthorised } from './oura.js';
+import { hasNight } from './telemetry.js';
 
 export async function dispatch({
   now = new Date(),
@@ -47,6 +50,26 @@ export async function dispatch({
     } catch (err) {
       // A failing inbox must never stop tonight's 9 PM card going out.
       log(`inbox error (continuing): ${err.message}`);
+    }
+  }
+
+  /* --- Oura top-up --------------------------------------------------------- */
+
+  // Oura only has last night once the ring has synced to their cloud, which
+  // happens when the phone app is opened. Attempting from 11:00 local and
+  // retrying each poll until the night lands is simpler and more reliable than
+  // guessing a single time; once the night is on record the check costs
+  // nothing and no request is made.
+  let ingest = null;
+  if (live && !dryRun && isAuthorised()) {
+    const hour = Number(localTimeString(now, config.timezone).slice(0, 2));
+    if (hour >= (config.ouraPullFromHour ?? 11) && !hasNight(dateString)) {
+      try {
+        ingest = await ingestRecent({ days: 3, log });
+      } catch (err) {
+        // A failed pull must never stop a reminder going out.
+        log(`oura ingest error (continuing): ${err.message}`);
+      }
     }
   }
 
@@ -137,6 +160,7 @@ export async function dispatch({
   return {
     sent,
     inbox,
+    ingest,
     dateString,
     localTime: localTimeString(now, config.timezone),
     schedule,
