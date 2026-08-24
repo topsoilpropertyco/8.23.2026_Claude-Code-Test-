@@ -7,7 +7,8 @@ Seth drops ideas whenever he has them. Nothing stops to build them. They land in
 up cold, and stay there until they're scheduled.
 
 A phase is only "ready" when it names what it touches, what decision it needs
-from Seth, and how you'd know it worked.
+from Seth, and how you'd know it worked. Phase numbers are ordering, not
+commitments — they get renumbered when something slots in between.
 
 ---
 
@@ -165,7 +166,7 @@ throughout; the same standard applies to the science.
 
 - **M4 — Do habit anchors get journal prompts?** Facts each carry one. Habits
   are actions, not ideas. *Recommendation: no prompt, but track completion —
-  see Phase 8.*
+  see Phase 9.*
 
 ## Done when
 
@@ -175,7 +176,127 @@ provably off, and the existing 55-fact rotation is untouched.
 
 ---
 
-# Phase 7 — Generator bake-off
+# Phase 7 — Closing the loop on every reply
+
+**Status:** specified, not started. Sits next to Phase 6 — both are message-layer
+work and should probably ship together.
+
+## What Seth asked for
+
+Every input to the bot gets something back. Never silence. Short, immediate,
+identity-reinforcing. A reliable small reward for having filled it out, so the
+habit of journaling becomes self-sustaining.
+
+## The actual gap, measured
+
+Three of the four inbound paths already answer. One does not:
+
+| You send | Today |
+|---|---|
+| A sleep log (`84 7.5 4`) | Full coach response — SD, percentile, one improvement |
+| `/status`, `/stats`, `/help` | Answers |
+| An unreadable sleep log | An error with examples |
+| **A journal entry** | **Logged silently. Nothing comes back.** |
+
+`src/inbox.js` writes the entry, logs a line to the run output, and
+acknowledges the Telegram update. There is no `sendMessage` on that branch.
+
+So this is not "make the replies warmer" — it is **one missing response on the
+single path where you have done the most work.** You answer a reflective prompt
+and the app says nothing.
+
+## The hard problem: latency
+
+Reinforcement works on a scale of seconds. The engine polls GitHub Actions
+**every 10 minutes**, so today a journal reply would wait 0–10 minutes for its
+acknowledgement — and scheduled Actions runs are routinely late on top of that.
+A reward that arrives eight minutes after the behaviour is not closing the loop;
+it is a separate event.
+
+This is the whole feature. Options:
+
+1. **Accept 0–10 min.** Costs nothing, delivers little. The reply still lands,
+   but the "hit" is gone.
+2. **Poll every 5 minutes.** GitHub's floor. Doubles the run count for half the
+   latency, still minutes.
+3. **Telegram webhook → a tiny serverless function** (Cloudflare Worker or
+   equivalent, free tier). Replies in under a second. The function does *only*
+   the affirmation; GitHub Actions keeps doing the logging, coaching and
+   telemetry exactly as now.
+
+*Recommendation: 3.* It is the only option that delivers what was actually
+asked for. It splits the system honestly — a fast path that acknowledges, a slow
+path that thinks. The cost is the first always-on component in a deliberately
+serverless design, and one more secret to hold.
+
+**Decision needed from Seth (L1): is instant worth a serverless function, or is
+"within ten minutes" good enough to start?** Everything below works either way.
+
+## What to say
+
+Generic praise is the failure mode. "Great job!" every time habituates within a
+week and starts reading as a machine patting you on the head. Three sources of
+something better, in increasing order of strength:
+
+1. **The mechanism.** Journal entries already store which behavioural mechanism
+   the prompt was targeting (`mechanism` on every entry). So the reply can name
+   what you just did: *"That's mental contrasting. Most people skip straight to
+   the plan."* Free personalisation from data already on disk.
+2. **The streak.** *"Nine nights running."* Objective evidence, not an adjective.
+   Far stronger than praise because it is a fact about who you are.
+3. **Your own words.** Reflecting a fragment of what you wrote proves it was
+   read. Cheapest honest version: the first clause, no LLM required.
+
+**Identity, not performance.** "You're the kind of person who does this at
+11pm" beats "well done." The former is evidence for a self-concept; the latter
+is a gold star.
+
+## Variable intensity
+
+The config already carries a `jackpot` at odds `0.142857` — roughly one in
+seven — used to make the fact rotation feel alive. The same precedent applies
+here: **always reply, but vary the size.** Most acknowledgements are one line.
+Occasionally the reply is bigger: a streak milestone, a rarer line, a statistic
+about the journal. Constant-magnitude reward flattens into noise; varied
+magnitude stays live.
+
+## One design guardrail
+
+Seth asked for behavioural dependency, in those words, and that is a legitimate
+thing to build for yourself. The failure mode worth designing against is not
+moral, it is practical: if the reward attaches to *typing something*, the
+optimal move becomes typing anything. Tie the reward to evidence — the streak,
+the mechanism, his own sentence — and it stays attached to the reflection
+instead. Where the entry is two words, the reply should be warm and short
+rather than effusive; effusive on a throwaway entry teaches that throwaway
+entries pay.
+
+## What it touches
+
+| File | Change |
+|---|---|
+| `src/inbox.js` | send a reply on the journal branch — the missing `sendMessage` |
+| `data/affirmations.json` | **new.** Pools by shape: mechanism-aware, streak, short-entry, milestone |
+| `src/journal.js` | current streak, and total entries, for the streak line |
+| `src/affirm.js` | **new.** Pick a shape, fill it, rotate so lines do not repeat inside a month |
+| *(if L1 = webhook)* | a Worker that receives the update, replies, and forwards to the existing pipeline |
+| `test/` | never silent on any inbound path; no repeat inside N; streak maths; two-word entry gets the short shape |
+
+## Also worth doing while in here
+
+The sleep-log coach response already replies but ends on an improvement note.
+It should close on identity too — one line, after the numbers.
+
+## Done when
+
+No inbound message produces silence, ever, including when matching fails and
+including on an unrecognised input. Journal replies name the mechanism or the
+streak rather than praising. Nothing repeats inside a month. And Seth can say
+whether it feels like a reward or like a robot — that is the only real test.
+
+---
+
+# Phase 8 — Generator bake-off
 
 **Status:** fully specified in `SUPERPROMPT-PHASE4.md`. Needs a session with the
 Magic Patterns and Lovable connectors live.
@@ -190,7 +311,7 @@ one project with five routes, not five projects.
 
 ---
 
-# Phase 8 — Getting the night screen in front of you
+# Phase 9 — Getting the night screen in front of you
 
 **Status:** not specified. Needs a decision before it's worth planning.
 
@@ -217,7 +338,7 @@ tracked, the night screen is where the streak belongs.
 
 ---
 
-# Phase 9 — Statistical integrity
+# Phase 10 — Statistical integrity
 
 **Status:** known defects, no user-visible symptom yet.
 
