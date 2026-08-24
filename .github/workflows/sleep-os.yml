@@ -39,8 +39,8 @@ jobs:
 
       - name: Dispatch due reminders
         env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.SLEEPOS_TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.SLEEPOS_TELEGRAM_CHAT_ID }}
         run: |
           if [ -n "${{ inputs.slot }}" ]; then
             node bin/sleep-os.js send "${{ inputs.slot }}" ${{ inputs.dry_run && '--dry-run' || '' }}
