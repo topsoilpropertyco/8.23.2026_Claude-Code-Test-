@@ -89,11 +89,12 @@ body{font-family:var(--type);color:var(--ink);-webkit-font-smoothing:antialiased
 .bg div{display:flex;justify-content:space-between;font-size:11px;
   border-bottom:1px dotted var(--gridb);padding-bottom:2px}
 .bg span:first-child{color:var(--quiet);font-size:10px}
-.note{margin-top:12px;font-size:9.5px;color:var(--quiet);line-height:1.5}
+.note{margin-top:11px;font-size:9px;color:var(--quiet);line-height:1.5}
 .sig{margin-top:auto;padding-top:14px;display:flex;justify-content:space-between;
   align-items:flex-end}
 .sig .l{font-family:var(--form);font-size:9px;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--quiet);border-top:1px solid var(--ink);padding-top:3px;width:150px}
+  color:var(--quiet);border-top:1px solid var(--ink);padding-top:3px;width:172px;
+  white-space:nowrap}
 /* Greek must never be uppercased: text-transform turns mu into M and
    sigma into a summation sign. Bit me once already on v4. */
 .grk{text-transform:none!important}
@@ -115,7 +116,7 @@ body{font-family:var(--type);color:var(--ink);-webkit-font-smoothing:antialiased
   </div></div>
 
   <div class="strip">
-    <div class="lb"><span>Hypnogram &mdash; 25 mm/hr</span><span>8h 12m</span></div>
+    <div class="lb"><span>Hypnogram &mdash; 8h 12m at 25 mm/hr</span><span></span></div>
     <svg viewBox="0 0 346 132" preserveAspectRatio="none" aria-label="Hypnogram trace">
       <g id="g"></g><path id="tr" fill="none" stroke="#20241C" stroke-width="1.4"
         vector-effect="non-scaling-stroke"/>

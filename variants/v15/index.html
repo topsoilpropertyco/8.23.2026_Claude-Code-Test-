@@ -32,12 +32,13 @@ body{font-family:Helvetica,Arial,sans-serif;color:var(--ink);
 
 /* the score, cropped by the frame -- brutalism does not fit type to a box */
 .hero{border-bottom:3px solid var(--ink);position:relative;overflow:hidden;height:184px}
-.hero .n{position:absolute;left:-13px;top:-40px;font-size:242px;font-weight:700;
+.hero .n{position:absolute;left:-14px;top:1px;font-size:230px;font-weight:700;
   line-height:1;letter-spacing:-.06em;font-family:Helvetica,Arial,sans-serif}
 .hero .tag{position:absolute;right:0;top:0;background:var(--hazard);
   border-left:3px solid var(--ink);border-bottom:3px solid var(--ink);
   padding:8px 10px 9px;text-align:right}
-.hero .tag b{display:block;font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1}
+.hero .tag b{display:block;font-size:20px;font-weight:700;letter-spacing:-.02em;
+  line-height:1;white-space:nowrap}
 .hero .tag span{display:block;font-size:9.5px;font-weight:700;letter-spacing:.14em;
   text-transform:uppercase;margin-top:3px}
 .hero .lbl{position:absolute;left:0;bottom:0;background:var(--ink);color:var(--paper);
@@ -66,7 +67,7 @@ body{font-family:Helvetica,Arial,sans-serif;color:var(--ink);
 
 /* the table: every rule visible */
 table{width:100%;border-collapse:collapse}
-td{border-bottom:1px solid var(--ink);padding:4.4px 12px;font-size:11.5px}
+td{border-bottom:1px solid var(--ink);padding:5.7px 12px;font-size:11.5px}
 td:first-child{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
   border-right:1px solid var(--ink);width:47%}
 td:last-child{font-weight:700;text-align:right}

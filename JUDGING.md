@@ -138,3 +138,90 @@ single move most likely to produce a screen that could not be any other app.
 Second, smaller gap: all five are static compositions. Phase 5's motion pass is
 not decoration here — the entrance is where the hierarchy gets *taught* to the
 eye, and none of them has been through it yet.
+
+---
+
+# Round two — Sets B and C
+
+Same rubric, same discipline. Motion is still 1 for every variant because
+Phase 5 has not run, so the "less motion" column out of 25 is the one to read.
+
+| | Distinct | Type | Legib. | Restraint | Craft | **/25** |
+|---|:--:|:--:|:--:|:--:|:--:|:--:|
+| **v8 Ma** | 5 | 5 | 3 | 5 | 4 | **22** |
+| **v7 Broadsheet** | 4 | 4 | 5 | 3 | 4 | **20** |
+| **v15 Brutalist** | 4 | 5 | 5 | 2 | 4 | **20** |
+| **v12 Terminal** | 4 | 4 | 5 | 2 | 4 | **19** |
+| **v6 Instrument** | 4 | 4 | 4 | 2 | 4 | **18** |
+| **v14 Seismograph** | 5 | 2 | 3 | 3 | 5 | **18** |
+| **v9 Specimen** | 4 | 5 | 3 | 2 | 3 | **17** |
+| **v10 Panel** | 4 | 2 | 4 | 3 | 4 | **17** |
+| **v11 Chart** | 5 | 2 | 3 | 2 | 5 | **17** |
+| **v13 Receipt** | 5 | 3 | 4 | 1 | 4 | **17** |
+
+Across all fifteen the top is a three-way tie: **v1 Ledger 22, v3 Dial 22,
+v8 Ma 22.**
+
+## The three findings
+
+**1. Round two closed the gap round one left open.** Set A's finding was that
+no variant made the comparison as dominant as the score. Three of the ten new
+ones fix it, and every one of them does so by borrowing a form that already had
+a grammar for comparison rather than by inventing a chart:
+
+- **v7** writes the sentence first and draws the evidence under it, which is
+  what a graphics desk does. The comparison is in the standfirst, at reading
+  size, before the chart confirms it.
+- **v13** uses the receipt's *you saved* line — "you beat your average by
+  +8.7 points". That is the plainest statement of the comparison in all fifteen.
+- **v15** just declares it at the second-largest size on the screen: "you slept
+  better than 844 of your last 1,042 nights."
+
+**v11** deserves a mention it does not get in its score: the clinical reference
+interval is structurally the best answer here, because a chart never prints a
+value without one. It loses on legibility only because the form is deliberately
+flat and the score is a stamp rather than a hero.
+
+**2. Borrowed forms are nearly all maximal.** Nine of the ten score 1–3 on
+restraint. That is not nine separate failures, it is one structural fact about
+the experiment: an instrument panel, a newspaper, a specimen sheet, a clinical
+form, a terminal, a till roll and a seismogram all exist to carry everything at
+once. Only one source discipline in the set is subtractive — ma, the interval —
+and it produced the highest score of the round.
+
+If restraint is what the finished screen needs, the reference to reach for is
+the one that is *about* leaving things out, not a dense form edited down.
+
+**3. Four variants cannot pass the type floor, and probably shouldn't be made
+to.** The rubric wants 8:1 display-to-body. v10 (3.6:1), v11 (3.2:1),
+v13 (5:1) and v14 (3.6:1) all miss it — because signage, clinical forms,
+receipts and strip-chart recorders have no concept of a hero number. They
+distribute emphasis instead of concentrating it.
+
+That is a genuine conflict between the spec and the reference, not sloppiness,
+and it wants deciding before a composite gets built. Either the 8:1 floor is
+the point and those four disciplines are out, or the floor is negotiable and
+v11's reference interval becomes available.
+
+## Revised recommendation
+
+The Phase 3 recommendation was a composite on v3 as base. Round two does not
+overturn it, but it changes two of the parts:
+
+- **Base: v3 The Dial** — unchanged. Clock and hypnogram in one mark, and the
+  score lands in the same fixation.
+- **Comparison mechanism: v15's declarative sentence, not v4's mark field.**
+  "Better than 844 of your last 1,042 nights" needs no decoding and no legend,
+  and it is the one treatment that puts the comparison and the score in a
+  single glance without a chart competing for the space.
+- **Restraint model: v8, not v1.** v1 cuts the chart; v8 cuts almost everything
+  and makes the emptiness structural. It is the only variant that scored 5.
+- **Reference interval from v11** if — and only if — the 8:1 floor is relaxed.
+
+## What still has not been tested
+
+Magic Patterns and Lovable were meant to be independent generators in this
+round. Both are authenticated but switched off for this chat, so neither ran.
+Every one of the fifteen is hand-authored, which means all fifteen share one
+hand. Sets B and C widen the *references*; they do not widen the *maker*.
+That remains genuinely untested.

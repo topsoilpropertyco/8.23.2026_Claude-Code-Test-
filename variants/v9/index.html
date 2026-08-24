@@ -49,7 +49,7 @@ body{font-family:'Space Mono',ui-monospace,monospace;color:var(--ink);
   color:var(--quiet)}
 
 /* the rank, on the fluoro ground */
-.rank{margin-top:2px;background:var(--fluoro);padding:13px 22px;
+.rank{margin-top:2px;background:var(--fluoro);padding:16px 22px;
   display:flex;justify-content:space-between;align-items:baseline}
 .rank .k{font-size:9.5px;font-weight:700;letter-spacing:.22em;text-transform:uppercase}
 .rank .v{font-family:'Anton',sans-serif;font-size:26px;letter-spacing:-.01em}
@@ -58,7 +58,7 @@ body{font-family:'Space Mono',ui-monospace,monospace;color:var(--ink);
 
 /* the waterfall -- real specimen furniture, carrying the real hierarchy */
 .water{margin-top:20px}
-.wrow{display:flex;align-items:baseline;gap:12px;padding:6px 0;
+.wrow{display:flex;align-items:baseline;gap:12px;padding:9px 0;
   border-bottom:1px solid var(--rule)}
 .wrow .num{font-family:'Anton',sans-serif;line-height:.94;letter-spacing:-.02em;
   flex:0 0 auto;min-width:118px}
@@ -69,13 +69,16 @@ body{font-family:'Space Mono',ui-monospace,monospace;color:var(--ink);
 /* setting notes, two columns of cold metadata */
 .notes{margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:0 20px;
   border-top:2px solid var(--ink);padding-top:12px}
-.note{display:flex;justify-content:space-between;padding:4.5px 0;
+.note{display:flex;justify-content:space-between;padding:5px 0;
   border-bottom:1px solid var(--rule);font-size:10.5px}
 .note .k{color:var(--quiet);letter-spacing:.06em}
 .note .v{font-weight:700}
 
-.colophon{margin-top:auto;padding-top:16px;font-size:8.5px;letter-spacing:.14em;
-  color:var(--quiet);display:flex;justify-content:space-between}
+.pad.foot{flex:1;display:flex;flex-direction:column}
+.colophon{margin-top:auto;padding-top:14px;font-size:8.5px;letter-spacing:.12em;
+  color:var(--quiet);display:flex;justify-content:space-between;align-items:flex-end;
+  gap:14px}
+.colophon span{white-space:nowrap}
 /* Greek must never be uppercased: text-transform turns mu into M and
    sigma into a summation sign. Bit me once already on v4. */
 .grk{text-transform:none!important}
@@ -86,8 +89,8 @@ body{font-family:'Space Mono',ui-monospace,monospace;color:var(--ink);
   <div class="pad hd"><span class="l">Sleep OS &nbsp;Specimen</span><span class="r">N&deg; 1043 &middot; 23.08.2026</span></div>
 
   <div class="spec">
-    <div class="rulel" style="top:52px"><span>CAP</span></div>
-    <div class="rulel" style="top:212px"><span>BASELINE</span></div>
+    <div class="rulel" style="top:52px"></div>
+    <div class="rulel" style="top:212px"></div>
     <div class="g">88</div>
     <div class="tick">
       <div>SCORE<b>88 / 100</b></div>
@@ -118,7 +121,7 @@ body{font-family:'Space Mono',ui-monospace,monospace;color:var(--ink);
       <span class="meta"><span class="nm">Latency &middot; min:sec</span><span class="pt">13 pt</span></span></div>
   </div>
 
-  <div class="pad">
+  <div class="pad foot">
     <div class="notes">
       <div class="note"><span class="k">in bed</span><span class="v">8:12</span></div>
       <div class="note"><span class="k">efficiency</span><span class="v">94%</span></div>
@@ -129,7 +132,7 @@ body{font-family:'Space Mono',ui-monospace,monospace;color:var(--ink);
       <div class="note"><span class="k">resp</span><span class="v">14.4</span></div>
       <div class="note"><span class="k">restless</span><span class="v">174</span></div>
     </div>
-    <div class="colophon"><span>SET FROM OURA GEN3 &middot; UNROUNDED</span><span>T7 79.4 &nbsp;T30 79.2 &nbsp;T90 73.9</span></div>
+    <div class="colophon"><span>OURA GEN3 &middot; UNROUNDED</span><span>T7 79.4 &nbsp;T30 79.2 &nbsp;T90 73.9</span></div>
   </div>
 </div>
 </body></html>
