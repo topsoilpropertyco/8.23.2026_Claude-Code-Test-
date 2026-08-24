@@ -14,6 +14,7 @@ import { selectFact } from '../src/selector.js';
 import { selectPrompt, intakeRequest } from '../src/prompts.js';
 import { renderMessage, renderIntake } from '../src/render.js';
 import { readJournal, sleepSeries } from '../src/journal.js';
+import { authorizeUrl, exchangeCode, isAuthorised, readTokens, SCOPES, REDIRECT_URI } from '../src/oura.js';
 import { dispatch } from '../src/dispatch.js';
 import { getMe, getUpdates } from '../src/telegram.js';
 import { loadState, sentSlotsFor, readHistory } from '../src/state.js';
@@ -140,6 +141,41 @@ async function cmdJournal() {
   }
 }
 
+async function cmdOura(action, code) {
+  const clientId = process.env.OURA_CLIENT_ID;
+  const clientSecret = process.env.OURA_CLIENT_SECRET;
+
+  if (action === 'url') {
+    if (!clientId) throw new Error('OURA_CLIENT_ID is not set (secret: SLEEPOS_OURA_CLIENT_ID).');
+    banner('Authorise Sleep OS with Oura');
+    console.log('\n  1. Open this URL and approve access:\n');
+    console.log(`     ${authorizeUrl(clientId)}\n`);
+    console.log(`  2. You will land on ${REDIRECT_URI} which shows an error page. That is expected.`);
+    console.log('  3. Copy the "code" value out of the address bar.');
+    console.log('  4. Re-run this workflow with oura_action=code and paste it in.\n');
+    console.log(`  scopes requested: ${SCOPES.join(' ')}`);
+    return;
+  }
+
+  if (action === 'code') {
+    if (!code) throw new Error('No authorisation code supplied.');
+    if (!clientId || !clientSecret) throw new Error('OURA_CLIENT_ID and OURA_CLIENT_SECRET must both be set.');
+    const tokens = await exchangeCode({ code: code.trim(), clientId, clientSecret });
+    banner('Oura connected');
+    console.log(`  access token expires ${tokens.expires_at}`);
+    console.log('  refresh token stored encrypted in state/oura.enc');
+    return;
+  }
+
+  banner('Oura');
+  if (!isAuthorised()) {
+    console.log('  not connected — run: npm run oura -- url');
+    return;
+  }
+  const t = readTokens();
+  console.log(`  connected · access token expires ${t.expires_at}`);
+}
+
 async function cmdStats() {
   const { facts } = loadLibraries();
   const state = loadState();
@@ -200,8 +236,11 @@ try {
     case 'journal':
       await cmdJournal();
       break;
+    case 'oura':
+      await cmdOura(args[0], args.slice(1).join(' '));
+      break;
     default:
-      console.error(`Unknown command "${command}". Try: today, preview, dispatch, send, whoami, stats, journal`);
+      console.error(`Unknown command "${command}". Try: today, preview, dispatch, send, whoami, stats, journal, oura`);
       process.exit(1);
   }
 } catch (err) {

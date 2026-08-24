@@ -19,6 +19,16 @@ on:
         required: false
         type: boolean
         default: false
+      oura_action:
+        description: 'Oura setup: "url" prints the authorisation link, "code" exchanges the code below'
+        required: false
+        type: choice
+        options: ['', 'url', 'code']
+        default: ''
+      oura_code:
+        description: 'Authorisation code from the redirect URL (only with oura_action=code)'
+        required: false
+        type: string
 
 concurrency:
   group: sleep-os-dispatch
@@ -37,11 +47,22 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Oura authorisation
+        if: inputs.oura_action != ''
+        env:
+          SLEEPOS_DATA_KEY: ${{ secrets.SLEEPOS_DATA_KEY }}
+          OURA_CLIENT_ID: ${{ secrets.SLEEPOS_OURA_CLIENT_ID }}
+          OURA_CLIENT_SECRET: ${{ secrets.SLEEPOS_OURA_CLIENT_SECRET }}
+        run: node bin/sleep-os.js oura ${{ inputs.oura_action }} "${{ inputs.oura_code }}"
+
       - name: Dispatch due reminders
+        if: inputs.oura_action == ''
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.SLEEPOS_TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.SLEEPOS_TELEGRAM_CHAT_ID }}
           SLEEPOS_DATA_KEY: ${{ secrets.SLEEPOS_DATA_KEY }}
+          OURA_CLIENT_ID: ${{ secrets.SLEEPOS_OURA_CLIENT_ID }}
+          OURA_CLIENT_SECRET: ${{ secrets.SLEEPOS_OURA_CLIENT_SECRET }}
         run: |
           if [ -n "${{ inputs.slot }}" ]; then
             node bin/sleep-os.js send "${{ inputs.slot }}" ${{ inputs.dry_run && '--dry-run' || '' }}

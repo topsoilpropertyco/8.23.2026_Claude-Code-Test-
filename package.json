@@ -15,6 +15,7 @@
     "whoami": "node bin/sleep-os.js whoami",
     "stats": "node bin/sleep-os.js stats",
     "test": "node --test test/*.test.js",
-    "journal": "node bin/sleep-os.js journal"
+    "journal": "node bin/sleep-os.js journal",
+    "oura": "node bin/sleep-os.js oura"
   }
 }
