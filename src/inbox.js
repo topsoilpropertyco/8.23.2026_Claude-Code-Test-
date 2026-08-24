@@ -183,7 +183,11 @@ async function handleSleepEntry({ token, chatId, text, state, dateString, log })
 
 /**
  * Drain the update queue and act on anything new.
- * Returns a summary of what was handled.
+ *
+ * An update is acknowledged only once it has actually been handled. If a
+ * handler throws -- most likely because the data key is not configured yet and
+ * a journal write refuses to fall back to plaintext -- the message stays in
+ * Telegram's queue and a later run picks it up, rather than being lost.
  */
 export async function processInbox({ config, state, token, chatId, now = new Date(), log = console.log }) {
   const updates = await getUpdates(token, state.inboxOffset ?? 0);
@@ -191,62 +195,69 @@ export async function processInbox({ config, state, token, chatId, now = new Dat
   const handled = [];
 
   for (const update of updates) {
-    state.inboxOffset = update.update_id + 1;
-
     const message = update.message ?? update.edited_message;
     const text = message?.text?.trim();
-    if (!text) continue;
-    if (String(message.chat?.id) !== String(chatId)) continue;
+    const ack = () => {
+      state.inboxOffset = update.update_id + 1;
+    };
 
-    if (text.startsWith('/')) {
-      const [cmd, ...rest] = text.split(/\s+/);
-      if (cmd === '/help' || cmd === '/start') {
-        await sendMessage(token, chatId, helpText());
-        handled.push({ type: 'command', cmd });
-        continue;
-      }
-      if (cmd === '/log') {
-        const body = rest.join(' ');
-        handled.push(await handleSleepEntry({ token, chatId, text: body, state, dateString, log }));
-        continue;
-      }
-      if (cmd === '/status') {
-        await sendMessage(token, chatId, statusText({ config, state, now }));
-        handled.push({ type: 'command', cmd });
-        continue;
-      }
-      if (cmd === '/today') {
-        await sendMessage(token, chatId, todayText({ config, state, now }));
-        handled.push({ type: 'command', cmd });
-        continue;
-      }
-      if (cmd === '/stats') {
-        await sendMessage(token, chatId, statsText({ state }));
-        handled.push({ type: 'command', cmd });
-        continue;
-      }
-      await sendMessage(token, chatId, `Unknown command ${cmd}.\n\n${helpText()}`);
-      handled.push({ type: 'command', cmd, unknown: true });
+    // Nothing actionable: acknowledge so it never comes back.
+    if (!text || String(message.chat?.id) !== String(chatId)) {
+      ack();
       continue;
     }
 
-    // A number-led reply while today's intake is open is a logged night;
-    // anything else is reflection against the last card.
-    const looksNumeric = /^\s*\d/.test(text);
-    if (looksNumeric && intakeOpen(state, dateString)) {
-      handled.push(await handleSleepEntry({ token, chatId, text, state, dateString, log }));
-    } else {
-      const context = matchPending(state, message);
-      addJournalEntry({
-        date: dateString,
-        text,
-        factId: context?.factId ?? null,
-        promptId: context?.promptId ?? null,
-        mechanism: context?.mechanism ?? null,
-        slot: context?.slot ?? null,
-      });
-      log(`journal entry logged${context?.promptId ? ` against ${context.promptId}` : ''}`);
-      handled.push({ type: 'journal', promptId: context?.promptId ?? null });
+    try {
+      if (text.startsWith('/')) {
+        const [cmd, ...rest] = text.split(/\s+/);
+
+        if (cmd === '/help' || cmd === '/start') {
+          await sendMessage(token, chatId, helpText());
+          handled.push({ type: 'command', cmd });
+        } else if (cmd === '/status') {
+          await sendMessage(token, chatId, statusText({ config, state, now }));
+          handled.push({ type: 'command', cmd });
+        } else if (cmd === '/today') {
+          await sendMessage(token, chatId, todayText({ config, state, now }));
+          handled.push({ type: 'command', cmd });
+        } else if (cmd === '/stats') {
+          await sendMessage(token, chatId, statsText({ state }));
+          handled.push({ type: 'command', cmd });
+        } else if (cmd === '/log') {
+          handled.push(await handleSleepEntry({ token, chatId, text: rest.join(' '), state, dateString, log }));
+        } else {
+          await sendMessage(token, chatId, `Unknown command ${cmd}.\n\n${helpText()}`);
+          handled.push({ type: 'command', cmd, unknown: true });
+        }
+
+        ack();
+        continue;
+      }
+
+      // A number-led reply while today's intake is open is a logged night;
+      // anything else is reflection against the last card sent.
+      if (/^\s*\d/.test(text) && intakeOpen(state, dateString)) {
+        handled.push(await handleSleepEntry({ token, chatId, text, state, dateString, log }));
+      } else {
+        const context = matchPending(state, message);
+        addJournalEntry({
+          date: dateString,
+          text,
+          factId: context?.factId ?? null,
+          promptId: context?.promptId ?? null,
+          mechanism: context?.mechanism ?? null,
+          slot: context?.slot ?? null,
+        });
+        log(`journal entry logged${context?.promptId ? ` against ${context.promptId}` : ''}`);
+        handled.push({ type: 'journal', promptId: context?.promptId ?? null });
+      }
+
+      ack();
+    } catch (err) {
+      // Leave this update unacknowledged and stop: processing later messages
+      // out of order would scramble the journal's sequence.
+      log(`inbox: could not handle update ${update.update_id} (${err.message}); leaving it queued`);
+      break;
     }
   }
 
