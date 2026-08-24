@@ -23,8 +23,14 @@ import { join } from 'node:path';
 import { ROOT } from './facts.js';
 import { encryptLine, decryptLine, hasKey, MissingKeyError } from './crypto.js';
 
-const AUTHORIZE_URL = 'https://cloud.ouraring.com/oauth/authorize';
-const TOKEN_URL = 'https://api.ouraring.com/oauth/token';
+// Applications created in Oura's post-2025 developer portal authenticate
+// against a different OAuth server from the legacy one, with differently named
+// scopes. Discovered from the issuer in the callback:
+//   https://moi.ouraring.com/oauth/v2/ext/oauth-anonymous/.well-known/openid-configuration
+// The legacy endpoints (cloud.ouraring.com/oauth/authorize and
+// api.ouraring.com/oauth/token) return "Invalid client" for these apps.
+const AUTHORIZE_URL = 'https://moi.ouraring.com/oauth/v2/ext/oauth-authorize';
+const TOKEN_URL = 'https://moi.ouraring.com/oauth/v2/ext/oauth-token';
 const API = 'https://api.ouraring.com/v2/usercollection';
 
 const TOKEN_FILE = join(ROOT, 'state/oura.enc');
@@ -34,7 +40,16 @@ const REDIRECT_URI = 'https://example.com/callback';
 // with a token that expires mid-flight.
 const EXPIRY_MARGIN_MS = 5 * 60 * 1000;
 
-export const SCOPES = ['personal', 'daily', 'heartrate', 'session'];
+// The new server namespaces its scopes; the bare names the legacy docs list
+// are silently not granted.
+export const SCOPES = [
+  'extapi:personal',
+  'extapi:daily',
+  'extapi:heartrate',
+  'extapi:session',
+  'extapi:stress',
+  'extapi:heart_health',
+];
 
 export class OuraError extends Error {}
 export class NotAuthorisedError extends OuraError {
