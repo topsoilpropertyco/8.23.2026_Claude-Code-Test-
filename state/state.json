@@ -7,7 +7,6 @@
     "sleep-20",
     "sleep-32",
     "lucid-15",
-    "sleep-21",
     "sleep-40",
     "lucid-11",
     "sleep-05",
@@ -117,11 +116,37 @@
       "morning_reflection": {
         "status": "missed",
         "at": "2026-08-24T14:24:47.921Z"
+      },
+      "morning_light": {
+        "status": "missed",
+        "at": "2026-08-24T16:07:36.933Z"
+      },
+      "midday_essentialism": {
+        "status": "sent",
+        "kind": "fact",
+        "factId": "sleep-21",
+        "library": "sleep",
+        "category": "cognition",
+        "jackpot": false,
+        "cycle": 0,
+        "promptId": "p12",
+        "mechanism": "prospective_regret",
+        "targetLabel": "12:02 PM",
+        "at": "2026-08-24T16:07:38.287Z"
       }
     }
   },
-  "inboxOffset": 697606357,
+  "inboxOffset": 697606358,
   "pending": [
+    {
+      "messageId": 28,
+      "kind": "fact",
+      "factId": "sleep-21",
+      "promptId": "p12",
+      "mechanism": "prospective_regret",
+      "slot": "midday_essentialism",
+      "at": "2026-08-24T16:07:38.287Z"
+    },
     {
       "messageId": 25,
       "kind": "morning-prompt",
@@ -177,7 +202,6 @@
   ],
   "promptCycle": 0,
   "promptRemaining": [
-    "p12",
     "p13",
     "p15",
     "p19",
@@ -204,5 +228,10 @@
     "p24",
     "p07"
   ],
-  "coachRotation": 2
+  "coachRotation": 2,
+  "affirmRotation": {
+    "mechanism:identity": [
+      1
+    ]
+  }
 }
