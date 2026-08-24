@@ -785,3 +785,109 @@ test('a message arriving mid-window is answered inside it', async () => {
   assert.equal(sends.length, 1, 'the entry should have been answered');
   assert.equal(state.inboxOffset, 991002, 'offset must advance so it is not answered twice');
 });
+
+/* --------------------------------------------------------------- MSRI */
+
+test('the EWMA is seeded with the first observation, not zero', async () => {
+  const { ewma } = await import('../src/msri.js');
+  assert.deepEqual(ewma([], 0.25), []);
+  assert.deepEqual(ewma([80], 0.25), [80]);
+
+  // Seeded at zero the first terms climb out of a hole that was never measured.
+  const flat = ewma([80, 80, 80, 80], 0.25);
+  assert.ok(flat.every((v) => Math.abs(v - 80) < 1e-9), 'a flat series must stay flat from term one');
+
+  // A step change is approached, never overshot.
+  const step = ewma([50, 100, 100, 100, 100], 0.5);
+  assert.equal(step[0], 50);
+  assert.ok(step.every((v, i) => i === 0 || v > step[i - 1]), 'must rise monotonically toward the step');
+  assert.ok(step[step.length - 1] < 100, 'must approach, never reach or overshoot');
+});
+
+test('baselines come from Seth\'s own history, not population figures', async () => {
+  const { baselineFrom } = await import('../src/msri.js');
+  const recs = [
+    { average_hrv: 30, lowest_heart_rate: 50 },
+    { average_hrv: 40, lowest_heart_rate: 60 },
+    { average_hrv: null, lowest_heart_rate: 55 },
+  ];
+  const b = baselineFrom(recs);
+  assert.equal(b.hrv, 35);
+  assert.equal(b.rhr, 55);
+  assert.equal(b.n, 2, 'coverage is the smaller of the two, not the row count');
+});
+
+test('a night missing inputs scores null rather than a partial index', async () => {
+  const { nightIndex } = await import('../src/msri.js');
+  const baseline = { hrv: 37, rhr: 55 };
+  const full = {
+    total_sleep_duration: 27870, deep_sleep_duration: 5340, rem_sleep_duration: 7590,
+    efficiency: 94, average_hrv: 37, lowest_heart_rate: 55,
+  };
+  assert.ok(nightIndex(full, baseline) > 0);
+
+  // An index built from half its factors is a different number wearing the
+  // same name, so it must refuse rather than degrade.
+  for (const drop of ['average_hrv', 'lowest_heart_rate', 'efficiency',
+                      'deep_sleep_duration', 'rem_sleep_duration', 'total_sleep_duration']) {
+    assert.equal(nightIndex({ ...full, [drop]: null }, baseline), null, `should refuse without ${drop}`);
+  }
+  assert.equal(nightIndex(full, { hrv: null, rhr: 55 }), null, 'should refuse without a baseline');
+  assert.equal(nightIndex(null, baseline), null);
+});
+
+test('no single factor can run the index away', async () => {
+  const { nightIndex } = await import('../src/msri.js');
+  const baseline = { hrv: 37, rhr: 55 };
+  const base = {
+    total_sleep_duration: 28800, deep_sleep_duration: 5400, rem_sleep_duration: 7500,
+    efficiency: 95, average_hrv: 37, lowest_heart_rate: 55,
+  };
+
+  // An absurd HRV must not push the index past its ceiling. Unbounded factors
+  // were the original defect: one strong signal pinned the number near 100 and
+  // it stopped discriminating.
+  const absurd = nightIndex({ ...base, average_hrv: 4000 }, baseline);
+  const sane = nightIndex(base, baseline);
+  assert.ok(absurd > sane, 'a better night should still score higher');
+  assert.ok(absurd <= 100, `index must be bounded at 100, ran to ${absurd}`);
+
+  // Twelve hours in bed cannot buy more than the duration weight allows.
+  const marathon = nightIndex({ ...base, total_sleep_duration: 12 * 3600 }, baseline);
+  assert.ok(marathon <= 100);
+
+  // 100 means every factor hit its cap simultaneously, which should be rare.
+  const perfect = nightIndex({ total_sleep_duration: 9 * 3600, deep_sleep_duration: 9000,
+    rem_sleep_duration: 9000, efficiency: 100, average_hrv: 9999, lowest_heart_rate: 40 }, baseline);
+  assert.ok(Math.abs(perfect - 100) < 0.01, `all caps hit should be exactly 100, got ${perfect}`);
+});
+
+test('the index refuses to report until it has enough nights', async () => {
+  const { msri } = await import('../src/msri.js');
+  const night = (date, hrv) => ({
+    date, total_sleep_duration: 27000, deep_sleep_duration: 5200, rem_sleep_duration: 7400,
+    efficiency: 92, average_hrv: hrv, lowest_heart_rate: 55,
+  });
+
+  const thin = msri([night('2026-08-01', 37), night('2026-08-02', 38)]);
+  assert.equal(thin.value, null);
+  assert.match(thin.reason, /need 14/);
+
+  const enough = Array.from({ length: 20 }, (_, i) =>
+    night(`2026-08-${String(i + 1).padStart(2, '0')}`, 36 + (i % 4)));
+  const r = msri(enough);
+  assert.ok(typeof r.value === 'number' && r.value > 0);
+  assert.equal(r.coverage, 20);
+  assert.equal(r.series.length, 20);
+  assert.equal(r.alpha, 2 / 8, 'alpha derived from the window, not hardcoded');
+
+  // Smoothing must actually smooth: the filtered series varies less than the raw.
+  const spread = (xs) => Math.max(...xs) - Math.min(...xs);
+  assert.ok(spread(r.series.map((s) => s.smoothed)) < spread(r.series.map((s) => s.raw)),
+    'the filtered series should be calmer than the raw one');
+
+  // Nights without biometrics are excluded from coverage, not silently scored.
+  const withGaps = msri([...enough, { date: '2026-09-01', sleep_score: 88 }]);
+  assert.equal(withGaps.coverage, 20);
+  assert.equal(withGaps.total, 21);
+});

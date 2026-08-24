@@ -21,6 +21,7 @@ import { readJournal, sleepSeries } from '../src/journal.js';
 import { loadPrompts } from '../src/prompts.js';
 import { localDateString } from '../src/time.js';
 import { hasKey } from '../src/crypto.js';
+import { msri as computeMsri } from '../src/msri.js';
 import { readTelemetry } from '../src/telemetry.js';
 
 const { facts } = loadLibraries();
@@ -95,25 +96,17 @@ const trailing = [7, 30, 90, 180, 365].map((k) => {
   };
 });
 
-// MSRI. The spec's factors are all unbounded above and its weights sum to 1,
-// so healthy inputs pin the index near 100 and it stops discriminating. Here the
-// factors are capped and the biometric inputs are derived from the night's own
-// score, which keeps the index tracking reality. The real formula still needs
-// three decisions from Seth -- see ROADMAP Phase 3.
-const q = (lo, hi) => lo + ((last - 41) / (96 - 41)) * (hi - lo);
-const tst = Math.round(q(352, 486));
-const target = 480;
-const se = Math.round(q(79, 94));
-const deep = Math.round(q(48, 92));
-const rem = Math.round(q(66, 118));
-const hrv = Math.round(q(34, 61));
-const muHrv = 47;
-const rhr = Math.round(q(60, 48));
-const muRhr = 53;
-const sHat = Math.min(1, tst / target);
-const aHat = Math.min(1.25, (hrv / muHrv) * Math.exp(-0.05 * Math.max(0, rhr - muRhr)));
-const qHat = Math.min(1.15, (deep + rem) / (tst * 0.45));
-const msri = 100 * (0.35 * sHat + 0.3 * aHat + 0.2 * qHat + 0.15 * (se / 100));
+// MSRI. Computed by src/msri.js from the real telemetry: personal HRV and
+// resting-heart-rate baselines, capped factors, and a genuinely seeded EWMA.
+// The previous version interpolated every biometric from the sleep score, so
+// the index could not disagree with the number it was corroborating, and the
+// dashboard called it "EWMA-filtered" when no EWMA existed.
+//
+// Without the decryption key there are no biometrics to read, so it reports
+// nothing rather than a figure derived from invented inputs.
+const msriResult = NIGHTS_ARE_REAL
+  ? computeMsri(readTelemetry())
+  : { value: null, reason: 'no decryption key on this machine', coverage: 0 };
 
 /* ----------------------------------------------------------------- cadence */
 
@@ -405,8 +398,10 @@ footer strong{color:var(--ice);font-weight:600}
       </div>
       <div class="stat">
         <div class="k">MSRI</div>
-        <div class="v">${msri.toFixed(1)}</div>
-        <div class="n">EWMA-filtered signal</div>
+        <div class="v">${msriResult.value == null ? '—' : msriResult.value.toFixed(1)}</div>
+        <div class="n">${msriResult.value == null
+          ? esc(msriResult.reason)
+          : `${msriResult.window}-night EWMA · ${msriResult.coverage} nights`}</div>
       </div>
     </div>
   </section>
@@ -500,7 +495,9 @@ footer strong{color:var(--ice);font-weight:600}
       ? `The ${nights.length.toLocaleString('en-US')} nights charted are real Oura measurements, unrounded.`
       : 'The Oura telemetry here is generated from a fixed seed, because this machine has no decryption key for '
         + 'the real series — the nights are invented even though the maths on them is not.'}
-    The z-score, percentile, trailing windows and MSRI are all genuinely derived from the series in the chart.<br><br>
+    The z-score, percentile and trailing windows are derived from the series in the chart. MSRI is computed
+    separately from the night-by-night biometrics — HRV and resting heart rate against your own baselines, not
+    population figures — and is only shown when those measurements are actually readable.<br><br>
     Sleep OS is a behavioural reminder tool. It is not medical advice, diagnosis, or treatment.
   </footer>
 </div>
@@ -547,5 +544,6 @@ footer strong{color:var(--ice);font-weight:600}
 
 writeFileSync(join(ROOT, 'web/dashboard.html'), html);
 console.log('built web/dashboard.html');
-console.log(`  last night ${last} · z ${sign(z, 2)} · p${percentile.toFixed(2)} · MSRI ${msri.toFixed(1)}`);
+console.log(`  last night ${last} · z ${sign(z, 2)} · p${percentile.toFixed(2)}` +
+  `  MSRI ${msriResult.value == null ? `— (${msriResult.reason})` : msriResult.value.toFixed(1)}`);
 console.log(`  next slot: ${next ? next.slot.name + ' @ ' + next.slot.targetLabel : 'none left today'}`);
