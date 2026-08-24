@@ -891,3 +891,58 @@ test('the index refuses to report until it has enough nights', async () => {
   assert.equal(withGaps.coverage, 20);
   assert.equal(withGaps.total, 21);
 });
+
+test('logging a night also cues the morning light, once', async () => {
+  const { processInbox } = await import('../src/inbox.js');
+  const config = loadConfig();
+  const day = '2026-09-15';
+  // A bare score is only read as a sleep log while today's intake is open, so
+  // the intake has to have gone out.
+  const state = { inboxOffset: 0, pending: [], sends: { [day]: { intake: { status: 'sent' } } } };
+  const sends = [];
+  const send = async (_t, _c, text) => { sends.push(text); return { message_id: sends.length }; };
+
+  const post = (id, text) => ({ update_id: id, message: { message_id: id, chat: { id: 42 }, text } });
+
+  await processInbox({
+    config, state, token: 'x', chatId: '42',
+    now: new Date(`${day}T11:30:00Z`), log: () => {}, send,
+    fetchUpdates: async () => [post(991001, '88 7.75 4')],
+  });
+
+  // Two messages: the coach response, then the morning-light cue.
+  assert.equal(sends.length, 2, `expected coach + cue, got ${sends.length}`);
+  const cue = sends[1];
+  assert.ok(cue.startsWith('Outside. Eyes up. Now.'), 'the cue must lead with the cue line');
+  assert.ok(cue.includes('on waking'), 'should be labelled as triggered by waking, not a clock time');
+  assert.ok(state.sends[day].morning_light, 'must be recorded so the 08:15 anchor does not repeat it');
+  assert.equal(state.sends[day].morning_light.trigger, 'intake-reply');
+
+  // A second log the same day must not send it again.
+  await processInbox({
+    config, state, token: 'x', chatId: '42',
+    now: new Date(`${day}T12:00:00Z`), log: () => {}, send,
+    fetchUpdates: async () => [post(991002, '88 7.75 4')],
+  });
+  assert.equal(sends.length, 3, 'second log should send only the coach reply, not another cue');
+});
+
+test('the anchor is a backstop, later than the usual wake time', () => {
+  const config = loadConfig();
+  const light = config.slots.find((s) => s.id === 'morning_light');
+  // Seth wakes around 07:26. An anchor before that always beats the reply, which
+  // would make the intake trigger dead code.
+  assert.ok(light.anchor > '07:26', `anchor ${light.anchor} fires before he wakes`);
+  assert.equal(light.jitter, false);
+});
+
+test('a failed morning-light cue never breaks the intake reply', async () => {
+  const { cueMorningLight } = await import('../src/inbox.js');
+  const state = { sends: {} };
+  const ok = await cueMorningLight({
+    token: 'x', chatId: '42', state, dateString: '2026-09-16', log: () => {},
+    send: async () => { throw new Error('Telegram down'); },
+  });
+  assert.equal(ok, false);
+  assert.ok(!state.sends['2026-09-16']?.morning_light, 'a failed send must not be recorded as sent');
+});

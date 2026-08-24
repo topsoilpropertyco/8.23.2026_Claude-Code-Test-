@@ -9,3 +9,4 @@
 {"date":"2026-08-24","slot":"morning_reflection","status":"missed","at":"2026-08-24T14:24:47.921Z"}
 {"date":"2026-08-24","slot":"morning_light","status":"missed","at":"2026-08-24T16:07:36.933Z"}
 {"date":"2026-08-24","slot":"midday_essentialism","status":"sent","kind":"fact","factId":"sleep-21","library":"sleep","category":"cognition","jackpot":false,"cycle":0,"promptId":"p12","mechanism":"prospective_regret","targetLabel":"12:02 PM","at":"2026-08-24T16:07:38.287Z"}
+{"date":"2026-09-15","slot":"morning_light","status":"sent","kind":"habit","habit":"morning_light","whyId":"ml04","optional":false,"cycle":1,"targetLabel":null,"trigger":"intake-reply","at":"2026-08-24T16:51:26.530Z"}

@@ -21,22 +21,22 @@
       "enabled": true
     },
     {
-      "id": "morning_light",
-      "name": "01: Morning Light",
-      "anchor": "07:15",
-      "objective": "Set the circadian clock: outdoor light within an hour of waking.",
-      "type": "habit",
-      "habit": "morning_light",
-      "jitter": false,
-      "enabled": true
-    },
-    {
       "id": "morning_reflection",
-      "name": "02: Morning Reflection",
+      "name": "01: Morning Reflection",
       "anchor": "08:00",
       "objective": "Re-anchor identity as a high-performance sleeper upon waking.",
       "enabled": true,
       "type": "fact"
+    },
+    {
+      "id": "morning_light",
+      "name": "02: Morning Light",
+      "anchor": "08:15",
+      "objective": "Outdoor light within an hour of waking. Fires on your first message of the day; 08:15 is the backstop.",
+      "type": "habit",
+      "habit": "morning_light",
+      "jitter": false,
+      "enabled": true
     },
     {
       "id": "midday_essentialism",

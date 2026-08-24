@@ -10,7 +10,7 @@
 import { loadLibraries, loadConfig } from './facts.js';
 import { buildDaySchedule, dueSlots } from './schedule.js';
 import { selectFact } from './selector.js';
-import { loadHabits, selectRationale } from './habits.js';
+import { prepareHabit } from './habits.js';
 import { selectPrompt, intakeRequest } from './prompts.js';
 import { renderMessage, renderIntake, renderHabit, renderSummary } from './render.js';
 import { sendMessage } from './telegram.js';
@@ -112,29 +112,15 @@ export async function dispatch({
       text = renderIntake({ slot, request: intakeRequest() });
       record = { status: dryRun ? 'dry-run' : 'sent', kind: 'intake', targetLabel: slot.targetLabel };
     } else if (slot.type === 'habit') {
-      const habits = loadHabits();
-      const habit = habits[slot.habit];
-      if (!habit) throw new Error(`slot ${slot.id} names unknown habit ${slot.habit}`);
-      const pick = selectRationale({ habit, habitId: slot.habit, state, dateString });
-
-      text = renderHabit({ habit, slot, why: pick.why, showOptional: pick.showOptional });
+      const prepared = prepareHabit({ slot, state, dateString });
+      text = renderHabit({ habit: prepared.habit, slot, why: prepared.why,
+                           showOptional: prepared.showOptional });
 
       // Same discipline as the fact rotation: advance only after a successful
       // send, so a delivery failure never burns a rationale.
-      state.habitRotation = {
-        ...(state.habitRotation ?? {}),
-        [slot.habit]: { cycle: pick.cycle, remaining: pick.remaining },
-      };
+      state.habitRotation = { ...(state.habitRotation ?? {}), ...prepared.rotation };
+      record = { status: dryRun ? 'dry-run' : 'sent', ...prepared.record };
 
-      record = {
-        status: dryRun ? 'dry-run' : 'sent',
-        kind: 'habit',
-        habit: slot.habit,
-        whyId: pick.why.id,
-        optional: pick.showOptional,
-        cycle: pick.cycle,
-        targetLabel: slot.targetLabel,
-      };
     } else {
       const choice = selectFact({ facts, state, slotId: slot.id, dateString, config });
       const lastMechanism = state.pending?.[0]?.mechanism ?? null;

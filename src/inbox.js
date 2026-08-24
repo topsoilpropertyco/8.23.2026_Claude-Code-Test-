@@ -9,10 +9,13 @@ import { getUpdates, sendMessage } from './telegram.js';
 import { parseEntry, buildCoachResponse } from './coach.js';
 import { addJournalEntry, addSleepEntry, sleepSeries, readJournal, journalStreak } from './journal.js';
 import { buildAffirmation } from './affirm.js';
+import { prepareHabit } from './habits.js';
+import { renderHabit } from './render.js';
+import { recordSend } from './state.js';
 import { morningPrompt } from './prompts.js';
 import { localDateString, localTimeString, formatClock12 } from './time.js';
 import { buildDaySchedule } from './schedule.js';
-import { loadLibraries } from './facts.js';
+import { loadLibraries, loadConfig } from './facts.js';
 
 const PENDING_KEEP = 12;
 
@@ -153,6 +156,41 @@ function statsText({ state }) {
   return lines.join('\n');
 }
 
+
+/**
+ * Send the morning-light habit now, if it has not already gone out today.
+ *
+ * Returns false when it was already sent, when the slot is disabled, or when
+ * the send fails -- never throws. The intake reply must land even if this does
+ * not, and the anchor will pick it up later regardless.
+ */
+export async function cueMorningLight({ token, chatId, state, dateString, log = () => {},
+                                        send = sendMessage, config = loadConfig() }) {
+  const slot = config.slots.find((s) => s.id === 'morning_light');
+  if (!slot || slot.enabled === false) return false;
+  if (state.sends?.[dateString]?.morning_light) return false;   // anchor already fired
+
+  try {
+    const prepared = prepareHabit({ slot, state, dateString });
+    const text = renderHabit({
+      habit: prepared.habit,
+      slot: { ...slot, targetLabel: 'on waking' },
+      why: prepared.why,
+      showOptional: prepared.showOptional,
+    });
+    await send(token, chatId, text);
+
+    state.habitRotation = { ...(state.habitRotation ?? {}), ...prepared.rotation };
+    recordSend(state, dateString, 'morning_light',
+      { status: 'sent', ...prepared.record, trigger: 'intake-reply', at: new Date().toISOString() });
+    log(`morning light cued on intake reply (${prepared.record.whyId})`);
+    return true;
+  } catch (err) {
+    log(`morning light cue failed: ${err.message}`);
+    return false;
+  }
+}
+
 async function handleSleepEntry({ token, chatId, text, state, dateString, log, send = sendMessage }) {
   const parsed = parseEntry(text);
   if (!parsed.ok) {
@@ -178,8 +216,14 @@ async function handleSleepEntry({ token, chatId, text, state, dateString, log, s
     at: new Date().toISOString(),
   });
 
+  // The morning-light cue rides out on the back of this reply. Logging your
+  // sleep is the first thing you do awake, which makes it a far better wake
+  // signal than a clock: the anchor has to guess, this knows. The anchor stays
+  // as a backstop for mornings you do not log.
+  const cued = await cueMorningLight({ token, chatId, state, dateString, log, send });
+
   log(`logged night ${dateString}: score=${parsed.score} hours=${parsed.hours} feel=${parsed.feel} → lever ${response.lever}`);
-  return { type: 'sleep-entry', ...response };
+  return { type: 'sleep-entry', morningLightCued: cued, ...response };
 }
 
 /**

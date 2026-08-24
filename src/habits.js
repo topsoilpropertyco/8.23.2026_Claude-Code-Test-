@@ -62,3 +62,37 @@ export function selectRationale({ habit, habitId, state, dateString }) {
 
   return { why, showOptional, cycle, remaining: rest };
 }
+
+/**
+ * Everything needed to send one habit: the text, the delivery record, and the
+ * advanced rotation.
+ *
+ * Extracted so the scheduler and the intake handler share one implementation.
+ * The morning cue can fire either from its anchor or from Seth's first message
+ * of the day, and duplicating the rotation bookkeeping across two call sites is
+ * how the two copies drift and a rationale gets burned twice.
+ *
+ * Does not mutate state -- the caller decides whether the send succeeded.
+ */
+export function prepareHabit({ slot, state, dateString, habits = null }) {
+  const lib = habits ?? loadHabits();
+  const habit = lib[slot.habit];
+  if (!habit) throw new Error(`slot ${slot.id} names unknown habit ${slot.habit}`);
+
+  const pick = selectRationale({ habit, habitId: slot.habit, state, dateString });
+
+  return {
+    habit,
+    why: pick.why,
+    showOptional: pick.showOptional,
+    rotation: { [slot.habit]: { cycle: pick.cycle, remaining: pick.remaining } },
+    record: {
+      kind: 'habit',
+      habit: slot.habit,
+      whyId: pick.why.id,
+      optional: pick.showOptional,
+      cycle: pick.cycle,
+      targetLabel: slot.targetLabel ?? null,
+    },
+  };
+}
