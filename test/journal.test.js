@@ -331,3 +331,85 @@ test('no Oura connection means no pull attempt at all', async () => {
   const now = zonedWallTimeToDate('2026-08-24', parseClock('15:00'), config.timezone);
   assert.equal(shouldIngest({ config, dateString: '2026-08-24', now, connected: false, settled: false }), false);
 });
+
+test('a night carries Oura\'s own five-minute hypnogram when present', async () => {
+  const { normalise } = await import('../src/telemetry.js');
+  const withPhases = normalise({
+    day: '2026-08-23',
+    sleep: { score: 88 },
+    readiness: { score: 85 },
+    stress: null,
+    periods: [{ type: 'long_sleep', total_sleep_duration: 27870, sleep_phase_5_min: '4221133' }],
+  });
+  assert.equal(withPhases.sleep_phase_5_min, '4221133');
+
+  // Oura omits it on short or unscored periods; that must be null, not undefined,
+  // so the field round-trips through JSON and the dial can detect its absence.
+  const without = normalise({
+    day: '2026-08-22',
+    sleep: { score: 74 },
+    readiness: null,
+    stress: null,
+    periods: [{ type: 'long_sleep', total_sleep_duration: 21000 }],
+  });
+  assert.equal(without.sleep_phase_5_min, null);
+  assert.ok('sleep_phase_5_min' in JSON.parse(JSON.stringify(without)));
+});
+
+test('the last-night screen is built from real telemetry, never invented', async () => {
+  const { buildNightData, renderNight, reconstructPhases } =
+    await import('../web/build-night.js');
+  const { readFileSync } = await import('node:fs');
+
+  // 40 prior nights plus the real night of 2026-08-23.
+  const prior = Array.from({ length: 40 }, (_, i) => ({
+    date: `2026-07-${String(i + 1).padStart(2, '0')}`,
+    sleep_score: 70 + (i % 17),
+  }));
+  const last = {
+    date: '2026-08-23', sleep_score: 88, readiness_score: 85,
+    total_sleep_duration: 27870, deep_sleep_duration: 5340, rem_sleep_duration: 7590,
+    light_sleep_duration: 14940, awake_time: 1644, time_in_bed: 29514,
+    efficiency: 94, latency: 150,
+    bedtime_start: '2026-08-23T23:15:00-04:00', bedtime_end: '2026-08-24T07:26:00-04:00',
+    sleep_phase_5_min: '1'.repeat(18) + '2'.repeat(50) + '3'.repeat(25) + '4'.repeat(5),
+  };
+
+  const d = buildNightData([...prior, last], 'America/Detroit');
+
+  assert.equal(d.score, 88);
+  assert.equal(d.n, 40);
+  // The sentence must be literally true: a count, not a percentile rounded back.
+  assert.equal(d.betterThan, prior.filter((p) => p.sleep_score < 88).length);
+  assert.equal(d.asleep, '7h 45m');          // never rounded to 8h
+  assert.equal(d.deep, '1:29');
+  assert.equal(d.latency, '2m 30s');
+  assert.equal(d.bedtime, '23:15');
+  assert.equal(d.wake, '07:26');
+  assert.equal(d.phasesSource, 'oura');
+
+  // A night from before the field was captured is labelled, not silently faked.
+  const older = buildNightData([...prior, { ...last, sleep_phase_5_min: null }], 'America/Detroit');
+  assert.equal(older.phasesSource, 'reconstructed');
+  assert.ok(older.phases.length > 80);
+  assert.ok(/^[1234]+$/.test(older.phases));
+
+  // Reconstruction keeps the published stage proportions.
+  const p = reconstructPhases(last);
+  const share = (c) => p.split('').filter((x) => x === c).length / p.length;
+  assert.ok(Math.abs(share('1') - 5340 / 29514) < 0.06, 'deep share off');
+  assert.ok(Math.abs(share('3') - 7590 / 29514) < 0.06, 'REM share off');
+
+  // The rendered screen carries the data and stays a single self-contained file.
+  const html = renderNight(readFileSync('variants/composite/index.html', 'utf8'), d);
+  assert.ok(html.includes('"score": 88'));
+  assert.ok(html.includes('"betterThan"'));
+  assert.equal(html.split('<script id="night"').length, 2, 'exactly one data block');
+});
+
+test('a baseline too thin to be meaningful is refused', async () => {
+  const { buildNightData } = await import('../web/build-night.js');
+  const thin = Array.from({ length: 10 }, (_, i) => ({ date: `2026-08-0${i}`, sleep_score: 80 }));
+  assert.throws(() => buildNightData([...thin, { date: '2026-08-23', sleep_score: 88 }],
+    'America/Detroit'), /need 30/);
+});

@@ -97,13 +97,13 @@ body{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased
 <div class="screen">
 
   <div class="head">
-    <span class="l">23 Aug &middot; Sleep OS</span>
-    <span class="r">81ST</span>
+    <span class="l" id="f-date">23 Aug &middot; Sleep OS</span>
+    <span class="r" id="f-pct">81ST</span>
   </div>
 
   <div class="dial">
-    <svg width="342" height="342" viewBox="0 0 342 342" role="img"
-         aria-label="The night from 23:15 to 07:26 as a radial dial. Each tick is five minutes, coloured by sleep stage.">
+    <svg width="342" height="342" viewBox="0 0 342 342" role="img" id="dialsvg"
+         aria-label="Last night as a radial dial. Each tick is five minutes, coloured by sleep stage.">
       <g id="ticks"></g>
     </svg>
     <div class="centre">
@@ -112,31 +112,99 @@ body{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased
     </div>
   </div>
 
-  <p class="said anim" id="said">You slept better than <b>844</b> of your last <b>1,042</b> nights.
-    <span class="sub">81st percentile &middot; +0.92 SD above a 79.3 mean</span></p>
+  <p class="said anim" id="said"><span id="f-said">You slept better than <b>844</b> of your last <b>1,042</b> nights.</span>
+    <span class="sub" id="f-sub">81st percentile &middot; +0.92 SD above a 79.3 mean</span></p>
 
   <div class="ends">
-    <div><span class="lab">Lights out</span>23:15</div>
-    <div style="text-align:right"><span class="lab">Woke</span>07:26</div>
+    <div><span class="lab">Lights out</span><span id="f-bed">23:15</span></div>
+    <div style="text-align:right"><span class="lab">Woke</span><span id="f-wake">07:26</span></div>
   </div>
 
   <div class="stages">
-    <div class="s-deep"><div class="k">Deep</div><div class="v">1:29</div></div>
-    <div class="s-rem"><div class="k">REM</div><div class="v">2:07</div></div>
-    <div class="s-light"><div class="k">Light</div><div class="v">4:09</div></div>
-    <div class="s-wake"><div class="k">Awake</div><div class="v">0:27</div></div>
+    <div class="s-deep"><div class="k">Deep</div><div class="v" id="f-deep">1:29</div></div>
+    <div class="s-rem"><div class="k">REM</div><div class="v" id="f-rem">2:07</div></div>
+    <div class="s-light"><div class="k">Light</div><div class="v" id="f-light">4:09</div></div>
+    <div class="s-wake"><div class="k">Awake</div><div class="v" id="f-awake">0:27</div></div>
   </div>
 
   <div class="meta">
-    <div class="row"><span class="k">ASLEEP</span><span class="v">7h 45m</span></div>
-    <div class="row"><span class="k">EFFIC</span><span class="v">94%</span></div>
-    <div class="row"><span class="k">LATENCY</span><span class="v">2m 30s</span></div>
-    <div class="row"><span class="k">READY</span><span class="v">85</span></div>
+    <div class="row"><span class="k">ASLEEP</span><span class="v" id="f-asleep">7h 45m</span></div>
+    <div class="row"><span class="k">EFFIC</span><span class="v" id="f-eff">94%</span></div>
+    <div class="row"><span class="k">LATENCY</span><span class="v" id="f-lat">2m 30s</span></div>
+    <div class="row"><span class="k">READY</span><span class="v" id="f-ready">85</span></div>
   </div>
 
 </div>
 
 <script>var MM=(()=>{var M=Object.defineProperty;var oe=Object.getOwnPropertyDescriptor;var re=Object.getOwnPropertyNames;var ie=Object.prototype.hasOwnProperty;var ne=(t,e)=>{for(var o in e)M(t,o,{get:e[o],enumerable:!0})},ae=(t,e,o,r)=>{if(e&&typeof e=="object"||typeof e=="function")for(let i of re(e))!ie.call(t,i)&&i!==o&&M(t,i,{get:()=>e[i],enumerable:!(r=oe(e,i))||r.enumerable});return t};var se=t=>ae(M({},"__esModule",{value:!0}),t);var le={};ne(le,{animate:()=>L});var h=()=>{};function B(t){let e;return()=>(e===void 0&&(e=t()),e)}var D=t=>t;var d=t=>t*1e3,g=t=>t/1e3;var P=t=>Array.isArray(t)&&typeof t[0]=="number";var z=(t,e,o=10)=>{let r="",i=Math.max(Math.round(e/o),2);for(let m=0;m<i;m++)r+=Math.round(t(m/(i-1))*1e4)/1e4+", ";return`linear(${r.substring(0,r.length-2)})`};var me=t=>t!==null;function j(t,{repeat:e,repeatType:o="loop"},r,i=1){let m=t.filter(me),c=i<0||e&&o!=="loop"&&e%2===1?0:m.length-1;return!c||r===void 0?m[c]:r}var V=class{constructor(){this.updateFinished()}get finished(){return this._finished}updateFinished(){this._finished=new Promise(e=>{this.resolve=e})}notifyFinished(){this.resolve()}then(e,o){return this.finished.then(e,o)}};function w(t){for(let e=1;e<t.length;e++)t[e]??(t[e]=t[e-1])}var S=t=>t.startsWith("--");function q(t,e,o){S(e)?t.style.setProperty(e,o):t.style[e]=o}var H={};function A(t,e){let o=B(t);return()=>H[e]??o()}var $=A(()=>window.ScrollTimeline!==void 0,"scrollTimeline");var E=A(()=>{try{document.createElement("div").animate({opacity:0},{easing:"linear(0, 1)"})}catch{return!1}return!0},"linearEasing");var x=([t,e,o,r])=>`cubic-bezier(${t}, ${e}, ${o}, ${r})`;var C={linear:"linear",ease:"ease",easeIn:"ease-in",easeOut:"ease-out",easeInOut:"ease-in-out",circIn:x([0,.65,.55,1]),circOut:x([.55,0,1,.45]),backIn:x([.31,.01,.66,-.59]),backOut:x([.33,1.53,.69,.99])};function F(t,e){if(t)return typeof t=="function"?E()?z(t,e):"ease-out":P(t)?x(t):Array.isArray(t)?t.map(o=>F(o,e)||C.easeOut):C[t]}function _(t,e,o,{delay:r=0,duration:i=300,repeat:m=0,repeatType:u="loop",ease:c="easeOut",times:s}={},n=void 0){let a={[e]:o};s&&(a.offset=s);let l=F(c,i);Array.isArray(l)&&(a.easing=l);let p={delay:r,duration:i,easing:Array.isArray(l)?"linear":l,fill:"both",iterations:m+1,direction:u==="reverse"?"alternate":"normal"};return n&&(p.pseudoElement=n),t.animate(a,p)}function U(t){return typeof t=="function"&&"applyToOptions"in t}function Z({type:t,...e}){return U(t)&&E()?t.applyToOptions(e):(e.duration??(e.duration=300),e.ease??(e.ease="easeOut"),e)}var y=class extends V{constructor(e){if(super(),this.finishedTime=null,this.isStopped=!1,this.manualStartTime=null,!e)return;let{element:o,name:r,keyframes:i,pseudoElement:m,allowFlatten:u=!1,finalKeyframe:c,onComplete:s}=e;this.isPseudoElement=!!m,this.allowFlatten=u,this.options=e,h(typeof e.type!="string",`Mini animate() doesn't support "type" as a string.`,"mini-spring");let n=Z(e);this.animation=_(o,r,i,n,m),n.autoplay===!1&&this.animation.pause(),this.animation.onfinish=()=>{if(this.finishedTime=this.time,!m){let a=j(i,this.options,c,this.speed);this.updateMotionValue&&this.updateMotionValue(a),q(o,r,a),this.animation.cancel()}s?.(),this.notifyFinished()}}play(){this.isStopped||(this.manualStartTime=null,this.animation.play(),this.state==="finished"&&this.updateFinished())}pause(){this.animation.pause()}complete(){this.animation.finish?.()}cancel(){try{this.animation.cancel()}catch{}}stop(){if(this.isStopped)return;this.isStopped=!0;let{state:e}=this;e==="idle"||e==="finished"||(this.updateMotionValue?this.updateMotionValue():this.commitStyles(),this.isPseudoElement||this.cancel())}commitStyles(){let e=this.options?.element;!this.isPseudoElement&&e?.isConnected&&this.animation.commitStyles?.()}get duration(){let e=this.animation.effect?.getComputedTiming?.().duration||0;return g(Number(e))}get iterationDuration(){let{delay:e=0}=this.options||{};return this.duration+g(e)}get time(){return g(Number(this.animation.currentTime)||0)}set time(e){let o=this.finishedTime!==null;this.manualStartTime=null,this.finishedTime=null,this.animation.currentTime=d(e),o&&this.animation.pause()}get speed(){return this.animation.playbackRate}set speed(e){e<0&&(this.finishedTime=null),this.animation.playbackRate=e}get state(){return this.finishedTime!==null?"finished":this.animation.playState}get startTime(){return this.manualStartTime??Number(this.animation.startTime)}set startTime(e){this.manualStartTime=this.animation.startTime=e}attachTimeline({timeline:e,rangeStart:o,rangeEnd:r,observe:i}){return this.allowFlatten&&this.animation.effect?.updateTiming({easing:"linear"}),this.animation.onfinish=null,e&&$()?(this.animation.timeline=e,o&&(this.animation.rangeStart=o),r&&(this.animation.rangeEnd=r),D):i(this)}};var b=class{constructor(e){this.stop=()=>this.runAll("stop"),this.animations=e.filter(Boolean)}get finished(){return Promise.all(this.animations.map(e=>e.finished))}getAll(e){return this.animations[0][e]}setAll(e,o){for(let r=0;r<this.animations.length;r++)this.animations[r][e]=o}attachTimeline(e){let o=this.animations.map(r=>r.attachTimeline(e));return()=>{o.forEach((r,i)=>{r&&r(),this.animations[i].stop()})}}get time(){return this.getAll("time")}set time(e){this.setAll("time",e)}get speed(){return this.getAll("speed")}set speed(e){this.setAll("speed",e)}get state(){return this.getAll("state")}get startTime(){return this.getAll("startTime")}get duration(){return J(this.animations,"duration")}get iterationDuration(){return J(this.animations,"iterationDuration")}runAll(e){this.animations.forEach(o=>o[e]())}play(){this.runAll("play")}pause(){this.runAll("pause")}cancel(){this.runAll("cancel")}complete(){this.runAll("complete")}};function J(t,e){let o=0;for(let r=0;r<t.length;r++){let i=t[r][e];i!==null&&i>o&&(o=i)}return o}var T=class extends b{then(e,o){return this.finished.finally(e).then(()=>{})}};var X=new WeakMap,I=(t,e="")=>`${t}:${e}`;function R(t){let e=X.get(t);return e||(e=new Map,X.set(t,e)),e}function Y(t,e){if(t?.inherit&&e){let{inherit:o,...r}=t;return{...e,...r}}return t}function k(t,e){let o=t?.[e]??t?.default??t;return o!==t?Y(o,t):o}var Q=["borderTopLeftRadius","borderTopRightRadius","borderBottomRightRadius","borderBottomLeftRadius"];var ee=new Set(["borderWidth","borderTopWidth","borderRightWidth","borderBottomWidth","borderLeftWidth","borderRadius",...Q,"width","maxWidth","height","maxHeight","top","right","bottom","left","inset","insetBlock","insetBlockStart","insetBlockEnd","insetInline","insetInlineStart","insetInlineEnd","padding","paddingTop","paddingRight","paddingBottom","paddingLeft","paddingBlock","paddingBlockStart","paddingBlockEnd","paddingInline","paddingInlineStart","paddingInlineEnd","margin","marginTop","marginRight","marginBottom","marginLeft","marginBlock","marginBlockStart","marginBlockEnd","marginInline","marginInlineStart","marginInlineEnd","fontSize","backgroundPositionX","backgroundPositionY"]);function O(t,e){for(let o=0;o<t.length;o++)typeof t[o]=="number"&&ee.has(e)&&(t[o]=t[o]+"px")}function N(t,e,o){if(t==null)return[];if(t instanceof EventTarget)return[t];if(typeof t=="string"){let r=document;e&&(r=e.current);let i=o?.[t]??r.querySelectorAll(t);return i?Array.from(i):[]}return Array.from(t).filter(r=>r!=null)}function v(t,e){let o=window.getComputedStyle(t);return S(e)?o.getPropertyValue(e):o[e]}function te(t,e,o,r){if(t==null)return[];let i=N(t,r),m=i.length;h(!!m,"No valid elements provided.","no-valid-elements");let u=[];for(let s=0;s<m;s++){let n=i[s],a={...o};typeof a.delay=="function"&&(a.delay=a.delay(s,m));for(let l in e){let p=e[l];Array.isArray(p)||(p=[p]);let f={...k(a,l)};f.duration&&(f.duration=d(f.duration)),f.delay&&(f.delay=d(f.delay));let W=R(n),G=I(l,f.pseudoElement||""),K=W.get(G);K&&K.stop(),u.push({map:W,key:G,unresolvedKeyframes:p,options:{...f,element:n,name:l,allowFlatten:!a.type&&!a.ease}})}}for(let s=0;s<u.length;s++){let{unresolvedKeyframes:n,options:a}=u[s],{element:l,name:p,pseudoElement:f}=a;!f&&n[0]===null&&(n[0]=v(l,p)),w(n),O(n,p),!f&&n.length<2&&n.unshift(v(l,p)),a.keyframes=n}let c=[];for(let s=0;s<u.length;s++){let{map:n,key:a,options:l}=u[s],p=new y(l);n.set(a,p),p.finished.finally(()=>n.delete(a)),c.push(p)}return c}var pe=t=>{function e(o,r,i){return new T(te(o,r,i,t))}return e},L=pe();return se(le);})();
+</script>
+<script id="night" type="application/json">
+{
+ "date": "2026-08-23",
+ "dateLabel": "23 Aug",
+ "score": 88,
+ "readiness": 85,
+ "percentile": 81,
+ "betterThan": 844,
+ "n": 1042,
+ "z": 0.92,
+ "mean": 79.3,
+ "bedtime": "23:15",
+ "wake": "07:26",
+ "deep": "1:29",
+ "rem": "2:07",
+ "light": "4:09",
+ "awake": "0:27",
+ "asleep": "7h 45m",
+ "efficiency": 94,
+ "latency": "2m 30s",
+ "phases": "42222111111112223322221111112222333334222221111222233333332224222222333333222222422222233333222222",
+ "phasesSource": "reconstructed"
+}
+</script>
+<script>
+/* ------------------------------------------------------------------ *
+ * The screen renders from the JSON block above, so `web/build-night.js`
+ * only has to swap that block to produce a live version from real Oura
+ * telemetry. The values baked in here are the real unrounded figures for
+ * the night of 2026-08-23, so the file still stands alone as a design
+ * reference with nothing stubbed.
+ * ------------------------------------------------------------------ */
+var NIGHTDATA = JSON.parse(document.getElementById('night').textContent);
+
+(function render(d){
+  var ord = function(n){
+    var s=['th','st','nd','rd'], v=n%100;
+    return n + (s[(v-20)%10] || s[v] || s[0]);
+  };
+  var set = function(id, html){ var el=document.getElementById(id); if(el) el.innerHTML=html; };
+  var grp = function(n){ return n.toLocaleString('en-US'); };
+
+  set('f-date', d.dateLabel + ' &middot; Sleep OS');
+  set('f-pct',  ord(d.percentile).toUpperCase());
+  set('score',  d.score);
+  set('f-said', 'You slept better than <b>' + grp(d.betterThan) +
+                '</b> of your last <b>' + grp(d.n) + '</b> nights.');
+  set('f-sub',  ord(d.percentile) + ' percentile &middot; ' +
+                (d.z >= 0 ? '+' : '') + d.z.toFixed(2) + ' SD ' +
+                (d.z >= 0 ? 'above' : 'below') + ' a ' + d.mean.toFixed(1) + ' mean');
+  set('f-bed', d.bedtime); set('f-wake', d.wake);
+  set('f-deep', d.deep); set('f-rem', d.rem);
+  set('f-light', d.light); set('f-awake', d.awake);
+  set('f-asleep', d.asleep); set('f-eff', d.efficiency + '%');
+  set('f-lat', d.latency); set('f-ready', d.readiness);
+
+  /* Oura's own hypnogram is the truth; a reconstruction is only proportionally
+     right. Say which one is on screen rather than let the dial imply precision
+     it does not have. */
+  var svg = document.getElementById('dialsvg');
+  if (svg) svg.setAttribute('aria-label',
+    'Last night as a radial dial, ' + (d.phases ? d.phases.length : 0) +
+    ' ticks of five minutes each, coloured by sleep stage' +
+    (d.phasesSource === 'reconstructed'
+      ? '. Stage order is reconstructed to match the published totals.'
+      : '. Stage order is from Oura.'));
+})(NIGHTDATA);
 </script>
 <script>
 /* ------------------------------------------------------------------ *
@@ -144,21 +212,15 @@ body{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased
  * 8h 12m in bed, swept over 300 degrees with the gap at the bottom.
  * ------------------------------------------------------------------ */
 var TICKS=(function(){
-  /* v3 carried a hand-condensed phase string of 101 characters. At five
-     minutes a tick that is 505 minutes, but the night was 492 -- the dial was
-     thirteen minutes long. Derived from the authoritative segment list here
-     instead, so the ring is exactly the night and the stage proportions on the
-     face match the published totals. */
-  var NIGHT=[['w',3],['l',22],['d',38],['l',14],['r',12],['l',18],['d',31],['l',20],
-   ['r',26],['w',4],['l',24],['d',20],['l',22],['r',34],['l',16],['w',6],['l',30],
-   ['r',30],['l',27],['w',8],['l',28],['r',25],['l',28],['w',6]];
-  var CODE={d:1,l:2,r:3,w:4}, TOT=492, N=99;
-  var byMinute=[]; NIGHT.forEach(function(seg){
-    for(var k=0;k<seg[1];k++) byMinute.push(CODE[seg[0]]);
+  /* One tick per five minutes, straight from the hypnogram string: Oura's own
+     encoding, 1=deep 2=light 3=REM 4=awake. v3 carried a hand-condensed 101
+     character string -- 505 minutes against a 492 minute night -- so the dial
+     was thirteen minutes long. Reading the real series fixes that and makes
+     the ring exactly as long as the night was. */
+  var phases = (NIGHTDATA.phases || '').split('').map(Number).filter(function(n){
+    return n >= 1 && n <= 4;
   });
-  var phases=[]; for(var i=0;i<N;i++){
-    phases.push(byMinute[Math.min(TOT-1, Math.floor((i+0.5)*TOT/N))]);
-  }
+  if (!phases.length) phases = [2];
 
   var CX=171, CY=171, R=150;
   var START=120, SWEEP=300;
@@ -171,9 +233,9 @@ var TICKS=(function(){
   ring.setAttribute('fill','none'); ring.setAttribute('stroke','#16151A');
   ring.setAttribute('stroke-width','1'); g.appendChild(ring);
 
-  var made=[];
+  var made=[], span = Math.max(1, phases.length-1);
   phases.forEach(function(p,i){
-    var a=(START + SWEEP*(i/(phases.length-1)) ) * Math.PI/180;
+    var a=(START + SWEEP*(i/span)) * Math.PI/180;
     var len=LEN[p]||14, inner=R-len, outer=R;
     var line=document.createElementNS(ns,'line');
     line.setAttribute('x1',CX+Math.cos(a)*inner); line.setAttribute('y1',CY+Math.sin(a)*inner);

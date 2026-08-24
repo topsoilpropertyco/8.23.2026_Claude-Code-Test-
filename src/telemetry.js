@@ -51,6 +51,13 @@ export function normalise({ day, sleep, readiness, stress, periods }) {
     bedtime_start: p?.bedtime_start ?? null,
     bedtime_end: p?.bedtime_end ?? null,
 
+    // Oura's own hypnogram: one digit per five minutes of the sleep period,
+    // 1=deep 2=light 3=REM 4=awake. Until this was captured the last-night
+    // dial had to be drawn from a sequence reconstructed to match the
+    // published stage totals -- correct in proportion, invented in order.
+    // With this stored, the dial is the actual night.
+    sleep_phase_5_min: p?.sleep_phase_5_min ?? null,
+
     sleep_contributors: sleep?.contributors ?? null,
     readiness_contributors: readiness?.contributors ?? null,
     stress_summary: stress?.day_summary ?? null,

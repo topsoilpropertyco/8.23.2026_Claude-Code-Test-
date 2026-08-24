@@ -70,6 +70,37 @@ jobs:
             node bin/sleep-os.js dispatch ${{ inputs.dry_run && '--dry-run' || '' }}
           fi
 
+      # The last-night screen is rebuilt only when the ingest actually wrote a
+      # new night, not on all 144 daily polls. It embeds real biometrics, so on
+      # a public repo it must never be committed -- it leaves as a private
+      # workflow artifact instead. continue-on-error because a broken screen
+      # must never stop the reminders going out.
+      - name: Did telemetry change?
+        if: inputs.oura_action == ''
+        id: telem
+        run: |
+          if [ -n "$(git status --porcelain state/telemetry.enc)" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build the last-night screen
+        if: inputs.oura_action == '' && steps.telem.outputs.changed == 'true'
+        continue-on-error: true
+        env:
+          SLEEPOS_DATA_KEY: ${{ secrets.SLEEPOS_DATA_KEY }}
+        run: node web/build-night.js
+
+      - name: Upload the last-night screen
+        if: inputs.oura_action == '' && steps.telem.outputs.changed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: last-night
+          path: web/night.html
+          retention-days: 14
+          if-no-files-found: ignore
+
       - name: Persist rotation state
         run: |
           if [ -z "$(git status --porcelain state/)" ]; then
