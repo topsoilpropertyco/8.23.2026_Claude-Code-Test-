@@ -106,10 +106,27 @@
         "targetLabel": "8:40 PM",
         "at": "2026-08-24T01:54:43.395Z"
       }
+    },
+    "2026-08-24": {
+      "intake": {
+        "status": "sent",
+        "kind": "intake",
+        "targetLabel": "6:00 AM",
+        "at": "2026-08-24T10:20:46.199Z"
+      }
     }
   },
   "inboxOffset": 697606356,
   "pending": [
+    {
+      "messageId": 23,
+      "kind": "intake",
+      "factId": null,
+      "promptId": null,
+      "mechanism": null,
+      "slot": "intake",
+      "at": "2026-08-24T10:20:46.199Z"
+    },
     {
       "messageId": 21,
       "kind": "fact",
