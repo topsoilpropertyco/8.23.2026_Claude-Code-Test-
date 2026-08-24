@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>v8 · Ma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100;200;300;400&family=Noto+Serif+JP:wght@200;300&display=swap">
+<style>
+/* v8 MA -- Japanese negative space.
+   Source discipline: ma, the interval. The subject of the screen is the empty
+   part, and the marks exist to give the emptiness edges. Every other variant
+   in this project fills 844 pixels; this one refuses to, and the refusal is
+   the design. There is no chart. Position is a single seal-red mark on an
+   otherwise unbroken vertical line -- the least drawing that can still carry
+   'where this night sits'.
+   Three colour roles. One accent. */
+:root{
+  --paper:#F6F4EF;
+  --sumi:#1D1A16;
+  --quiet:#A9A296;
+  --hair:#DCD7CC;
+  --seal:#A8322A;            /* the only accent */
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--paper)}
+body{font-family:'Noto Sans JP',system-ui,sans-serif;color:var(--sumi);
+  -webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+.screen{width:390px;min-height:844px;margin:0 auto;background:var(--paper);
+  position:relative;padding:0}
+
+/* the vertical label, set in vertical writing as it would be printed */
+.vlabel{position:absolute;top:56px;right:30px;writing-mode:vertical-rl;
+  font-size:10px;font-weight:300;letter-spacing:.5em;color:var(--quiet)}
+
+/* the date, small, low-contrast, top left */
+.date{position:absolute;top:58px;left:38px;font-size:10px;font-weight:300;
+  letter-spacing:.28em;color:var(--quiet)}
+
+/* the number: large, but light -- weight 200, not black. It sits high and left
+   so that the emptiness below it is the largest object on the screen. */
+.n{position:absolute;top:132px;left:34px;font-family:'Noto Serif JP',serif;
+  font-weight:200;font-size:172px;line-height:.8;letter-spacing:-.045em}
+.n .sub{display:block;font-family:'Noto Sans JP',sans-serif;font-size:10px;
+  font-weight:300;letter-spacing:.42em;color:var(--quiet);margin-top:26px;
+  padding-left:5px}
+
+/* the line: 1,042 nights as a single unbroken vertical, worst at the bottom,
+   best at the top. One mark. No axis, no ticks, no numbers on it. */
+.scale{position:absolute;top:150px;right:74px;width:1px;height:392px;background:var(--hair)}
+.mark{position:absolute;right:-4.5px;width:10px;height:10px;border-radius:50%;
+  background:var(--seal)}
+.mark::after{content:'';position:absolute;inset:-9px;border:1px solid var(--seal);
+  border-radius:50%;opacity:.22}
+.mk-lab{position:absolute;right:22px;white-space:nowrap;text-align:right;
+  font-size:10px;font-weight:300;letter-spacing:.16em;color:var(--sumi);line-height:1.7}
+.mk-lab i{display:block;font-style:normal;color:var(--quiet);letter-spacing:.2em;font-size:9px}
+.mean{position:absolute;right:-3px;width:7px;height:1px;background:var(--quiet)}
+.mean-lab{position:absolute;right:22px;font-size:9px;font-weight:300;letter-spacing:.2em;
+  color:var(--quiet);white-space:nowrap}
+
+/* the four facts, spaced far apart along the bottom. Nothing is boxed. */
+.facts{position:absolute;left:38px;right:38px;bottom:104px}
+.fact{display:flex;justify-content:space-between;align-items:baseline;
+  padding:15px 0;border-bottom:1px solid var(--hair)}
+.fact:first-child{border-top:1px solid var(--hair)}
+.fact .k{font-size:10px;font-weight:300;letter-spacing:.3em;color:var(--quiet)}
+.fact .v{font-family:'Noto Serif JP',serif;font-weight:300;font-size:20px;letter-spacing:.01em}
+
+.seal{position:absolute;left:38px;bottom:52px;width:26px;height:26px;
+  border:1.5px solid var(--seal);display:flex;align-items:center;justify-content:center}
+.seal span{font-size:12px;color:var(--seal);font-weight:300;line-height:1}
+.foot{position:absolute;right:38px;bottom:56px;font-size:9px;font-weight:300;
+  letter-spacing:.24em;color:var(--quiet)}
+</style></head>
+<body>
+<div class="screen">
+
+  <div class="date">2026 &middot; 08 &middot; 23</div>
+  <div class="vlabel">昨夜 &nbsp;&nbsp; LAST NIGHT</div>
+
+  <div class="n">88<span class="sub">SCORE</span></div>
+
+  <div class="scale">
+    <div class="mean" style="top:52.6%"></div>
+    <div class="mean-lab" style="top:calc(52.6% - 6px)">平均 &nbsp;79.3</div>
+    <div class="mark" id="mark">
+      <div class="mk-lab" id="mklab" style="top:-12px">81<i>PERCENTILE</i></div>
+    </div>
+  </div>
+
+  <div class="facts">
+    <div class="fact"><span class="k">睡眠 &nbsp; ASLEEP</span><span class="v">7h 45m</span></div>
+    <div class="fact"><span class="k">深い &nbsp; DEEP</span><span class="v">1h 29m</span></div>
+    <div class="fact"><span class="k">効率 &nbsp; EFFICIENCY</span><span class="v">94%</span></div>
+    <div class="fact"><span class="k">起床 &nbsp; WOKE</span><span class="v">07:26</span></div>
+  </div>
+
+  <div class="seal"><span>睡</span></div>
+  <div class="foot">1,042 &nbsp;NIGHTS</div>
+</div>
+
+<script>
+/* The mark's height on the line is the true percentile -- 81st, measured
+   empirically against 1,042 nights, not a normal approximation. The line runs
+   0 at the bottom to 100 at the top. */
+const PCT=81;
+document.getElementById('mark').style.top=(100-PCT)+'%';
+</script>
+</body></html>

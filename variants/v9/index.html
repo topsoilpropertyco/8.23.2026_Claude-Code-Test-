@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>v9 · The Specimen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:wght@400;700&display=swap">
+<style>
+/* v9 THE SPECIMEN -- a type foundry specimen sheet.
+   Source discipline: the printed specimen, where a single glyph is set
+   enormous and everything around it is cold metadata about how it was set.
+   Translated: the night's score is the specimen; the night's statistics are
+   its setting notes; and the waterfall -- the row of descending sizes every
+   specimen sheet carries -- becomes the real hierarchy of the night, biggest
+   number to smallest.
+   Five colour roles. One accent (fluoro), used as a ground, never as text. */
+:root{
+  --paper:#FFFFFF;
+  --ink:#0B0B0B;
+  --quiet:#9A9A9A;
+  --rule:#E4E4E4;
+  --fluoro:#E4FF00;          /* the only accent */
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--paper)}
+body{font-family:'Space Mono',ui-monospace,monospace;color:var(--ink);
+  -webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+.screen{width:390px;min-height:844px;margin:0 auto;background:var(--paper);
+  padding:24px 0 22px;display:flex;flex-direction:column;overflow:hidden}
+.pad{padding:0 22px}
+
+.hd{display:flex;justify-content:space-between;align-items:baseline;
+  border-bottom:2px solid var(--ink);padding-bottom:6px}
+.hd .l{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase}
+.hd .r{font-size:10px;letter-spacing:.1em;color:var(--quiet)}
+
+/* the specimen: set to bleed off the left edge, the way a specimen sheet
+   crops a glyph to show its construction rather than its politeness */
+.spec{position:relative;margin-top:6px;height:250px;overflow:hidden}
+.spec .g{position:absolute;left:-16px;top:-38px;font-family:'Anton',sans-serif;
+  font-size:310px;line-height:1;letter-spacing:-.045em}
+.spec .tick{position:absolute;right:22px;top:26px;text-align:right}
+.spec .tick div{font-size:9px;letter-spacing:.16em;color:var(--quiet);line-height:2.1}
+.spec .tick b{display:block;font-size:11px;color:var(--ink);letter-spacing:.06em}
+
+/* baseline / cap-height rules, as printed on a real specimen */
+.rulel{position:absolute;left:0;right:0;height:1px;background:var(--rule)}
+.rulel span{position:absolute;right:2px;top:-13px;font-size:8px;letter-spacing:.18em;
+  color:var(--quiet)}
+
+/* the rank, on the fluoro ground */
+.rank{margin-top:2px;background:var(--fluoro);padding:13px 22px;
+  display:flex;justify-content:space-between;align-items:baseline}
+.rank .k{font-size:9.5px;font-weight:700;letter-spacing:.22em;text-transform:uppercase}
+.rank .v{font-family:'Anton',sans-serif;font-size:26px;letter-spacing:-.01em}
+.rank .v em{font-style:normal;font-family:'Space Mono',monospace;font-size:11px;
+  font-weight:400;letter-spacing:.06em;margin-left:6px}
+
+/* the waterfall -- real specimen furniture, carrying the real hierarchy */
+.water{margin-top:20px}
+.wrow{display:flex;align-items:baseline;gap:12px;padding:6px 0;
+  border-bottom:1px solid var(--rule)}
+.wrow .num{font-family:'Anton',sans-serif;line-height:.94;letter-spacing:-.02em;
+  flex:0 0 auto;min-width:118px}
+.wrow .meta{flex:1;display:flex;justify-content:space-between;align-items:baseline}
+.wrow .nm{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--quiet)}
+.wrow .pt{font-size:9px;letter-spacing:.12em;color:#C4C4C4}
+
+/* setting notes, two columns of cold metadata */
+.notes{margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:0 20px;
+  border-top:2px solid var(--ink);padding-top:12px}
+.note{display:flex;justify-content:space-between;padding:4.5px 0;
+  border-bottom:1px solid var(--rule);font-size:10.5px}
+.note .k{color:var(--quiet);letter-spacing:.06em}
+.note .v{font-weight:700}
+
+.colophon{margin-top:auto;padding-top:16px;font-size:8.5px;letter-spacing:.14em;
+  color:var(--quiet);display:flex;justify-content:space-between}
+</style></head>
+<body>
+<div class="screen">
+
+  <div class="pad hd"><span class="l">Sleep OS &nbsp;Specimen</span><span class="r">N&deg; 1043 &middot; 23.08.2026</span></div>
+
+  <div class="spec">
+    <div class="rulel" style="top:52px"><span>CAP</span></div>
+    <div class="rulel" style="top:212px"><span>BASELINE</span></div>
+    <div class="g">88</div>
+    <div class="tick">
+      <div>SCORE<b>88 / 100</b></div>
+      <div>DEVIATION<b>+0.92 &sigma;</b></div>
+      <div>MEAN<b>79.3</b></div>
+      <div>&sigma;<b>9.54</b></div>
+      <div>READINESS<b>85</b></div>
+    </div>
+  </div>
+
+  <div class="rank">
+    <span class="k">Rank among specimens</span>
+    <span class="v">198<em>of 1,042 &middot; 81st pct</em></span>
+  </div>
+
+  <div class="pad water">
+    <div class="wrow"><span class="num" style="font-size:52px">7:45</span>
+      <span class="meta"><span class="nm">Asleep</span><span class="pt">52 pt</span></span></div>
+    <div class="wrow"><span class="num" style="font-size:40px">4:09</span>
+      <span class="meta"><span class="nm">Light</span><span class="pt">40 pt</span></span></div>
+    <div class="wrow"><span class="num" style="font-size:31px">2:07</span>
+      <span class="meta"><span class="nm">REM</span><span class="pt">31 pt</span></span></div>
+    <div class="wrow"><span class="num" style="font-size:24px">1:29</span>
+      <span class="meta"><span class="nm">Deep</span><span class="pt">24 pt</span></span></div>
+    <div class="wrow"><span class="num" style="font-size:18px">0:27</span>
+      <span class="meta"><span class="nm">Awake</span><span class="pt">18 pt</span></span></div>
+    <div class="wrow"><span class="num" style="font-size:13px">2:30</span>
+      <span class="meta"><span class="nm">Latency &middot; min:sec</span><span class="pt">13 pt</span></span></div>
+  </div>
+
+  <div class="pad">
+    <div class="notes">
+      <div class="note"><span class="k">in bed</span><span class="v">8:12</span></div>
+      <div class="note"><span class="k">efficiency</span><span class="v">94%</span></div>
+      <div class="note"><span class="k">bedtime</span><span class="v">23:15</span></div>
+      <div class="note"><span class="k">wake</span><span class="v">07:26</span></div>
+      <div class="note"><span class="k">hrv avg</span><span class="v">37 ms</span></div>
+      <div class="note"><span class="k">hr low</span><span class="v">55</span></div>
+      <div class="note"><span class="k">resp</span><span class="v">14.4</span></div>
+      <div class="note"><span class="k">restless</span><span class="v">174</span></div>
+    </div>
+    <div class="colophon"><span>SET FROM OURA GEN3 &middot; UNROUNDED</span><span>T7 79.4 &nbsp;T30 79.2 &nbsp;T90 73.9</span></div>
+  </div>
+</div>
+</body></html>

@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>v10 · The Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap">
+<style>
+/* v10 THE PANEL -- transit signage.
+   Source discipline: Vignelli's 1972 NYC subway diagram and the platform signs
+   that came with it. A night is a journey with stations, so it gets a route
+   diagram: one vertical line, stage segments as track, real clock times as
+   stations. Position among 1,042 nights is a wayfinding strip, because that is
+   how signage says 'you are here'.
+   Six colour roles, one accent hue. Stages are four values on the accent's own
+   ramp rather than four separate hues -- signage discipline, and it keeps the
+   one-accent cap honest. */
+:root{
+  --ground:#191C1E;
+  --panel:#222629;
+  --ink:#FFFFFF;
+  --quiet:#8B9297;
+  --accent:#FFB800;           /* the only accent hue */
+  --s-deep:#FFB800;
+  --s-rem:#B8842A;
+  --s-light:#4E5257;
+  --s-wake:#2C3033;
+  --sans:'Archivo',Helvetica,system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--ground)}
+body{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased;
+  font-variant-numeric:tabular-nums}
+.screen{width:390px;min-height:844px;margin:0 auto;background:var(--ground);
+  padding:26px 22px 22px;display:flex;flex-direction:column}
+
+.sign{display:flex;align-items:center;gap:13px}
+.bullet{width:78px;height:78px;border-radius:50%;background:var(--accent);
+  display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.bullet span{font-size:40px;font-weight:700;color:#191C1E;letter-spacing:-.04em}
+.sign .txt .a{font-size:11px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--quiet)}
+.sign .txt .b{font-size:27px;font-weight:600;letter-spacing:-.025em;line-height:1.15;margin-top:5px}
+.sign .txt .c{font-size:11px;font-weight:400;letter-spacing:.06em;color:var(--quiet);margin-top:4px}
+
+/* wayfinding strip: you are here, among 1,042 */
+.here{margin-top:22px;background:var(--panel);padding:14px 16px 13px}
+.here .lab{display:flex;justify-content:space-between;font-size:9.5px;font-weight:600;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--quiet)}
+.strip{position:relative;height:26px;margin-top:11px}
+.strip .track{position:absolute;top:11px;left:0;right:0;height:4px;background:#33383C}
+.strip .fill{position:absolute;top:11px;left:0;height:4px;background:var(--accent)}
+.strip .stn{position:absolute;top:8px;width:2px;height:10px;background:#4E5257}
+.strip .you{position:absolute;top:2px;width:22px;height:22px;border-radius:50%;
+  background:var(--accent);border:3px solid var(--panel);transform:translateX(-11px)}
+.here .sc{display:flex;justify-content:space-between;font-size:9px;color:var(--quiet);
+  letter-spacing:.1em;margin-top:2px}
+
+/* the route */
+.routewrap{margin-top:22px;display:flex;gap:16px;flex:1}
+.route{flex:0 0 auto;width:34px}
+.route svg{display:block}
+.stations{flex:1;position:relative}
+.stn-row{position:absolute;left:0;right:0;display:flex;justify-content:space-between;
+  align-items:baseline;transform:translateY(-7px)}
+.stn-row .nm{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase}
+.stn-row .tm{font-size:12px;font-weight:400;color:var(--quiet);letter-spacing:.03em}
+.stn-row.dim .nm{color:var(--quiet);font-weight:500}
+
+/* the key, as a platform legend */
+.key{margin-top:18px;display:flex;gap:0;background:var(--panel)}
+.key div{flex:1;padding:11px 10px 12px;border-left:3px solid}
+.key div:first-child{border-left-width:3px}
+.key .k{font-size:8.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--quiet)}
+.key .v{font-size:16px;font-weight:600;margin-top:4px;letter-spacing:-.02em}
+.k-deep{border-color:var(--s-deep)} .k-rem{border-color:var(--s-rem)}
+.k-light{border-color:var(--s-light)} .k-wake{border-color:var(--s-wake)}
+
+.plate{margin-top:16px;display:flex;justify-content:space-between;
+  border-top:2px solid #33383C;padding-top:12px;font-size:10px;color:var(--quiet);
+  letter-spacing:.1em}
+.plate b{color:var(--ink);font-weight:600}
+</style></head>
+<body>
+<div class="screen">
+
+  <div class="sign">
+    <div class="bullet"><span>88</span></div>
+    <div class="txt">
+      <div class="a">Last night</div>
+      <div class="b">7h 45m asleep</div>
+      <div class="c">23:15 &rarr; 07:26 &middot; 94% efficient</div>
+    </div>
+  </div>
+
+  <div class="here">
+    <div class="lab"><span>You are here</span><span>81st of 1,042</span></div>
+    <div class="strip">
+      <div class="track"></div>
+      <div class="fill" id="fill"></div>
+      <div class="stn" style="left:25%"></div>
+      <div class="stn" style="left:50%"></div>
+      <div class="stn" style="left:75%"></div>
+      <div class="you" id="you"></div>
+    </div>
+    <div class="sc"><span>WORST 46</span><span>MEAN 79.3</span><span>BEST 98</span></div>
+  </div>
+
+  <div class="routewrap">
+    <div class="route"><svg id="rt" width="34" height="382" aria-label="The night as a route diagram"></svg></div>
+    <div class="stations" id="stns"></div>
+  </div>
+
+  <div class="key">
+    <div class="k-deep"><div class="k">Deep</div><div class="v">1:29</div></div>
+    <div class="k-rem"><div class="k">REM</div><div class="v">2:07</div></div>
+    <div class="k-light"><div class="k">Light</div><div class="v">4:09</div></div>
+    <div class="k-wake"><div class="k">Awake</div><div class="v">0:27</div></div>
+  </div>
+
+  <div class="plate">
+    <span>HRV <b>37ms</b></span><span>HR <b>55</b></span>
+    <span>RESP <b>14.4</b></span><span>READY <b>85</b></span>
+  </div>
+</div>
+
+<script>
+const NIGHT=[['w',3],['l',22],['d',38],['l',14],['r',12],['l',18],['d',31],['l',20],
+ ['r',26],['w',4],['l',24],['d',20],['l',22],['r',34],['l',16],['w',6],['l',30],
+ ['r',30],['l',27],['w',8],['l',28],['r',25],['l',28],['w',6]];
+const COL={d:'#FFB800',r:'#B8842A',l:'#4E5257',w:'#2C3033'};
+const H=382,TOT=492,CX=17,LW=13;
+
+/* the track: one line, thick, flat colour per segment -- no gradients, no
+   rounded joins between stages. Signage does not blend. */
+let y=0,svg='';
+NIGHT.forEach(([s,m])=>{const h=m/TOT*H;
+  svg+=`<rect x="${CX-LW/2}" y="${y.toFixed(1)}" width="${LW}" height="${(h+.6).toFixed(1)}" fill="${COL[s]}"/>`;
+  y+=h});
+
+/* stations, drawn as signage dots: white ring, dark core */
+const STN=[
+  {m:0,   nm:'Bedtime',      tm:'23:15', big:1},
+  {m:25,  nm:'First deep',   tm:'23:40', big:0},
+  {m:184, nm:'Longest REM',  tm:'02:19', big:0},
+  {m:254, nm:'Deepest point',tm:'03:29', big:0},
+  {m:397, nm:'Last waking',  tm:'06:00', big:0},
+  {m:492, nm:'Wake',         tm:'07:26', big:1}
+];
+STN.forEach(s=>{const yy=s.m/TOT*H;
+  svg+=`<circle cx="${CX}" cy="${yy.toFixed(1)}" r="${s.big?8:6}" fill="#191C1E"/>`+
+       `<circle cx="${CX}" cy="${yy.toFixed(1)}" r="${s.big?8:6}" fill="none" stroke="#FFFFFF" stroke-width="${s.big?3:2}"/>`});
+document.getElementById('rt').innerHTML=svg;
+
+document.getElementById('stns').innerHTML=STN.map(s=>
+  `<div class="stn-row${s.big?'':' dim'}" style="top:${(s.m/TOT*H).toFixed(1)}px">
+     <span class="nm">${s.nm}</span><span class="tm">${s.tm}</span></div>`).join('');
+
+/* the wayfinding strip is scaled to the real range, 46 to 98, not 0 to 100 */
+const pos=(88-46)/(98-46)*100;
+document.getElementById('fill').style.width=pos+'%';
+document.getElementById('you').style.left=pos+'%';
+</script>
+</body></html>

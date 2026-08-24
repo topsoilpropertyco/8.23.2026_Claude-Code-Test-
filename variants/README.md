@@ -74,3 +74,51 @@ rather than a number and a label; Tolan's cream-and-serif editorial page.
 ## Outcome notes
 
 Filled in after building, before scoring. See the judging report for scores.
+
+---
+
+# Set B & C — widening the gene pool
+
+Seth's note on 2026-08-24: *"I feel like you just used the examples of
+inspiration you got from this one MCP connector."*
+
+Fair, and worth being precise about what was and wasn't true. The five variants
+in Set A were hand-authored — zero Magic Patterns generations were spent. But
+the **reference corpus** behind them was 18 Mobbin screens, and every one of
+those was a consumer health or sleep app. One gene pool. Even designing
+*against* that corpus (the Set A finding was that none of them makes the number
+big) is still being steered by it.
+
+So Sets B and C take their source discipline from outside app design entirely.
+Nothing here is drawn from a Mobbin screen. Each variant names a real design
+tradition and commits to it — its palette, its typeface, its grammar — rather
+than borrowing a look.
+
+The 8:1 display-to-body floor, the six-colour-role cap, 390×844, and the
+real unrounded Oura values from DESIGN.md §6 all still bind.
+
+## Set B — foreign disciplines
+
+| | Name | Source discipline | Palette | Type |
+|---|---|---|---|---|
+| v6 | **The Instrument** | Lab test gear — Tektronix scopes, glass-cockpit avionics | Phosphor green on instrument black | Monospace + condensed engineering |
+| v7 | **The Broadsheet** | Newspaper graphics desk — FT / NYT annotated statistics | Salmon newsprint, ink, one blue | Serif headline + sans annotation |
+| v8 | **Ma (間)** | Japanese negative space — the interval is the subject | Sumi on off-white, one seal red | Light sans, enormous leading |
+| v9 | **The Specimen** | Type foundry specimen sheet | Paper white, black, one fluoro | The number *as* the specimen |
+| v10 | **The Panel** | Transit signage — Vignelli's NYC subway diagram | Flat signal blocks on slate | Grotesque, all caps, tight |
+
+## Set C — further out
+
+| | Name | Source discipline | Palette | Type |
+|---|---|---|---|---|
+| v11 | **The Chart** | Hospital record — ruled vitals sheet, stamped header | Clinical pale green, one red flag | Ruled grid, stamp, typewriter |
+| v12 | **The Terminal** | Unix ops dashboards — htop, k9s | Terminal black, amber, one cyan | Monospace only, ASCII rules |
+| v13 | **The Receipt** | Thermal till roll / boarding pass | Receipt white, dot-matrix black | Condensed mono, tear edge |
+| v14 | **The Seismograph** | Strip-chart recorders — seismogram, ECG | Recorder paper, stylus red | Trace is the hero, score stamped |
+| v15 | **The Brutalist** | Brutalist web — visible structure, no comfort | Raw white, hard black, hazard yellow | System fonts, oversized, unsmoothed |
+
+## Outcome notes
+
+Set A judged in `JUDGING.md` — v1 Ledger 22, v3 Dial 22, v4 Almanac 21,
+v5 Dispatch 19, v2 Night 16. Sets B and C are judged against the same
+`RUBRIC.md` in `JUDGING.md` under "Round two".

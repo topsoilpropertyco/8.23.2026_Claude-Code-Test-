@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>v11 · The Chart</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Barlow+Condensed:wght@400;500;600&display=swap">
+<style>
+/* v11 THE CHART -- a hospital record.
+   Source discipline: the ruled vitals sheet clipped to the end of a bed. The
+   reason this is worth stealing: a clinical chart never prints a number
+   without its reference interval, so 'compared to what' is native to the form
+   rather than bolted on. That is precisely what Set A failed to do. The
+   pre-printed grid, the typed entries, and the rubber stamp all carry real
+   values; nothing here is decoration.
+   Six colour roles, one accent (chart red). */
+:root{
+  --paper:#EFF1E8;
+  --grid:#D7DECD;
+  --gridb:#C3CDB6;
+  --ink:#20241C;
+  --quiet:#7B8373;
+  --red:#BE3227;               /* the only accent */
+  --type:'Courier Prime',ui-monospace,monospace;
+  --form:'Barlow Condensed',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--paper)}
+body{font-family:var(--type);color:var(--ink);-webkit-font-smoothing:antialiased;
+  font-variant-numeric:tabular-nums}
+.screen{width:390px;min-height:844px;margin:0 auto;padding:22px 20px 20px;
+  display:flex;flex-direction:column;position:relative;
+  background:
+    repeating-linear-gradient(0deg,transparent 0 15px,var(--grid) 15px 16px),
+    repeating-linear-gradient(90deg,transparent 0 15px,var(--grid) 15px 16px),
+    var(--paper);}
+
+/* pre-printed form head */
+.form{border:1.5px solid var(--ink);background:rgba(239,241,232,.9)}
+.form .top{display:flex;justify-content:space-between;align-items:baseline;
+  padding:7px 10px 6px;border-bottom:1.5px solid var(--ink)}
+.form .top .t{font-family:var(--form);font-size:12px;font-weight:600;letter-spacing:.24em;
+  text-transform:uppercase}
+.form .top .n{font-family:var(--form);font-size:10px;letter-spacing:.12em;color:var(--quiet)}
+.fields{display:grid;grid-template-columns:1fr 1fr 1fr}
+.fld{padding:6px 10px 7px;border-right:1px solid var(--gridb)}
+.fld:last-child{border-right:0}
+.fld .k{font-family:var(--form);font-size:9px;font-weight:500;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--quiet)}
+.fld .v{font-size:12px;margin-top:3px}
+
+/* the stamp -- rotated, over-inked, the way a real one lands */
+.stampwrap{position:relative;height:0}
+.stamp{position:absolute;right:2px;top:14px;transform:rotate(-7deg);
+  border:2.5px solid var(--red);color:var(--red);padding:6px 11px 7px;
+  background:rgba(239,241,232,.72);text-align:center}
+.stamp .a{font-family:var(--form);font-size:9.5px;font-weight:600;letter-spacing:.2em;
+  text-transform:uppercase;line-height:1}
+.stamp .b{font-size:38px;font-weight:700;line-height:1;margin:2px 0 1px;letter-spacing:-.03em}
+.stamp .c{font-family:var(--form);font-size:9px;font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;line-height:1}
+
+/* the trace on the grid, ECG-strip style */
+.strip{margin-top:56px;border:1.5px solid var(--ink);background:rgba(255,255,255,.35)}
+.strip .lb{display:flex;justify-content:space-between;padding:5px 9px 4px;
+  border-bottom:1px solid var(--gridb);font-family:var(--form);font-size:9px;
+  font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--quiet)}
+.strip svg{display:block;width:100%}
+
+/* vitals with reference intervals -- the whole point of the form */
+.vitals{margin-top:16px;border:1.5px solid var(--ink);background:rgba(239,241,232,.9)}
+.vitals .hd,.vrow{display:grid;grid-template-columns:1.35fr .85fr 1.15fr .34fr;align-items:baseline}
+.vitals .hd{padding:6px 10px;border-bottom:1.5px solid var(--ink);
+  font-family:var(--form);font-size:9px;font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--quiet)}
+.vrow{padding:5.5px 10px;border-bottom:1px solid var(--gridb);font-size:12px}
+.vrow:last-child{border-bottom:0}
+.vrow .k{font-family:var(--form);font-size:12px;letter-spacing:.06em;color:#4A5142}
+.vrow .v{font-weight:700}
+.vrow .r{color:var(--quiet);font-size:10.5px}
+.vrow .f{text-align:right;color:var(--red);font-weight:700;font-size:11px}
+
+/* baseline block, typed in */
+.base{margin-top:16px;border:1.5px solid var(--ink);padding:9px 10px 10px;
+  background:rgba(239,241,232,.9)}
+.base .t{font-family:var(--form);font-size:9px;font-weight:600;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--quiet);margin-bottom:6px}
+.bg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px 10px}
+.bg div{display:flex;justify-content:space-between;font-size:11px;
+  border-bottom:1px dotted var(--gridb);padding-bottom:2px}
+.bg span:first-child{color:var(--quiet);font-size:10px}
+.note{margin-top:12px;font-size:9.5px;color:var(--quiet);line-height:1.5}
+.sig{margin-top:auto;padding-top:14px;display:flex;justify-content:space-between;
+  align-items:flex-end}
+.sig .l{font-family:var(--form);font-size:9px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--quiet);border-top:1px solid var(--ink);padding-top:3px;width:150px}
+</style></head>
+<body>
+<div class="screen">
+
+  <div class="form">
+    <div class="top"><span class="t">Sleep Record</span><span class="n">SHEET 1043</span></div>
+    <div class="fields">
+      <div class="fld"><div class="k">Date</div><div class="v">2026-08-23</div></div>
+      <div class="fld"><div class="k">Lights out</div><div class="v">23:15</div></div>
+      <div class="fld"><div class="k">Rose</div><div class="v">07:26</div></div>
+    </div>
+  </div>
+
+  <div class="stampwrap"><div class="stamp">
+    <div class="a">Sleep score</div><div class="b">88</div><div class="c">&#9650; Above mean</div>
+  </div></div>
+
+  <div class="strip">
+    <div class="lb"><span>Hypnogram &mdash; 25 mm/hr</span><span>8h 12m</span></div>
+    <svg viewBox="0 0 346 132" preserveAspectRatio="none" aria-label="Hypnogram trace">
+      <g id="g"></g><path id="tr" fill="none" stroke="#20241C" stroke-width="1.4"
+        vector-effect="non-scaling-stroke"/>
+    </svg>
+  </div>
+
+  <div class="vitals">
+    <div class="hd"><span>Observation</span><span>Value</span><span>Ref. interval</span><span>&Delta;</span></div>
+    <div class="vrow"><span class="k">Sleep score</span><span class="v">88</span><span class="r">69.8&ndash;88.8</span><span class="f">&#9650;</span></div>
+    <div class="vrow"><span class="k">Total sleep</span><span class="v">7h 45m</span><span class="r">&mdash;</span><span class="f"></span></div>
+    <div class="vrow"><span class="k">Efficiency</span><span class="v">94%</span><span class="r">&mdash;</span><span class="f"></span></div>
+    <div class="vrow"><span class="k">Deep</span><span class="v">1h 29m</span><span class="r">&mdash;</span><span class="f"></span></div>
+    <div class="vrow"><span class="k">REM</span><span class="v">2h 07m</span><span class="r">&mdash;</span><span class="f"></span></div>
+    <div class="vrow"><span class="k">Latency</span><span class="v">2m 30s</span><span class="r">&mdash;</span><span class="f"></span></div>
+    <div class="vrow"><span class="k">HRV, mean</span><span class="v">37 ms</span><span class="r">&mdash;</span><span class="f"></span></div>
+    <div class="vrow"><span class="k">HR, lowest</span><span class="v">55 bpm</span><span class="r">&mdash;</span><span class="f"></span></div>
+    <div class="vrow"><span class="k">Respiration</span><span class="v">14.4/min</span><span class="r">&mdash;</span><span class="f"></span></div>
+    <div class="vrow"><span class="k">Readiness</span><span class="v">85</span><span class="r">&mdash;</span><span class="f"></span></div>
+  </div>
+
+  <div class="base">
+    <div class="t">Baseline &mdash; 1,042 nights from 2023-08-25</div>
+    <div class="bg">
+      <div><span>mean</span><span>79.3</span></div>
+      <div><span>SD</span><span>9.54</span></div>
+      <div><span>z</span><span>+0.92</span></div>
+      <div><span>pctile</span><span>81st</span></div>
+      <div><span>7-day</span><span>79.4</span></div>
+      <div><span>30-day</span><span>79.2</span></div>
+    </div>
+  </div>
+
+  <div class="note">&Delta; marks direction against the mean, not an out-of-range result: at
+  +0.92&nbsp;SD the score sits above the mean but inside the interval.
+  Interval = mean &plusmn;&nbsp;1&nbsp;SD, printed only where &ge;30 prior
+  observations exist. Sleep score n&nbsp;=&nbsp;1,042; remaining fields await
+  backfill and are reported without interval.</div>
+
+  <div class="sig">
+    <div class="l">Recorded by &mdash; Oura Gen3</div>
+    <div class="l" style="width:110px;text-align:right">90-day 73.9</div>
+  </div>
+</div>
+
+<script>
+const NIGHT=[['w',3],['l',22],['d',38],['l',14],['r',12],['l',18],['d',31],['l',20],
+ ['r',26],['w',4],['l',24],['d',20],['l',22],['r',34],['l',16],['w',6],['l',30],
+ ['r',30],['l',27],['w',8],['l',28],['r',25],['l',28],['w',6]];
+const LVL={w:16,r:44,l:80,d:114},W=346,TOT=492;
+/* the chart's own ruling, printed under the trace like real strip paper */
+let g='';
+for(let i=1;i<24;i++){const x=(W/24*i).toFixed(1);
+  g+=`<line x1="${x}" y1="0" x2="${x}" y2="132" stroke="#D7DECD" stroke-width="1"/>`}
+[16,44,80,114].forEach(y=>{
+  g+=`<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="#E2E7DA" stroke-width="1"/>`});
+document.getElementById('g').innerHTML=g;
+let x=0,d='';
+NIGHT.forEach(([s,m],i)=>{const y=LVL[s],w=m/TOT*W;
+  d+=(i?`L${x.toFixed(1)},${y} `:`M${x.toFixed(1)},${y} `)+`L${(x+w).toFixed(1)},${y} `;x+=w});
+document.getElementById('tr').setAttribute('d',d);
+</script>
+</body></html>

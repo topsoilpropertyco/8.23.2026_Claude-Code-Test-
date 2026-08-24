@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>v6 · The Instrument</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@400;500;600&display=swap">
+<style>
+/* v6 THE INSTRUMENT — lab test gear.
+   Source discipline: Tektronix storage scopes and glass-cockpit avionics, not
+   app design. The premise is that a night is a signal, and a signal belongs on
+   a calibrated instrument: graticule, trace, engraved bezel legends, and a
+   readout that is large because instruments are read at arm's length in poor
+   light. Nothing here is decorative -- the graticule is a real 10x8 division
+   grid and the trace sits on it truthfully.
+   Six colour roles, one accent (phosphor). */
+:root{
+  --ground:#070908;
+  --panel:#0C100D;
+  --engrave:#161C17;
+  --ink:#B9CBBB;
+  --quiet:#55665A;
+  --accent:#46F08A;                  /* P31 phosphor -- the only accent */
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--ground)}
+body{font-family:'Share Tech Mono',ui-monospace,monospace;color:var(--ink);
+  -webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+.screen{width:390px;min-height:844px;margin:0 auto;background:var(--ground);
+  padding:26px 20px 24px;display:flex;flex-direction:column}
+
+/* --- bezel head: engraved instrument legends --- */
+.bezel{display:flex;justify-content:space-between;align-items:flex-end;
+  padding-bottom:9px;border-bottom:1px solid var(--engrave)}
+.bezel .id{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;
+  letter-spacing:.34em;text-transform:uppercase;color:var(--quiet)}
+.bezel .ch{font-size:10px;letter-spacing:.16em;color:var(--accent)}
+
+/* --- the readout: large because instruments are read from a distance --- */
+.readout{margin-top:18px;display:flex;align-items:flex-start;gap:16px}
+.readout .n{font-size:158px;line-height:.74;letter-spacing:-.03em;color:var(--accent);
+  text-shadow:0 0 22px rgba(70,240,138,.24)}
+.readout .side{padding-top:8px;flex:1}
+.readout .lab{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:500;
+  letter-spacing:.28em;text-transform:uppercase;color:var(--quiet);line-height:1.9}
+.readout .dev{font-size:26px;color:var(--ink);letter-spacing:-.01em;margin-top:2px}
+.readout .devsub{font-size:10px;color:var(--quiet);letter-spacing:.1em;margin-top:3px}
+
+/* --- CRT: graticule + trace --- */
+.crt{margin-top:20px;position:relative;background:var(--panel);
+  border:1px solid var(--engrave);padding:10px 8px 8px}
+.crt svg{display:block;width:100%}
+.crt .axl{position:absolute;bottom:-16px;left:0;right:0;display:flex;
+  justify-content:space-between;font-size:9px;letter-spacing:.14em;color:var(--quiet)}
+
+/* --- engraved parameter rows --- */
+.rows{margin-top:34px;border-top:1px solid var(--engrave)}
+.row{display:flex;align-items:baseline;justify-content:space-between;
+  padding:9px 0;border-bottom:1px solid var(--engrave)}
+.row .k{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:500;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--quiet)}
+.row .v{font-size:14px;letter-spacing:.02em}
+.row .v em{font-style:normal;color:var(--quiet);font-size:11px;margin-left:5px}
+
+/* --- calibration bar: where this night sits on the instrument's range --- */
+.cal{margin-top:24px}
+.cal .ct{display:flex;justify-content:space-between;font-family:'Barlow Condensed',sans-serif;
+  font-size:10px;font-weight:500;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--quiet);margin-bottom:9px}
+.calbar{position:relative;height:44px}
+.calbar svg{display:block;width:100%}
+.cal .foot{display:flex;justify-content:space-between;font-size:9.5px;
+  letter-spacing:.1em;color:var(--quiet);margin-top:5px}
+
+.stamp{margin-top:auto;padding-top:20px;font-size:9.5px;letter-spacing:.16em;
+  color:#2E3A31;display:flex;justify-content:space-between}
+</style></head>
+<body>
+<div class="screen">
+
+  <div class="bezel">
+    <div class="id">Sleep OS &nbsp;/&nbsp; CH 1</div>
+    <div class="ch">23 AUG 2026</div>
+  </div>
+
+  <div class="readout">
+    <div class="n">88</div>
+    <div class="side">
+      <div class="lab">Score</div>
+      <div class="dev">+0.92&thinsp;&sigma;</div>
+      <div class="devsub">81st pct &middot; n=1,042</div>
+      <div class="lab" style="margin-top:16px">Readiness</div>
+      <div class="dev">85</div>
+    </div>
+  </div>
+
+  <div class="crt">
+    <svg viewBox="0 0 344 150" preserveAspectRatio="none" aria-label="Hypnogram trace on graticule">
+      <g id="grat"></g>
+      <path id="trace" fill="none" stroke="#46F08A" stroke-width="1.6"
+            stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+      <g id="tracegl" opacity=".28"></g>
+    </svg>
+    <div class="axl"><span>23:15</span><span>01:20</span><span>03:25</span><span>05:30</span><span>07:26</span></div>
+  </div>
+
+  <div class="rows" style="margin-top:36px">
+    <div class="row"><span class="k">Asleep</span><span class="v">7:45<em>27,870 s</em></span></div>
+    <div class="row"><span class="k">In bed</span><span class="v">8:12<em>29,514 s</em></span></div>
+    <div class="row"><span class="k">Efficiency</span><span class="v">94<em>%</em></span></div>
+    <div class="row"><span class="k">Deep / REM / Light</span><span class="v">1:29 &middot; 2:07 &middot; 4:09</span></div>
+    <div class="row"><span class="k">Latency</span><span class="v">2:30<em>150 s</em></span></div>
+    <div class="row"><span class="k">HRV avg</span><span class="v">37<em>ms</em></span></div>
+    <div class="row"><span class="k">HR low / avg</span><span class="v">55 &middot; 60.1<em>bpm</em></span></div>
+    <div class="row"><span class="k">Resp</span><span class="v">14.4<em>/min</em></span></div>
+    <div class="row"><span class="k">Restless</span><span class="v">174<em>periods</em></span></div>
+  </div>
+
+  <div class="cal">
+    <div class="ct"><span>Calibration &mdash; 1,042 nights</span><span>&mu; 79.3 &nbsp; &sigma; 9.54</span></div>
+    <div class="calbar">
+      <svg viewBox="0 0 344 44" preserveAspectRatio="none" aria-label="Distribution with this night marked">
+        <g id="dist"></g>
+        <line id="needle" y1="0" y2="36" stroke="#46F08A" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
+      </svg>
+    </div>
+    <div class="foot"><span>46</span><span>&mdash;&thinsp;&mu;&thinsp;&mdash;</span><span>98</span></div>
+  </div>
+
+  <div class="stamp"><span>OURA GEN3 &middot; UTC-4</span><span>CAL OK</span></div>
+</div>
+
+<script>
+/* Real night, real order. Segment minutes sum to 492 = 8h12m in bed;
+   awake 27, deep 89, REM 127, light 249 -- the published values, unrounded. */
+const NIGHT=[['w',3],['l',22],['d',38],['l',14],['r',12],['l',18],['d',31],['l',20],
+ ['r',26],['w',4],['l',24],['d',20],['l',22],['r',34],['l',16],['w',6],['l',30],
+ ['r',30],['l',27],['w',8],['l',28],['r',25],['l',28],['w',6]];
+const LVL={w:14,r:44,l:86,d:128};        /* y on a 150-high face; awake at top */
+const W=344,TOT=492;
+
+/* graticule: a true 10 x 8 division grid, as on a scope face */
+let g='';
+for(let i=1;i<10;i++){const x=(W/10*i).toFixed(1);
+  g+=`<line x1="${x}" y1="0" x2="${x}" y2="150" stroke="#18211A" stroke-width="1"/>`}
+for(let j=1;j<8;j++){const y=(150/8*j).toFixed(1);
+  g+=`<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="#18211A" stroke-width="1"/>`}
+g+=`<rect x=".5" y=".5" width="${W-1}" height="149" fill="none" stroke="#222D24"/>`;
+document.getElementById('grat').innerHTML=g;
+
+/* the trace: a stepped signal, because sleep stages are discrete states */
+let x=0,d='';
+NIGHT.forEach(([s,m],i)=>{const y=LVL[s],w=m/TOT*W;
+  d+=(i?`L${x.toFixed(1)},${y} `:`M${x.toFixed(1)},${y} `)+`L${(x+w).toFixed(1)},${y} `;x+=w});
+document.getElementById('trace').setAttribute('d',d);
+document.getElementById('tracegl').innerHTML=
+  `<path d="${d}" fill="none" stroke="#46F08A" stroke-width="4" stroke-linejoin="round"/>`;
+
+/* calibration: the real distribution, Gaussian at mu 79.3 sigma 9.54, and the
+   needle at 88. The needle is what makes the night legible -- not the number. */
+let dd='';
+for(let v=46;v<=98;v++){
+  const z=(v-79.3)/9.54, h=Math.exp(-.5*z*z)*34, xx=(v-46)/52*W;
+  dd+=`<line x1="${xx.toFixed(1)}" y1="${(36-h).toFixed(1)}" x2="${xx.toFixed(1)}" y2="36" stroke="#1E2A21" stroke-width="4"/>`}
+document.getElementById('dist').innerHTML=dd;
+const nx=(88-46)/52*W;
+const n=document.getElementById('needle');n.setAttribute('x1',nx);n.setAttribute('x2',nx);
+</script>
+</body></html>
