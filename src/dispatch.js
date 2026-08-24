@@ -20,6 +20,21 @@ import { ingestRecent } from './ingest.js';
 import { isAuthorised } from './oura.js';
 import { hasNight } from './telemetry.js';
 
+/**
+ * Whether this run should attempt an Oura pull.
+ *
+ * Three conditions, all cheap: Oura is connected, the local hour has reached
+ * the configured pull time, and last night is not already on record. The last
+ * one is what makes retrying free -- once the night lands, no request is made
+ * for the rest of the day.
+ */
+export function shouldIngest({ config, now, dateString, connected = isAuthorised(), settled = null }) {
+  if (!connected) return false;
+  const hour = Number(localTimeString(now, config.timezone).slice(0, 2));
+  if (hour < (config.ouraPullFromHour ?? 11)) return false;
+  return !(settled ?? hasNight(dateString));
+}
+
 export async function dispatch({
   now = new Date(),
   dryRun = false,
@@ -61,15 +76,12 @@ export async function dispatch({
   // guessing a single time; once the night is on record the check costs
   // nothing and no request is made.
   let ingest = null;
-  if (live && !dryRun && isAuthorised()) {
-    const hour = Number(localTimeString(now, config.timezone).slice(0, 2));
-    if (hour >= (config.ouraPullFromHour ?? 11) && !hasNight(dateString)) {
-      try {
-        ingest = await ingestRecent({ days: 3, log });
-      } catch (err) {
-        // A failed pull must never stop a reminder going out.
-        log(`oura ingest error (continuing): ${err.message}`);
-      }
+  if (live && !dryRun && shouldIngest({ config, now, dateString })) {
+    try {
+      ingest = await ingestRecent({ days: 3, log });
+    } catch (err) {
+      // A failed pull must never stop a reminder going out.
+      log(`oura ingest error (continuing): ${err.message}`);
     }
   }
 

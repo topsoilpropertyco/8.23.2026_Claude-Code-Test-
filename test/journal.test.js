@@ -296,3 +296,38 @@ test('the coach falls back to the manual log when Oura has no record', async () 
   assert.ok(r.factId, 'no lever offered');
   assert.doesNotMatch(r.text, /Oura says/);
 });
+
+/* ----------------------------------------------------------- ingest gating */
+
+test('the Oura pull waits until the configured hour, then retries until the night lands', async () => {
+  const { shouldIngest } = await import('../src/dispatch.js');
+  const { zonedWallTimeToDate, parseClock } = await import('../src/time.js');
+  const at = (hhmm) => zonedWallTimeToDate('2026-08-24', parseClock(hhmm), config.timezone);
+  const base = { config, dateString: '2026-08-24', connected: true, settled: false };
+
+  // Too early: Oura will not have the night yet.
+  for (const t of ['00:30', '06:05', '08:00', '10:59']) {
+    assert.equal(shouldIngest({ ...base, now: at(t) }), false, `should not pull at ${t}`);
+  }
+
+  // From the pull hour it tries, and keeps trying on every poll.
+  for (const t of ['11:00', '11:10', '14:00', '22:00']) {
+    assert.equal(shouldIngest({ ...base, now: at(t) }), true, `should pull at ${t}`);
+  }
+});
+
+test('once the night is on record the pull stops making requests', async () => {
+  const { shouldIngest } = await import('../src/dispatch.js');
+  const { zonedWallTimeToDate, parseClock } = await import('../src/time.js');
+  const now = zonedWallTimeToDate('2026-08-24', parseClock('15:00'), config.timezone);
+
+  assert.equal(shouldIngest({ config, dateString: '2026-08-24', now, connected: true, settled: false }), true);
+  assert.equal(shouldIngest({ config, dateString: '2026-08-24', now, connected: true, settled: true }), false);
+});
+
+test('no Oura connection means no pull attempt at all', async () => {
+  const { shouldIngest } = await import('../src/dispatch.js');
+  const { zonedWallTimeToDate, parseClock } = await import('../src/time.js');
+  const now = zonedWallTimeToDate('2026-08-24', parseClock('15:00'), config.timezone);
+  assert.equal(shouldIngest({ config, dateString: '2026-08-24', now, connected: false, settled: false }), false);
+});
