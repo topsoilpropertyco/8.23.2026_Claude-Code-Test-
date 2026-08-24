@@ -194,9 +194,9 @@ export async function processInbox({
   config, state, token, chatId, now = new Date(), log = console.log,
   // Injected so the failure paths can be exercised in tests. Defaults are the
   // real Telegram calls, so every existing call site is unchanged.
-  send = sendMessage, fetchUpdates = getUpdates,
+  send = sendMessage, fetchUpdates = getUpdates, pollTimeout = 0,
 } = {}) {
-  const updates = await fetchUpdates(token, state.inboxOffset ?? 0);
+  const updates = await fetchUpdates(token, state.inboxOffset ?? 0, { timeout: pollTimeout });
   const dateString = localDateString(now, config.timezone);
   const handled = [];
 

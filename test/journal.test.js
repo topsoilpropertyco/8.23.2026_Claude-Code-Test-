@@ -703,3 +703,85 @@ test('slot display numbers match delivery order', () => {
     assert.equal(shown, i, `${slot.name} fires ${i + 1}th at ${slot.anchor}`);
   });
 });
+
+/* -------------------------------------------------- L1: the listen window */
+
+test('the listen window long-polls until its deadline and stops', async () => {
+  const { listen } = await import('../src/listen.js');
+  const config = loadConfig();
+  const state = { inboxOffset: 0, pending: [] };
+
+  // Virtual clock: each poll consumes its full timeout, so the window should
+  // close after a predictable number of polls rather than spinning.
+  let t = 0;
+  const timeouts = [];
+  const fetchUpdates = async (_tok, _off, opts) => {
+    timeouts.push(opts.timeout);
+    t += opts.timeout * 1000;
+    return [];
+  };
+
+  const res = await listen({
+    config, state, token: 'x', chatId: '42', seconds: 100,
+    now: () => t, log: () => {}, persist: false,
+    fetchUpdates, send: async () => ({ message_id: 1 }),
+  });
+
+  assert.equal(res.handled, 0);
+  assert.ok(res.batches >= 2 && res.batches <= 4, `expected a few polls, got ${res.batches}`);
+  assert.ok(timeouts.every((x) => x > 0), 'every poll must actually be a long poll');
+  assert.ok(timeouts.every((x) => x <= 45), 'must stay under Telegram\'s 50s cap');
+  // The last poll must not run past the deadline.
+  assert.ok(timeouts.reduce((a, b) => a + b, 0) <= 100, 'polls overran the window');
+});
+
+test('a poll failure does not end the listen window', async () => {
+  const { listen } = await import('../src/listen.js');
+  const config = loadConfig();
+  let t = 0;
+  let calls = 0;
+  const fetchUpdates = async (_tok, _off, opts) => {
+    calls += 1;
+    t += opts.timeout * 1000;
+    if (calls === 1) throw new Error('network blip');
+    return [];
+  };
+
+  const res = await listen({
+    config, state: { inboxOffset: 0 }, token: 'x', chatId: '42', seconds: 90,
+    now: () => t, log: () => {}, persist: false,
+    fetchUpdates, send: async () => ({ message_id: 1 }),
+  });
+
+  assert.ok(calls > 1, 'should have kept polling after the failure');
+  assert.ok(res.batches >= 1);
+});
+
+test('a message arriving mid-window is answered inside it', async () => {
+  const { listen } = await import('../src/listen.js');
+  const config = loadConfig();
+  const state = { inboxOffset: 0, pending: [] };
+  const sends = [];
+  let t = 0;
+  let polls = 0;
+
+  const fetchUpdates = async (_tok, _off, opts) => {
+    polls += 1;
+    t += opts.timeout * 1000;
+    if (polls === 2) {
+      return [{ update_id: 991001, message: { message_id: 5, chat: { id: 42 },
+        text: 'A considered entry written in the middle of the listening window.' } }];
+    }
+    return [];
+  };
+
+  const res = await listen({
+    config, state, token: 'x', chatId: '42', seconds: 150,
+    now: () => t, log: () => {}, persist: false,
+    fetchUpdates, send: async (_t, _c, text) => { sends.push(text); return { message_id: sends.length }; },
+  });
+
+  assert.equal(res.handled, 1);
+  assert.equal(sends.length, 1, 'the entry should have been answered');
+  assert.equal(state.inboxOffset, 991002, 'offset must advance so it is not answered twice');
+});

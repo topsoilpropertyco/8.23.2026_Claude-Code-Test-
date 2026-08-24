@@ -51,13 +51,13 @@ body{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased
 
 /* the sentence -- second largest thing on the screen, and the only place the
    comparison is stated. Nothing else on this screen repeats it. */
-.said{width:100%;margin-top:30px;font-size:21px;font-weight:700;line-height:1.26;
+.said{width:100%;margin-top:40px;font-size:21px;font-weight:700;line-height:1.26;
   letter-spacing:-.018em;text-wrap:balance}
 .said b{color:var(--accent);font-weight:700}
 .said .sub{display:block;font-family:var(--mono);font-size:10px;font-weight:400;
   letter-spacing:.14em;text-transform:uppercase;color:var(--ink-quiet);margin-top:9px}
 
-.ends{width:100%;display:flex;justify-content:space-between;margin-top:34px;
+.ends{width:100%;display:flex;justify-content:space-between;margin-top:44px;
   font-family:var(--mono);font-size:11px;letter-spacing:.06em}
 .ends .lab{display:block;font-size:9px;letter-spacing:.18em;color:var(--ink-quiet);
   text-transform:uppercase;margin-bottom:3px}
@@ -65,7 +65,7 @@ body{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased
 /* 6px gaps: butted together the four rules read as a proportional stacked
    bar, but the cells are equal width -- deep 1:29 and light 4:09 would look
    the same length. Separated, they read as what they are: a legend. */
-.stages{width:100%;margin-top:38px;display:flex;gap:6px}
+.stages{width:100%;margin-top:48px;display:flex;gap:6px}
 /* `.stages div` also matched the inner .k and .v divs -- twelve borders
    instead of four -- and its shorthand set border-top-color to currentColor
    at a higher specificity than .s-deep etc, so every stage rendered white.
@@ -80,7 +80,7 @@ body{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased
 .stages>.s-wake{border-top-color:#232120}
 
 /* four rows, down from v3's eight. See the note in the script. */
-.meta{width:100%;margin-top:auto;padding-top:20px;border-top:1px solid var(--rule);
+.meta{width:100%;margin-top:auto;padding-top:22px;border-top:1px solid var(--rule);
   display:grid;grid-template-columns:1fr 1fr;gap:9px 26px}
 .meta .row{display:flex;align-items:baseline;font-family:var(--mono);font-size:11px}
 .meta .row .k{color:var(--ink-quiet);letter-spacing:.08em}

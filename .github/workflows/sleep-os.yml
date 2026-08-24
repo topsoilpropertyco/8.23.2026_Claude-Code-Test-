@@ -1,13 +1,15 @@
 name: Sleep OS Dispatch
 
-# The engine polls every 10 minutes and sends any slot whose jittered target
-# time has passed. Polling rather than scheduling six exact crons is deliberate:
+# The engine polls every 5 minutes and sends any slot whose jittered target
+# time has passed. After sending, it holds an open long poll for most of the
+# remaining interval so a reply is answered within seconds rather than at the
+# next run -- see src/listen.js for why that beats standing up a webhook. Polling rather than scheduling six exact crons is deliberate:
 # GitHub's scheduler routinely fires several minutes late, and a poll absorbs
 # that drift instead of compounding it. The schedule itself is computed
 # deterministically from the date, so extra polls never move the target times.
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
     inputs:
       slot:
@@ -40,6 +42,7 @@ permissions:
 jobs:
   dispatch:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -100,6 +103,35 @@ jobs:
           path: web/night.html
           retention-days: 14
           if-no-files-found: ignore
+
+      # Phase 8. The screen was correct and unreachable -- it left as a workflow
+      # artifact, which meant opening Actions and downloading a zip. A photo in
+      # the chat that already carries everything else costs one message.
+      # CHROMIUM_PATH points at the runner's preinstalled Chrome so this does
+      # not download a browser on every run.
+      - name: Send the last-night screen
+        if: inputs.oura_action == '' && steps.telem.outputs.changed == 'true' && inputs.dry_run != true
+        continue-on-error: true
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.SLEEPOS_TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.SLEEPOS_TELEGRAM_CHAT_ID }}
+          SLEEPOS_DATA_KEY: ${{ secrets.SLEEPOS_DATA_KEY }}
+          CHROMIUM_PATH: /usr/bin/google-chrome
+        run: |
+          npm install --no-save --silent playwright-core
+          node bin/sleep-os.js night
+
+      # Hold an open long poll for most of what is left of the interval. Runs
+      # last so a slow or failing poll can never delay a scheduled send, and
+      # continue-on-error so it can never fail the run that already delivered.
+      - name: Listen for replies
+        if: inputs.oura_action == '' && inputs.dry_run != true
+        continue-on-error: true
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.SLEEPOS_TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.SLEEPOS_TELEGRAM_CHAT_ID }}
+          SLEEPOS_DATA_KEY: ${{ secrets.SLEEPOS_DATA_KEY }}
+        run: node bin/sleep-os.js listen 200
 
       - name: Persist rotation state
         run: |

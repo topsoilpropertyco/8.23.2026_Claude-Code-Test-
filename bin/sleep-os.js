@@ -25,6 +25,17 @@ import { localDateString, localTimeString } from '../src/time.js';
 
 const [command = 'today', ...args] = process.argv.slice(2);
 
+/** Env var or a clear failure. Both new commands need the same two. */
+function requireEnv(name) {
+  const v = process.env[name];
+  if (!v) {
+    console.error(`${name} is not set.`);
+    process.exit(1);
+  }
+  return v;
+}
+
+
 function banner(title) {
   console.log(`\n\x1b[38;2;123;175;212m${title}\x1b[0m`);
   console.log('\x1b[38;2;138;153;173m' + '─'.repeat(title.length) + '\x1b[0m');
@@ -249,7 +260,58 @@ async function cmdStats() {
 }
 
 try {
-  switch (command) {
+  
+/**
+ * Hold an open long poll so replies are answered in seconds rather than at the
+ * next scheduled run. See src/listen.js for why this beats a webhook here.
+ */
+async function cmdListen(seconds) {
+  const token = requireEnv('TELEGRAM_BOT_TOKEN');
+  const chatId = requireEnv('TELEGRAM_CHAT_ID');
+  const config = loadConfig();
+  const state = loadState();
+  const { listen } = await import('../src/listen.js');
+  await listen({ config, state, token, chatId, seconds: Number(seconds) || 240 });
+}
+
+/** Build the last-night screen, render it, and send it as a photo. */
+async function cmdNight({ dryRun = false } = {}) {
+  const token = requireEnv('TELEGRAM_BOT_TOKEN');
+  const chatId = requireEnv('TELEGRAM_CHAT_ID');
+  const { hasKey } = await import('../src/crypto.js');
+  if (!hasKey()) {
+    console.error('night: SLEEPOS_DATA_KEY is not set, so the telemetry cannot be read.');
+    process.exitCode = 1;
+    return;
+  }
+
+  const { readFileSync, writeFileSync } = await import('node:fs');
+  const { join } = await import('node:path');
+  const { ROOT } = await import('../src/facts.js');
+  const { readTelemetry } = await import('../src/telemetry.js');
+  const { buildNightData, renderNight } = await import('../web/build-night.js');
+  const { shootNight, nightCaption } = await import('../web/shoot-night.js');
+  const { sendPhoto } = await import('../src/telegram.js');
+
+  const config = loadConfig();
+  const data = buildNightData(readTelemetry(), config.timezone);
+  const html = renderNight(readFileSync(join(ROOT, 'variants/composite/index.html'), 'utf8'), data);
+  const htmlPath = join(ROOT, 'web/night.html');
+  writeFileSync(htmlPath, html);
+
+  const png = await shootNight({ htmlPath });
+  const caption = nightCaption(data);
+
+  if (dryRun) {
+    console.log(`night: would send ${png}\n${caption}`);
+    return;
+  }
+  await sendPhoto(token, chatId, png, caption);
+  console.log(`night: sent ${data.date} · score ${data.score} · ${data.percentile}th of ${data.n}`);
+}
+
+
+switch (command) {
     case 'today':
       await cmdToday();
       break;
@@ -273,6 +335,12 @@ try {
       break;
     case 'journal':
       await cmdJournal();
+      break;
+    case 'listen':
+      await cmdListen(args[0]);
+      break;
+    case 'night':
+      await cmdNight({ dryRun: args.includes('--dry-run') });
       break;
     case 'oura':
       await cmdOura(args[0], args.slice(1).join(' '));

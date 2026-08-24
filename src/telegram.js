@@ -79,8 +79,49 @@ export async function getMe(token) {
  * Reads pending updates. Passing an offset acknowledges everything before it,
  * which is how the queue is drained without a webhook.
  */
-export async function getUpdates(token, offset = 0) {
-  const payload = { timeout: 0, limit: 50 };
+export async function getUpdates(token, offset = 0, { timeout = 0 } = {}) {
+  // timeout > 0 is a long poll: Telegram holds the connection open until a
+  // message arrives or the timeout expires. That is what turns a ten-minute
+  // worst case into a few seconds without any always-on component of our own.
+  const payload = { timeout, limit: 50 };
   if (offset) payload.offset = offset;
   return call(token, 'getUpdates', payload);
+}
+
+/**
+ * Upload a local image. This one cannot go through call(): Telegram wants
+ * multipart/form-data for a file upload, not JSON. The retry policy is the
+ * same in spirit -- transient failures are retried, a 4xx is real.
+ */
+export async function sendPhoto(token, chatId, filePath, caption = '') {
+  const { readFile } = await import('node:fs/promises');
+  const { basename } = await import('node:path');
+  const bytes = await readFile(filePath);
+
+  let lastError;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    const form = new FormData();
+    form.append('chat_id', String(chatId));
+    if (caption) form.append('caption', caption.slice(0, 1024));
+    form.append('photo', new Blob([bytes], { type: 'image/png' }), basename(filePath));
+
+    let res;
+    try {
+      res = await fetch(`${API}/bot${token}/sendPhoto`, { method: 'POST', body: form });
+    } catch (err) {
+      lastError = new TelegramError(`sendPhoto network error: ${err.message}`);
+      if (attempt < MAX_ATTEMPTS) { await sleep(2 ** attempt * 500); continue; }
+      throw lastError;
+    }
+
+    let body;
+    try { body = await res.json(); } catch { body = null; }
+    if (body?.ok) return body.result;
+
+    const description = body?.description ?? `HTTP ${res.status}`;
+    lastError = new TelegramError(`sendPhoto failed: ${description}`);
+    if (!(res.status === 429 || res.status >= 500) || attempt === MAX_ATTEMPTS) throw lastError;
+    await sleep((body?.parameters?.retry_after ?? 2 ** attempt) * 1000);
+  }
+  throw lastError;
 }
