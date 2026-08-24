@@ -1,0 +1,61 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>lv1 — Subtractive</title>
+<meta name="viewport" content="width=390, initial-scale=1">
+<!-- Lovable, route /v1: SUBTRACTIVE. Ported verbatim from src/routes/v1.tsx at commit
+     2a7d10f (project 0e8f383c-9e4a-4464-b52b-9473d5cc4120). Tailwind arbitrary-value
+     utilities expanded to plain CSS; the lv-* motion utilities from src/styles.css are
+     inlined unchanged. Note: this route independently arrived at the same mechanism as
+     Magic Patterns mp1 -- the hero's right edge lands exactly on the percentile mark of
+     the rule beneath it. Recorded as a convergence finding in JUDGING.md. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Karla:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;background:#78756F}
+*{box-sizing:border-box}
+.lv-nums{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+@keyframes lvFade{from{opacity:0}to{opacity:1}}
+@keyframes lvRise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes lvWipe{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes lvGrow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.lv-ground{opacity:0;animation:lvFade 220ms ease-out forwards}
+.lv-hero{opacity:0;animation:lvRise 380ms cubic-bezier(.2,.75,.2,1) 140ms forwards}
+.lv-item{opacity:0;animation:lvRise 320ms cubic-bezier(.2,.75,.2,1) 260ms forwards}
+.lv-wipe{transform:scaleX(0);transform-origin:left center;animation:lvWipe 400ms cubic-bezier(.2,.75,.2,1) 180ms forwards}
+.lv-grow{transform:scaleY(0);transform-origin:bottom center;animation:lvGrow 380ms cubic-bezier(.2,.75,.2,1) 200ms forwards}
+@media (prefers-reduced-motion:reduce){
+ .lv-ground,.lv-hero,.lv-item,.lv-wipe,.lv-grow{animation:lvFade 240ms ease-out forwards !important;transform:none !important}
+}
+.wrap{display:flex;min-height:100vh;align-items:center;justify-content:center;background:#78756F}
+.screen{position:relative;overflow:hidden;width:390px;height:844px;background:#F2EFE9;
+  color:#17150F;font-family:'Karla',sans-serif}
+.kicker{font-size:10px;line-height:1;letter-spacing:.3em;text-transform:uppercase;color:#8B867A;margin:0}
+.hero{font-family:'Bodoni Moda',serif;font-weight:500;font-size:176px;line-height:176px;letter-spacing:-.03em}
+.pct{font-size:11px;line-height:1.5;letter-spacing:.02em;text-align:right;color:#7A1F3D}
+.body{font-size:11px;line-height:1.7;color:#8B867A;margin:0}
+.cut{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:#CDC7B9;margin:0}
+</style>
+<main class="wrap">
+  <section class="lv-ground screen">
+    <div style="position:absolute;left:24px;top:40px;width:342px">
+      <p class="lv-item lv-nums kicker">Sun 23 Aug 2026 &nbsp;·&nbsp; 23:15 — 07:26</p>
+    </div>
+    <div style="position:absolute;left:24px;top:292px;width:342px">
+      <div style="position:relative;height:188px">
+        <div class="lv-hero lv-nums hero" style="position:absolute;right:64.98px;bottom:0">88</div>
+      </div>
+      <div style="position:relative;margin-top:18px;height:1px">
+        <div style="position:absolute;inset:0;background:#CDC7B9"></div>
+        <div class="lv-wipe" style="position:absolute;top:0;left:0;width:277.02px;height:1px;background:#7A1F3D"></div>
+        <div class="lv-item" style="position:absolute;left:276.02px;top:0;width:1px;height:26px;background:#7A1F3D"></div>
+      </div>
+      <div class="lv-item lv-nums pct" style="position:absolute;right:64.98px;top:242px">81st percentile</div>
+    </div>
+    <div style="position:absolute;left:24px;top:552px;width:342px">
+      <p class="lv-item lv-nums body">Better than 844 of 1,042 nights. +8.7 points above your all-time average of 79.3<span style="text-transform:none"> (σ 9.54)</span>.</p>
+      <p class="lv-item lv-nums body" style="margin-top:12px">7h 45m asleep.</p>
+    </div>
+    <p class="lv-item lv-nums cut" style="position:absolute;left:24px;bottom:40px">No stages. No heart rate.</p>
+  </section>
+</main>

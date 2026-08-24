@@ -1,0 +1,151 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>mp2 — The Percentile</title>
+<meta name="viewport" content="width=390, initial-scale=1">
+<!-- Magic Patterns, direction 2: COMPARISON-FIRST. Ported verbatim from the
+     generated App.tsx (editor iqvhudpgtfzfn88nebdbxc). The distribution drawn is a
+     fitted normal from mean 79.3 / sd 9.54, not the empirical 1,042 nights; the
+     generator's aria-label claimed the latter, corrected here to say "modelled". -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600;6..96,700&family=Public+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;background:#78756F}
+@keyframes barRise{from{transform:scaleY(.82);opacity:0}to{transform:scaleY(1);opacity:1}}
+.sleepRoot{width:390px;height:844px;overflow:hidden;position:relative;background:#F2EEE3;
+  color:#16140E;font-family:'Public Sans',system-ui,sans-serif;font-variant-numeric:tabular-nums;
+  font-feature-settings:'tnum' 1,'lnum' 1;-webkit-font-smoothing:antialiased;box-sizing:border-box;
+  padding:0 22px;display:flex;flex-direction:column}
+.sleepRoot *{box-sizing:border-box;font-variant-numeric:tabular-nums}
+.meta{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#7C7768;font-weight:600}
+.rule{height:1px;background:#16140E;width:100%}
+.hair{height:1px;background:#BEB7A4;width:100%}
+.head{display:flex;justify-content:space-between;align-items:baseline;padding:18px 0 8px}
+.pctBlock{display:flex;align-items:flex-start;gap:10px;padding-top:6px}
+.pctNum{font-family:'Bodoni Moda',serif;font-weight:700;font-size:148px;line-height:.72;
+  letter-spacing:-.045em;margin:0}
+.pctOrd{font-family:'Bodoni Moda',serif;font-size:30px;line-height:1;font-weight:500;padding-top:8px}
+.pctSide{margin-left:auto;text-align:right;padding-top:10px}
+.pctSideNum{font-family:'Bodoni Moda',serif;font-size:27px;line-height:1.1;font-weight:600}
+.claim{font-size:11px;letter-spacing:.1em;font-weight:700;text-transform:uppercase;line-height:1.45}
+.histWrap{position:relative;height:118px;display:flex;align-items:flex-end;gap:1.6px}
+.bar{flex:1 1 0;transform-origin:bottom;animation:barRise 220ms cubic-bezier(.23,1,.32,1) both}
+.marker{position:absolute;top:-14px;bottom:-1px;width:2px;background:#5B2BD9}
+.markerCap{position:absolute;top:-30px;transform:translateX(-50%);font-family:'Bodoni Moda',serif;
+  font-size:34px;font-weight:700;line-height:1;color:#5B2BD9;letter-spacing:-.03em}
+.axisRow{display:flex;justify-content:space-between;padding-top:5px}
+.stat{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:#7C7768;font-weight:600}
+.statVal{color:#16140E;font-weight:800}
+.trendRow{display:flex;align-items:center;gap:8px;padding:5px 0}
+.trendLab{font-size:9.5px;letter-spacing:.12em;color:#7C7768;font-weight:700;width:96px;white-space:nowrap}
+.trendTrack{flex:1;height:7px;background:#E4DFD1;position:relative}
+.trendFill{position:absolute;left:0;top:0;bottom:0;background:#BEB7A4}
+.trendVal{font-size:11px;font-weight:700;width:34px;text-align:right}
+.stageBar{display:flex;height:13px;width:100%}
+.stageKey{display:flex;justify-content:space-between;padding-top:6px}
+.stageKeyItem{font-size:9px;letter-spacing:.1em;color:#7C7768;font-weight:700}
+.stageKeyVal{color:#16140E}
+.ledger{display:flex;gap:18px}
+.ledgerCol{flex:1}
+.ledgerRow{display:flex;justify-content:space-between;align-items:baseline;padding:5.5px 0;
+  border-bottom:1px solid #E4DFD1}
+.ledgerKey{font-size:9px;letter-spacing:.11em;color:#7C7768;font-weight:700}
+.ledgerVal{font-size:11.5px;font-weight:700}
+.foot{margin-top:auto;padding:10px 0 16px;display:flex;justify-content:space-between;align-items:baseline}
+@media (prefers-reduced-motion:reduce){.bar{animation:none}}
+</style>
+<main class="sleepRoot" aria-label="Sleep record for the night of Sunday 23 August 2026">
+  <header class="head">
+    <span class="meta">Sun 23 Aug 2026 · Night record</span>
+    <span class="meta">n = 1,042</span>
+  </header>
+  <div class="rule"></div>
+  <section style="padding-top:14px">
+    <div class="pctBlock">
+      <h1 class="pctNum">81</h1>
+      <span class="pctOrd">st</span>
+      <div class="pctSide">
+        <div class="meta" style="color:#16140E">Percentile</div>
+        <div class="pctSideNum">198<span style="color:#7C7768">/1042</span></div>
+        <div class="meta" style="margin-top:2px">Rank of all nights</div>
+      </div>
+    </div>
+    <p class="claim" style="margin:16px 0 10px">Better than 844 of 1,042 nights<span style="color:#7C7768"> · z&nbsp;+0.92 above a mean of 79.3</span></p>
+  </section>
+  <section aria-label="Modelled distribution of night scores, normal fit to mean 79.3 and sd 9.54">
+    <div class="hair" style="margin-bottom:34px"></div>
+    <div class="histWrap" id="hist"></div>
+    <div class="rule"></div>
+    <div class="axisRow">
+      <span class="stat">44</span>
+      <span class="stat">mean <span class="statVal">79.3</span> · sd <span class="statVal">9.54</span></span>
+      <span class="stat">104</span>
+    </div>
+  </section>
+  <section style="padding-top:14px" aria-label="Trailing averages" id="trends"></section>
+  <section style="padding-top:12px" aria-label="Sleep stage composition">
+    <div class="stageBar">
+      <div style="width:50.6098%;background:#BEB7A4;border-right:1px solid #F2EEE3"></div>
+      <div style="width:25.8130%;background:#7C7768;border-right:1px solid #F2EEE3"></div>
+      <div style="width:18.0894%;background:#16140E;border-right:1px solid #F2EEE3"></div>
+      <div style="width:5.4878%;background:#E4DFD1"></div>
+    </div>
+    <div class="stageKey">
+      <span class="stageKeyItem">LIGHT <span class="stageKeyVal">4h 09m</span></span>
+      <span class="stageKeyItem">REM <span class="stageKeyVal">2h 07m</span></span>
+      <span class="stageKeyItem">DEEP <span class="stageKeyVal">1h 29m</span></span>
+      <span class="stageKeyItem">AWAKE <span class="stageKeyVal">27m</span></span>
+    </div>
+  </section>
+  <section style="padding-top:16px" aria-label="Night measurements">
+    <div class="ledger">
+      <div class="ledgerCol">
+        <div class="ledgerRow"><span class="ledgerKey">ASLEEP</span><span class="ledgerVal">7h 45m</span></div>
+        <div class="ledgerRow"><span class="ledgerKey">IN BED</span><span class="ledgerVal">8h 12m</span></div>
+        <div class="ledgerRow"><span class="ledgerKey">EFFICIENCY</span><span class="ledgerVal">94%</span></div>
+        <div class="ledgerRow"><span class="ledgerKey">LATENCY</span><span class="ledgerVal">2m 30s</span></div>
+        <div class="ledgerRow"><span class="ledgerKey">BEDTIME</span><span class="ledgerVal">23:15</span></div>
+        <div class="ledgerRow"><span class="ledgerKey">WAKE</span><span class="ledgerVal">07:26</span></div>
+      </div>
+      <div class="ledgerCol">
+        <div class="ledgerRow"><span class="ledgerKey">HRV</span><span class="ledgerVal">37 ms</span></div>
+        <div class="ledgerRow"><span class="ledgerKey">LOWEST HR</span><span class="ledgerVal">55 bpm</span></div>
+        <div class="ledgerRow"><span class="ledgerKey">AVG HR</span><span class="ledgerVal">60.1 bpm</span></div>
+        <div class="ledgerRow"><span class="ledgerKey">RESPIRATION</span><span class="ledgerVal">14.4 /min</span></div>
+        <div class="ledgerRow"><span class="ledgerKey">RESTLESS</span><span class="ledgerVal">174</span></div>
+        <div class="ledgerRow"><span class="ledgerKey">READINESS</span><span class="ledgerVal">85</span></div>
+      </div>
+    </div>
+  </section>
+  <footer class="foot">
+    <span class="meta">Sleep score</span>
+    <span style="font-family:'Bodoni Moda',serif;font-size:30px;font-weight:700;line-height:1;color:#5B2BD9">88</span>
+  </footer>
+</main>
+<script>
+var MEAN=79.3,SD=9.54,SCORE=88,FROM=44,TO=104,STEP=2;
+var bins=[],peak=0;
+for(var x=FROM;x<TO;x+=STEP){var mid=x+STEP/2;var d=Math.exp(-Math.pow(mid-MEAN,2)/(2*SD*SD));if(d>peak)peak=d;bins.push({x:mid,h:d});}
+bins=bins.map(function(b){return{x:b.x,h:b.h/peak};});
+var markerLeft=((SCORE-FROM)/(TO-FROM))*100;
+var hist=document.getElementById('hist');
+bins.forEach(function(b,i){var el=document.createElement('div');el.className='bar';
+  el.style.height=Math.max(2,b.h*100)+'%';el.style.background=b.x<SCORE?'#BEB7A4':'#E4DFD1';
+  el.style.animationDelay=(i*8)+'ms';hist.appendChild(el);});
+var m=document.createElement('div');m.className='marker';m.style.left=markerLeft+'%';m.setAttribute('aria-hidden','true');hist.appendChild(m);
+var c=document.createElement('div');c.className='markerCap';c.style.left=markerLeft+'%';c.textContent='88';hist.appendChild(c);
+var trends=[['TRAILING 7','79.4',79.4],['TRAILING 30','79.2',79.2],['TRAILING 90','73.9',73.9]];
+var tw=document.getElementById('trends');
+trends.forEach(function(t){
+  var row=document.createElement('div');row.className='trendRow';
+  var lab=document.createElement('span');lab.className='trendLab';lab.textContent=t[0];
+  var track=document.createElement('span');track.className='trendTrack';
+  var fill=document.createElement('span');fill.className='trendFill';
+  fill.style.width=(((t[2]-FROM)/(TO-FROM))*100)+'%';
+  var tick=document.createElement('span');
+  tick.style.cssText='position:absolute;left:'+markerLeft+'%;top:-2px;bottom:-2px;width:1px;background:#16140E';
+  track.appendChild(fill);track.appendChild(tick);
+  var val=document.createElement('span');val.className='trendVal';val.textContent=t[1];
+  row.appendChild(lab);row.appendChild(track);row.appendChild(val);tw.appendChild(row);
+});
+</script>

@@ -1,0 +1,91 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>mp1 — The Plumb Line</title>
+<meta name="viewport" content="width=390, initial-scale=1">
+<!-- Magic Patterns, direction 1: SUBTRACTIVE. Ported verbatim from the generated
+     App.tsx (editor gts4upn3woye1qr2xzfo8r). Two corrections applied, both noted
+     in variants/README.md: "198 above" -> "197 above". The generator double-counted
+     the night itself -- 844 below + itself + 197 above = 1,042, not 844 + 198.
+     The axis is a percentile axis, so the mean tick stays at 50%. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;padding:0;background:#78756F}
+  .sl-root{
+    position:relative;width:390px;height:844px;overflow:hidden;
+    background:#F2F0EA;color:#16171A;
+    font-family:'Schibsted Grotesk',ui-sans-serif,sans-serif;
+    font-variant-numeric:tabular-nums;font-feature-settings:'tnum' 1,'lnum' 1;
+    -webkit-font-smoothing:antialiased;
+  }
+  .sl-head{position:absolute;top:44px;left:24px;right:24px;display:flex;
+    justify-content:space-between;font-size:11px;line-height:1;color:#8B887E}
+  .sl-hero{position:absolute;top:206px;right:85px;font-size:176px;line-height:1;
+    font-weight:500;letter-spacing:-0.055em;color:#16171A;
+    animation:sl-in 240ms cubic-bezier(.23,1,.32,1) both}
+  @keyframes sl-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .sl-connector{position:absolute;left:301.02px;top:392px;width:1.5px;height:42px;background:#2436D4}
+  .sl-axis{position:absolute;left:24px;top:440px;width:342px;height:1px;background:#C6C3B8}
+  .sl-mark{position:absolute;left:301.02px;top:434px;width:1.5px;height:13px;background:#2436D4}
+  .sl-meantick{position:absolute;left:195px;top:440px;width:1px;height:6px;background:#8B887E}
+  .sl-pct{position:absolute;top:412px;left:0;width:293.02px;text-align:right;
+    font-size:11px;line-height:1;font-weight:500;color:#2436D4}
+  .sl-below,.sl-above,.sl-mean{position:absolute;top:454px;font-size:11px;line-height:1;color:#8B887E}
+  .sl-below{left:24px}
+  .sl-above{right:24px}
+  .sl-mean{left:135px;width:120px;text-align:center}
+  .sl-rule{position:absolute;left:24px;top:576px;width:342px;height:1px;background:#E3E0D6}
+  .sl-cols{position:absolute;left:24px;top:600px;width:342px;display:flex;gap:42px}
+  .sl-col{flex:1}
+  .sl-row{display:flex;justify-content:space-between;align-items:baseline;
+    height:24px;font-size:11px;line-height:24px}
+  .sl-rl{color:#8B887E}
+  .sl-rv{color:#16171A;font-weight:500}
+  .sl-foot{position:absolute;left:24px;right:24px;top:772px;font-size:10px;
+    line-height:16px;color:#8B887E}
+  .sl-foot b{font-weight:500;color:#16171A}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  @media (prefers-reduced-motion:reduce){
+    .sl-hero{animation:sl-fade 200ms linear both}
+    @keyframes sl-fade{from{opacity:0}to{opacity:1}}
+  }
+</style>
+<div class="sl-root">
+  <header class="sl-head"><span>Sun 23 Aug 2026</span><span>23:15 &rarr; 07:26</span></header>
+  <main>
+    <div class="sl-hero">88</div>
+    <div class="sl-pct">81st percentile</div>
+    <div class="sl-connector" aria-hidden="true"></div>
+    <div class="sl-mark" aria-hidden="true"></div>
+    <div class="sl-axis" aria-hidden="true"></div>
+    <div class="sl-meantick" aria-hidden="true"></div>
+    <p class="sl-below">844 nights below</p>
+    <p class="sl-mean">79.3 mean</p>
+    <p class="sl-above">197 above</p>
+    <span class="sr">Sleep score 88, ranked 198 of 1,042 prior nights.</span>
+    <div class="sl-rule" aria-hidden="true"></div>
+    <section class="sl-cols" aria-label="Night detail">
+      <div class="sl-col">
+        <div class="sl-row"><span class="sl-rl">asleep</span><span class="sl-rv">7h 45m</span></div>
+        <div class="sl-row"><span class="sl-rl">in bed</span><span class="sl-rv">8h 12m</span></div>
+        <div class="sl-row"><span class="sl-rl">efficiency</span><span class="sl-rv">94%</span></div>
+        <div class="sl-row"><span class="sl-rl">latency</span><span class="sl-rv">2m 30s</span></div>
+        <div class="sl-row"><span class="sl-rl">awake</span><span class="sl-rv">27m</span></div>
+        <div class="sl-row"><span class="sl-rl">restless</span><span class="sl-rv">174</span></div>
+      </div>
+      <div class="sl-col">
+        <div class="sl-row"><span class="sl-rl">deep</span><span class="sl-rv">1h 29m</span></div>
+        <div class="sl-row"><span class="sl-rl">rem</span><span class="sl-rv">2h 07m</span></div>
+        <div class="sl-row"><span class="sl-rl">light</span><span class="sl-rv">4h 09m</span></div>
+        <div class="sl-row"><span class="sl-rl">hrv</span><span class="sl-rv">37 ms</span></div>
+        <div class="sl-row"><span class="sl-rl">lowest hr</span><span class="sl-rv">55 bpm</span></div>
+        <div class="sl-row"><span class="sl-rl">avg hr</span><span class="sl-rv">60.1 bpm</span></div>
+      </div>
+    </section>
+    <p class="sl-foot">
+      readiness <b>85</b> &nbsp;·&nbsp; respiration <b>14.4</b>/min &nbsp;·&nbsp; z <b>+0.92</b> &nbsp;·&nbsp; sd <b>9.54</b><br>
+      7d <b>79.4</b> &nbsp;·&nbsp; 30d <b>79.2</b> &nbsp;·&nbsp; 90d <b>73.9</b> &nbsp;·&nbsp; rank <b>198</b> of <b>1,042</b>
+    </p>
+  </main>
+</div>

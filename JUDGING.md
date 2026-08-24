@@ -319,3 +319,480 @@ CSP will load.
 exactly 390×844 against fallback metrics; with Anton's real metrics it
 overflowed to 873px. Now fixed. Layout verified against substitute fonts is not
 verification — every future round must render with the real faces resolved.
+
+---
+
+# Round three — Magic Patterns and Lovable
+
+The first fifteen varied the *references* but not the *maker*: one model
+hand-authored all of them. This round changes the maker. Six designs from Magic
+Patterns (one generation each, six of a six-generation budget, **zero
+re-rolls**), five from Lovable (one project, five routes, **one message**,
+9.3 credits).
+
+Every design here renders at exactly 390×844 with `scrollWidth === 390` and
+zero overflowing elements, was screenshotted headless at `deviceScaleFactor: 2`,
+and was **looked at**. That mattered: see *What rendering caught* below.
+
+All eleven animate, which none of the fifteen do. So motion is scored honestly
+and reported in both columns — **Total** counts motion out of 30, **less
+motion** subtracts it for like-for-like comparison against the earlier tables.
+
+## Magic Patterns
+
+| | Distinct | Type | Legib. | Motion | Restraint | Craft | **Total** | **less motion** |
+|---|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+| **mp4 Dyed Swatch** | 5 | 5 | 5 | 1 | 2 | 4 | 22 | **21** |
+| **mp1 Plumb Line** | 3 | 5 | 5 | 3 | 3 | 4 | 23 | **20** |
+| **mp5 Woven Band** | 5 | 4 | 3 | 1 | 2 | 4 | 19 | **18** |
+| **mp2 Percentile** | 3 | 5 | 4 | 2 | 2 | 3 | 19 | **17** |
+| **mp3 Night Log** | 3 | 4 | 4 | 1 | 2 | 3 | 17 | **16** |
+| **mp6 Plate** *(free)* | 3 | 4 | 5 | 1 | 2 | 2 | 17 | **16** |
+
+## Lovable
+
+| | Distinct | Type | Legib. | Motion | Restraint | Craft | **Total** | **less motion** |
+|---|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+| **lv1 Subtractive** | 3 | 5 | 5 | 4 | 5 | 4 | 26 | **22** |
+| **lv5 Free** | 4 | 5 | 5 | 3 | 2 | 4 | 23 | **20** |
+| **lv2 Comparison-first** | 2 | 4 | 5 | 3 | 3 | 3 | 20 | **17** |
+| **lv4 Rulebreak** | 4 | 4 | 3 | 3 | 2 | 2 | 18 | **15** |
+| **lv3 Dense shadcn** *(control)* | 1 | 3 | 3 | 3 | 1 | 4 | 15 | **12** |
+
+---
+
+## mp4 — The Dyed Swatch · 21
+
+- **Distinct 5** — the only screen in twenty-six where the *page itself* is the
+  datum. The ground is `#2F5F3F`, which is literally the `+1 SD` chip of the
+  calibration strip printed below it. Strip the data and it is still a dyed
+  swatch card and nothing else.
+- **Type 5** — 176px Bodoni Moda 900 against 8px Spectral small caps is 22:1,
+  the widest ratio in the round. Proper U+2212 minus signs in the key.
+- **Legib. 5** — the answer arrives on a channel no other screen uses. Colour is
+  pre-attentive: you feel "well above" from the ground before reading a figure,
+  and the +0.92 at 44px sits beside the hero to confirm it. This is the clearest
+  instance in twenty-six of the comparison landing *with* the score rather than
+  after it.
+- **Motion 1** — none authored.
+- **Restraint 2** — and then it prints an eighteen-cell specimen band containing
+  every remaining value including the baseline mean and SD. Nothing was cut.
+- **Craft 4** — the ground exactly equalling a key chip is a real flourish. Two
+  defects fixed: the "last night" caret sat at 46% while its own label sat at
+  50%, and the calibration label wrapped, leaving "MEAN" as a widow against the
+  chips.
+
+## mp1 — The Plumb Line · 20
+
+- **Distinct 3** — the *mechanism* is sharp; the surface is not. A clean
+  grotesk on bone could be a banking app. Lovable independently produced nearly
+  the same screen, which is itself the argument against a higher score.
+- **Type 5** — 176px Schibsted Grotesk against 10px, 17.6:1.
+- **Legib. 5** — the best structural answer in the round. The hero's **right
+  edge is the marker**: an accent rule drops from the numeral's edge onto a
+  percentile axis at 81%, where "844 nights below · 79.3 mean · 197 above"
+  flanks it. The comparison is not annotation, it is the number's position.
+- **Motion 3** — only the hero moves, which is correct, but it only arrives; it
+  does not teach anything.
+- **Restraint 3** — enormous voids top and middle, yet a twelve-row ledger and
+  a two-line footer of every remaining statistic. Space was left, nothing was cut.
+- **Craft 4** — numeral edge and tick edge both land at 301.02px, verified.
+  Fixed: "198 above" → "197 above". The percentile label crowds the paragraph
+  beneath it.
+
+## mp5 — The Woven Band · 18
+
+- **Distinct 5** — nothing else here is an *object*. All 24 real hypnogram
+  segments are the weft of a 196×486 band (486px for 492 minutes) with a
+  selvedge, a raking sheen, a linen grain and a knotted fringe.
+- **Type 4** — 126px Jost 600 against 9px DM Mono, 14:1. Clears the floor, but
+  the hero is at the small end and Jost is a neutral geometric.
+- **Legib. 3** — the failure the round was meant to fix. The comparison is an
+  84px comb and two 9px mono lines in the corner. You read the 88 instantly and
+  then have to hunt, and squint.
+- **Motion 1** — none authored.
+- **Restraint 2** — eleven rows of marginalia beside the band, with a large void
+  between two groups of them.
+- **Craft 4** — the material rendering is the best craft in the round, and the
+  hypnogram sum to 492 is asserted in code. Against that: three wrapping
+  failures needed fixing, and the accent does double duty as both REM and the
+  last-night marker, against `DESIGN.md` §4. The consequence is visible — the
+  band reads as blue stripes, not as one marked night.
+
+## mp2 — The Percentile · 17
+
+- **Distinct 3** — a statistical annual in Bodoni on warm paper, which is v4
+  The Almanac's territory. The accent is a blue-violet: the exact hue
+  `DESIGN.md` §9 names as the *category default*. Kept, not sanded off — a
+  generator reaching for the default hue is the finding.
+- **Type 5** — 148px against 9px, 16.4:1.
+- **Legib. 4** — genuinely inverts the hierarchy: "81" is the hero, the claim
+  sentence sits under it, and 88 is a 30px footer mark. Successful, but it now
+  costs a second fixation to retrieve the *score* — the same failure mirrored.
+- **Motion 2** — bars rise on an 8ms stagger. A chart animation, not hierarchy.
+- **Restraint 2** — histogram, three trailing bars, stage bar, twelve-row
+  ledger, footer.
+- **Craft 3** — fixed: the 78px label column wrapped "TRAILING 30" and
+  "TRAILING 90", breaking two of three baselines. Remaining: the marker sits a
+  couple of px off the true bar because the flex gaps make the layout non-linear,
+  the awake segment is invisible against the ground, and the distribution is a
+  fitted normal presented (in the generated aria-label) as the empirical 1,042.
+
+## mp3 — The Night Log · 16
+
+- **Distinct 3** — the italic Bodoni standfirst is a real editorial voice. But
+  the *photographic* idea, the whole point of the direction, did not arrive: at
+  `soft-light` 0.42 over a near-black field the `feTurbulence` grain is
+  invisible and twenty stars sit under a scrim. What remains is a dark radial
+  gradient — the category default it was briefed away from.
+- **Type 4** — 176px against 9px, 19.6:1. The "81ST PCTL" lockup is cramped.
+- **Legib. 4** — 88 instant; the standfirst carries the comparison as a
+  sentence, which works, but at 15.5px below the hero it is a second fixation.
+- **Motion 1** — none authored.
+- **Restraint 2** — standfirst, four sidelines, trend row, stage bar, clock,
+  eight-row colophon, footer, plus a 200px void doing no structural work.
+- **Craft 3** — the accent appears four times, over §4's limit of three. IBM
+  Plex Sans is a near-collision with v1/v3's IBM Plex Mono: a different family,
+  the same superfamily.
+
+## mp6 — The Plate · 16 *(free — no direction given)*
+
+This is Magic Patterns choosing for itself, so it is the honest read on the tool.
+
+- **Distinct 3** — an engraved statistical plate. Competent, and squarely inside
+  v4 The Almanac's territory. Left to itself, the tool reproduced ground the
+  hand-authored set already held.
+- **Type 4** — 104px against 8px is 13:1 by the marginalia measure this file has
+  used throughout, so the floor holds. But it is the smallest hero of the eleven
+  and a 17px masthead competes with it.
+- **Legib. 5** — the strongest thing about it: the 88 sits *directly on* its own
+  marker in the distribution, with "844 nights below" and "197 above" flanking
+  the axis. One glance, no decoding.
+- **Motion 1** — none authored.
+- **Restraint 2** — twelve-row ledger, five footer statistics, stage bar, plot,
+  and a 200px void.
+- **Craft 2** — the worst in the round, and not for pixels. **Four data-integrity
+  defects**: `σ` inside a `text-transform: uppercase` label rendered as a capital
+  **Σ**; "198 above" off by one; *"Kept nightly since 12 October 2023"*, a date
+  that does not exist in the data (the series starts 25 August 2023); and
+  *"every night, scored 46 → 100"*, presenting the plot's own axis bounds as the
+  observed range. A fifth, cosmetic: the Awake label clipped to "AWA". All fixed
+  here. On a screen whose entire job is to be trusted about numbers, inventing a
+  date is the most serious fault in the round.
+
+## lv1 — Subtractive · 22
+
+The best generated screen, and the only one of twenty-six that answers the
+restraint criterion as written.
+
+- **Distinct 3** — held down deliberately. It is lovely, but Magic Patterns
+  arrived at nearly the same screen from the same brief, and two makers
+  converging on one answer is evidence that the answer is not distinctive.
+- **Type 5** — 176px Bodoni Moda against 10px Karla, 17.6:1.
+- **Legib. 5** — the mp1 mechanism, executed as cleanly: the accent rule runs to
+  81% and drops a tick, and the numeral's right edge and the tick's right edge
+  are the same 301.02px. Then one sentence.
+- **Motion 4** — the highest motion score in the round and it is earned. The
+  rule **wipes left to right to 81%** after the hero settles: the motion *is*
+  the comparison being drawn, in the right order, and `prefers-reduced-motion`
+  collapses to a designed opacity settle rather than being switched off.
+- **Restraint 5** — it cut the hypnogram, every stage, every vital and the whole
+  heart-rate group, and then **names the cut in 10px at the foot: "No stages. No
+  heart rate."** Two sentences and a rule. Negative space carries the structure.
+  This is what the criterion asks for and the first screen in twenty-six to do it.
+- **Craft 4** — guarded `σ` against the uppercase trap unprompted. The
+  percentile label crowds the paragraph below it, and there is a large lower void.
+
+## lv5 — Free · 20 *(free — no direction given)*
+
+- **Distinct 4** — the distribution turned on its side: a 24-row vertical
+  histogram standing beside the numeral, top row = 100, marker row in teal
+  visibly above the bulge. No other screen here uses that form. The teal
+  `#0E8C7F` is a near-collision with v7's `#0D7680` — different value, adjacent
+  hue.
+- **Type 5** — 156px Playfair Display against 10px Outfit, 15.6:1, and the 19px
+  Playfair sentence is properly set.
+- **Legib. 5** — hero, histogram and sentence occupy one visual block. The
+  marker's position above the bulge reads as "above average" before any figure
+  is decoded.
+- **Motion 3** — hypnogram bars grow on a 6ms stagger; entrance ordered
+  correctly; reduced-motion designed. Pleasant, not structural.
+- **Restraint 2** — a ten-row vitals grid, four stage figures, the hypnogram,
+  an axis line and a statistics line.
+- **Craft 4** — fixed a wrapping orphan ("73.9"). The awake bars are nearly
+  invisible on the warm ground, and the histogram column overshoots the
+  numeral's cap height.
+
+## lv2 — Comparison-first · 17
+
+- **Distinct 2** — a dark screen with a large condensed numeral and a filled
+  blue curve. Competent, and it could be any analytics product.
+- **Type 4** — 188px Big Shoulders Display 900 against 10px, 18.8:1, though the
+  display face carries the whole screen alone.
+- **Legib. 5** — "81st percentile — better than 844 of 1,042 nights" *is* the
+  headline. Nothing to decode.
+- **Motion 3** — the shared entrance system, correctly ordered.
+- **Restraint 3** — the sparest of the Lovable set: one curve, one footer plate,
+  no vitals table at all. Undercut by a 190px void.
+- **Craft 3** — fixed: the axis row placed "79.3 mean" with flex auto-margins,
+  landing it near 44% of an axis where the mean actually falls at 62%; under a
+  drawn curve that reads as a positioned tick. `μ` guarded correctly. The footer
+  line wraps.
+
+## lv4 — Rulebreak · 15
+
+The anti-shadcn test: can the tool be pushed off its defaults? Yes — and the
+bill comes due in legibility.
+
+- **Distinct 4** — zero radius, magenta on near-black, hairline bands, a night
+  drawn in 50 character cells. It genuinely left its defaults behind.
+- **Type 4** — 128px Syne 800 against 10px, 12.8:1, across three faces.
+- **Legib. 3** — the 88 is instant. The magenta bar beneath it encodes the
+  percentile *by length* and is never labelled, so the reader cannot know that.
+  The rank ladder is a mostly-empty rectangle. The 12px claim sentence does the
+  actual work.
+- **Motion 3** — the shared system.
+- **Restraint 2** — ten-row ledger, cell chart, key, claim, ladder — and the
+  largest void of the eleven, roughly 300px.
+- **Craft 2** — the block-glyph chart is close to unreadable: at this size `▓`,
+  `▒` and `░` render as near-identical dither, so REM, light and awake are not
+  separable, and the legend swatches share the problem. It also **overflowed its
+  own container** — 50 cells measured 362px inside 350px, breaking the 20px
+  gutter — until reduced to 11.5px. `white-space: pre` was used correctly, which
+  is the one trap it avoided.
+
+## lv3 — Dense shadcn · 12 *(the control)*
+
+Asked for the best version of the thing it wants to build anyway. This is that,
+and it is the lowest score in twenty-six.
+
+- **Distinct 1** — the category default with a green accent. Swap the logo and
+  it ships as anything.
+- **Type 3** — 96px against 10px is 9.6:1, clearing the floor by the narrowest
+  margin here, in Manrope at default weights — which is what `DESIGN.md` §8
+  bans by name.
+- **Legib. 3** — **round one's exact failure, reproduced by the tool's own
+  defaults.** A 96px score with the percentile set at 11px beside a 152×46
+  sparkline: the comparison is an annotation hanging off the number. Two to
+  three seconds.
+- **Motion 3** — the shared system, applied uniformly and inoffensively.
+- **Restraint 1** — everything available is on screen: score, sparkline, badge,
+  statistics line, hypnogram, axis, four stage bars, eight vitals, three
+  trailing means.
+- **Craft 4** — and this is the honest part: as *information design* it is
+  clean, aligned and competent. An 8px rounded card, and a 250px void.
+
+---
+
+## What rendering caught
+
+Round two found seven bugs that only rendering exposed. Round three found
+**seventeen**, of which **thirteen were corrected in code** and four were left
+in place as findings. None of the seventeen was visible from reading the source
+with confidence, and four were invisible until the pixels existed.
+
+The harness itself needed fixing first, and this is worth recording because it
+would have silently corrupted every judgement in this round:
+
+> **Headless chromium does not advance the CSS animation clock reliably.** Every
+> generated screen uses an entrance animation with `animation-fill-mode: both`
+> or `forwards` from an `opacity: 0` base. Screenshotted naively, they capture
+> at or near their *from* state — mp1's hero measured `opacity: 0` and
+> photographed as grey rather than ink, and all five Lovable screens would have
+> come out blank or half-faded. Fix: settle every animation with
+> `getAnimations().forEach(a => a.finish())` before the screenshot, cancelling
+> any infinite one and reporting it (an infinite animation is itself banned by
+> `DESIGN.md` §7; none appeared).
+
+Two of the brief's named traps fired exactly as predicted:
+
+- **`text-transform: uppercase` turns σ into Σ** — mp6, in the footer statistics
+  row. Guarded with a `text-transform: none` span. Notably, Lovable guarded
+  both `μ` and `σ` unprompted in three separate routes.
+- **A chart wider than its container** — lv4's 50-cell block-glyph run measured
+  362px inside a 350px container, breaking its own gutter by 12px and aligning
+  with nothing on the screen.
+
+The trap that did *not* fire: `white-space: nowrap` collapsing runs of spaces.
+Lovable used `white-space: pre` for its character-cell chart, correctly.
+
+**The error profile differs from hand-authoring, and that is the more
+interesting result.** Round two's seven bugs were all layout and rendering
+faults. Of round three's seventeen, **four are data-integrity failures**: a
+fabricated series start date, the same off-by-one on "nights above" in two
+independent generations (844 + 198 = 1,042 double-counts the night itself; it is
+844 below, this night, and 197 above), and axis bounds presented as the observed
+range of the data. Hand-authoring miscounts pixels. Generators invent facts.
+On a screen whose only job is to be trusted about numbers, the second failure
+mode is worse, and no amount of looking at a screenshot catches it — it needs
+someone who knows what the data actually says.
+
+---
+
+## Combined ranking — all twenty-seven, less motion
+
+Motion subtracted throughout, because the fifteen do not animate and the
+comparison has to be like for like.
+
+| # | Design | Maker | /25 |
+|---:|---|---|:--:|
+| 1= | **lv1 Subtractive** | Lovable | **22** |
+| 1= | **v1 The Ledger** | hand | **22** |
+| 1= | **v3 The Dial** | hand | **22** |
+| 1= | **v8 Ma 間** | hand | **22** |
+| 1= | **Composite** | hand | **22** |
+| 6= | **mp4 Dyed Swatch** | Magic Patterns | **21** |
+| 6= | v4 The Almanac | hand | 21 |
+| 8= | **mp1 Plumb Line** | Magic Patterns | **20** |
+| 8= | **lv5 Free** | Lovable | **20** |
+| 8= | v7 The Broadsheet | hand | 20 |
+| 8= | v15 The Brutalist | hand | 20 |
+| 12= | v5 The Dispatch | hand | 19 |
+| 12= | v12 The Terminal | hand | 19 |
+| 14= | **mp5 Woven Band** | Magic Patterns | **18** |
+| 14= | v6 The Instrument | hand | 18 |
+| 14= | v14 The Seismograph | hand | 18 |
+| 17= | **mp2 Percentile** | Magic Patterns | **17** |
+| 17= | **lv2 Comparison-first** | Lovable | **17** |
+| 17= | v9 The Specimen | hand | 17 |
+| 17= | v10 The Panel | hand | 17 |
+| 17= | v11 The Chart | hand | 17 |
+| 17= | v13 The Receipt | hand | 17 |
+| 23= | **mp3 Night Log** | Magic Patterns | **16** |
+| 23= | **mp6 Plate** | Magic Patterns | **16** |
+| 23= | v2 The Night | hand | 16 |
+| 26 | **lv4 Rulebreak** | Lovable | **15** |
+| 27 | **lv3 Dense shadcn** | Lovable | **12** |
+
+With motion counted (out of 30) lv1 reaches **26**, level with the composite,
+and mp1 reaches 23. **No generated screen beat the hand-authored 22. One tied
+it.** The generators also produced the two lowest-scoring screens of the
+twenty-seven.
+
+Median: hand-authored **19**, generated **17**.
+
+---
+
+## The maker-diversity question, answered
+
+**Did a different maker produce anything structurally different from what one
+model produced by hand? Largely no. The novelty tracked the brief, not the
+maker.**
+
+Six pieces of evidence, and they point the same way.
+
+**1. The typefaces converged hard.** Five of eleven independently chose **Bodoni
+Moda** — mp2, mp3, mp4, mp6 and lv1 — across two tools that shared no prompt
+beyond a ban list of the fifteen already-used faces. lv5 chose Playfair
+Display, the same high-contrast-serif instinct. Two unrelated generators, given
+a free choice of every face on Google Fonts, reached for the same didone for the
+hero more often than not. That is the opposite of maker diversity.
+
+**2. The two free runs reproduced existing territory.** The honest read on a
+tool is what it does with no direction. Magic Patterns unprompted produced an
+engraved statistical plate — v4 The Almanac's ground. Lovable unprompted
+produced an editorial serif screen on warm paper — adjacent to v5 The Dispatch.
+Neither invented a form the hand-authored fifteen did not already hold. **Every
+structurally new form in this round came from a direction line I wrote**:
+colour-as-data (mp4), physical object (mp5), the sideways distribution (lv5,
+and even that is the closest thing to an unprompted exception), block-glyph
+brutalism (lv4). Take the directions away and the generators return to the
+category.
+
+**3. Two makers independently invented the identical mechanism.** mp1 and lv1
+both land the hero's *right edge* on the percentile mark of a rule beneath it —
+same device, same geometry, 301.02px in both. Given the same brief, different
+makers produced the same answer. That is convergence you can measure to two
+decimal places.
+
+**4. All eleven share an implementation signature the fifteen do not.** Every
+single generated screen is a flex column with `margin-top: auto` on a footer,
+authored for content that under-fills a fixed 844px — so every one has a large
+dead void, from 100px to about 300px in lv4. Eight of eleven then fill the lower
+half with a two-column ledger of eight to eighteen rows. That is not eleven
+designers; that is one build habit expressed eleven times.
+
+**5. Restraint failed systematically, exactly as it did in round two.** Nine of
+eleven scored 1–2 on restraint. Round two's finding was that borrowed forms are
+maximal by nature; this round shows the failure is not about *borrowed forms* at
+all, because these were not borrowing. **Generators default to completeness.**
+Given seventeen values they will place seventeen values, and the "subtractive"
+instruction had to be given explicitly to get anything else.
+
+**6. Where they genuinely won, they won on things a brief can specify.** Two
+real gains came out of this round, and both are portable:
+
+- **lv1 is the first screen in twenty-seven to satisfy the restraint criterion
+  as written** — it cut the hypnogram, the stages and all vitals, and then named
+  the cut on screen. It also has the best motion in the set, where the accent
+  rule wiping out to 81% *is* the comparison being drawn. That is a real
+  contribution and it beats every hand-authored screen on restraint.
+- **mp4's colour-as-data is the only pre-attentive comparison in twenty-seven.**
+  Every other screen, hand-authored or generated, makes you read something.
+  mp4 makes you *see* it, because the ground itself is the value. That channel
+  was untested before this round and it works.
+
+**So the verdict is a split, weighted toward no.** Maker diversity did not
+produce structural diversity: the generators converged on each other's
+typefaces, re-derived each other's mechanisms, shared a layout habit, and
+returned to the hand-authored set's territory whenever left to choose. What they
+did produce was two ideas worth keeping — one of which (lv1's declared
+subtraction) the hand-authored fifteen never managed across fifteen attempts,
+which is a genuine finding and not a flattering one.
+
+The cheaper reading of this round is also the more useful one: **the direction
+line did the work, not the maker.** Every novel form here traces to a sentence
+in the brief. That suggests the next round should spend its budget on
+directions, not on tools.
+
+## Where the tools refused or drifted
+
+Tool defaults are data, so they are recorded.
+
+- **Neither tool refused anything.** No direction was declined and no
+  constraint was pushed back on.
+- **Magic Patterns drifted to the category's default hue.** mp2's accent is a
+  blue-violet, the exact family `DESIGN.md` §9 names as the in-category default,
+  despite a ban list of fourteen hex values and an instruction to pick a
+  different hue.
+- **Magic Patterns did not deliver the photographic direction.** mp3 was asked
+  for a real image or texture ground, the one thing none of the fifteen has. It
+  produced radial gradients, twenty 1px stars and an `feTurbulence` grain at
+  `soft-light` 0.42 over near-black — which is invisible. The direction that was
+  meant to open new ground closed back onto a dark gradient screen.
+- **Magic Patterns ignored an explicit accent budget.** mp3 uses its accent four
+  times against a stated limit of three; mp5 lets the accent mean two different
+  things at once.
+- **Lovable pushed off its own defaults when told to, and paid for it.** lv4 has
+  no shadcn component, no border radius and custom faces, exactly as asked — and
+  the cost is a chart you cannot read. That is a real answer to the question,
+  not a failure to follow instructions.
+- **Lovable was the better instruction-follower on the traps.** It guarded `μ`
+  and `σ` against the uppercase transform in three routes unprompted, used
+  `white-space: pre` correctly for its character-cell chart, ran its own
+  headless screenshot checks while building, and self-corrected an accent
+  overuse in lv4 before finishing. Magic Patterns shipped the Σ bug.
+- **Lovable's own default, asked for directly, is the weakest screen here.**
+  lv3 scores 12 of 25 and reproduces round one's headline failure. Worth
+  knowing: the thing the tool most wants to build is the thing this spec least
+  wants.
+
+## Spend
+
+| | Budget | Used |
+|---|---|---|
+| Magic Patterns generations | 6 | **6** (one per design, **0 re-rolls**) |
+| Lovable messages | as few as possible | **1** (one project, five routes, 9.3 credits) |
+
+No generation was re-run because its output was off. Every defect above was
+fixed in code, which is what `SUPERPROMPT-PHASE4.md` §6 asks for.
+
+## What this leaves open
+
+- The 8:1 type floor was set up to be reopened if a generated design scored 5 on
+  legibility while under the floor. **None did** — the lowest ratio here is
+  lv3's 9.6:1 and it scored 3. The floor's proxy held for a third round.
+- `v11`'s reference interval is still unborrowed. Nothing in this round tried it.
+- **lv1's declared subtraction is the one thing worth taking into a composite**
+  from this round, alongside mp4's colour channel. Both are mechanisms, not
+  styles, so both are portable.

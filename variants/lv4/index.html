@@ -1,0 +1,85 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>lv4 — Rulebreak</title>
+<meta name="viewport" content="width=390, initial-scale=1">
+<!-- Lovable, route /v4: DELIBERATELY ANTI-SHADCN. Ported verbatim from src/routes/v4.tsx
+     at commit 2a7d10f. The 50-cell block-glyph hypnogram is computed with the same
+     dominant-stage-per-cell reduction the route uses (492 minutes / 50 cells, JS
+     Math.round slice bounds, ties to the stage appearing first in the cell), so the
+     glyph run is identical. white-space:pre is kept as generated.
+     One correction: at the generated 12px the 50 cells measured 362px inside a 350px
+     container -- the run broke its own 20px gutter by 12px and no longer lined up with
+     anything else on the screen. Reduced to 11.5px, which fits 350px exactly.
+     Recorded in JUDGING.md. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;700&family=Syne:wght@700;800&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;background:#78756F}
+*{box-sizing:border-box}
+.lv-nums{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+@keyframes lvFade{from{opacity:0}to{opacity:1}}
+@keyframes lvRise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes lvWipe{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes lvGrow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.lv-ground{opacity:0;animation:lvFade 220ms ease-out forwards}
+.lv-hero{opacity:0;animation:lvRise 380ms cubic-bezier(.2,.75,.2,1) 140ms forwards}
+.lv-item{opacity:0;animation:lvRise 320ms cubic-bezier(.2,.75,.2,1) 260ms forwards}
+.lv-wipe{transform:scaleX(0);transform-origin:left center;animation:lvWipe 400ms cubic-bezier(.2,.75,.2,1) 180ms forwards}
+.lv-grow{transform:scaleY(0);transform-origin:bottom center;animation:lvGrow 380ms cubic-bezier(.2,.75,.2,1) 200ms forwards}
+@media (prefers-reduced-motion:reduce){
+ .lv-ground,.lv-hero,.lv-item,.lv-wipe,.lv-grow{animation:lvFade 240ms ease-out forwards !important;transform:none !important}
+}
+
+.wrap{display:flex;min-height:100vh;align-items:center;justify-content:center;background:#78756F}
+.screen{overflow:hidden;width:390px;height:844px;background:#0B0B0B;color:#F4F1E8;
+  font-family:'Familjen Grotesk',sans-serif;border-radius:0;display:flex;flex-direction:column}
+.top{padding:18px 20px 14px;border-bottom:1px solid #6E6A60;display:flex;
+  justify-content:space-between;font-size:10px;letter-spacing:.26em;text-transform:uppercase}
+.hero{display:flex;min-height:190px;border-bottom:1px solid #6E6A60}
+.heroL{flex:1;min-width:0;overflow:hidden;padding:18px 0 0 14px;display:flex;
+  flex-direction:column;justify-content:flex-end}
+.score{font-family:'Syne',sans-serif;font-weight:800;font-size:128px;line-height:.82em;letter-spacing:-.06em}
+.pctbar{height:6px;width:81%;background:#FF2E93;margin-top:10px;margin-bottom:20px}
+.heroR{width:116px;border-left:1px solid #6E6A60;position:relative;padding:10px 12px}
+.rlab{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:#6E6A60}
+.rnum{font-size:22px;font-weight:700;line-height:1.1}
+.ladder{position:absolute;left:12px;right:12px;top:78px;bottom:16px;border:1px solid #6E6A60}
+.claim{padding:14px 20px;font-size:12px;line-height:1.55;border-bottom:1px solid #6E6A60}
+.hypsec{padding:12px 20px 10px;border-bottom:1px solid #6E6A60}
+.hyplab{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:#6E6A60;margin-bottom:8px}
+.cells{white-space:pre;font-family:'Spline Sans Mono',monospace;font-size:11.5px;line-height:28px;letter-spacing:0}
+.key{margin-top:8px;font-size:10px;color:#6E6A60;letter-spacing:.1em}
+.ledger{padding:4px 20px 0;font-size:12px}
+.lrow{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #211F1B}
+.lk{color:#6E6A60;letter-spacing:.16em;font-size:10px}
+.foot{margin-top:auto;padding:16px 20px;font-size:10px;letter-spacing:.2em;color:#6E6A60;
+  display:flex;justify-content:space-between}
+</style>
+<main class="wrap">
+  <section class="lv-ground screen">
+    <div class="lv-item lv-nums top"><span>Night of sun 23 aug 2026</span><span>23:15/07:26</span></div>
+    <div class="lv-hero hero">
+      <div class="heroL">
+        <div class="lv-nums score">88</div>
+        <div class="pctbar"></div>
+      </div>
+      <div class="heroR">
+        <div class="lv-nums rlab">rank</div>
+        <div class="lv-nums rnum">198<span style="color:#6E6A60;font-size:12px">/1,042</span></div>
+        <div class="ladder">
+          <div style="position:absolute;left:0;right:0;top:19%;height:3px;background:#FF2E93"></div>
+          <div class="lv-nums" style="position:absolute;left:4px;top:calc(19% + 8px);font-size:10px;color:#F4F1E8">81st</div>
+        </div>
+      </div>
+    </div>
+    <div class="lv-item lv-nums claim">BETTER THAN 844 OF 1,042 NIGHTS. <span style="color:#FF2E93">+8.7 ABOVE ALL-TIME AVERAGE</span><span style="text-transform:none"> (μ 79.3, σ 9.54, z +0.92 SD)</span>.</div>
+    <div class="hypsec">
+      <div class="lv-item lv-nums hyplab">492 minutes in bed / 50 cells</div>
+      <div class="lv-item cells" id="cells"><span style="color:#9B9587">▒</span><span style="color:#9B9587">▒</span><span style="color:#9B9587">▒</span><span style="color:#F4F1E8">█</span><span style="color:#F4F1E8">█</span><span style="color:#F4F1E8">█</span><span style="color:#9B9587">▒</span><span style="color:#9B9587">▒</span><span style="color:#CFC9B9">▓</span><span style="color:#9B9587">▒</span><span style="color:#9B9587">▒</span><span style="color:#F4F1E8">█</span><span style="color:#F4F1E8">█</span><span style="color:#F4F1E8">█</span><span style="color:#9B9587">▒</span><span style="color:#9B9587">▒</span><span style="color:#CFC9B9">▓</span><span style="color:#CFC9B9">▓</span><span style="color:#CFC9B9">▓</span><span style="color:#9B9587">▒</span><span style="color:#9B9587">▒</span><span style="color:#9B9587">▒</span><span style="color:#F4F1E8">█</span><span style="color:#F4F1E8">█</span><span style="color:#9B9587">▒</span><span style="color:#9B9587">▒</span><span style="color:#CFC9B9">▓</span><span style="color:#CFC9B9">▓</span><span style="color:#CFC9B9">▓</span><span style="color:#9B9587">▒</span><span style="color:#9B9587">▒</span><span style="color:#5A5750">░</span><span style="color:#9B9587">▒</span><span style="color:#9B9587">▒</span><span style="color:#9B9587">▒</span><span style="color:#CFC9B9">▓</span><span style="color:#CFC9B9">▓</span><span style="color:#CFC9B9">▓</span><span style="color:#9B9587">▒</span><span style="color:#9B9587">▒</span><span style="color:#5A5750">░</span><span style="color:#9B9587">▒</span><span style="color:#9B9587">▒</span><span style="color:#9B9587">▒</span><span style="color:#CFC9B9">▓</span><span style="color:#CFC9B9">▓</span><span style="color:#CFC9B9">▓</span><span style="color:#9B9587">▒</span><span style="color:#9B9587">▒</span><span style="color:#5A5750">░</span></div>
+      <div class="lv-item lv-nums key">█ DEEP 1h 29m ▓ REM 2h 07m ▒ LIGHT 4h 09m ░ AWAKE 27m</div>
+    </div>
+    <div class="lv-item lv-nums ledger"><div class="lrow"><span class="lk">ASLEEP</span><span>7h 45m</span></div><div class="lrow"><span class="lk">IN BED</span><span>8h 12m</span></div><div class="lrow"><span class="lk">EFFICIENCY</span><span>94%</span></div><div class="lrow"><span class="lk">LATENCY</span><span>2m 30s</span></div><div class="lrow"><span class="lk">HRV</span><span>37 ms</span></div><div class="lrow"><span class="lk">LOWEST HR</span><span>55 bpm</span></div><div class="lrow"><span class="lk">AVG HR</span><span>60.1 bpm</span></div><div class="lrow"><span class="lk">RESPIRATION</span><span>14.4/min</span></div><div class="lrow"><span class="lk">RESTLESS PERIODS</span><span>174</span></div><div class="lrow"><span class="lk">READINESS</span><span>85</span></div></div>
+    <div class="lv-item lv-nums foot"><span>T7 MEAN 79.4</span><span>T30 MEAN 79.2</span><span>T90 MEAN 73.9</span></div>
+  </section>
+</main>

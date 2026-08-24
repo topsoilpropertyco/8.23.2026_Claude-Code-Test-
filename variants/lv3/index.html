@@ -1,0 +1,96 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>lv3 — Dense shadcn</title>
+<meta name="viewport" content="width=390, initial-scale=1">
+<!-- Lovable, route /v3: ITS OWN BEST DENSE SHADCN SCREEN (the control). Ported verbatim
+     from src/routes/v3.tsx at commit 2a7d10f. The shadcn Card / Separator / Badge are
+     expanded to the plain CSS they compile to (Card rounded-md = 8px on --radius 0.625rem,
+     Badge rounded-sm = 6px, Separator = 1px of --border #E2E8F0) so the file is
+     self-contained. Nothing about the layout or values is changed. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;background:#78756F}
+*{box-sizing:border-box}
+.lv-nums{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+@keyframes lvFade{from{opacity:0}to{opacity:1}}
+@keyframes lvRise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes lvWipe{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes lvGrow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.lv-ground{opacity:0;animation:lvFade 220ms ease-out forwards}
+.lv-hero{opacity:0;animation:lvRise 380ms cubic-bezier(.2,.75,.2,1) 140ms forwards}
+.lv-item{opacity:0;animation:lvRise 320ms cubic-bezier(.2,.75,.2,1) 260ms forwards}
+.lv-wipe{transform:scaleX(0);transform-origin:left center;animation:lvWipe 400ms cubic-bezier(.2,.75,.2,1) 180ms forwards}
+.lv-grow{transform:scaleY(0);transform-origin:bottom center;animation:lvGrow 380ms cubic-bezier(.2,.75,.2,1) 200ms forwards}
+@media (prefers-reduced-motion:reduce){
+ .lv-ground,.lv-hero,.lv-item,.lv-wipe,.lv-grow{animation:lvFade 240ms ease-out forwards !important;transform:none !important}
+}
+
+.wrap{display:flex;min-height:100vh;align-items:center;justify-content:center;background:#78756F}
+.screen{overflow:hidden;width:390px;height:844px;background:#F6F5F2;color:#191C1A;
+  font-family:'Manrope',sans-serif;padding:26px 20px 22px;display:flex;flex-direction:column}
+.head{display:flex;align-items:baseline;justify-content:space-between}
+.head h1{margin:0;font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase}
+.card{margin-top:12px;border-radius:8px;border:0;box-shadow:none;background:#fff}
+.cardin{display:flex;align-items:center;gap:16px;padding:20px 16px}
+.hero{margin:0;font-weight:800;font-size:96px;line-height:.86em;letter-spacing:-.045em}
+.herolab{margin:4px 0 0;font-size:11px;letter-spacing:.16em;text-transform:uppercase}
+.sep{height:1px;background:#E2E8F0;margin:20px 0;flex:0 0 auto}
+.badge{display:inline-block;border-radius:6px;border:0;font-size:11px;background:#2F7D32;
+  color:#fff;padding:2px 8px;font-weight:600}
+.hyp{margin-top:8px;display:flex;height:92px;gap:1px}
+.hypax{margin-top:4px;display:flex;justify-content:space-between;font-size:10px;color:#77807A}
+.srow{display:flex;align-items:center;gap:12px}
+.srow+.srow{margin-top:8px}
+.sk{width:54px;font-size:11px}
+.strack{height:6px;flex:1;background:#E7E9E6}
+.sv{width:52px;text-align:right;font-size:11px}
+.vitals{display:grid;grid-template-columns:1fr 1fr;column-gap:18px;margin:0}
+.vrow{display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid #E7E9E6;padding:6px 0}
+.vk{font-size:11px;color:#77807A;margin:0}
+.vv{font-size:11px;font-weight:600;margin:0}
+</style>
+<main class="wrap">
+  <section class="lv-ground screen">
+    <header class="lv-item head">
+      <h1 class="lv-nums">Sunday 23 August 2026</h1>
+      <span class="lv-nums" style="font-size:11px;color:#77807A">23:15 → 07:26</span>
+    </header>
+    <div class="lv-hero card">
+      <div class="cardin">
+        <div>
+          <p class="lv-nums hero">88</p>
+          <p class="lv-nums herolab">Sleep score</p>
+        </div>
+        <div style="margin-left:auto;width:152px">
+          <svg width="152" height="46" viewBox="0 0 152 46" aria-hidden="true">
+            <polyline points="0.0,45.9 1.4,45.9 2.8,45.9 4.1,45.9 5.5,45.9 6.9,45.8 8.3,45.8 9.7,45.7 11.1,45.7 12.4,45.7 13.8,45.6 15.2,45.5 16.6,45.4 18.0,45.3 19.3,45.2 20.7,45.1 22.1,45.0 23.5,44.8 24.9,44.6 26.3,44.4 27.6,44.2 29.0,44.0 30.4,43.7 31.8,43.4 33.2,43.0 34.5,42.6 35.9,42.2 37.3,41.7 38.7,41.2 40.1,40.7 41.5,40.1 42.8,39.4 44.2,38.7 45.6,37.9 47.0,37.1 48.4,36.2 49.7,35.3 51.1,34.3 52.5,33.3 53.9,32.2 55.3,31.0 56.7,29.8 58.0,28.6 59.4,27.3 60.8,26.0 62.2,24.6 63.6,23.2 64.9,21.8 66.3,20.3 67.7,18.9 69.1,17.4 70.5,15.9 71.9,14.5 73.2,13.1 74.6,11.7 76.0,10.3 77.4,9.0 78.8,7.8 80.1,6.6 81.5,5.5 82.9,4.4 84.3,3.5 85.7,2.7 87.1,1.9 88.4,1.3 89.8,0.8 91.2,0.4 92.6,0.2 94.0,0.0 95.3,0.0 96.7,0.1 98.1,0.4 99.5,0.7 100.9,1.2 102.3,1.8 103.6,2.5 105.0,3.3 106.4,4.2 107.8,5.3 109.2,6.4 110.5,7.5 111.9,8.8 113.3,10.1 114.7,11.4 116.1,12.8 117.5,14.2 118.8,15.6 120.2,17.1 121.6,18.6 123.0,20.0 124.4,21.5 125.7,22.9 127.1,24.3 128.5,25.7 129.9,27.0 131.3,28.3 132.7,29.6 134.0,30.8 135.4,32.0 136.8,33.1 138.2,34.1 139.6,35.1 140.9,36.1 142.3,36.9 143.7,37.8 145.1,38.5 146.5,39.3 147.9,39.9 149.2,40.5 150.6,41.1 152.0,41.6" fill="none" stroke="#9AA29C" stroke-width="1"/>
+            <line x1="118.8" y1="0" x2="118.8" y2="46" stroke="#2F7D32" stroke-width="1.5"/>
+          </svg>
+          <p class="lv-nums" style="margin:0;font-size:11px;line-height:1.55;color:#77807A">
+            <span style="color:#2F7D32;font-weight:700">81st percentile</span><br>
+            rank 198 of 1,042<br>better than 844 nights
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="lv-item" style="margin-top:12px;display:flex;align-items:center;gap:8px">
+      <span class="lv-nums badge">+8.7 vs average</span>
+      <span class="lv-nums" style="font-size:11px;color:#77807A">
+        <span style="text-transform:none">μ 79.3 · σ 9.54 · z +0.92 SD</span>
+      </span>
+    </div>
+    <div class="sep"></div>
+    <p class="lv-item lv-nums" style="margin:0;font-size:11px;letter-spacing:.16em;text-transform:uppercase">Night · 8h 12m in bed</p>
+    <div class="lv-item hyp"><div style="flex-grow:3;flex-basis:0;background:#CDD2CE;align-self:flex-end;height:22%"></div><div style="flex-grow:22;flex-basis:0;background:#9AA29C;align-self:flex-end;height:48%"></div><div style="flex-grow:38;flex-basis:0;background:#2A2E2B;align-self:stretch;height:100%"></div><div style="flex-grow:14;flex-basis:0;background:#9AA29C;align-self:flex-end;height:48%"></div><div style="flex-grow:12;flex-basis:0;background:#5C635E;align-self:flex-end;height:72%"></div><div style="flex-grow:18;flex-basis:0;background:#9AA29C;align-self:flex-end;height:48%"></div><div style="flex-grow:31;flex-basis:0;background:#2A2E2B;align-self:stretch;height:100%"></div><div style="flex-grow:20;flex-basis:0;background:#9AA29C;align-self:flex-end;height:48%"></div><div style="flex-grow:26;flex-basis:0;background:#5C635E;align-self:flex-end;height:72%"></div><div style="flex-grow:4;flex-basis:0;background:#CDD2CE;align-self:flex-end;height:22%"></div><div style="flex-grow:24;flex-basis:0;background:#9AA29C;align-self:flex-end;height:48%"></div><div style="flex-grow:20;flex-basis:0;background:#2A2E2B;align-self:stretch;height:100%"></div><div style="flex-grow:22;flex-basis:0;background:#9AA29C;align-self:flex-end;height:48%"></div><div style="flex-grow:34;flex-basis:0;background:#5C635E;align-self:flex-end;height:72%"></div><div style="flex-grow:16;flex-basis:0;background:#9AA29C;align-self:flex-end;height:48%"></div><div style="flex-grow:6;flex-basis:0;background:#CDD2CE;align-self:flex-end;height:22%"></div><div style="flex-grow:30;flex-basis:0;background:#9AA29C;align-self:flex-end;height:48%"></div><div style="flex-grow:30;flex-basis:0;background:#5C635E;align-self:flex-end;height:72%"></div><div style="flex-grow:27;flex-basis:0;background:#9AA29C;align-self:flex-end;height:48%"></div><div style="flex-grow:8;flex-basis:0;background:#CDD2CE;align-self:flex-end;height:22%"></div><div style="flex-grow:28;flex-basis:0;background:#9AA29C;align-self:flex-end;height:48%"></div><div style="flex-grow:25;flex-basis:0;background:#5C635E;align-self:flex-end;height:72%"></div><div style="flex-grow:28;flex-basis:0;background:#9AA29C;align-self:flex-end;height:48%"></div><div style="flex-grow:6;flex-basis:0;background:#CDD2CE;align-self:flex-end;height:22%"></div></div>
+    <div class="lv-item lv-nums hypax"><span>23:15</span><span>deep · REM · light · awake</span><span>07:26</span></div>
+    <div class="sep"></div>
+    <div class="lv-item"><div class="srow"><span class="lv-nums sk">Deep</span><div class="strack"><div style="width:18.0894%;height:100%;background:#2A2E2B"></div></div><span class="lv-nums sv">1h 29m</span></div><div class="srow"><span class="lv-nums sk">REM</span><div class="strack"><div style="width:25.8130%;height:100%;background:#5C635E"></div></div><span class="lv-nums sv">2h 07m</span></div><div class="srow"><span class="lv-nums sk">Light</span><div class="strack"><div style="width:50.6098%;height:100%;background:#9AA29C"></div></div><span class="lv-nums sv">4h 09m</span></div><div class="srow"><span class="lv-nums sk">Awake</span><div class="strack"><div style="width:5.4878%;height:100%;background:#CDD2CE"></div></div><span class="lv-nums sv">27m</span></div></div>
+    <div class="sep"></div>
+    <dl class="lv-item vitals"><div class="vrow"><dt class="lv-nums vk">HRV</dt><dd class="lv-nums vv">37 ms</dd></div><div class="vrow"><dt class="lv-nums vk">Lowest HR</dt><dd class="lv-nums vv">55 bpm</dd></div><div class="vrow"><dt class="lv-nums vk">Average HR</dt><dd class="lv-nums vv">60.1 bpm</dd></div><div class="vrow"><dt class="lv-nums vk">Respiration</dt><dd class="lv-nums vv">14.4/min</dd></div><div class="vrow"><dt class="lv-nums vk">Latency</dt><dd class="lv-nums vv">2m 30s</dd></div><div class="vrow"><dt class="lv-nums vk">Restless periods</dt><dd class="lv-nums vv">174</dd></div><div class="vrow"><dt class="lv-nums vk">Efficiency</dt><dd class="lv-nums vv">94%</dd></div><div class="vrow"><dt class="lv-nums vk">Readiness</dt><dd class="lv-nums vv">85</dd></div></dl>
+    <div class="lv-item lv-nums" style="display:flex;justify-content:space-between;font-size:11px;color:#77807A;margin-top:auto;padding-top:18px">
+      <span>T7 mean 79.4</span><span>T30 mean 79.2</span><span>T90 mean 73.9</span>
+    </div>
+  </section>
+</main>

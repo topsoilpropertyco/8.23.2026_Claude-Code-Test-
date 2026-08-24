@@ -1,0 +1,143 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>mp6 — The Plate</title>
+<meta name="viewport" content="width=390, initial-scale=1">
+<!-- Magic Patterns, direction 6: FREE (no direction given). Ported from the generated
+     App.tsx (editor brb76gxqj6mor7tjmofwj3). Four generator bugs found by rendering
+     and corrected here, all recorded in JUDGING.md:
+       1. sigma inside a text-transform:uppercase label rendered as a capital SIGMA.
+          Guarded with .grk { text-transform: none }.
+       2. "198 above" double-counted the night itself; 844 below + itself + 197 above
+          = 1,042. Corrected to 197.
+       3. "Kept nightly since 12 October 2023" was invented -- the series starts
+          25 August 2023. Corrected.
+       4. "every night, scored 46 -> 100" presented the plot's axis bounds as the
+          observed range of the data, which is not known. Reworded to name the axis.
+     Also fixed: the Awake stage label was clipped to "AWA" by overflow:hidden on a
+     18.8px column. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600&family=Libre+Franklin:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;background:#78756F}
+.nr,.nr *{box-sizing:border-box;margin:0;padding:0}
+.nr{width:390px;height:844px;overflow:hidden;background:#F2EEE4;color:#191813;
+  font-family:'Libre Franklin',sans-serif;font-variant-numeric:tabular-nums lining-nums;
+  font-feature-settings:"tnum" 1,"lnum" 1;padding:20px 24px 18px;display:flex;flex-direction:column;
+  -webkit-font-smoothing:antialiased}
+.nr .lbl{font-size:8.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#6E6A5F}
+.nr .rule{height:1px;background:#D5CFC0;width:100%}
+.nr .rule-ink{height:1px;background:#191813;width:100%}
+.nr .val{font-size:12.5px;font-weight:500;letter-spacing:-.01em}
+.nr .num-display{font-family:'Bodoni Moda',serif;font-weight:500;
+  font-variant-numeric:tabular-nums lining-nums;letter-spacing:-.03em}
+.nr .body-11{font-size:11px;line-height:1.45;color:#191813}
+.nr .body-mut{font-size:10px;line-height:1.5;color:#6E6A5F}
+.nr .grk{text-transform:none !important}
+</style>
+<div class="nr" role="main" aria-label="Sleep record for the night of Sunday 23 August 2026">
+  <header>
+    <div style="display:flex;align-items:baseline;justify-content:space-between">
+      <h1 class="num-display" style="font-size:17px;font-weight:600;letter-spacing:.01em">Night Record</h1>
+      <span class="lbl">Entry no. 1,043</span>
+    </div>
+    <div class="rule-ink" style="margin:7px 0 6px"></div>
+    <div style="display:flex;justify-content:space-between">
+      <span class="body-mut">Sunday 23 August 2026 · 23:15 — 07:26</span>
+      <span class="body-mut">Personal series, 1,042 prior nights</span>
+    </div>
+  </header>
+  <section style="margin-top:18px" aria-label="Score in the context of all prior nights">
+    <div style="position:relative;height:112px">
+      <div style="position:absolute;left:0;top:6px;width:150px">
+        <div class="lbl">Sleep score</div>
+        <p class="body-11" style="margin-top:8px">81st percentile.<br>Rank 198 of 1,042.</p>
+        <div style="margin-top:10px;display:inline-block;border:1px solid #2E4EA7;color:#2E4EA7;
+          font-size:9.5px;font-weight:600;letter-spacing:.1em;padding:3px 6px 2px">+0.92 SD</div>
+      </div>
+      <div class="num-display" style="position:absolute;left:266px;bottom:-6px;
+        transform:translateX(-50%);font-size:104px;line-height:.78">88</div>
+    </div>
+    <svg width="342" height="139" viewBox="0 0 342 139" aria-hidden="true" style="display:block" id="plot"></svg>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:7px">
+      <span class="body-mut"><span style="color:#191813;font-weight:600">844</span> nights below</span>
+      <span class="body-mut">1,042 nights · axis 46 → 100</span>
+      <span class="body-mut"><span style="color:#191813;font-weight:600">197</span> above</span>
+    </div>
+  </section>
+  <section style="margin-top:20px" aria-label="Sleep stages">
+    <div style="display:flex;justify-content:space-between;align-items:baseline">
+      <span class="lbl">Time in bed 8h 12m</span>
+      <span class="lbl">Asleep 7h 45m · 94% efficient</span>
+    </div>
+    <div style="display:flex;height:16px;margin-top:7px;gap:1.5px">
+      <div style="width:18.0894%;background:#2E4EA7"></div>
+      <div style="width:25.8130%;background:#191813"></div>
+      <div style="width:50.6098%;background:#B8B2A2"></div>
+      <div style="width:5.4878%;background:transparent;border:1px solid #6E6A5F"></div>
+    </div>
+    <div style="display:flex;margin-top:6px;gap:1.5px">
+      <div style="width:18.0894%;overflow:hidden"><div class="lbl" style="font-size:8px">Deep</div><div class="val" style="font-size:11px;margin-top:1px">1h 29m</div></div>
+      <div style="width:25.8130%;overflow:hidden"><div class="lbl" style="font-size:8px">REM</div><div class="val" style="font-size:11px;margin-top:1px">2h 07m</div></div>
+      <div style="width:50.6098%;overflow:hidden"><div class="lbl" style="font-size:8px">Light</div><div class="val" style="font-size:11px;margin-top:1px">4h 09m</div></div>
+      <div style="width:5.4878%;overflow:visible;text-align:right;white-space:nowrap"><div class="lbl" style="font-size:8px">Awake</div><div class="val" style="font-size:11px;margin-top:1px">27m</div></div>
+    </div>
+  </section>
+  <section style="margin-top:18px;display:flex;gap:22px" aria-label="Night measurements">
+    <div style="flex:1">
+      <div class="rule-ink"></div>
+      <div class="lrow"><span class="lbl">In bed</span><span class="val">8h 12m</span></div>
+      <div class="lrow"><span class="lbl">Asleep</span><span class="val">7h 45m</span></div>
+      <div class="lrow"><span class="lbl">Efficiency</span><span class="val">94%</span></div>
+      <div class="lrow"><span class="lbl">Latency</span><span class="val">2m 30s</span></div>
+      <div class="lrow"><span class="lbl">Bedtime</span><span class="val">23:15</span></div>
+      <div class="lrow"><span class="lbl">Wake</span><span class="val">07:26</span></div>
+    </div>
+    <div style="flex:1">
+      <div class="rule-ink"></div>
+      <div class="lrow"><span class="lbl">Readiness</span><span class="val">85</span></div>
+      <div class="lrow"><span class="lbl">HRV</span><span class="val">37 ms</span></div>
+      <div class="lrow"><span class="lbl">Lowest HR</span><span class="val">55 bpm</span></div>
+      <div class="lrow"><span class="lbl">Average HR</span><span class="val">60.1 bpm</span></div>
+      <div class="lrow"><span class="lbl">Respiration</span><span class="val">14.4 /min</span></div>
+      <div class="lrow"><span class="lbl">Restless</span><span class="val">174</span></div>
+    </div>
+  </section>
+  <footer style="margin-top:auto">
+    <div class="rule-ink" style="margin-bottom:8px"></div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end">
+      <div><div class="lbl" style="font-size:8px">Last 7</div><div class="num-display" style="font-size:15px;margin-top:3px;letter-spacing:-.01em">79.4</div></div>
+      <div><div class="lbl" style="font-size:8px">Last 30</div><div class="num-display" style="font-size:15px;margin-top:3px;letter-spacing:-.01em">79.2</div></div>
+      <div><div class="lbl" style="font-size:8px">Last 90</div><div class="num-display" style="font-size:15px;margin-top:3px;letter-spacing:-.01em">73.9</div></div>
+      <div><div class="lbl" style="font-size:8px">All 1,042</div><div class="num-display" style="font-size:15px;margin-top:3px;letter-spacing:-.01em">79.3</div></div>
+      <div><div class="lbl" style="font-size:8px"><span class="grk">σ</span></div><div class="num-display" style="font-size:15px;margin-top:3px;letter-spacing:-.01em">9.54</div></div>
+    </div>
+    <p class="body-mut" style="margin-top:9px;font-size:9.5px">Kept nightly since 25 August 2023. This night reads better than 844 of the 1,042 recorded before it.</p>
+  </footer>
+</div>
+<style>
+.nr .lrow{display:flex;justify-content:space-between;align-items:baseline;
+  padding:6.5px 0 5.5px;border-bottom:1px solid #D5CFC0}
+</style>
+<script>
+var PLOT_W=342,PLOT_H=138,X_MIN=46,X_MAX=100,MEAN=79.3,SD=9.54;
+var MUTED='#6E6A5F',FILL='#B8B2A2',INK='#191813',ACCENT='#2E4EA7';
+function xOf(v){return ((v-X_MIN)/(X_MAX-X_MIN))*PLOT_W;}
+var bins=[];for(var lo=X_MIN;lo<X_MAX;lo+=2){var c=lo+1;bins.push({c:c,h:Math.exp(-Math.pow(c-MEAN,2)/(2*SD*SD))});}
+var mx=Math.max.apply(null,bins.map(function(b){return b.h}));
+bins=bins.map(function(b){return{c:b.c,h:b.h/mx}});
+var BAR_W=PLOT_W/bins.length-2.2;
+var NS='http://www.w3.org/2000/svg',svg=document.getElementById('plot');
+function el(n,a){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);return e;}
+bins.forEach(function(b){
+  var h=Math.max(1,b.h*(PLOT_H-10)),below=b.c<88;
+  svg.appendChild(el('rect',{x:xOf(b.c)-BAR_W/2,y:PLOT_H-h,width:BAR_W,height:h,
+    fill:below?FILL:'none',stroke:below?'none':FILL,'stroke-width':0.75}));
+});
+svg.appendChild(el('line',{x1:xOf(MEAN),x2:xOf(MEAN),y1:16,y2:PLOT_H,stroke:MUTED,'stroke-width':1,'stroke-dasharray':'1 3'}));
+var t=el('text',{x:xOf(MEAN)-5,y:13,'text-anchor':'end','font-family':"'Libre Franklin', sans-serif",'font-size':'8.5','letter-spacing':'1.1',fill:MUTED});
+t.textContent='MEAN 79.3';svg.appendChild(t);
+svg.appendChild(el('line',{x1:xOf(88),x2:xOf(88),y1:0,y2:PLOT_H,stroke:ACCENT,'stroke-width':1.4}));
+svg.appendChild(el('circle',{cx:xOf(88),cy:4,r:3,fill:ACCENT}));
+svg.appendChild(el('line',{x1:0,x2:PLOT_W,y1:PLOT_H,y2:PLOT_H,stroke:INK,'stroke-width':1}));
+</script>

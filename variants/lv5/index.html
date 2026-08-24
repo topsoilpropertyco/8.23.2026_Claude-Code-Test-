@@ -1,0 +1,71 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>lv5 — Editorial</title>
+<meta name="viewport" content="width=390, initial-scale=1">
+<!-- Lovable, route /v5: FREE (no direction given). Ported verbatim from src/routes/v5.tsx
+     at commit 2a7d10f. The vertical distribution column is evaluated with the same
+     expression the route uses (24 rows, top = score 100, width = 4 + density * 40,
+     marker on the row nearest 88, which is row 5 at v 88.04).
+     One correction: the trailing-statistics line wrapped, orphaning "73.9" onto a second
+     line under the rule. Reduced 11px -> 10.5px so it sets on one line. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;background:#78756F}
+*{box-sizing:border-box}
+.lv-nums{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+@keyframes lvFade{from{opacity:0}to{opacity:1}}
+@keyframes lvRise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes lvWipe{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes lvGrow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.lv-ground{opacity:0;animation:lvFade 220ms ease-out forwards}
+.lv-hero{opacity:0;animation:lvRise 380ms cubic-bezier(.2,.75,.2,1) 140ms forwards}
+.lv-item{opacity:0;animation:lvRise 320ms cubic-bezier(.2,.75,.2,1) 260ms forwards}
+.lv-wipe{transform:scaleX(0);transform-origin:left center;animation:lvWipe 400ms cubic-bezier(.2,.75,.2,1) 180ms forwards}
+.lv-grow{transform:scaleY(0);transform-origin:bottom center;animation:lvGrow 380ms cubic-bezier(.2,.75,.2,1) 200ms forwards}
+@media (prefers-reduced-motion:reduce){
+ .lv-ground,.lv-hero,.lv-item,.lv-wipe,.lv-grow{animation:lvFade 240ms ease-out forwards !important;transform:none !important}
+}
+
+.wrap{display:flex;min-height:100vh;align-items:center;justify-content:center;background:#78756F}
+.screen{overflow:hidden;width:390px;height:844px;background:#FBF7F0;color:#211D1A;
+  font-family:'Outfit',sans-serif;padding:38px 26px 30px;display:flex;flex-direction:column}
+.kick{margin:0;font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:#8C8378}
+.hero{font-family:'Playfair Display',serif;font-weight:500;font-size:156px;line-height:.8em;letter-spacing:-.04em}
+.pcta{margin:0;font-size:13px;line-height:1.5;font-weight:600;color:#0E8C7F}
+.pctb{margin:0;font-size:11px;line-height:1.6;color:#8C8378}
+.sentence{margin:26px 0 0;font-family:'Playfair Display',serif;font-size:19px;line-height:1.42;letter-spacing:-.01em}
+.stats{margin-top:10px;font-size:10.5px;color:#8C8378;border-top:1px solid #E0D8CB;padding-top:8px;white-space:nowrap}
+.night{display:flex;height:74px;gap:1px;align-items:flex-end}
+.nax{display:flex;justify-content:space-between;margin-top:7px;font-size:10px;color:#8C8378;letter-spacing:.14em}
+.srow{margin-top:34px;display:flex;justify-content:space-between}
+.sk{margin:0;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#8C8378}
+.sv{margin:2px 0 0;font-family:'Playfair Display',serif;font-size:20px}
+.vitals{margin-top:auto;padding-top:30px;display:grid;grid-template-columns:1fr 1fr;column-gap:22px}
+.vrow{display:flex;justify-content:space-between;border-bottom:1px solid #E0D8CB;padding:5px 0;font-size:11px}
+.vrow dt{color:#8C8378;margin:0} .vrow dd{margin:0}
+</style>
+<main class="wrap">
+  <section class="lv-ground screen">
+    <p class="lv-item lv-nums kick">Sunday 23 August 2026</p>
+    <div class="lv-hero" style="margin-top:34px;display:flex;align-items:flex-end">
+      <div><div class="lv-nums hero">88</div></div>
+      <div style="margin-left:18px;width:44px">
+        <svg width="44" height="168" viewBox="0 0 44 168" aria-hidden="true"><rect x="0" y="0.0000" width="7.799" height="5.400" fill="#D6CEC3"/><rect x="0" y="7.0000" width="10.343" height="5.400" fill="#D6CEC3"/><rect x="0" y="14.0000" width="13.944" height="5.400" fill="#D6CEC3"/><rect x="0" y="21.0000" width="18.640" height="5.400" fill="#D6CEC3"/><rect x="0" y="28.0000" width="24.242" height="5.400" fill="#D6CEC3"/><rect x="0" y="35.0000" width="30.282" height="5.400" fill="#0E8C7F"/><rect x="0" y="42.0000" width="36.047" height="5.400" fill="#D6CEC3"/><rect x="0" y="49.0000" width="40.697" height="5.400" fill="#D6CEC3"/><rect x="0" y="56.0000" width="43.462" height="5.400" fill="#D6CEC3"/><rect x="0" y="63.0000" width="43.852" height="5.400" fill="#D6CEC3"/><rect x="0" y="70.0000" width="41.794" height="5.400" fill="#D6CEC3"/><rect x="0" y="77.0000" width="37.661" height="5.400" fill="#D6CEC3"/><rect x="0" y="84.0000" width="32.153" height="5.400" fill="#D6CEC3"/><rect x="0" y="91.0000" width="26.113" height="5.400" fill="#D6CEC3"/><rect x="0" y="98.0000" width="20.311" height="5.400" fill="#D6CEC3"/><rect x="0" y="105.0000" width="15.298" height="5.400" fill="#D6CEC3"/><rect x="0" y="112.0000" width="11.350" height="5.400" fill="#D6CEC3"/><rect x="0" y="119.0000" width="8.490" height="5.400" fill="#D6CEC3"/><rect x="0" y="126.0000" width="6.576" height="5.400" fill="#D6CEC3"/><rect x="0" y="133.0000" width="5.388" height="5.400" fill="#D6CEC3"/><rect x="0" y="140.0000" width="4.702" height="5.400" fill="#D6CEC3"/><rect x="0" y="147.0000" width="4.334" height="5.400" fill="#D6CEC3"/><rect x="0" y="154.0000" width="4.149" height="5.400" fill="#D6CEC3"/><rect x="0" y="161.0000" width="4.062" height="5.400" fill="#D6CEC3"/></svg>
+      </div>
+      <div style="margin-left:12px;padding-bottom:4px">
+        <p class="lv-nums pcta">81st</p>
+        <p class="lv-nums pctb">percentile<br>rank 198<br>of 1,042</p>
+      </div>
+    </div>
+    <p class="lv-item sentence"><span class="lv-nums">Better than 844 of 1,042 nights, and +8.7 points above your all-time average of 79.3.</span></p>
+    <div class="lv-item lv-nums stats"><span style="text-transform:none">σ 9.54 · z +0.92 SD</span> · T7 mean 79.4 · T30 mean 79.2 · T90 mean 73.9</div>
+    <div style="margin-top:40px">
+      <div class="lv-item night"><div class="lv-grow" style="flex-grow:3;flex-basis:0;height:24%;background:#D6CEC3;animation-delay:200ms"></div><div class="lv-grow" style="flex-grow:22;flex-basis:0;height:50%;background:#A9A29A;animation-delay:206ms"></div><div class="lv-grow" style="flex-grow:38;flex-basis:0;height:100%;background:#2C2A26;animation-delay:212ms"></div><div class="lv-grow" style="flex-grow:14;flex-basis:0;height:50%;background:#A9A29A;animation-delay:218ms"></div><div class="lv-grow" style="flex-grow:12;flex-basis:0;height:74%;background:#6B665D;animation-delay:224ms"></div><div class="lv-grow" style="flex-grow:18;flex-basis:0;height:50%;background:#A9A29A;animation-delay:230ms"></div><div class="lv-grow" style="flex-grow:31;flex-basis:0;height:100%;background:#2C2A26;animation-delay:236ms"></div><div class="lv-grow" style="flex-grow:20;flex-basis:0;height:50%;background:#A9A29A;animation-delay:242ms"></div><div class="lv-grow" style="flex-grow:26;flex-basis:0;height:74%;background:#6B665D;animation-delay:248ms"></div><div class="lv-grow" style="flex-grow:4;flex-basis:0;height:24%;background:#D6CEC3;animation-delay:254ms"></div><div class="lv-grow" style="flex-grow:24;flex-basis:0;height:50%;background:#A9A29A;animation-delay:260ms"></div><div class="lv-grow" style="flex-grow:20;flex-basis:0;height:100%;background:#2C2A26;animation-delay:266ms"></div><div class="lv-grow" style="flex-grow:22;flex-basis:0;height:50%;background:#A9A29A;animation-delay:272ms"></div><div class="lv-grow" style="flex-grow:34;flex-basis:0;height:74%;background:#6B665D;animation-delay:278ms"></div><div class="lv-grow" style="flex-grow:16;flex-basis:0;height:50%;background:#A9A29A;animation-delay:284ms"></div><div class="lv-grow" style="flex-grow:6;flex-basis:0;height:24%;background:#D6CEC3;animation-delay:290ms"></div><div class="lv-grow" style="flex-grow:30;flex-basis:0;height:50%;background:#A9A29A;animation-delay:296ms"></div><div class="lv-grow" style="flex-grow:30;flex-basis:0;height:74%;background:#6B665D;animation-delay:302ms"></div><div class="lv-grow" style="flex-grow:27;flex-basis:0;height:50%;background:#A9A29A;animation-delay:308ms"></div><div class="lv-grow" style="flex-grow:8;flex-basis:0;height:24%;background:#D6CEC3;animation-delay:314ms"></div><div class="lv-grow" style="flex-grow:28;flex-basis:0;height:50%;background:#A9A29A;animation-delay:320ms"></div><div class="lv-grow" style="flex-grow:25;flex-basis:0;height:74%;background:#6B665D;animation-delay:326ms"></div><div class="lv-grow" style="flex-grow:28;flex-basis:0;height:50%;background:#A9A29A;animation-delay:332ms"></div><div class="lv-grow" style="flex-grow:6;flex-basis:0;height:24%;background:#D6CEC3;animation-delay:338ms"></div></div>
+      <div class="lv-item lv-nums nax"><span>23:15 ASLEEP IN 2m 30s</span><span>ROSE 07:26</span></div>
+    </div>
+    <div class="lv-item lv-nums srow"><div><p class="sk">Deep</p><p class="sv">1h 29m</p></div><div><p class="sk">REM</p><p class="sv">2h 07m</p></div><div><p class="sk">Light</p><p class="sv">4h 09m</p></div><div><p class="sk">Awake</p><p class="sv">27m</p></div></div>
+    <dl class="lv-item lv-nums vitals"><div class="vrow"><dt>Asleep</dt><dd>7h 45m</dd></div><div class="vrow"><dt>In bed</dt><dd>8h 12m</dd></div><div class="vrow"><dt>Efficiency</dt><dd>94%</dd></div><div class="vrow"><dt>Readiness</dt><dd>85</dd></div><div class="vrow"><dt>HRV</dt><dd>37 ms</dd></div><div class="vrow"><dt>Lowest heart rate</dt><dd>55 bpm</dd></div><div class="vrow"><dt>Average heart rate</dt><dd>60.1 bpm</dd></div><div class="vrow"><dt>Respiration</dt><dd>14.4/min</dd></div><div class="vrow"><dt>Restless periods</dt><dd>174</dd></div><div class="vrow"><dt>Latency</dt><dd>2m 30s</dd></div></dl>
+  </section>
+</main>
