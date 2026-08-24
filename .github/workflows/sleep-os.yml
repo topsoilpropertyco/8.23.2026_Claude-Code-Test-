@@ -58,10 +58,23 @@ jobs:
           git config user.email "sleep-os@users.noreply.github.com"
           git add state/
           git commit -m "chore(state): rotation update $(date -u +%Y-%m-%dT%H:%MZ)"
-          # Another poll may have landed a commit while this one ran.
+          # Another push may have landed while this run was working. Rebase onto
+          # it; if the state files themselves conflict, ours win -- this run is
+          # the one that knows what was just delivered, and losing that record
+          # would make the next run re-send the same card.
           for attempt in 1 2 3 4; do
-            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+            if git pull --rebase --autostash origin "${GITHUB_REF_NAME}"; then
+              git push origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+            else
+              if git checkout --ours -- state/ 2>/dev/null; then
+                git add state/
+                GIT_EDITOR=true git rebase --continue || git rebase --abort
+              else
+                git rebase --abort || true
+              fi
+            fi
             echo "push attempt $attempt failed; retrying"
             sleep $((2 ** attempt))
           done
+          echo "::error::Could not persist rotation state after 4 attempts."
           exit 1

@@ -5,27 +5,61 @@
 // the behavioural journalling layer lands in a later phase.
 
 const API = 'https://api.telegram.org';
+const MAX_ATTEMPTS = 4;
 
 export class TelegramError extends Error {}
 
-async function call(token, method, payload) {
-  const res = await fetch(`${API}/bot${token}/${method}`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(payload ?? {}),
-  });
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-  let body;
-  try {
-    body = await res.json();
-  } catch {
-    throw new TelegramError(`${method} returned non-JSON (HTTP ${res.status})`);
+/**
+ * A transient failure must not cost a card. Network blips, Telegram 5xx and
+ * rate limits are all retried with backoff; a 4xx that is not a rate limit is
+ * a real error (bad token, blocked bot) and fails immediately, because
+ * retrying it would only delay a failure the run should surface.
+ */
+async function call(token, method, payload, { log = () => {} } = {}) {
+  let lastError;
+
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    let res;
+    try {
+      res = await fetch(`${API}/bot${token}/${method}`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(payload ?? {}),
+      });
+    } catch (err) {
+      lastError = new TelegramError(`${method} network error: ${err.message}`);
+      if (attempt < MAX_ATTEMPTS) {
+        await sleep(2 ** attempt * 500);
+        log(`${method} network error, retry ${attempt}/${MAX_ATTEMPTS - 1}`);
+        continue;
+      }
+      throw lastError;
+    }
+
+    let body;
+    try {
+      body = await res.json();
+    } catch {
+      body = null;
+    }
+
+    if (body?.ok) return body.result;
+
+    const description = body?.description ?? `HTTP ${res.status}`;
+    const retryAfter = body?.parameters?.retry_after;
+    const retriable = res.status === 429 || res.status >= 500;
+
+    lastError = new TelegramError(`${method} failed: ${description}`);
+    if (!retriable || attempt === MAX_ATTEMPTS) throw lastError;
+
+    const waitMs = retryAfter ? (retryAfter + 1) * 1000 : 2 ** attempt * 500;
+    log(`${method} ${description}, waiting ${Math.round(waitMs / 1000)}s (retry ${attempt}/${MAX_ATTEMPTS - 1})`);
+    await sleep(waitMs);
   }
 
-  if (!body.ok) {
-    throw new TelegramError(`${method} failed: ${body.description ?? `HTTP ${res.status}`}`);
-  }
-  return body.result;
+  throw lastError;
 }
 
 export async function sendMessage(token, chatId, text) {
