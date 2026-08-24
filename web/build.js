@@ -15,6 +15,7 @@ import { join } from 'node:path';
 import { loadLibraries, loadConfig, ROOT } from '../src/facts.js';
 import { buildDaySchedule } from '../src/schedule.js';
 import { selectFact } from '../src/selector.js';
+import { loadHabits, selectRationale } from '../src/habits.js';
 import { rngFrom, gaussian } from '../src/rng.js';
 import { readJournal, sleepSeries } from '../src/journal.js';
 import { loadPrompts } from '../src/prompts.js';
@@ -118,11 +119,33 @@ const msri = 100 * (0.35 * sHat + 0.3 * aHat + 0.2 * qHat + 0.15 * (se / 100));
 
 const schedule = buildDaySchedule(config, today);
 let scratch = { version: 1, cycle: 4, remaining: null, sends: {} };
+// Only fact slots draw from the fact library. This used to call selectFact for
+// every slot, which put a random sleep card under "Morning Intake" and, once
+// habit anchors landed, under both of those too -- and burned three rotation
+// positions per build, so the remaining-in-cycle count was wrong as well.
+const habitDefs = loadHabits();
+let habitScratch = {};
 const cadence = schedule.map((slot) => {
+  const delivered = NOW >= slot.targetAt;
+
+  if (slot.type === 'intake') {
+    return { slot, kind: 'intake', label: 'intake', delivered };
+  }
+
+  if (slot.type === 'habit') {
+    const habit = habitDefs[slot.habit];
+    const pick = selectRationale({ habit, habitId: slot.habit, state: habitScratch, dateString: today });
+    habitScratch = { habitRotation: { ...(habitScratch.habitRotation ?? {}),
+      [slot.habit]: { cycle: pick.cycle, remaining: pick.remaining } } };
+    return { slot, kind: 'habit', label: 'habit', habit, why: pick.why, delivered };
+  }
+
   const choice = selectFact({ facts, state: scratch, slotId: slot.id, dateString: today, config });
   scratch = { ...scratch, cycle: choice.cycle, remaining: choice.remaining };
-  return { slot, fact: choice.fact, jackpot: choice.jackpot, delivered: NOW >= slot.targetAt };
+  return { slot, kind: 'fact', fact: choice.fact, jackpot: choice.jackpot,
+           label: choice.fact.category, delivered };
 });
+const factSlotCount = cadence.filter((c) => c.kind === 'fact').length;
 const next = cadence.find((c) => !c.delivered);
 const cycleRemaining = scratch.remaining.length;
 
@@ -353,7 +376,7 @@ footer strong{color:var(--ice);font-weight:600}
         <div class="tm">${esc(c.slot.targetLabel)}</div>
         <div><span class="node"></span></div>
         <div class="nm">${esc(c.slot.name.replace(/^\d+:\s*/, ''))}</div>
-        <div class="chip ${c.jackpot ? 'jack' : ''}">${esc(c.delivered ? (c.jackpot ? 'jackpot · ' + c.fact.category : c.fact.category) : 'sealed')}</div>
+        <div class="chip ${c.jackpot ? 'jack' : ''}">${esc(c.delivered ? (c.jackpot ? 'jackpot · ' + c.label : c.label) : 'sealed')}</div>
       </div>`;
       }).join('')}
     </div>
@@ -466,7 +489,7 @@ footer strong{color:var(--ice);font-weight:600}
         ${facts.filter((f) => f.library === 'sleep').length} sleep science ·
         ${facts.filter((f) => f.library === 'lucid').length} lucid ·
         ${facts.filter((f) => f.intensity === 'high').length} jackpot-eligible ·
-        full cycle ≈ ${(facts.length / cadence.length).toFixed(1)} days
+        full cycle ≈ ${(facts.length / factSlotCount).toFixed(1)} days
       </div>
     </div>
   </section>

@@ -153,10 +153,10 @@ function statsText({ state }) {
   return lines.join('\n');
 }
 
-async function handleSleepEntry({ token, chatId, text, state, dateString, log }) {
+async function handleSleepEntry({ token, chatId, text, state, dateString, log, send = sendMessage }) {
   const parsed = parseEntry(text);
   if (!parsed.ok) {
-    await sendMessage(token, chatId, `Could not read that — ${parsed.reason}.\n\nTry: 84   or   84 7.5   or   84 7.5 4`);
+    await send(token, chatId, `Could not read that — ${parsed.reason}.\n\nTry: 84   or   84 7.5   or   84 7.5 4`);
     return { type: 'parse-error' };
   }
 
@@ -167,7 +167,7 @@ async function handleSleepEntry({ token, chatId, text, state, dateString, log })
   const prompt = morningPrompt(rotation);
   const response = buildCoachResponse({ entry: parsed, history, rotation, morningPrompt: prompt, date: dateString });
 
-  const sent = await sendMessage(token, chatId, response.text);
+  const sent = await send(token, chatId, response.text);
   state.coachRotation = rotation + 1;
   trackPending(state, {
     messageId: sent.message_id,
@@ -190,8 +190,13 @@ async function handleSleepEntry({ token, chatId, text, state, dateString, log })
  * a journal write refuses to fall back to plaintext -- the message stays in
  * Telegram's queue and a later run picks it up, rather than being lost.
  */
-export async function processInbox({ config, state, token, chatId, now = new Date(), log = console.log }) {
-  const updates = await getUpdates(token, state.inboxOffset ?? 0);
+export async function processInbox({
+  config, state, token, chatId, now = new Date(), log = console.log,
+  // Injected so the failure paths can be exercised in tests. Defaults are the
+  // real Telegram calls, so every existing call site is unchanged.
+  send = sendMessage, fetchUpdates = getUpdates,
+} = {}) {
+  const updates = await fetchUpdates(token, state.inboxOffset ?? 0);
   const dateString = localDateString(now, config.timezone);
   const handled = [];
 
@@ -213,21 +218,21 @@ export async function processInbox({ config, state, token, chatId, now = new Dat
         const [cmd, ...rest] = text.split(/\s+/);
 
         if (cmd === '/help' || cmd === '/start') {
-          await sendMessage(token, chatId, helpText());
+          await send(token, chatId, helpText());
           handled.push({ type: 'command', cmd });
         } else if (cmd === '/status') {
-          await sendMessage(token, chatId, statusText({ config, state, now }));
+          await send(token, chatId, statusText({ config, state, now }));
           handled.push({ type: 'command', cmd });
         } else if (cmd === '/today') {
-          await sendMessage(token, chatId, todayText({ config, state, now }));
+          await send(token, chatId, todayText({ config, state, now }));
           handled.push({ type: 'command', cmd });
         } else if (cmd === '/stats') {
-          await sendMessage(token, chatId, statsText({ state }));
+          await send(token, chatId, statsText({ state }));
           handled.push({ type: 'command', cmd });
         } else if (cmd === '/log') {
-          handled.push(await handleSleepEntry({ token, chatId, text: rest.join(' '), state, dateString, log }));
+          handled.push(await handleSleepEntry({ token, chatId, text: rest.join(' '), state, dateString, log, send }));
         } else {
-          await sendMessage(token, chatId, `Unknown command ${cmd}.\n\n${helpText()}`);
+          await send(token, chatId, `Unknown command ${cmd}.\n\n${helpText()}`);
           handled.push({ type: 'command', cmd, unknown: true });
         }
 
@@ -238,7 +243,7 @@ export async function processInbox({ config, state, token, chatId, now = new Dat
       // A number-led reply while today's intake is open is a logged night;
       // anything else is reflection against the last card sent.
       if (/^\s*\d/.test(text) && intakeOpen(state, dateString)) {
-        handled.push(await handleSleepEntry({ token, chatId, text, state, dateString, log }));
+        handled.push(await handleSleepEntry({ token, chatId, text, state, dateString, log, send }));
       } else {
         const context = matchPending(state, message);
         addJournalEntry({
@@ -262,14 +267,25 @@ export async function processInbox({ config, state, token, chatId, now = new Dat
           state,
           dateString,
         });
-        await sendMessage(token, chatId, affirmation.text);
+        // Best-effort, and deliberately so. The entry is already on disk; the
+        // update is acknowledged below. If this send were allowed to throw, the
+        // update would go unacknowledged and the next poll would write the same
+        // entry again -- and on a persistent failure (a 400, say) it would keep
+        // doing that every ten minutes forever. A missing affirmation is a far
+        // smaller problem than a duplicated journal.
+        let affirmed = affirmation.shape;
+        try {
+          await send(token, chatId, affirmation.text);
+        } catch (err) {
+          affirmed = `FAILED (${err.message})`;
+        }
 
         log(`journal entry logged${context?.promptId ? ` against ${context.promptId}` : ''}` +
-            ` → ${affirmation.shape}${affirmation.streakShown ? ` +streak ${streak}` : ''}`);
+            ` → ${affirmed}${affirmation.streakShown ? ` +streak ${streak}` : ''}`);
         handled.push({
           type: 'journal',
           promptId: context?.promptId ?? null,
-          affirmed: affirmation.shape,
+          affirmed,
           streak,
         });
       }

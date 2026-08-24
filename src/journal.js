@@ -9,7 +9,10 @@ import { join } from 'node:path';
 import { ROOT } from './facts.js';
 import { encryptLine, decryptLine, hasKey, MissingKeyError } from './crypto.js';
 
-const DIR = join(ROOT, 'state');
+// Overridable so tests can exercise the real write paths without touching the
+// real journal. A test that appends to state/journal.ndjson corrupts the streak
+// and would commit fabricated entries -- which is exactly what happened once.
+const DIR = process.env.SLEEPOS_STATE_DIR || join(ROOT, 'state');
 const JOURNAL = join(DIR, 'journal.ndjson');
 const SLEEPLOG = join(DIR, 'sleeplog.ndjson');
 

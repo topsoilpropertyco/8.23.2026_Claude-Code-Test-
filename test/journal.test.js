@@ -1,4 +1,7 @@
 import test from 'node:test';
+import { mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import assert from 'node:assert/strict';
 
 import { loadConfig } from '../src/facts.js';
@@ -612,4 +615,91 @@ test('a streak must reach today, and a gap breaks it', async () => {
   assert.equal(journalStreak([e('2026-08-23'), e('2026-08-23'), e('2026-08-24')], '2026-08-24'), 2, 'two entries in a day are one day');
   assert.equal(journalStreak([e('2026-07-31'), e('2026-08-01')], '2026-08-01'), 2, 'must cross a month boundary');
   assert.equal(journalStreak([], '2026-08-24'), 0);
+});
+
+/* ----------------------------------------- regressions from the bug sweep */
+
+// These two exercise the real write path, so they must run against a scratch
+// state directory. Pointing them at state/ appends fabricated entries to the
+// real journal and inflates the streak.
+const SCRATCH = mkdtempSync(join(tmpdir(), 'sleep-os-test-'));
+process.env.SLEEPOS_STATE_DIR = SCRATCH;
+
+test('a failed affirmation does not cause the journal entry to be written twice', async () => {
+  const { processInbox } = await import('../src/inbox.js');
+  const { readJournal } = await import('../src/journal.js');
+
+  const before = readJournal().length;
+  const config = loadConfig();
+  const state = { inboxOffset: 0, pending: [] };
+
+  const update = {
+    update_id: 990001,
+    message: { message_id: 1, chat: { id: 42 }, text: 'A real reflection about how the evening went and what I would change tomorrow.' },
+  };
+
+  // Telegram accepts nothing. The entry must still be recorded exactly once,
+  // and the update must still be acknowledged -- otherwise the next poll
+  // rewrites the same entry, forever, on any persistent failure.
+  const failing = async () => { throw new Error('400 Bad Request'); };
+  const res = await processInbox({
+    config, state, token: 'x', chatId: '42', now: new Date(),
+    log: () => {}, send: failing, fetchUpdates: async () => [update],
+  });
+
+  const after = readJournal();
+  assert.equal(after.length, before + 1, 'entry should be written exactly once');
+  assert.equal(state.inboxOffset, update.update_id + 1, 'update must be acknowledged despite the send failing');
+  assert.ok(res.handled.find((h) => h.type === 'journal')?.affirmed?.startsWith('FAILED'),
+    'the failure should be recorded, not swallowed silently');
+
+  // And a second poll of the same update must not re-add it.
+  const res2 = await processInbox({
+    config, state, token: 'x', chatId: '42', now: new Date(),
+    log: () => {}, send: failing, fetchUpdates: async () => [],
+  });
+  assert.equal(readJournal().length, before + 1, 'no duplicate on the next poll');
+  assert.equal(res2.count, 0);
+});
+
+test('a journal entry gets exactly one reply when Telegram is healthy', async () => {
+  const { processInbox } = await import('../src/inbox.js');
+  const config = loadConfig();
+  const state = { inboxOffset: 0, pending: [] };
+  const sends = [];
+  const send = async (_t, _c, text) => { sends.push(text); return { message_id: sends.length }; };
+
+  await processInbox({
+    config, state, token: 'x', chatId: '42', now: new Date(), log: () => {}, send,
+    fetchUpdates: async () => [{
+      update_id: 990002,
+      message: { message_id: 2, chat: { id: 42 }, text: 'Another considered entry about the wind-down and what actually helped.' },
+    }],
+  });
+
+  assert.equal(sends.length, 1, 'exactly one reply, never zero and never two');
+  assert.ok(sends[0].trim().length > 0);
+});
+
+test('only fact slots draw from the fact library', async () => {
+  const { loadHabits } = await import('../src/habits.js');
+  const config = loadConfig();
+  const habits = loadHabits();
+
+  for (const slot of config.slots) {
+    assert.ok(['fact', 'intake', 'habit'].includes(slot.type), `slot ${slot.id} has type ${slot.type}`);
+    if (slot.type === 'habit') {
+      // A typo here would throw at send time, in production, at 7:15am.
+      assert.ok(habits[slot.habit], `slot ${slot.id} names unknown habit ${slot.habit}`);
+    }
+  }
+});
+
+test('slot display numbers match delivery order', () => {
+  const config = loadConfig();
+  const byTime = [...config.slots].sort((a, b) => a.anchor.localeCompare(b.anchor));
+  byTime.forEach((slot, i) => {
+    const shown = Number(slot.name.slice(0, 2));
+    assert.equal(shown, i, `${slot.name} fires ${i + 1}th at ${slot.anchor}`);
+  });
 });

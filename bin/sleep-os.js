@@ -11,8 +11,9 @@
 import { loadLibraries, loadConfig } from '../src/facts.js';
 import { buildDaySchedule } from '../src/schedule.js';
 import { selectFact } from '../src/selector.js';
+import { loadHabits, selectRationale } from '../src/habits.js';
 import { selectPrompt, intakeRequest } from '../src/prompts.js';
-import { renderMessage, renderIntake } from '../src/render.js';
+import { renderMessage, renderIntake, renderHabit } from '../src/render.js';
 import { readJournal, sleepSeries } from '../src/journal.js';
 import { authorizeUrl, exchangeCode, isAuthorised, readTokens, SCOPES, REDIRECT_URI } from '../src/oura.js';
 import { backfill, ingestRecent } from '../src/ingest.js';
@@ -73,6 +74,17 @@ async function cmdPreview() {
     console.log(`\n${'─'.repeat(66)}`);
     if (slot.type === 'intake') {
       console.log(renderIntake({ slot, request: intakeRequest() }));
+      continue;
+    }
+    if (slot.type === 'habit') {
+      const habit = loadHabits()[slot.habit];
+      const pick = selectRationale({ habit, habitId: slot.habit, state: scratch, dateString });
+      scratch = {
+        ...scratch,
+        habitRotation: { ...(scratch.habitRotation ?? {}),
+          [slot.habit]: { cycle: pick.cycle, remaining: pick.remaining } },
+      };
+      console.log(renderHabit({ habit, slot, why: pick.why, showOptional: pick.showOptional }));
       continue;
     }
     const choice = selectFact({ facts, state: scratch, slotId: slot.id, dateString, config });
