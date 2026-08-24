@@ -65,6 +65,9 @@ body{font-family:var(--mono);color:var(--ink);-webkit-font-smoothing:antialiased
 
 .colophon{margin-top:auto;padding-top:18px;font-size:9px;letter-spacing:.16em;
   text-transform:uppercase;color:var(--ink-quiet);display:flex;justify-content:space-between}
+/* Greek must never be uppercased: text-transform turns mu into M and
+   sigma into a summation sign. Bit me once already on v4. */
+.grk{text-transform:none!important}
 </style></head>
 <body>
 <div class="screen">
@@ -95,7 +98,7 @@ body{font-family:var(--mono);color:var(--ink);-webkit-font-smoothing:antialiased
     <div class="col">
       <div class="a">Above mean</div>
       <div class="b">+8.7</div>
-      <div class="c">+0.92&sigma;</div>
+      <div class="c">+0.92<span class="grk">&sigma;</span></div>
     </div>
     <div class="col" style="margin-left:auto;text-align:right">
       <div class="a">Crown nights</div>

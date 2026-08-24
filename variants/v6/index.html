@@ -37,8 +37,8 @@ body{font-family:'Share Tech Mono',ui-monospace,monospace;color:var(--ink);
 .bezel .ch{font-size:10px;letter-spacing:.16em;color:var(--accent)}
 
 /* --- the readout: large because instruments are read from a distance --- */
-.readout{margin-top:18px;display:flex;align-items:flex-start;gap:16px}
-.readout .n{font-size:158px;line-height:.74;letter-spacing:-.03em;color:var(--accent);
+.readout{margin-top:12px;display:flex;align-items:flex-start;gap:16px}
+.readout .n{font-size:128px;line-height:.74;letter-spacing:-.03em;color:var(--accent);
   text-shadow:0 0 22px rgba(70,240,138,.24)}
 .readout .side{padding-top:8px;flex:1}
 .readout .lab{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:500;
@@ -47,7 +47,7 @@ body{font-family:'Share Tech Mono',ui-monospace,monospace;color:var(--ink);
 .readout .devsub{font-size:10px;color:var(--quiet);letter-spacing:.1em;margin-top:3px}
 
 /* --- CRT: graticule + trace --- */
-.crt{margin-top:20px;position:relative;background:var(--panel);
+.crt{margin-top:16px;position:relative;background:var(--panel);
   border:1px solid var(--engrave);padding:10px 8px 8px}
 .crt svg{display:block;width:100%}
 .crt .axl{position:absolute;bottom:-16px;left:0;right:0;display:flex;
@@ -56,14 +56,14 @@ body{font-family:'Share Tech Mono',ui-monospace,monospace;color:var(--ink);
 /* --- engraved parameter rows --- */
 .rows{margin-top:34px;border-top:1px solid var(--engrave)}
 .row{display:flex;align-items:baseline;justify-content:space-between;
-  padding:9px 0;border-bottom:1px solid var(--engrave)}
+  padding:6.5px 0;border-bottom:1px solid var(--engrave)}
 .row .k{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:500;
   letter-spacing:.22em;text-transform:uppercase;color:var(--quiet)}
 .row .v{font-size:14px;letter-spacing:.02em}
 .row .v em{font-style:normal;color:var(--quiet);font-size:11px;margin-left:5px}
 
 /* --- calibration bar: where this night sits on the instrument's range --- */
-.cal{margin-top:24px}
+.cal{margin-top:16px}
 .cal .ct{display:flex;justify-content:space-between;font-family:'Barlow Condensed',sans-serif;
   font-size:10px;font-weight:500;letter-spacing:.26em;text-transform:uppercase;
   color:var(--quiet);margin-bottom:9px}
@@ -74,6 +74,9 @@ body{font-family:'Share Tech Mono',ui-monospace,monospace;color:var(--ink);
 
 .stamp{margin-top:auto;padding-top:20px;font-size:9.5px;letter-spacing:.16em;
   color:#2E3A31;display:flex;justify-content:space-between}
+/* Greek must never be uppercased: text-transform turns mu into M and
+   sigma into a summation sign. Bit me once already on v4. */
+.grk{text-transform:none!important}
 </style></head>
 <body>
 <div class="screen">
@@ -87,7 +90,7 @@ body{font-family:'Share Tech Mono',ui-monospace,monospace;color:var(--ink);
     <div class="n">88</div>
     <div class="side">
       <div class="lab">Score</div>
-      <div class="dev">+0.92&thinsp;&sigma;</div>
+      <div class="dev">+0.92&thinsp;<span class="grk">&sigma;</span></div>
       <div class="devsub">81st pct &middot; n=1,042</div>
       <div class="lab" style="margin-top:16px">Readiness</div>
       <div class="dev">85</div>
@@ -104,7 +107,7 @@ body{font-family:'Share Tech Mono',ui-monospace,monospace;color:var(--ink);
     <div class="axl"><span>23:15</span><span>01:20</span><span>03:25</span><span>05:30</span><span>07:26</span></div>
   </div>
 
-  <div class="rows" style="margin-top:36px">
+  <div class="rows" style="margin-top:26px">
     <div class="row"><span class="k">Asleep</span><span class="v">7:45<em>27,870 s</em></span></div>
     <div class="row"><span class="k">In bed</span><span class="v">8:12<em>29,514 s</em></span></div>
     <div class="row"><span class="k">Efficiency</span><span class="v">94<em>%</em></span></div>
@@ -117,14 +120,14 @@ body{font-family:'Share Tech Mono',ui-monospace,monospace;color:var(--ink);
   </div>
 
   <div class="cal">
-    <div class="ct"><span>Calibration &mdash; 1,042 nights</span><span>&mu; 79.3 &nbsp; &sigma; 9.54</span></div>
+    <div class="ct"><span>Calibration &mdash; 1,042 nights</span><span><span class="grk">&mu;</span> 79.3 &nbsp; <span class="grk">&sigma;</span> 9.54</span></div>
     <div class="calbar">
       <svg viewBox="0 0 344 44" preserveAspectRatio="none" aria-label="Distribution with this night marked">
         <g id="dist"></g>
         <line id="needle" y1="0" y2="36" stroke="#46F08A" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
       </svg>
     </div>
-    <div class="foot"><span>46</span><span>&mdash;&thinsp;&mu;&thinsp;&mdash;</span><span>98</span></div>
+    <div class="foot"><span>46</span><span>&mdash;&thinsp;<span class="grk">&mu;</span>&thinsp;&mdash;</span><span>98</span></div>
   </div>
 
   <div class="stamp"><span>OURA GEN3 &middot; UTC-4</span><span>CAL OK</span></div>

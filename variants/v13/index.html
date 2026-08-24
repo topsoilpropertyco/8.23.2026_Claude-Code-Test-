@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>v13 · The Receipt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sono:wght@300;400;600;800&display=swap">
+<style>
+/* v13 THE RECEIPT -- a thermal till roll.
+   Source discipline: the printed receipt. Chosen because a receipt already has
+   a grammar for everything this screen needs and none of it looks like an app:
+   line items with quantities, a subtotal, a total, and -- the part worth
+   stealing -- a YOU SAVED line, which is a comparison against a reference
+   price stated as plainly as anything in graphic design. Last night against a
+   1,042-night average is exactly that shape.
+   Four colour roles, one accent (the total's inverted block).
+   Deliberately jagged: torn edges top and bottom, narrow column, off-centre on
+   the 390 frame the way a receipt lies on a counter. */
+:root{
+  --counter:#191713;
+  --paper:#FBFAF6;
+  --ink:#15130F;
+  --faint:#8C877D;
+  --line:#D8D3C8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--counter)}
+body{font-family:'Sono',ui-monospace,monospace;color:var(--ink);
+  -webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+.screen{width:390px;min-height:844px;margin:0 auto;background:var(--counter);
+  padding:14px 0;display:flex;justify-content:center;align-items:flex-start}
+
+/* the roll: narrow, rotated a hair, with real torn edges */
+.roll{width:306px;transform:rotate(-1.1deg);
+  filter:drop-shadow(0 16px 34px rgba(0,0,0,.55));position:relative}
+.tear{display:block;width:100%;height:11px}
+.inner{background:var(--paper);padding:11px 20px 12px;font-size:10.5px;line-height:1.36}
+
+.center{text-align:center}
+.brand{font-size:16px;font-weight:800;letter-spacing:.32em;margin-bottom:2px}
+.sub{font-size:8.5px;letter-spacing:.22em;color:var(--faint);line-height:1.6}
+.dash{border-top:1px dashed var(--line);margin:8px 0}
+.solid{border-top:2px solid var(--ink);margin:8px 0}
+
+.meta{display:flex;justify-content:space-between;font-size:9.5px;color:var(--faint);
+  letter-spacing:.06em;line-height:1.62}
+
+.li{display:flex;justify-content:space-between;align-items:baseline;line-height:1.62}
+.li .d{flex:1}
+.li .q{width:56px;text-align:right;color:var(--faint);font-size:10.5px}
+.li .a{width:62px;text-align:right;font-weight:600}
+.li.small .d,.li.small .a{font-size:10.5px;font-weight:400;color:var(--faint)}
+
+.sect{font-size:9px;font-weight:600;letter-spacing:.24em;color:var(--faint);
+  margin-top:7px;margin-bottom:2px}
+
+/* the total: inverted, the way a receipt shouts the only number that matters */
+.total{background:var(--ink);color:var(--paper);margin:10px -20px 0;padding:9px 20px 11px;
+  display:flex;justify-content:space-between;align-items:center}
+.total .l{font-size:11px;font-weight:600;letter-spacing:.26em}
+.total .n{font-size:52px;font-weight:800;line-height:.82;letter-spacing:-.045em}
+
+.saved{margin-top:10px;border:2px solid var(--ink);padding:7px 10px 8px;text-align:center}
+.saved .l{font-size:9.5px;font-weight:600;letter-spacing:.26em;color:var(--faint)}
+.saved .v{font-size:22px;font-weight:800;letter-spacing:-.02em;margin-top:3px}
+.saved .n{font-size:10px;color:var(--faint);letter-spacing:.06em;margin-top:3px;line-height:1.5}
+
+.barcode{margin-top:10px;height:34px;display:flex;align-items:flex-end;gap:1px;
+  justify-content:center}
+.barcode i{display:block;background:var(--ink)}
+.thanks{text-align:center;font-size:9px;letter-spacing:.3em;color:var(--faint);margin-top:6px}
+</style></head>
+<body>
+<div class="screen">
+  <div class="roll">
+    <svg class="tear" viewBox="0 0 306 11" preserveAspectRatio="none" aria-hidden="true">
+      <path id="t1" fill="#FBFAF6"/></svg>
+
+    <div class="inner">
+      <div class="center">
+        <div class="brand">SLEEP OS</div>
+        <div class="sub">NIGHT SHIFT &middot; DETROIT MI</div>
+        <div class="sub">OURA GEN3 &middot; TERM 01</div>
+      </div>
+
+      <div class="dash"></div>
+      <div class="meta"><span>SUN 23 AUG 2026</span><span>23:15</span></div>
+      <div class="meta"><span>RECEIPT NO.</span><span>1043</span></div>
+      <div class="meta"><span>CLOSED</span><span>07:26</span></div>
+      <div class="dash"></div>
+
+      <div class="sect">ITEMS</div>
+      <div class="li"><span class="d">LIGHT SLEEP</span><span class="q">249 min</span><span class="a">4:09</span></div>
+      <div class="li"><span class="d">REM SLEEP</span><span class="q">127 min</span><span class="a">2:07</span></div>
+      <div class="li"><span class="d">DEEP SLEEP</span><span class="q">89 min</span><span class="a">1:29</span></div>
+      <div class="li small"><span class="d">AWAKE</span><span class="q">27 min</span><span class="a">0:27</span></div>
+      <div class="li small"><span class="d">SLEEP LATENCY</span><span class="q">150 sec</span><span class="a">2:30</span></div>
+
+      <div class="dash"></div>
+      <div class="li"><span class="d">SUBTOTAL ASLEEP</span><span class="q">465 min</span><span class="a">7:45</span></div>
+      <div class="li small"><span class="d">TIME IN BED</span><span class="q">492 min</span><span class="a">8:12</span></div>
+      <div class="li"><span class="d">EFFICIENCY</span><span class="q"></span><span class="a">94%</span></div>
+
+      <div class="dash"></div>
+      <div class="sect">MEASURED</div>
+      <div class="li small"><span class="d">HRV AVERAGE</span><span class="q"></span><span class="a">37 ms</span></div>
+      <div class="li small"><span class="d">HEART RATE LOW</span><span class="q"></span><span class="a">55 bpm</span></div>
+      <div class="li small"><span class="d">HEART RATE AVG</span><span class="q"></span><span class="a">60.1 bpm</span></div>
+      <div class="li small"><span class="d">RESPIRATION</span><span class="q"></span><span class="a">14.4</span></div>
+      <div class="li small"><span class="d">RESTLESS PERIODS</span><span class="q"></span><span class="a">174</span></div>
+      <div class="li small"><span class="d">READINESS</span><span class="q"></span><span class="a">85</span></div>
+
+      <div class="total">
+        <span class="l">SLEEP<br>SCORE</span>
+        <span class="n">88</span>
+      </div>
+
+      <div class="saved">
+        <div class="l">YOU BEAT YOUR AVERAGE BY</div>
+        <div class="v">+8.7 points</div>
+        <div class="n">avg 79.3 over 1,042 nights &middot; +0.92&sigma;<br>
+        better than 844 of them &middot; 81st percentile</div>
+      </div>
+
+      <div class="solid"></div>
+      <div class="meta"><span>LAST 7 NIGHTS</span><span>79.4</span></div>
+      <div class="meta"><span>LAST 30 NIGHTS</span><span>79.2</span></div>
+      <div class="meta"><span>LAST 90 NIGHTS</span><span>73.9</span></div>
+
+      <div class="barcode" id="bc"></div>
+      <div class="thanks">SLEEP AGAIN TONIGHT</div>
+    </div>
+
+    <svg class="tear" viewBox="0 0 306 11" preserveAspectRatio="none" aria-hidden="true">
+      <path id="t2" fill="#FBFAF6"/></svg>
+  </div>
+</div>
+
+<script>
+/* Torn edges. A real tear is irregular but not random-looking, so the zigzag
+   is deterministic -- same shape on every render. */
+function tear(id,down){
+  let d=down?'M0,11 ':'M0,0 ',n=34;
+  for(let i=0;i<=n;i++){
+    const x=306/n*i, k=(i*2654435761>>>0)%100/100;
+    const y=down?(1+k*8.5):(11-(1+k*8.5));
+    d+=`L${x.toFixed(1)},${y.toFixed(1)} `}
+  d+=down?'L306,11 Z':'L306,0 Z';
+  document.getElementById(id).setAttribute('d',d);
+}
+tear('t1',true); tear('t2',false);
+
+/* Barcode: the score encoded as bar widths -- decorative, but derived from the
+   real figures rather than noise, so it changes when the night changes. */
+const seed=[8,8,7,4,5,9,4,1,2,9,2,7,3,7,5,5,6,0,1,1,4,4,1,4,8,1,0,4,2];
+document.getElementById('bc').innerHTML=seed.map((v,i)=>
+  `<i style="width:${1+(v%3)}px;height:${20+(v%5)*2.8}px;opacity:${i%7===0?.35:1}"></i>`).join('');
+</script>
+</body></html>

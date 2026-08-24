@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>v14 · The Seismograph</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;500;700&family=Roboto+Mono:wght@300;400;500&display=swap">
+<style>
+/* v14 THE SEISMOGRAPH -- a drum strip-chart recorder.
+   Source discipline: the paper seismogram, where a full day wraps onto one
+   sheet as stacked hourly lines and the eye reads the QUIET as the result. A
+   calm night is a flat trace; that inversion is the idea. Every other variant
+   here asks you to read a number. This one asks you to see stillness, and puts
+   the number in a stamped corner box the way a station stamps a magnitude.
+   Stylus deflection is derived from sleep stage -- awake deflects hard, deep
+   is nearly flat -- so the trace is real data, not texture.
+   Five colour roles, one accent (stylus red). */
+:root{
+  --paper:#F0EADC;
+  --grid:#DFD6C2;
+  --gridh:#CFC3A9;
+  --ink:#1A1712;
+  --quiet:#8B8272;
+  --stylus:#C22E1C;            /* the only accent */
+  --cond:'Roboto Condensed',sans-serif;
+  --mono:'Roboto Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--paper)}
+body{font-family:var(--mono);color:var(--ink);-webkit-font-smoothing:antialiased;
+  font-variant-numeric:tabular-nums}
+.screen{width:390px;min-height:844px;margin:0 auto;background:var(--paper);
+  padding:22px 18px 18px;display:flex;flex-direction:column}
+
+.hd{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;
+  border-bottom:2px solid var(--ink);padding-bottom:8px}
+.hd .l{flex:0 0 auto}
+.hd .l{font-family:var(--cond);font-size:12px;font-weight:700;letter-spacing:.26em;
+  text-transform:uppercase}
+.hd .r{font-family:var(--cond);font-size:9.5px;font-weight:500;letter-spacing:.12em;
+  color:var(--quiet);text-align:right;line-height:1.45;flex:1}
+
+/* the drum */
+.drum{margin-top:10px;position:relative}
+.drum svg{display:block;width:100%}
+
+/* stamped magnitude box, as a station stamps a sheet */
+.stamp{flex:0 0 auto;border:2px solid var(--stylus);padding:4px 9px 6px;
+  text-align:right;align-self:stretch;display:flex;flex-direction:column;
+  justify-content:center}
+.stamp .a{font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--stylus);line-height:1}
+.stamp .b{font-size:40px;font-weight:400;line-height:.86;letter-spacing:-.04em;
+  color:var(--stylus);margin-top:2px}
+.stamp .c{font-family:var(--cond);font-size:9px;font-weight:500;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--quiet);margin-top:2px;line-height:1.25}
+
+/* event log -- what the trace shows, listed as a station lists events */
+.log{margin-top:16px;border-top:2px solid var(--ink)}
+.log .hd2{display:grid;grid-template-columns:56px 1fr 62px 46px;padding:6px 0 5px;
+  border-bottom:1px solid var(--gridh);font-family:var(--cond);font-size:9px;
+  font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--quiet)}
+.ev{display:grid;grid-template-columns:56px 1fr 62px 46px;padding:5px 0;
+  border-bottom:1px solid var(--grid);font-size:11px;align-items:baseline}
+.ev .t{color:var(--quiet)}
+.ev .d{font-family:var(--cond);font-size:12px;letter-spacing:.04em}
+.ev .n{text-align:right}
+.ev .m{text-align:right;color:var(--stylus);font-size:10.5px}
+
+/* footer: the reference line, calibration style */
+.calib{margin-top:14px;border-top:2px solid var(--ink);padding-top:9px;
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px 12px}
+.calib div{display:flex;justify-content:space-between;font-size:10.5px;
+  border-bottom:1px dotted var(--grid);padding-bottom:2px}
+.calib span:first-child{font-family:var(--cond);font-size:9.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--quiet)}
+.note{margin-top:10px;font-size:9.5px;color:var(--quiet);line-height:1.5}
+/* Greek must never be uppercased: text-transform turns mu into M and
+   sigma into a summation sign. Bit me once already on v4. */
+.grk{text-transform:none!important}
+</style></head>
+<body>
+<div class="screen">
+
+  <div class="hd">
+    <div class="l">Sleep OS</div>
+    <div class="r">STN DETROIT &middot; CH SLP&ndash;Z<br>23 AUG 2026<br>23:15&ndash;07:26 EDT</div>
+    <div class="stamp">
+      <div class="a">Score</div><div class="b">88</div>
+      <div class="c">+0.92<span class="grk">&sigma;</span> &middot; 81 pct &middot; n 1,042</div>
+    </div>
+  </div>
+
+  <div class="drum">
+    <svg id="drum" viewBox="0 0 354 344" aria-label="The night as nine stacked hourly traces"></svg>
+  </div>
+
+  <div class="log">
+    <div class="hd2"><span>Onset</span><span>Phase</span><span>Duration</span><span>Defl.</span></div>
+    <div class="ev"><span class="t">23:15</span><span class="d">Settling</span><span class="n">2m 30s</span><span class="m">1.00</span></div>
+    <div class="ev"><span class="t">23:40</span><span class="d">Deep &mdash; longest</span><span class="n">38m</span><span class="m">0.10</span></div>
+    <div class="ev"><span class="t">01:53</span><span class="d">First long REM</span><span class="n">26m</span><span class="m">0.60</span></div>
+    <div class="ev"><span class="t">03:29</span><span class="d">REM &mdash; longest</span><span class="n">34m</span><span class="m">0.60</span></div>
+    <div class="ev"><span class="t">05:52</span><span class="d">Waking &mdash; longest</span><span class="n">8m</span><span class="m">1.00</span></div>
+    <div class="ev"><span class="t">07:26</span><span class="d">Rose</span><span class="n">&mdash;</span><span class="m">&mdash;</span></div>
+  </div>
+
+  <div class="calib">
+    <div><span>asleep</span><span>7:45</span></div>
+    <div><span>in bed</span><span>8:12</span></div>
+    <div><span>eff</span><span>94%</span></div>
+    <div><span>deep</span><span>1:29</span></div>
+    <div><span>rem</span><span>2:07</span></div>
+    <div><span>light</span><span>4:09</span></div>
+    <div><span>hrv</span><span>37 ms</span></div>
+    <div><span>hr low</span><span>55</span></div>
+    <div><span>resp</span><span>14.4</span></div>
+  </div>
+
+  <div class="note">Stylus deflection derived from sleep stage: awake 1.00,
+  REM 0.60, light 0.45, deep 0.10. Restless periods, 174, are not resolved at
+  this paper speed. Baseline <span class="grk">&mu;</span> 79.3, <span class="grk">&sigma;</span> 9.54.</div>
+</div>
+
+<script>
+const NIGHT=[['w',3],['l',22],['d',38],['l',14],['r',12],['l',18],['d',31],['l',20],
+ ['r',26],['w',4],['l',24],['d',20],['l',22],['r',34],['l',16],['w',6],['l',30],
+ ['r',30],['l',27],['w',8],['l',28],['r',25],['l',28],['w',6]];
+const AMP={w:1.0,r:.60,l:.45,d:.10};
+const W=354,ROWS=9,RH=36,PAD=54,TRACE=W-PAD-6,START=23*60+15;
+
+/* stage at any minute after lights-out */
+const at=[];{let i=0;NIGHT.forEach(([s,m])=>{for(let k=0;k<m;k++)at[i++]=s});}
+
+let s='';
+for(let r=0;r<ROWS;r++){
+  const y0=r*RH+20;
+  /* hour rule and the faint minute ticks the paper carries */
+  s+=`<line x1="${PAD}" y1="${y0}" x2="${W-6}" y2="${y0}" stroke="#DFD6C2" stroke-width="1"/>`;
+  for(let t=0;t<=60;t+=10){const x=PAD+t/60*TRACE;
+    s+=`<line x1="${x.toFixed(1)}" y1="${y0-4}" x2="${x.toFixed(1)}" y2="${y0+4}" stroke="#CFC3A9" stroke-width="1"/>`}
+  const hh=String(Math.floor(((START+r*60)%1440)/60)).padStart(2,'0');
+  s+=`<text x="${PAD-9}" y="${y0+4}" text-anchor="end" font-family="Roboto Mono,monospace"
+       font-size="10" fill="#8B8272">${hh}:15</text>`;
+
+  /* the trace: 60 minutes, 6 samples a minute, envelope set by stage */
+  let d='';
+  for(let k=0;k<=360;k++){
+    const mm=r*60+k/6;
+    if(mm>492)break;
+    const st=at[Math.floor(mm)]||'w';
+    const a=AMP[st]*15;
+    /* deterministic multi-frequency wiggle -- no randomness, so the sheet is
+       identical on every render, as a re-plot of the same tape would be */
+    const v=Math.sin(k*1.31)*.62+Math.sin(k*0.47+1.3)*.26+Math.sin(k*2.9+.4)*.12;
+    const x=PAD+k/360*TRACE, y=y0-v*a;
+    d+=(k?'L':'M')+x.toFixed(1)+','+y.toFixed(1)+' ';
+  }
+  if(d)s+=`<path d="${d}" fill="none" stroke="#C22E1C" stroke-width="1" vector-effect="non-scaling-stroke"/>`;
+}
+document.getElementById('drum').innerHTML=s;
+</script>
+</body></html>

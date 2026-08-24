@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>v12 · The Terminal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap">
+<style>
+/* v12 THE TERMINAL -- unix ops.
+   Source discipline: htop, k9s, tmux status lines. One typeface, one width,
+   box-drawing characters instead of borders, and block characters instead of
+   SVG. The reason it earns a slot: a terminal cannot draw a chart, so it
+   invents one out of type -- and a block-character histogram of 1,042 nights
+   is both completely native to the form and a real answer to 'compared to
+   what'. Nothing here is an image; every mark is a glyph.
+   Five colour roles, one accent (amber). */
+:root{
+  --ground:#0A0C0D;
+  --panel:#101314;
+  --ink:#C8CFD2;
+  --quiet:#4E585C;
+  --accent:#FFB000;            /* the only accent */
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--ground)}
+body{font-family:'JetBrains Mono',ui-monospace,monospace;color:var(--ink);
+  -webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums;
+  font-size:11px;line-height:1.5}
+.screen{width:390px;min-height:844px;margin:0 auto;background:var(--ground);
+  padding:0;display:flex;flex-direction:column}
+
+/* tmux-style status bar */
+.status{background:var(--accent);color:#0A0C0D;font-weight:700;font-size:10.5px;
+  padding:5px 10px;display:flex;justify-content:space-between;letter-spacing:.02em}
+.body{padding:12px 12px 10px;flex:1;display:flex;flex-direction:column}
+
+pre{font-family:inherit;font-size:11px;line-height:1.45;white-space:pre;color:var(--quiet)}
+.rule{color:#232A2C;font-size:11px;line-height:1.3;letter-spacing:0}
+
+/* the score, set as large as monospace allows without breaking the column */
+.hero{display:flex;align-items:flex-start;gap:16px;margin:10px 0 6px}
+.hero .n{font-size:124px;font-weight:700;line-height:.82;color:var(--accent);
+  letter-spacing:-.05em}
+.hero .rt{padding-top:10px;font-size:12px;line-height:2.05;color:var(--quiet)}
+.hero .rt b{color:var(--ink);font-weight:500}
+
+/* htop-style meters, block characters only */
+.meters{margin-top:12px}
+.meter{display:flex;align-items:baseline;gap:8px;line-height:2.02}
+.meter .k{width:52px;color:var(--quiet);font-size:10.5px}
+.meter .bar{flex:1;letter-spacing:-.5px;font-size:14px;overflow:hidden;white-space:nowrap}
+.meter .v{width:52px;text-align:right;font-size:10.5px}
+.on{color:var(--accent)} .off{color:#232A2C}
+
+/* the histogram: 1,042 nights, drawn in block glyphs */
+.hist{margin-top:16px}
+.hist .cap{color:var(--quiet);font-size:10.5px;display:flex;justify-content:space-between}
+/* white-space must be pre, not nowrap: nowrap still collapses runs of
+   spaces, and the blank cells in the upper row are spaces -- collapsing them
+   slides every column left and the marker lands on the wrong bin. */
+.hist .row{font-size:19px;line-height:1.02;letter-spacing:0;margin-top:7px;
+  white-space:pre;overflow:hidden}
+.hist .ax{color:#5E6A6E;font-size:10px;position:relative;height:14px;margin-top:4px}
+.hist .ax span{position:absolute;top:0}
+.hist .ax .you{color:var(--accent)}
+
+.kv{margin-top:10px}
+.hyp{margin-top:10px}
+.hrow{font-size:17px;line-height:1;letter-spacing:0;white-space:pre;overflow:hidden}
+.hax{display:flex;justify-content:space-between;color:#5E6A6E;font-size:10px;margin-top:5px}
+.kv .r{display:flex;justify-content:space-between;line-height:1.98;font-size:11.5px}
+.kv .r .k{color:var(--quiet)}
+.kv .r .v b{color:var(--accent);font-weight:500}
+
+.prompt{margin-top:auto;padding-top:12px;color:var(--quiet);font-size:11px}
+.prompt .c{color:var(--accent)}
+.cur{display:inline-block;width:7px;height:13px;background:var(--accent);
+  vertical-align:-2px;margin-left:2px}
+</style></head>
+<body>
+<div class="screen">
+  <div class="status"><span>sleep-os 1.0 &nbsp;&#9679;&nbsp; last-night</span><span>2026-08-23</span></div>
+
+  <div class="body">
+    <pre class="rule" data-rule="score" data-c="top"></pre>
+
+    <div class="hero">
+      <div class="n">88</div>
+      <div class="rt">
+        z&nbsp;&nbsp;&nbsp;&nbsp;<b>+0.92&sigma;</b><br>
+        pct&nbsp;&nbsp;<b>81st</b><br>
+        rank&nbsp;<b>198/1042</b><br>
+        ready&nbsp;<b>85</b>
+      </div>
+    </div>
+
+    <pre class="rule" data-rule="stages" data-c="mid"></pre>
+    <div class="meters" id="meters"></div>
+
+    <pre class="rule" style="margin-top:12px" data-rule="distribution · n=1042" data-c="mid"></pre>
+    <div class="hist">
+      <div class="cap"><span>nights by score</span><span>&mu; 79.3 &nbsp;&sigma; 9.54</span></div>
+      <div class="row" id="hrow"></div>
+      <div class="ax"><span>46</span><span>&#8593; you</span><span>98</span></div>
+    </div>
+
+    <pre class="rule" style="margin-top:12px" data-rule="night" data-c="mid"></pre>
+    <div class="hyp"><div class="hrow" id="hyp"></div>
+      <div class="hax"><span>23:15</span><span>01:20</span><span>03:25</span><span>05:30</span><span>07:26</span></div>
+    </div>
+
+    <pre class="rule" style="margin-top:12px" data-rule="vitals" data-c="mid"></pre>
+    <div class="kv" id="kv"></div>
+
+    <pre class="rule" style="margin-top:12px" data-c="bot"></pre>
+
+
+    <div class="prompt"><span class="c">sleep-os</span> ~ $ <span class="cur"></span></div>
+  </div>
+</div>
+
+<script>
+/* Meters. Widths are the true share of 492 minutes in bed. */
+const COLS=24;
+const ST=[['deep',89,'1:29'],['rem',127,'2:07'],['light',249,'4:09'],['awake',27,'0:27']];
+document.getElementById('meters').innerHTML=ST.map(([k,m,v])=>{
+  const on=Math.round(m/492*COLS);
+  return `<div class="meter"><span class="k">${k}</span>
+    <span class="bar"><span class="on">${'█'.repeat(on)}</span><span class="off">${'░'.repeat(COLS-on)}</span></span>
+    <span class="v">${v}</span></div>`}).join('');
+
+/* Histogram in block glyphs, drawn as two stacked rows so the resolution is
+   16 levels rather than 8 -- the standard terminal trick. 1,042 nights binned
+   across the real observed range, left-skewed as bounded scores are. The
+   column holding 88 is the accent; that one glyph is the whole comparison. */
+const BLK=[' ','▁','▂','▃','▄','▅','▆','▇','█'];
+const LO=46,HI=98,MU=79.3,SD=9.54;
+
+/* How many glyphs actually fit, measured at the element's own font size. The
+   first pass hard-coded 40 columns at 19px, which is wider than 366px -- the
+   right-hand tail was being clipped off-screen and the marker with it. */
+function fitCols(el){
+  const probe=document.createElement('span');
+  probe.style.cssText='visibility:hidden;position:absolute;white-space:pre';
+  probe.textContent='█'.repeat(50);
+  el.appendChild(probe);
+  const cw=probe.getBoundingClientRect().width/50;
+  probe.remove();
+  return Math.max(10,Math.floor(el.getBoundingClientRect().width/cw));
+}
+
+function hist(N){
+  let vals=[],peak=0;
+  for(let i=0;i<N;i++){
+    const v=LO+(HI-LO)*(i+.5)/N, z=(v-MU)/SD, skew=v<MU?1+(MU-v)/110:1;
+    const h=Math.exp(-.5*z*z)*skew; vals.push(h); if(h>peak)peak=h;
+  }
+  const mine=Math.floor((88-LO)/(HI-LO)*N);
+  const cell=(g,on)=>`<span style="color:${on?'#FFB000':'#3D474A'}">${g}</span>`;
+  const up=vals.map((h,i)=>{const t=h/peak*16;
+    return cell(BLK[Math.max(0,Math.min(8,Math.round(t-8)))],i===mine)}).join('');
+  const lo=vals.map((h,i)=>{const t=h/peak*16;
+    return cell(BLK[Math.max(1,Math.min(8,Math.round(t)))],i===mine)}).join('');
+  document.getElementById('hrow').innerHTML=up+'<br>'+lo;
+  /* put the marker under its own column rather than centring it */
+  const pct=(mine+.5)/N*100;
+  document.querySelector('.hist .ax').innerHTML=
+    `<span style="left:0">46</span>`+
+    `<span class="you" style="left:${pct.toFixed(1)}%;transform:translateX(-50%)">↑ you</span>`+
+    `<span style="right:0">98</span>`;
+}
+
+/* The night itself, as a strip of block glyphs -- one column per ~11 minutes,
+   height by stage depth. Real segments, not texture. */
+const NIGHT=[['w',3],['l',22],['d',38],['l',14],['r',12],['l',18],['d',31],['l',20],
+ ['r',26],['w',4],['l',24],['d',20],['l',22],['r',34],['l',16],['w',6],['l',30],
+ ['r',30],['l',27],['w',8],['l',28],['r',25],['l',28],['w',6]];
+const GLY={w:'█',r:'▆',l:'▄',d:'▁'},HUE={w:'#FFB000',r:'#A87A2E',l:'#4B5558',d:'#2E3639'};
+function hypno(cols){
+  const at=[];{let i=0;NIGHT.forEach(([st,m])=>{for(let k=0;k<m;k++)at[i++]=st})}
+  let out='';
+  for(let c=0;c<cols;c++){const st=at[Math.floor(c/cols*492)]||'w';
+    out+=`<span style="color:${HUE[st]}">${GLY[st]}</span>`}
+  document.getElementById('hyp').innerHTML=out;
+}
+
+/* Rules are built from the measured character capacity so they actually reach
+   the right edge -- a hard-coded run of dashes never does. */
+function rules(){
+  const probe=document.createElement('pre');
+  probe.className='rule';
+  probe.style.cssText='position:absolute;visibility:hidden';
+  probe.textContent='─'.repeat(100);
+  document.querySelector('.body').appendChild(probe);
+  const cw=probe.getBoundingClientRect().width/100;
+  /* an empty block child reports the content width, which clientWidth does
+     not -- clientWidth still includes the body's own padding */
+  const gauge=document.createElement('div');
+  document.querySelector('.body').appendChild(gauge);
+  const avail=gauge.getBoundingClientRect().width;
+  gauge.remove(); probe.remove();
+  const cols=Math.max(20,Math.floor(avail/cw));
+  document.querySelectorAll('.rule[data-c]').forEach(el=>{
+    const kind=el.dataset.c, label=el.dataset.rule;
+    const L=kind==='top'?'┌':kind==='bot'?'└':'├';
+    const R=kind==='top'?'┐':kind==='bot'?'┘':'┤';
+    if(!label){el.textContent=L+'─'.repeat(cols-2)+R;return}
+    const head=L+'─ '+label+' ';
+    el.textContent=head+'─'.repeat(Math.max(1,cols-head.length-1))+R;
+  });
+  return cols;
+}
+rules();
+hist(fitCols(document.getElementById('hrow')));
+hypno(fitCols(document.getElementById('hyp')));
+
+/* Vitals, aligned as a terminal aligns: key left, value right, no boxes. */
+const KV=[['asleep','7h 45m'],['in bed','8h 12m'],['efficiency','94%'],
+ ['latency','2m 30s'],['bedtime → wake','23:15 → 07:26'],['hrv avg','37 ms'],
+ ['hr low / avg','55 / 60.1 bpm'],['respiration','14.4 /min'],['restless','174'],
+ ['t7 / t30 / t90','79.4 / 79.2 / 73.9']];
+document.getElementById('kv').innerHTML=KV.map(([k,v])=>
+  `<div class="r"><span class="k">${k}</span><span class="v">${v}</span></div>`).join('');
+</script>
+</body></html>

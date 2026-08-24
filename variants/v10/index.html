@@ -57,7 +57,7 @@ body{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased
   letter-spacing:.1em;margin-top:2px}
 
 /* the route */
-.routewrap{margin-top:22px;display:flex;gap:16px;flex:1}
+.routewrap{margin-top:22px;display:flex;gap:16px;flex:1;min-height:0}
 .route{flex:0 0 auto;width:34px}
 .route svg{display:block}
 .stations{flex:1;position:relative}
@@ -69,13 +69,12 @@ body{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased
 
 /* the key, as a platform legend */
 .key{margin-top:18px;display:flex;gap:0;background:var(--panel)}
-.key div{flex:1;padding:11px 10px 12px;border-left:3px solid}
-.key div:first-child{border-left-width:3px}
+.key>div{flex:1;padding:11px 10px 12px;border-left-width:3px;border-left-style:solid}
 .key .k{font-size:8.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
   color:var(--quiet)}
 .key .v{font-size:16px;font-weight:600;margin-top:4px;letter-spacing:-.02em}
-.k-deep{border-color:var(--s-deep)} .k-rem{border-color:var(--s-rem)}
-.k-light{border-color:var(--s-light)} .k-wake{border-color:var(--s-wake)}
+.key .k-deep{border-left-color:var(--s-deep)} .key .k-rem{border-left-color:var(--s-rem)}
+.key .k-light{border-left-color:var(--s-light)} .key .k-wake{border-left-color:var(--s-wake)}
 
 .plate{margin-top:16px;display:flex;justify-content:space-between;
   border-top:2px solid #33383C;padding-top:12px;font-size:10px;color:var(--quiet);
@@ -108,7 +107,7 @@ body{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased
   </div>
 
   <div class="routewrap">
-    <div class="route"><svg id="rt" width="34" height="382" aria-label="The night as a route diagram"></svg></div>
+    <div class="route"><svg id="rt" width="34" aria-label="The night as a route diagram"></svg></div>
     <div class="stations" id="stns"></div>
   </div>
 
@@ -130,32 +129,41 @@ const NIGHT=[['w',3],['l',22],['d',38],['l',14],['r',12],['l',18],['d',31],['l',
  ['r',26],['w',4],['l',24],['d',20],['l',22],['r',34],['l',16],['w',6],['l',30],
  ['r',30],['l',27],['w',8],['l',28],['r',25],['l',28],['w',6]];
 const COL={d:'#FFB800',r:'#B8842A',l:'#4E5257',w:'#2C3033'};
-const H=382,TOT=492,CX=17,LW=13;
+const TOT=492,CX=17,LW=13,INSET=9;
 
-/* the track: one line, thick, flat colour per segment -- no gradients, no
-   rounded joins between stages. Signage does not blend. */
-let y=0,svg='';
-NIGHT.forEach(([s,m])=>{const h=m/TOT*H;
-  svg+=`<rect x="${CX-LW/2}" y="${y.toFixed(1)}" width="${LW}" height="${(h+.6).toFixed(1)}" fill="${COL[s]}"/>`;
-  y+=h});
-
-/* stations, drawn as signage dots: white ring, dark core */
+/* Stations. Two of these were wrong on the first pass: 02:19 is a four-minute
+   waking, not REM, and the longest waking begins 05:52, not 06:00 -- 06:00 is
+   when it ends. Corrected against the segment list. Also dropped 'first deep'
+   at 23:40: 25 minutes from bedtime is 19px on this column and the two labels
+   collided. */
 const STN=[
-  {m:0,   nm:'Bedtime',      tm:'23:15', big:1},
-  {m:25,  nm:'First deep',   tm:'23:40', big:0},
-  {m:184, nm:'Longest REM',  tm:'02:19', big:0},
-  {m:254, nm:'Deepest point',tm:'03:29', big:0},
-  {m:397, nm:'Last waking',  tm:'06:00', big:0},
-  {m:492, nm:'Wake',         tm:'07:26', big:1}
+  {m:0,   nm:'Bedtime',        tm:'23:15', big:1},
+  {m:158, nm:'First long REM', tm:'01:53', big:0},
+  {m:254, nm:'Longest REM',    tm:'03:29', big:0},
+  {m:397, nm:'Longest waking', tm:'05:52', big:0},
+  {m:492, nm:'Wake',           tm:'07:26', big:1}
 ];
-STN.forEach(s=>{const yy=s.m/TOT*H;
-  svg+=`<circle cx="${CX}" cy="${yy.toFixed(1)}" r="${s.big?8:6}" fill="#191C1E"/>`+
-       `<circle cx="${CX}" cy="${yy.toFixed(1)}" r="${s.big?8:6}" fill="none" stroke="#FFFFFF" stroke-width="${s.big?3:2}"/>`});
-document.getElementById('rt').innerHTML=svg;
 
-document.getElementById('stns').innerHTML=STN.map(s=>
-  `<div class="stn-row${s.big?'':' dim'}" style="top:${(s.m/TOT*H).toFixed(1)}px">
-     <span class="nm">${s.nm}</span><span class="tm">${s.tm}</span></div>`).join('');
+function draw(){
+  const H=Math.max(240,document.querySelector('.routewrap').clientHeight-4);
+  const TH=H-INSET*2;                       /* track height, inset so the end
+                                               circles are not clipped */
+  const rt=document.getElementById('rt');
+  rt.setAttribute('height',H);
+  let y=INSET,svg='';
+  NIGHT.forEach(([st,m])=>{const h=m/TOT*TH;
+    svg+=`<rect x="${CX-LW/2}" y="${y.toFixed(1)}" width="${LW}" height="${(h+.6).toFixed(1)}" fill="${COL[st]}"/>`;
+    y+=h});
+  STN.forEach(st=>{const yy=INSET+st.m/TOT*TH, r=st.big?8:6;
+    svg+=`<circle cx="${CX}" cy="${yy.toFixed(1)}" r="${r}" fill="#191C1E"/>`+
+         `<circle cx="${CX}" cy="${yy.toFixed(1)}" r="${r}" fill="none" stroke="#FFFFFF" stroke-width="${st.big?3:2}"/>`});
+  rt.innerHTML=svg;
+  document.getElementById('stns').innerHTML=STN.map(st=>
+    `<div class="stn-row${st.big?'':' dim'}" style="top:${(INSET+st.m/TOT*TH).toFixed(1)}px">
+       <span class="nm">${st.nm}</span><span class="tm">${st.tm}</span></div>`).join('');
+}
+draw();
+addEventListener('resize',draw);
 
 /* the wayfinding strip is scaled to the real range, 46 to 98, not 0 to 100 */
 const pos=(88-46)/(98-46)*100;

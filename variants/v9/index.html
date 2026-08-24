@@ -76,6 +76,9 @@ body{font-family:'Space Mono',ui-monospace,monospace;color:var(--ink);
 
 .colophon{margin-top:auto;padding-top:16px;font-size:8.5px;letter-spacing:.14em;
   color:var(--quiet);display:flex;justify-content:space-between}
+/* Greek must never be uppercased: text-transform turns mu into M and
+   sigma into a summation sign. Bit me once already on v4. */
+.grk{text-transform:none!important}
 </style></head>
 <body>
 <div class="screen">
@@ -88,9 +91,9 @@ body{font-family:'Space Mono',ui-monospace,monospace;color:var(--ink);
     <div class="g">88</div>
     <div class="tick">
       <div>SCORE<b>88 / 100</b></div>
-      <div>DEVIATION<b>+0.92 &sigma;</b></div>
+      <div>DEVIATION<b>+0.92 <span class="grk">&sigma;</span></b></div>
       <div>MEAN<b>79.3</b></div>
-      <div>&sigma;<b>9.54</b></div>
+      <div><span class="grk">&sigma;</span><b>9.54</b></div>
       <div>READINESS<b>85</b></div>
     </div>
   </div>

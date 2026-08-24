@@ -94,6 +94,9 @@ body{font-family:var(--type);color:var(--ink);-webkit-font-smoothing:antialiased
   align-items:flex-end}
 .sig .l{font-family:var(--form);font-size:9px;letter-spacing:.16em;text-transform:uppercase;
   color:var(--quiet);border-top:1px solid var(--ink);padding-top:3px;width:150px}
+/* Greek must never be uppercased: text-transform turns mu into M and
+   sigma into a summation sign. Bit me once already on v4. */
+.grk{text-transform:none!important}
 </style></head>
 <body>
 <div class="screen">
@@ -120,7 +123,7 @@ body{font-family:var(--type);color:var(--ink);-webkit-font-smoothing:antialiased
   </div>
 
   <div class="vitals">
-    <div class="hd"><span>Observation</span><span>Value</span><span>Ref. interval</span><span>&Delta;</span></div>
+    <div class="hd"><span>Observation</span><span>Value</span><span>Ref. interval</span><span><span class="grk">&Delta;</span></span></div>
     <div class="vrow"><span class="k">Sleep score</span><span class="v">88</span><span class="r">69.8&ndash;88.8</span><span class="f">&#9650;</span></div>
     <div class="vrow"><span class="k">Total sleep</span><span class="v">7h 45m</span><span class="r">&mdash;</span><span class="f"></span></div>
     <div class="vrow"><span class="k">Efficiency</span><span class="v">94%</span><span class="r">&mdash;</span><span class="f"></span></div>
@@ -145,7 +148,7 @@ body{font-family:var(--type);color:var(--ink);-webkit-font-smoothing:antialiased
     </div>
   </div>
 
-  <div class="note">&Delta; marks direction against the mean, not an out-of-range result: at
+  <div class="note"><span class="grk">&Delta;</span> marks direction against the mean, not an out-of-range result: at
   +0.92&nbsp;SD the score sits above the mean but inside the interval.
   Interval = mean &plusmn;&nbsp;1&nbsp;SD, printed only where &ge;30 prior
   observations exist. Sleep score n&nbsp;=&nbsp;1,042; remaining fields await

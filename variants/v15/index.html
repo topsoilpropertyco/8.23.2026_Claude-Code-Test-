@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>v15 · The Brutalist</title>
+<style>
+/* v15 THE BRUTALIST -- brutalist web.
+   Source discipline: the raw HTML document. No webfont is loaded; this uses
+   the system stack the way the tradition demands, so it is also the only
+   variant here that renders instantly and offline. Structure is visible:
+   borders are 3px and black, nothing is rounded, nothing is shadowed, and the
+   grid labels itself. The comparison is stated as a flat English sentence at
+   the largest size on the screen after the score, because brutalism does not
+   annotate -- it declares.
+   Three colour roles, one accent (hazard). */
+:root{
+  --paper:#FFFFFF;
+  --ink:#000000;
+  --hazard:#FFE800;            /* the only accent */
+  --grey:#767676;
+}
+*{box-sizing:border-box;margin:0;padding:0;border-radius:0!important}
+html,body{background:var(--paper)}
+body{font-family:Helvetica,Arial,sans-serif;color:var(--ink);
+  -webkit-font-smoothing:none;font-variant-numeric:tabular-nums}
+.screen{width:390px;min-height:844px;margin:0 auto;background:var(--paper);
+  border-left:3px solid var(--ink);border-right:3px solid var(--ink);
+  display:flex;flex-direction:column}
+
+.bar{background:var(--ink);color:var(--paper);padding:7px 10px;display:flex;
+  justify-content:space-between;font-size:11px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase}
+
+/* the score, cropped by the frame -- brutalism does not fit type to a box */
+.hero{border-bottom:3px solid var(--ink);position:relative;overflow:hidden;height:184px}
+.hero .n{position:absolute;left:-13px;top:-40px;font-size:242px;font-weight:700;
+  line-height:1;letter-spacing:-.06em;font-family:Helvetica,Arial,sans-serif}
+.hero .tag{position:absolute;right:0;top:0;background:var(--hazard);
+  border-left:3px solid var(--ink);border-bottom:3px solid var(--ink);
+  padding:8px 10px 9px;text-align:right}
+.hero .tag b{display:block;font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1}
+.hero .tag span{display:block;font-size:9.5px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;margin-top:3px}
+.hero .lbl{position:absolute;left:0;bottom:0;background:var(--ink);color:var(--paper);
+  font-size:9.5px;font-weight:700;letter-spacing:.2em;padding:4px 9px;text-transform:uppercase}
+
+/* the declaration */
+.decl{border-bottom:3px solid var(--ink);padding:11px 12px 13px}
+.decl p{font-size:23px;font-weight:700;line-height:1.14;letter-spacing:-.025em}
+.decl p mark{background:var(--hazard);padding:0 3px}
+.decl .s{font-size:11px;font-weight:400;color:var(--grey);margin-top:9px;line-height:1.5;
+  letter-spacing:.02em}
+
+/* the field: 1,042 nights as 1,042 marks. Raw, unsmoothed, no axis. */
+.field{border-bottom:3px solid var(--ink);padding:10px 12px 12px}
+.field .h{font-size:9.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  margin-bottom:8px;display:flex;justify-content:space-between}
+.field .h i{font-style:normal;color:var(--grey)}
+.marks{display:flex;flex-wrap:wrap;gap:1px;line-height:0}
+.marks i{display:block;width:5px;height:5px;background:#D8D8D8}
+.marks i.b{background:var(--ink)}
+.marks i.you{background:var(--hazard);outline:2px solid var(--ink);outline-offset:0;
+  position:relative;z-index:2}
+.field .k{font-size:9.5px;color:var(--grey);margin-top:9px;letter-spacing:.06em;
+  display:flex;gap:12px;flex-wrap:wrap}
+.field .k b{color:var(--ink)}
+
+/* the table: every rule visible */
+table{width:100%;border-collapse:collapse}
+td{border-bottom:1px solid var(--ink);padding:4.4px 12px;font-size:11.5px}
+td:first-child{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  border-right:1px solid var(--ink);width:47%}
+td:last-child{font-weight:700;text-align:right}
+tr:nth-child(odd) td{background:#F4F4F4}
+
+.foot{margin-top:auto;background:var(--ink);color:var(--paper);padding:9px 12px;
+  font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  display:flex;justify-content:space-between}
+/* Greek must never be uppercased: text-transform turns mu into M and
+   sigma into a summation sign. Bit me once already on v4. */
+.grk{text-transform:none!important}
+</style></head>
+<body>
+<div class="screen">
+
+  <div class="bar"><span>Sleep OS</span><span>23 Aug 2026</span></div>
+
+  <div class="hero">
+    <div class="n">88</div>
+    <div class="tag"><b>+0.92<span class="grk">&sigma;</span></b><span>Deviation</span></div>
+    <div class="lbl">Sleep score</div>
+  </div>
+
+  <div class="decl">
+    <p>You slept better than <mark>844</mark> of your last <mark>1,042</mark> nights.</p>
+    <div class="s">81st percentile. Mean 79.3, SD 9.54. Rank 198. Seven hours
+    forty-five minutes asleep out of eight hours twelve in bed.</div>
+  </div>
+
+  <div class="field">
+    <div class="h"><span>Every night on record</span><i>Worst &rarr; best</i></div>
+    <div class="marks" id="marks"></div>
+    <div class="k"><span>Below <b>844</b></span><span>Above <b>198</b></span>
+      <span>Best <b>98</b></span><span>Worst <b>46</b></span></div>
+  </div>
+
+  <table>
+    <tr><td>Asleep</td><td>7h 45m</td></tr>
+    <tr><td>In bed</td><td>8h 12m</td></tr>
+    <tr><td>Efficiency</td><td>94%</td></tr>
+    <tr><td>Deep</td><td>1h 29m</td></tr>
+    <tr><td>REM</td><td>2h 07m</td></tr>
+    <tr><td>Light</td><td>4h 09m</td></tr>
+    <tr><td>Awake</td><td>27m</td></tr>
+    <tr><td>Latency</td><td>2m 30s</td></tr>
+    <tr><td>HRV avg</td><td>37 ms</td></tr>
+    <tr><td>HR low</td><td>55 bpm</td></tr>
+    <tr><td>Respiration</td><td>14.4 /min</td></tr>
+    <tr><td>Readiness</td><td>85</td></tr>
+  </table>
+
+  <div class="foot"><span>Oura Gen3</span><span>23:15 &rarr; 07:26</span></div>
+</div>
+
+<script>
+/* 1,042 nights, one mark each, sorted worst to best. The 844 below last night
+   are black; the 198 above are grey; last night is the hazard square. Nothing
+   is aggregated -- this is the actual count, drawn. */
+const N=1042,BELOW=844;
+const f=document.createDocumentFragment();
+for(let i=0;i<N;i++){
+  const e=document.createElement('i');
+  if(i===BELOW)e.className='you';
+  else if(i<BELOW)e.className='b';
+  f.appendChild(e);
+}
+document.getElementById('marks').appendChild(f);
+</script>
+</body></html>

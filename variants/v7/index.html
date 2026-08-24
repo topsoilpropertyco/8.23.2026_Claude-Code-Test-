@@ -38,32 +38,32 @@ body{font-family:var(--serif);color:var(--ink);-webkit-font-smoothing:antialiase
   text-transform:uppercase}
 .kicker .date{font-family:var(--sans);font-size:10px;letter-spacing:.1em;color:var(--quiet)}
 
-h1{font-size:38px;font-weight:300;line-height:1.04;letter-spacing:-.022em;margin-top:20px}
+h1{font-size:31px;font-weight:300;line-height:1.04;letter-spacing:-.022em;margin-top:15px}
 h1 em{font-style:italic;font-weight:300}
 
 /* standfirst with the score set as a newspaper drop figure */
-.stand{margin-top:18px;overflow:hidden}
-.dropfig{float:left;font-size:118px;line-height:.76;font-weight:600;letter-spacing:-.05em;
+.stand{margin-top:13px;overflow:hidden}
+.dropfig{float:left;font-size:96px;line-height:.76;font-weight:600;letter-spacing:-.05em;
   margin:6px 14px -4px 0;color:var(--ink)}
-.stand p{font-size:14.5px;line-height:1.52;font-weight:300;color:#3D3733}
+.stand p{font-size:13px;line-height:1.46;font-weight:300;color:#3D3733}
 .stand p b{font-weight:600;color:var(--ink)}
 
 /* the evidence: annotated distribution */
-.figure{margin-top:26px;border-top:1px solid var(--rule);padding-top:14px}
+.figure{margin-top:18px;border-top:1px solid var(--rule);padding-top:14px}
 .figcap{font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:.16em;
   text-transform:uppercase;color:var(--quiet)}
 .figsub{font-family:var(--sans);font-size:10.5px;color:var(--quiet);margin-top:4px;line-height:1.45}
-.plot{margin-top:16px;position:relative}
+.plot{margin-top:11px;position:relative}
 .plot svg{display:block;width:100%}
 .axis{display:flex;justify-content:space-between;font-family:var(--sans);font-size:9.5px;
   color:var(--quiet);margin-top:6px;letter-spacing:.06em}
 
 /* the table: newspaper agate */
-.agate{margin-top:24px;border-top:1px solid var(--rule)}
+.agate{margin-top:16px;border-top:1px solid var(--rule)}
 .agate .hd{font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:.16em;
   text-transform:uppercase;color:var(--quiet);padding:10px 0 6px}
 table{width:100%;border-collapse:collapse}
-td{font-size:13px;padding:5.5px 0;border-bottom:1px solid var(--rule);font-weight:300}
+td{font-size:12.5px;padding:3.6px 0;border-bottom:1px solid var(--rule);font-weight:300}
 td.k{color:#5A524C;font-size:12.5px}
 td.v{text-align:right;font-weight:400;font-variant-numeric:tabular-nums}
 td.v span{color:var(--quiet);font-size:11px;margin-left:5px}
@@ -83,7 +83,7 @@ td.v span{color:var(--quiet);font-size:11px;margin-left:5px}
     <span class="dropfig">88</span>
     <p>Last night scored <b>88</b>, against a lifetime mean of <b>79.3</b> across
     1,042 nights. That is <b>+0.92 standard deviations</b> &mdash; better than
-    <b>81 per cent</b> of every night on record, and the best of the past week.
+    <b>81 per cent</b> of every night on record, against a seven-day mean of <b>79.4</b>.
     Seven hours forty-five minutes asleep, 94&thinsp;% efficient, asleep in two
     and a half minutes.</p>
   </div>
@@ -92,7 +92,7 @@ td.v span{color:var(--quiet);font-size:11px;margin-left:5px}
     <div class="figcap">Where last night sits</div>
     <div class="figsub">Every night since 25 August 2023, binned by score. Taller means more common.</div>
     <div class="plot">
-      <svg viewBox="0 0 338 148" aria-label="Distribution of 1,042 nights with last night marked at 88">
+      <svg viewBox="0 0 338 122" aria-label="Distribution of 1,042 nights with last night marked at 88">
         <g id="bars"></g>
         <g id="anno"></g>
       </svg>
@@ -108,12 +108,9 @@ td.v span{color:var(--quiet);font-size:11px;margin-left:5px}
       <tr><td class="k">Efficiency</td><td class="v">94<span>%</span></td></tr>
       <tr><td class="k">Deep</td><td class="v">1h 29m</td></tr>
       <tr><td class="k">REM</td><td class="v">2h 07m</td></tr>
-      <tr><td class="k">Light</td><td class="v">4h 09m</td></tr>
       <tr><td class="k">Awake</td><td class="v">27m</td></tr>
       <tr><td class="k">Sleep latency</td><td class="v">2m 30s</td></tr>
-      <tr><td class="k">Average HRV</td><td class="v">37<span>ms</span></td></tr>
       <tr><td class="k">Lowest heart rate</td><td class="v">55<span>bpm</span></td></tr>
-      <tr><td class="k">Respiratory rate</td><td class="v">14.4<span>/min</span></td></tr>
       <tr><td class="k">Readiness</td><td class="v">85</td></tr>
     </table>
   </div>
@@ -124,7 +121,7 @@ td.v span{color:var(--quiet);font-size:11px;margin-left:5px}
 <script>
 /* An empirical-looking distribution around mu 79.3, sigma 9.54, left-skewed the
    way bounded sleep scores actually are. 1,042 nights, binned in ones. */
-const W=338,H=148,LO=46,HI=98,MU=79.3,SD=9.54,ME=88;
+const W=338,H=122,LO=46,HI=98,MU=79.3,SD=9.54,ME=88;
 const bins=[];let peak=0;
 for(let v=LO;v<=HI;v++){
   const z=(v-MU)/SD;
@@ -136,7 +133,7 @@ for(let v=LO;v<=HI;v++){
 const bw=W/bins.length;
 let b='';
 bins.forEach((h,i)=>{
-  const v=LO+i,y=H-24-(h/peak)*104,hh=(h/peak)*104;
+  const v=LO+i,y=H-24-(h/peak)*82,hh=(h/peak)*82;
   const on=v===ME;
   b+=`<rect x="${(i*bw).toFixed(2)}" y="${y.toFixed(1)}" width="${(bw-.6).toFixed(2)}"
        height="${hh.toFixed(1)}" fill="${on?'#0D7680':'#DCCDBE'}"/>`;
@@ -144,19 +141,21 @@ bins.forEach((h,i)=>{
 b+=`<line x1="0" y1="${H-24}" x2="${W}" y2="${H-24}" stroke="#26221F" stroke-width="1"/>`;
 /* the mean, as a dotted reference the way a graphics desk would draw it */
 const mx=(MU-LO)/(HI-LO)*W;
-b+=`<line x1="${mx.toFixed(1)}" y1="8" x2="${mx.toFixed(1)}" y2="${H-24}"
+b+=`<line x1="${mx.toFixed(1)}" y1="40" x2="${mx.toFixed(1)}" y2="${H-24}"
      stroke="#8B8179" stroke-width="1" stroke-dasharray="2 3"/>`;
 document.getElementById('bars').innerHTML=b;
 
 /* the annotation -- a leader line and a label, in prose, as on a printed chart */
 const ex=(ME-LO+.5)/(HI-LO)*W;
 document.getElementById('anno').innerHTML=`
-  <line x1="${ex.toFixed(1)}" y1="20" x2="${ex.toFixed(1)}" y2="${(H-24-((bins[ME-LO]/peak)*104)-5).toFixed(1)}"
+  <line x1="${ex.toFixed(1)}" y1="20" x2="${ex.toFixed(1)}" y2="${(H-24-((bins[ME-LO]/peak)*82)-5).toFixed(1)}"
         stroke="#0D7680" stroke-width="1"/>
   <circle cx="${ex.toFixed(1)}" cy="20" r="2.6" fill="#0D7680"/>
   <text x="${(ex-8).toFixed(1)}" y="14" text-anchor="end"
-        font-family="Archivo,sans-serif" font-size="10.5" font-weight="600" fill="#0D7680">Last night, 88</text>
+        font-family="Archivo,sans-serif" font-size="10.5" font-weight="600" fill="#0D7680"
+        stroke="#FFF1E5" stroke-width="3" paint-order="stroke">Last night, 88</text>
   <text x="${(ex-8).toFixed(1)}" y="27" text-anchor="end"
-        font-family="Archivo,sans-serif" font-size="9.5" fill="#8B8179">81st percentile</text>`;
+        font-family="Archivo,sans-serif" font-size="9.5" fill="#8B8179"
+        stroke="#FFF1E5" stroke-width="3" paint-order="stroke">81st percentile</text>`;
 </script>
 </body></html>
