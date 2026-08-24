@@ -1,11 +1,14 @@
 // Builds the Sleep OS dashboard preview.
 //
-// This is wired to the real engine rather than mocked: the fact library, the
-// jittered cadence and the statistics are all computed by the same code that
-// drives Telegram. Only the Oura telemetry is synthetic, because the ring is
-// not connected yet -- it is generated from a fixed seed so the numbers stay
-// internally consistent (the z-score really is derived from the series shown
-// in the chart).
+// Wired to the real engine: the fact library, the jittered cadence and the
+// statistics are all computed by the same code that drives Telegram.
+//
+// The night series is real whenever the telemetry can be decrypted -- that is,
+// in CI, where SLEEPOS_DATA_KEY exists. Locally, with no key, it falls back to
+// a seeded synthetic series so the layout can still be worked on, and the page
+// says so in as many words. It used to be synthetic unconditionally, with a
+// comment claiming the ring was not connected; that stopped being true when
+// 1,043 nights were backfilled.
 
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -16,6 +19,8 @@ import { rngFrom, gaussian } from '../src/rng.js';
 import { readJournal, sleepSeries } from '../src/journal.js';
 import { loadPrompts } from '../src/prompts.js';
 import { localDateString } from '../src/time.js';
+import { hasKey } from '../src/crypto.js';
+import { readTelemetry } from '../src/telemetry.js';
 
 const { facts } = loadLibraries();
 const config = loadConfig();
@@ -24,15 +29,35 @@ const today = localDateString(NOW, config.timezone);
 
 /* ---------------------------------------------------------------- telemetry */
 
-const rng = rngFrom('sleep-os:preview-telemetry');
-const nights = [];
-for (let i = 399; i >= 0; i--) {
-  const d = new Date(NOW.getTime() - i * 86400000);
-  // A slow upward drift plus night-to-night noise, clamped to Oura's range.
-  const drift = 71 + (399 - i) * 0.017;
-  const score = Math.round(Math.max(41, Math.min(96, drift + gaussian(rng, 6.5, 16))));
-  nights.push({ date: localDateString(d, config.timezone), score });
+function realNights() {
+  if (!hasKey()) return null;
+  try {
+    const rows = readTelemetry()
+      .filter((r) => r.sleep_score != null)
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .map((r) => ({ date: r.date, score: r.sleep_score }));
+    return rows.length >= 30 ? rows : null;
+  } catch {
+    return null;                       // unreadable is the same as absent here
+  }
 }
+
+function syntheticNights() {
+  const rng = rngFrom('sleep-os:preview-telemetry');
+  const out = [];
+  for (let i = 399; i >= 0; i--) {
+    const d = new Date(NOW.getTime() - i * 86400000);
+    // A slow upward drift plus night-to-night noise, clamped to Oura's range.
+    const drift = 71 + (399 - i) * 0.017;
+    const score = Math.round(Math.max(41, Math.min(96, drift + gaussian(rng, 6.5, 16))));
+    out.push({ date: localDateString(d, config.timezone), score });
+  }
+  return out;
+}
+
+const real = realNights();
+const NIGHTS_ARE_REAL = real !== null;
+const nights = real ?? syntheticNights();
 
 const scores = nights.map((n) => n.score);
 const last = scores[scores.length - 1];
@@ -447,10 +472,12 @@ footer strong{color:var(--ice);font-weight:600}
   </section>
 
   <footer>
-    <strong>Preview build.</strong> The cadence, jitter, rotation and fact library above are live — computed by the
-    same engine that sends to Telegram. The Oura telemetry is generated from a fixed seed because the ring is not
-    connected yet; the z-score, percentile, trailing windows and MSRI are all genuinely derived from the series in
-    the chart, so the maths is real even though the nights are not.<br><br>
+    <strong>${NIGHTS_ARE_REAL ? 'Live build' : 'Preview build'}.</strong> The cadence, jitter, rotation and fact
+    library above are live — computed by the same engine that sends to Telegram. ${NIGHTS_ARE_REAL
+      ? `The ${nights.length.toLocaleString('en-US')} nights charted are real Oura measurements, unrounded.`
+      : 'The Oura telemetry here is generated from a fixed seed, because this machine has no decryption key for '
+        + 'the real series — the nights are invented even though the maths on them is not.'}
+    The z-score, percentile, trailing windows and MSRI are all genuinely derived from the series in the chart.<br><br>
     Sleep OS is a behavioural reminder tool. It is not medical advice, diagnosis, or treatment.
   </footer>
 </div>
