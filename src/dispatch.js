@@ -1,0 +1,144 @@
+// The dispatcher.
+//
+// Every run does two things: drains anything Seth has replied with, then sends
+// whatever slot is now due. Reading the inbox first matters -- a night logged at
+// 6:40 should be on the record before the 8:00 card goes out.
+//
+// Because the schedule is derived deterministically from the date, this can be
+// polled as often as the runner likes without the target times moving.
+
+import { loadLibraries, loadConfig } from './facts.js';
+import { buildDaySchedule, dueSlots } from './schedule.js';
+import { selectFact } from './selector.js';
+import { selectPrompt, intakeRequest } from './prompts.js';
+import { renderMessage, renderIntake, renderSummary } from './render.js';
+import { sendMessage } from './telegram.js';
+import { processInbox, trackPending } from './inbox.js';
+import { loadState, saveState, sentSlotsFor, recordSend } from './state.js';
+import { localDateString, localTimeString } from './time.js';
+
+export async function dispatch({
+  now = new Date(),
+  dryRun = false,
+  force = null,
+  skipInbox = false,
+  log = console.log,
+} = {}) {
+  const config = loadConfig();
+  const { facts } = loadLibraries();
+  const state = loadState();
+
+  const dateString = localDateString(now, config.timezone);
+  const schedule = buildDaySchedule(config, dateString);
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  const live = !dryRun && token && chatId;
+
+  if (!dryRun && !live) {
+    throw new Error('TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID must be set. Run: npm run whoami');
+  }
+
+  /* --- inbound first, so a logged night informs the day ------------------ */
+
+  let inbox = { count: 0, handled: [] };
+  if (live && !skipInbox) {
+    try {
+      inbox = await processInbox({ config, state, token, chatId, now, log });
+    } catch (err) {
+      // A failing inbox must never stop tonight's 9 PM card going out.
+      log(`inbox error (continuing): ${err.message}`);
+    }
+  }
+
+  /* --- outbound ----------------------------------------------------------- */
+
+  const alreadySent = sentSlotsFor(state, dateString);
+  let targets;
+  if (force) {
+    const slot = schedule.find((s) => s.id === force);
+    if (!slot) throw new Error(`Unknown slot "${force}". Known: ${schedule.map((s) => s.id).join(', ')}`);
+    targets = [slot];
+  } else {
+    const { due, missed } = dueSlots(schedule, now, alreadySent, config.maxLatenessMinutes ?? 75);
+    for (const m of missed) {
+      log(`skip  ${m.id} - window missed by ${Math.round(m.ageMinutes - (config.maxLatenessMinutes ?? 75))}m`);
+      recordSend(state, dateString, m.id, { status: 'missed', at: now.toISOString() }, { persist: !dryRun });
+    }
+    targets = due;
+  }
+
+  const sent = [];
+  for (const slot of targets) {
+    let text;
+    let record;
+
+    if (slot.type === 'intake') {
+      text = renderIntake({ slot, request: intakeRequest() });
+      record = { status: dryRun ? 'dry-run' : 'sent', kind: 'intake', targetLabel: slot.targetLabel };
+    } else {
+      const choice = selectFact({ facts, state, slotId: slot.id, dateString, config });
+      const lastMechanism = state.pending?.[0]?.mechanism ?? null;
+      const chosenPrompt = selectPrompt({ state, slotId: slot.id, lastMechanism });
+
+      text = renderMessage({ fact: choice.fact, slot, jackpot: choice.jackpot, prompt: chosenPrompt.prompt });
+
+      // Rotation advances only after a successful send, so a delivery failure
+      // never silently burns a fact.
+      state.cycle = choice.cycle;
+      state.remaining = choice.remaining;
+      state.promptCycle = chosenPrompt.promptCycle;
+      state.promptRemaining = chosenPrompt.promptRemaining;
+
+      record = {
+        status: dryRun ? 'dry-run' : 'sent',
+        kind: 'fact',
+        factId: choice.fact.id,
+        library: choice.fact.library,
+        category: choice.fact.category,
+        jackpot: choice.jackpot,
+        cycle: choice.cycle,
+        promptId: chosenPrompt.prompt.id,
+        mechanism: chosenPrompt.prompt.mechanism,
+        targetLabel: slot.targetLabel,
+      };
+      sent.push({ slot, ...choice, prompt: chosenPrompt.prompt });
+    }
+
+    if (dryRun) {
+      log(`\n${'-'.repeat(64)}\n${text}\n${'-'.repeat(64)}`);
+    } else {
+      const result = await sendMessage(token, chatId, text);
+      // Track the sent message so a reply can be matched back to the card
+      // that prompted it.
+      trackPending(state, {
+        messageId: result.message_id,
+        kind: record.kind,
+        factId: record.factId ?? null,
+        promptId: record.promptId ?? null,
+        mechanism: record.mechanism ?? null,
+        slot: slot.id,
+        at: new Date().toISOString(),
+      });
+    }
+
+    recordSend(state, dateString, slot.id, { ...record, at: new Date().toISOString() }, { persist: !dryRun });
+
+    if (slot.type === 'intake') {
+      log(`${slot.targetLabel.padStart(8)}  intake request`);
+      sent.push({ slot, intake: true });
+    } else {
+      const s = sent[sent.length - 1];
+      log(renderSummary({ fact: s.fact, slot, jackpot: s.jackpot }) + `  ${s.prompt.mechanism}`);
+    }
+  }
+
+  if (!dryRun) saveState(state);
+
+  return {
+    sent,
+    inbox,
+    dateString,
+    localTime: localTimeString(now, config.timezone),
+    schedule,
+  };
+}

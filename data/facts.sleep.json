@@ -1,0 +1,557 @@
+{
+  "library": "sleep",
+  "label": "Sleep Science",
+  "note": "Verbatim capture of the Sleep OS body/mind science fact library. Text is stored exactly as supplied. Categories, slots and intensity are Sleep OS routing metadata added on top of the source text; they do not alter it.",
+  "facts": [
+    {
+      "id": "sleep-01",
+      "category": "stress",
+      "intensity": "high",
+      "slots": [
+        "morning_reflection",
+        "midday_essentialism"
+      ],
+      "reframe": "Imagine a pharmaceutical company charged $10,000 a month for a pill that cuts your daily physiological stress odds by nearly 40%. You already own the prescription, and it costs nothing.",
+      "proof": "Biometric tracking across large cohorts demonstrates that every additional hour of total nightly sleep time decreases the odds of experiencing moderate-to-high stress by 38.3%.",
+      "currency": "Staying awake an extra hour to answer emails costs you 38% of your emotional bandwidth, patience, and mental calm tomorrow.",
+      "move": "Advance your target bedtime by 30 minutes to capture your stress-reduction dividend.",
+      "truth": "Stress breaks the human body. Sleep destroys stress."
+    },
+    {
+      "id": "sleep-02",
+      "category": "brain",
+      "intensity": "high",
+      "slots": [
+        "work_shutdown",
+        "terminal_bedtime"
+      ],
+      "reframe": "If a secret longevity clinic in the Amazon offered an elite fluid therapy that pressure-washes neurotoxic waste out of your brain, you would pay a fortune for it. Sleep executes that exact wash every single night.",
+      "proof": "During slow-wave sleep, astroglial channels expand, increasing cerebrospinal fluid flow by 60% to flush out metabolic debris like amyloid-beta and tau proteins.",
+      "currency": "Trading deep sleep for late-night work-stacking leaves toxic metabolic sludge in your brain tissue, guaranteeing brain fog, reduced processing speed, and long-term neurodegeneration.",
+      "move": "Enforce a strict work shutdown at 9:00 PM to maximize your early-night slow-wave sleep window.",
+      "truth": "Toxic waste decays your mind. Sleep purifies your brain."
+    },
+    {
+      "id": "sleep-03",
+      "category": "cardiometabolic",
+      "intensity": "standard",
+      "slots": [
+        "morning_reflection",
+        "evening_winddown",
+        "afternoon_boundary"
+      ],
+      "reframe": "Imagine taking a miracle drug that lowers your sleeping heart rate by a few beats and instantly shields your nervous system from overwhelm. You do not need a biotech startup; you just need your pillow.",
+      "proof": "Population tracking reveals that for every single beat-per-minute increase in nocturnal resting heart rate, the odds of experiencing high physiological stress surge by 3.6%.",
+      "currency": "Eating late or working late keeps your resting heart rate elevated all night, forcing you to start tomorrow with a baseline stress penalty.",
+      "move": "Stop eating food three hours before bed to let your heart rate drop to its true resting nadir.",
+      "truth": "High heart rates signal systemic overload. Sleep calms the heart."
+    },
+    {
+      "id": "sleep-04",
+      "category": "cardiometabolic",
+      "intensity": "standard",
+      "slots": [
+        "morning_reflection",
+        "terminal_bedtime"
+      ],
+      "reframe": "If a top longevity physician told you a $50,000 secret protocol could elevate your heart rate variability and make you immune to daily chaos, you would jump at it. Sleep delivers that exact resilience for free.",
+      "proof": "Large-scale biometric data shows that every single millisecond increase in nocturnal heart rate variability decreases the odds of experiencing moderate-to-high stress by 1.2%.",
+      "currency": "Truncating your sleep window suppresses heart rate variability, leaving your autonomic nervous system fragile and easily triggered by minor challenges.",
+      "move": "Dedicate 10 minutes to slow, down-regulation breathing before bed to boost your parasympathetic tone.",
+      "truth": "Low variability makes you fragile. Sleep builds indestructible nervous systems."
+    },
+    {
+      "id": "sleep-05",
+      "category": "cardiometabolic",
+      "intensity": "standard",
+      "slots": [
+        "morning_reflection",
+        "evening_winddown"
+      ],
+      "reframe": "Imagine finding out that an extra breath per minute while sleeping increases your stress odds as much as a major life disruption. You control your breathing environment simply by going to bed.",
+      "proof": "Continuous biometric monitoring proves that each additional breath per minute increase in average nightly respiration rate increases the odds of experiencing high stress by 23.0%.",
+      "currency": "Staying up late in a hyper-arousal state forces elevated nocturnal breathing rates, driving up your biological stress load by nearly a quarter before you even wake up.",
+      "move": "Set your bedroom thermostat to 65 degrees Fahrenheit to lower metabolic strain and stabilize breathing.",
+      "truth": "Shallow breathing reflects physiological strain. Sleep restores calm respiration."
+    },
+    {
+      "id": "sleep-06",
+      "category": "cardiometabolic",
+      "intensity": "high",
+      "slots": [
+        "work_shutdown",
+        "afternoon_boundary"
+      ],
+      "reframe": "Imagine a boutique longevity clinic promising to reverse pre-diabetic insulin resistance overnight without drugs. That miracle therapy is called six full cycles of sleep.",
+      "proof": "Clinical trials show that restricting sleep to four hours per night for just six consecutive days reduces peripheral insulin sensitivity by 30%, shifting glucose processing into a pre-diabetic state.",
+      "currency": "Sacrificing sleep for late-night screen time breaks your body's glucose regulation, causing intense energy crashes and relentless carbohydrate cravings tomorrow.",
+      "move": "Close your laptop at 9:00 PM to protect a full 7- to 8-hour sleep window.",
+      "truth": "Metabolic failure drains your vitality. Sleep restores your metabolic engine."
+    },
+    {
+      "id": "sleep-07",
+      "category": "immunity",
+      "intensity": "high",
+      "slots": [
+        "terminal_bedtime",
+        "work_shutdown"
+      ],
+      "reframe": "If a magic pill claimed to boost your body's cancer-killing immune cells by 300% overnight, it would be the biggest medical breakthrough in history. Sleeping seven hours does it automatically.",
+      "proof": "Immunology research demonstrates that a single night of four-hour sleep slashes circulating Natural Killer cell activity by 70%, eradicating seven out of ten primary defense cells.",
+      "currency": "Pushing past midnight to finish a presentation destroys your primary immune defense force, leaving your body open to infection and disease.",
+      "move": "Treat your target bedtime as a non-negotiable health boundary.",
+      "truth": "Immune suppression exposes you to illness. Sleep builds an impenetrable immune shield."
+    },
+    {
+      "id": "sleep-08",
+      "category": "hormones",
+      "intensity": "high",
+      "slots": [
+        "morning_reflection",
+        "terminal_bedtime"
+      ],
+      "reframe": "Imagine paying $10,000 for testosterone replacement therapy when all you needed to do was stop stealing two hours of sleep from your morning cycles.",
+      "proof": "Restricting sleep to five hours per night for just one week reduces daytime free testosterone levels by 10% to 15%, biologically aging endocrine vigor by over a decade.",
+      "currency": "Late-night work-stacking slashes your hormonal output, destroying physical energy, muscle recovery, and drive.",
+      "move": "Protect the final two hours of morning sleep where critical hormonal synthesis occurs.",
+      "truth": "Short sleep drains your hormonal vigor. Sleep restores youth and vitality."
+    },
+    {
+      "id": "sleep-09",
+      "category": "cognition",
+      "intensity": "high",
+      "slots": [
+        "work_shutdown"
+      ],
+      "reframe": "Imagine taking a pill that makes you drive and make executive decisions as if you were legally drunk. Staying awake for 17 hours does that exact same damage.",
+      "proof": "Psychomotor vigilance studies show that 17 to 19 hours of continuous wakefulness impairs cognitive performance to the exact level of a 0.05% blood alcohol concentration.",
+      "currency": "Working past midnight means you are managing your business, family, and life with the cognitive impairment of legal intoxication.",
+      "move": "Stop working at 9:00 PM because impaired late-night work creates mistakes you have to fix tomorrow.",
+      "truth": "Sleep deprivation intoxicates your brain. Sleep restores elite executive clarity."
+    },
+    {
+      "id": "sleep-10",
+      "category": "hormones",
+      "intensity": "standard",
+      "slots": [
+        "evening_winddown",
+        "afternoon_boundary"
+      ],
+      "reframe": "Imagine a weight-loss clinic charging thousands for a hormone-balancing shot, while ignoring the free miracle drug that regulates appetite automatically while you lie down.",
+      "proof": "Clinical data proves that sleep restriction drops satiety-inducing leptin by 18% while elevating hunger-inducing ghrelin by 28%, forcing automatic cravings for dense calories.",
+      "currency": "Staying up late chemically reprograms your brain to crave sugar and overeat, sabotaging your physical health and discipline.",
+      "move": "Go to bed on time to keep your chemical appetite signals perfectly balanced.",
+      "truth": "Sleep debt triggers uncontrollable hunger. Sleep masters your metabolic appetite."
+    },
+    {
+      "id": "sleep-11",
+      "category": "cardiometabolic",
+      "intensity": "high",
+      "slots": [
+        "evening_winddown"
+      ],
+      "reframe": "Imagine if a secret Swiss clinic offered a non-invasive treatment that cuts your 10-year cardiovascular mortality risk in half. The treatment is simply falling into a deep, dipping sleep.",
+      "proof": "Longitudinal cardiovascular studies reveal that the absence of a 10% to 20% nocturnal blood pressure dip doubles 10-year cardiovascular mortality risk.",
+      "currency": "Working late into the night under bright lights keeps your sympathetic nervous system firing, preventing your heart from decompressing overnight.",
+      "move": "Dim all household lighting two hours before bed to signal your cardiovascular system to down-regulate.",
+      "truth": "Constant arterial pressure wears out your heart. Sleep gives your cardiovascular system complete rest."
+    },
+    {
+      "id": "sleep-12",
+      "category": "cognition",
+      "intensity": "high",
+      "slots": [
+        "work_shutdown",
+        "evening_winddown"
+      ],
+      "reframe": "Imagine a magic pill that instantly quiets the fear and anxiety center of your brain by 60%, restoring absolute emotional calm and patience. That pill is a full night of sleep.",
+      "proof": "Neuroimaging reveals that sleep deprivation causes a 60% surge in amygdala threat reactivity, severing functional connectivity with the prefrontal cortex.",
+      "currency": "Depriving yourself of sleep strips away your prefrontal emotional brakes, making you irritable, reactive, and short-tempered with your children and spouse.",
+      "move": "Build a 60-minute wind-down routine free of stressful news or work communications.",
+      "truth": "Emotional reactivity ruins presence. Sleep restores emotional composure and patience."
+    },
+    {
+      "id": "sleep-13",
+      "category": "hormones",
+      "intensity": "standard",
+      "slots": [
+        "terminal_bedtime",
+        "afternoon_boundary"
+      ],
+      "reframe": "Imagine buying an expensive anti-aging peptide injection to trigger growth hormone release, when your pituitary gland gives you a massive, free injection during deep sleep.",
+      "proof": "Clinical endocrinology proves that slow-wave sleep triggers the largest daily endogenous pulse of Human Growth Hormone, driving tissue repair and muscle rebuilding.",
+      "currency": "Skipping early-night slow-wave sleep cuts off your body's primary repair mechanism, accelerating physical aging and muscle loss.",
+      "move": "Get to bed by 10:30 PM to capture the heavy slow-wave sleep cycles concentrated in the first half of the night.",
+      "truth": "Aging accelerates without cellular repair. Sleep is the ultimate anti-aging treatment."
+    },
+    {
+      "id": "sleep-14",
+      "category": "cognition",
+      "intensity": "standard",
+      "slots": [
+        "midday_essentialism"
+      ],
+      "reframe": "Imagine a neuro-technology that uploads everything you learned today from temporary brain storage into permanent memory banks. It exists, and it runs during Stage 2 sleep.",
+      "proof": "Neurophysiological studies show that sleep spindles generated during NREM Stage 2 sleep actively transfer short-term memories from the hippocampus to the neocortex for long-term storage.",
+      "currency": "Staying up late to study or analyze data prevents your brain from converting that information into permanent knowledge and wisdom.",
+      "move": "Prioritize consistent sleep duration so your brain can process and store today's insights.",
+      "truth": "Information is lost without consolidation. Sleep locks in permanent learning."
+    },
+    {
+      "id": "sleep-15",
+      "category": "cognition",
+      "intensity": "standard",
+      "slots": [
+        "morning_reflection"
+      ],
+      "reframe": "Imagine paying $500 an hour for an advanced therapeutic protocol that strips emotional pain away from hard memories. Rapid eye movement sleep does this every night for free.",
+      "proof": "Research in sleep neurobiology shows that REM sleep recreates memory traces in a noradrenaline-free environment, depotentiating affective distress while preserving semantic information.",
+      "currency": "Truncating late-morning REM sleep leaves painful stress signals attached to yesterday's events, keeping you anxious and hyper-vigilant.",
+      "move": "Protect your final sleep cycles in the morning to allow complete emotional depotentiation.",
+      "truth": "Unprocessed stress accumulates as trauma. Sleep heals emotional wounds."
+    },
+    {
+      "id": "sleep-16",
+      "category": "circadian",
+      "intensity": "standard",
+      "slots": [
+        "afternoon_boundary"
+      ],
+      "reframe": "Imagine finding out that the kombucha you drank at 2:00 PM is still sitting in your brain at midnight, blocking the miracle molecule that triggers deep recovery.",
+      "proof": "Pharmacology shows that caffeine has a 5- to 7-hour half-life and a 10- to 12-hour quarter-life, meaning 25% of the caffeine from a 2:00 PM cup remains active in your brain at midnight.",
+      "currency": "You do not drink coffee, which is most of this battle already won. What is left is kombucha, dark chocolate and hidden caffeine, all of which still block adenosine receptors late into the night.",
+      "move": "Keep kombucha and any hidden caffeine before 12:30 PM, ten hours ahead of your 10:30 target.",
+      "truth": "Chemical stimulants block natural recovery. Sleep requires clean neural pathways."
+    },
+    {
+      "id": "sleep-17",
+      "category": "circadian",
+      "intensity": "standard",
+      "slots": [
+        "evening_winddown"
+      ],
+      "reframe": "Imagine a biohack that doubles your natural sleep-inducing hormones without taking a single supplement. All you have to do is turn off bright overhead lights.",
+      "proof": "Endocrinology studies confirm that exposure to bright room lighting or screens in the evening suppresses nocturnal melatonin onset by 50% and delays peak hormone release.",
+      "currency": "Staring at phone or computer screens late at night tricks your pineal gland into perceiving bright sunlight, destroying your natural sleep drive.",
+      "move": "Switch to warm, low-level ambient lighting after 8:00 PM and put screens away.",
+      "truth": "Artificial light tricks your biology. Darkness unleashes natural sleep hormones."
+    },
+    {
+      "id": "sleep-18",
+      "category": "longevity",
+      "intensity": "high",
+      "slots": [
+        "terminal_bedtime",
+        "morning_reflection",
+        "afternoon_boundary"
+      ],
+      "reframe": "Imagine if a top biohacking research group discovered that going to bed at the exact same time every night predicts longevity better than total hours slept.",
+      "proof": "Epidemiological cohorts using the Sleep Regularity Index prove that individuals with low sleep regularity face a 20% to 40% higher all-cause mortality hazard, regardless of total duration.",
+      "currency": "Keeping erratic bedtimes between weekdays and weekends disrupts your central circadian clock, increasing long-term disease risk as much as chronic smoking.",
+      "move": "Lock in your target bedtime within a strict 30-minute window every single night.",
+      "truth": "Irregular timing creates systemic discord. Consistency unlocks ultimate longevity."
+    },
+    {
+      "id": "sleep-19",
+      "category": "performance",
+      "intensity": "standard",
+      "slots": [
+        "midday_essentialism",
+        "morning_reflection"
+      ],
+      "reframe": "Imagine a sports supplement company selling a drink that boosts your aerobic engine and stamina by 11%. You do not need a supplement; you just need to sleep 8 hours.",
+      "proof": "Exercise physiology studies show that sleep restriction slashes maximal oxygen uptake (VO2 max) by 11% and decreases time to physical exhaustion by up to 30%.",
+      "currency": "Sacrificing sleep for early morning workouts degrades your cardiovascular engine, making every effort harder while reducing athletic returns.",
+      "move": "Choose an extra hour of sleep over an exhausted early morning workout session.",
+      "truth": "Physical exhaustion destroys capacity. Sleep builds elite athletic power."
+    },
+    {
+      "id": "sleep-20",
+      "category": "environment",
+      "intensity": "standard",
+      "slots": [
+        "terminal_bedtime",
+        "evening_winddown"
+      ],
+      "reframe": "Imagine a simple trick that drops your sleep latency to under 10 minutes without medication. You only need to lower your bedroom temperature by a few degrees.",
+      "proof": "Thermal physiology research proves that a 2 to 3 degree Fahrenheit drop in core body temperature is biologically required to initiate rapid sleep onset and deep stage transitions.",
+      "currency": "Sleeping in a warm room prevents your core body temperature from dropping, causing tossing, turning, and frequent nighttime awakenings.",
+      "move": "Set your bedroom thermostat to 65 degrees Fahrenheit before going to bed.",
+      "truth": "Excess heat prevents rest. Cool air triggers immediate sleep onset."
+    },
+    {
+      "id": "sleep-21",
+      "category": "cognition",
+      "intensity": "high",
+      "slots": [
+        "midday_essentialism",
+        "work_shutdown"
+      ],
+      "reframe": "Imagine believing you are functioning fine on 6 hours of sleep, while an objective brain scan proves your cognitive performance has degraded as much as staying awake for 3 straight days.",
+      "proof": "Controlled laboratory studies show that two weeks of 6-hour sleep produces cognitive deficits equal to 72 hours of total continuous sleep deprivation, even though participants feel adapted.",
+      "currency": "Settling for 6 hours of sleep creates a silent cognitive debt that blinds you to your own declining focus and strategic judgment.",
+      "move": "Upgrade your nightly sleep target from 6 hours to 8 full hours.",
+      "truth": "Chronic short sleep blinds your awareness. Sleep restores absolute mental sharpness."
+    },
+    {
+      "id": "sleep-22",
+      "category": "immunity",
+      "intensity": "high",
+      "slots": [
+        "morning_reflection",
+        "midday_essentialism"
+      ],
+      "reframe": "Imagine if an Amazonian longevity clinic gave you a natural anti-viral shield that quadruples your defense against seasonal viruses. That shield is built during a 7-hour sleep window.",
+      "proof": "Clinical trials show that individuals sleeping less than 6 hours per night are 350% more likely to catch the common cold when exposed to a virus compared to those sleeping 7 or more hours.",
+      "currency": "Skimping on sleep to get through your task list breaks your immune defense, forcing sick days that destroy your productivity later.",
+      "move": "Maintain a non-negotiable floor of 7 hours of sleep every single night.",
+      "truth": "Vulnerability follows sleep loss. Sleep builds an unbeatable physical defense."
+    },
+    {
+      "id": "sleep-23",
+      "category": "cardiometabolic",
+      "intensity": "standard",
+      "slots": [
+        "afternoon_boundary",
+        "evening_winddown"
+      ],
+      "reframe": "Imagine discovering that eating a late snack forces your heart to beat thousands of extra times overnight, stealing the rest your cardiovascular system desperately needs.",
+      "proof": "Wearable biometric studies reveal that consuming food within 3 hours of sleep elevates resting heart rate, suppresses HRV, and reduces restfulness scores by 25%.",
+      "currency": "Late-night eating forces your digestive tract to work while you sleep, keeping your physiological engines idling instead of resting.",
+      "move": "Establish a hard kitchen closure 3 hours before your target bedtime.",
+      "truth": "Late digestion steals biological rest. An empty stomach enables deep recovery."
+    },
+    {
+      "id": "sleep-24",
+      "category": "longevity",
+      "intensity": "standard",
+      "slots": [
+        "midday_essentialism"
+      ],
+      "reframe": "Imagine a biotech infusion that neutralizes inflammatory cytokines across your entire vascular system. Sleep is that exact anti-inflammatory infusion, delivered every night.",
+      "proof": "Medical studies demonstrate that a single night of partial sleep loss triggers a sharp spike in systemic Interleukin-6 (IL-6) inflammatory markers.",
+      "currency": "Cutting sleep short fills your bloodstream with inflammatory molecules that damage blood vessels, joint tissue, and cellular health.",
+      "move": "Treat sleep as your primary daily anti-inflammatory health protocol.",
+      "truth": "Inflammation destroys cellular health. Sleep cools systemic inflammation."
+    },
+    {
+      "id": "sleep-25",
+      "category": "performance",
+      "intensity": "standard",
+      "slots": [
+        "midday_essentialism",
+        "morning_reflection"
+      ],
+      "reframe": "Imagine an elite performance coach offering a technique that instantly improves your motor skill accuracy and reaction time by nearly 10%. The technique is sleeping 9 hours.",
+      "proof": "Sports science research shows that extending sleep duration over several weeks improves fine motor precision, free-throw accuracy, and reaction speed by 9% in elite athletes.",
+      "currency": "Operating on restricted sleep degrades your motor coordination, precision, and physical speed across every activity you attempt.",
+      "move": "Extend your sleep window by 60 minutes to upgrade your physical skill execution.",
+      "truth": "Fatigue degrades physical precision. Sleep unlocks peak physical performance."
+    },
+    {
+      "id": "sleep-26",
+      "category": "cardiometabolic",
+      "intensity": "standard",
+      "slots": [
+        "evening_winddown",
+        "work_shutdown"
+      ],
+      "reframe": "Imagine taking a pharmaceutical pill that forces your heart into a high-stress overdrive state all night long. Sacrificing sleep does that exact same thing to your sympathetic nervous system.",
+      "proof": "Autonomic research proves that sleep deprivation shifts cardiac autonomic balance toward chronic sympathetic dominance, increasing cardiovascular strain and suppressing autonomic recovery.",
+      "currency": "Pushing through fatigue to work late forces your heart to pump against heightened stress signals, draining your physical reserve for the next day.",
+      "move": "Shut down mentally 60 minutes before bed to allow your autonomic nervous system to transition into parasympathetic recovery.",
+      "truth": "Sympathetic strain wears out your heart. Sleep restores autonomic equilibrium."
+    },
+    {
+      "id": "sleep-27",
+      "category": "environment",
+      "intensity": "high",
+      "slots": [
+        "evening_winddown",
+        "afternoon_boundary"
+      ],
+      "reframe": "Imagine paying for an expensive biohack to upgrade your neuroplasticity while drinking a nightcap that destroys 40% of your brain's restorative sleep cycles.",
+      "proof": "Sleep EEG studies demonstrate that evening alcohol consumption sedates the central nervous system, fragmenting sleep architecture and reducing REM sleep by up to 40%.",
+      "currency": "Using alcohol to fall asleep sedates your brain rather than resting it, depriving you of deep emotional processing and mental clarity tomorrow.",
+      "move": "Avoid alcohol within 4 hours of bedtime to preserve your brain's natural sleep architecture.",
+      "truth": "Sedation is not sleep. True sleep restores full neural capacity."
+    },
+    {
+      "id": "sleep-28",
+      "category": "circadian",
+      "intensity": "high",
+      "slots": [
+        "morning_reflection"
+      ],
+      "reframe": "Imagine an Amazonian secret light therapy that shifts your sleep timer forward by 90 minutes so you fall asleep effortlessly. That light therapy is free morning sunlight.",
+      "proof": "Circadian biology trials demonstrate that 20 minutes of morning daylight exposure advances nocturnal melatonin onset by 1.5 hours, making nighttime sleep latency rapid and effortless.",
+      "currency": "Staying indoors under artificial lighting all morning confuses your central clock, leaving you wide awake when you try to sleep at night.",
+      "move": "Get 15 to 20 minutes of direct sunlight outdoor exposure within one hour of waking up tomorrow.",
+      "truth": "Indoor darkness confuses your master clock. Sunlight anchors your natural sleep rhythm."
+    },
+    {
+      "id": "sleep-29",
+      "category": "longevity",
+      "intensity": "standard",
+      "slots": [
+        "morning_reflection",
+        "terminal_bedtime"
+      ],
+      "reframe": "Imagine if a major medical trial proved that maintaining a fixed wake-up time extends your life expectancy even more than trying to force extra hours of sleep on weekends.",
+      "proof": "Population research tracking tens of thousands of individuals shows that day-to-day sleep regularity predicts all-cause mortality hazard more strongly than total sleep duration alone.",
+      "currency": "Sleeping in on weekends creates social jetlag, disrupting your metabolic rhythms and making Monday mornings an uphill battle.",
+      "move": "Keep your morning wake-up time consistent within a 30-minute window seven days a week.",
+      "truth": "Shifted timing disrupts cellular clocks. Consistent wake times anchor long-term health."
+    },
+    {
+      "id": "sleep-30",
+      "category": "cognition",
+      "intensity": "high",
+      "slots": [
+        "midday_essentialism",
+        "work_shutdown"
+      ],
+      "reframe": "Imagine taking a pill that quadruples your mental mistakes and lapses in focus at work. Getting four hours of sleep two nights in a row does that exact damage.",
+      "proof": "Psychomotor vigilance testing proves that two consecutive nights of 4-hour sleep increases attentional lapses by 400% compared to a standard 8-hour baseline.",
+      "currency": "Accumulating back-to-back short sleep nights quadruples your chances of making critical errors, missing details, and exercising poor judgment.",
+      "move": "Never allow two short sleep nights to occur in a row.",
+      "truth": "Attentional lapses cause costly errors. Sleep protects absolute mental focus."
+    },
+    {
+      "id": "sleep-31",
+      "category": "brain",
+      "intensity": "high",
+      "slots": [
+        "terminal_bedtime",
+        "work_shutdown"
+      ],
+      "reframe": "Imagine believing you can clean your brain while staying awake, when direct cellular imaging proves brain waste clearance drops by 80% the moment you open your eyes.",
+      "proof": "Neurobiological studies show that glymphatic waste clearance is suppressed by 80% during wakefulness and anesthesia compared to natural slow-wave sleep.",
+      "currency": "Sacrificing slow-wave sleep forces your brain to operate with accumulated metabolic waste, reducing your mental processing power every hour you stay awake.",
+      "move": "Protect your early-night sleep window when slow-wave sleep and waste flushing are at their daily peak.",
+      "truth": "Brain clearance requires natural sleep. Wakefulness blocks cellular flushing."
+    },
+    {
+      "id": "sleep-32",
+      "category": "circadian",
+      "intensity": "high",
+      "slots": [
+        "work_shutdown"
+      ],
+      "reframe": "Imagine a biohack that moves your bedtime back by nearly an hour without you realizing it. Working on screens after 9:00 PM does that exact harm to your clock.",
+      "proof": "Human physiological trials show that engaging in high-cognitive work and screen exposure past 9:00 PM delays circadian phase alignment and melatonin release by 45 minutes.",
+      "currency": "Stacking work into the late evening pushes back your body's natural sleep drive, making it impossible to fall asleep at your intended bedtime.",
+      "move": "Set an absolute work shutdown alarm at 9:00 PM to protect your circadian timing.",
+      "truth": "Evening work shifts your body clock. A hard work shutdown enables fast sleep onset."
+    },
+    {
+      "id": "sleep-33",
+      "category": "environment",
+      "intensity": "standard",
+      "slots": [
+        "terminal_bedtime"
+      ],
+      "reframe": "Imagine a miracle treatment that turns every minute you spend in bed into uninterrupted physical restoration. High sleep efficiency delivers that seamless repair.",
+      "proof": "Large wearable biometric cohorts demonstrate that maintaining a sleep efficiency of 85% or higher eliminates nocturnal fragmentation and minimizes awakening stress.",
+      "currency": "Lying in bed awake for hours trains your brain to associate your bed with frustration and wakefulness rather than immediate deep sleep.",
+      "move": "Get out of bed if you are awake for more than 20 minutes and return only when sleepy.",
+      "truth": "Fragmented sleep causes nocturnal stress. Seamless sleep efficiency maximizes recovery."
+    },
+    {
+      "id": "sleep-34",
+      "category": "hormones",
+      "intensity": "standard",
+      "slots": [
+        "morning_reflection",
+        "midday_essentialism",
+        "afternoon_boundary"
+      ],
+      "reframe": "Imagine a two-day reset protocol that completely restores your satiety hormones after a week of chaotic travel or work stress. That protocol is two full nights of sleep.",
+      "proof": "Endocrinological trials show that extending sleep to 8+ hours for two consecutive nights fully reverses acute drops in leptin and spikes in ghrelin caused by short sleep.",
+      "currency": "You can rapidly reverse the metabolic damage of a bad sleep week by committing to a strict two-night sleep recovery protocol.",
+      "move": "Block out a full 8.5-hour opportunity window in bed tonight to catch up on lost sleep.",
+      "truth": "Sleep debt disrupts chemical balance. Sleep extension restores hormonal equilibrium."
+    },
+    {
+      "id": "sleep-35",
+      "category": "circadian",
+      "intensity": "high",
+      "slots": [
+        "evening_winddown",
+        "terminal_bedtime"
+      ],
+      "reframe": "Imagine finding out that reading emails on an illuminated tablet delays your brain's peak sleep hormone release past midnight. Swapping to paper fixes it instantly.",
+      "proof": "Physiological research shows that high-contrast light from tablet screens delays peak nocturnal melatonin release by 90 minutes compared to reading print books in dim light.",
+      "currency": "Checking digital devices in bed shifts your pineal gland's hormone schedule, leaving you tired in the morning and restless at night.",
+      "move": "Replace evening phone and tablet scrolling with a physical paper book or Kindle paperwhite.",
+      "truth": "Screen illumination delays natural sleep. Dim paper reading unlocks deep rest."
+    },
+    {
+      "id": "sleep-36",
+      "category": "performance",
+      "intensity": "high",
+      "slots": [
+        "terminal_bedtime"
+      ],
+      "reframe": "Imagine paying for an expensive body-rebuilding therapy that claims to repair 80% of your muscle tissue, when slow-wave sleep performs that rebuilding every single night.",
+      "proof": "Sports medicine research confirms that up to 80% of daily muscle tissue repair, protein synthesis, and cellular structural rebuilding occurs during deep slow-wave sleep.",
+      "currency": "Cutting deep sleep short leaves physical workout adaptations incomplete, causing chronic fatigue, joint strain, and reduced physical strength.",
+      "move": "Go to bed early enough to capture the concentrated slow-wave sleep cycles in the first half of the night.",
+      "truth": "Physical strain requires cellular rebuilding. Slow-wave sleep builds physical strength."
+    },
+    {
+      "id": "sleep-37",
+      "category": "environment",
+      "intensity": "standard",
+      "slots": [
+        "terminal_bedtime",
+        "evening_winddown"
+      ],
+      "reframe": "Imagine a 5-minute breathing exercise that increases your nervous system's recovery power by 40% right before your head hits the pillow.",
+      "proof": "Applied physiological studies demonstrate that 5 minutes of slow down-regulation breathing elevates high-frequency heart rate variability and parasympathetic tone by 40%.",
+      "currency": "Slipping into bed with an active, racing mind keeps your fight-or-flight nervous system engaged, delaying sleep onset and suppressing deep recovery.",
+      "move": "Practice 5 minutes of slow, 4-second inhalations and 6-second exhalations before turning off the lights.",
+      "truth": "A racing mind delays sleep. Slow breathing triggers immediate nervous system recovery."
+    },
+    {
+      "id": "sleep-38",
+      "category": "environment",
+      "intensity": "standard",
+      "slots": [
+        "evening_winddown",
+        "terminal_bedtime"
+      ],
+      "reframe": "Imagine a simple bedroom adjustment that cuts micro-awakenings by nearly a third without taking any medication or supplements. Total darkness achieves it.",
+      "proof": "Environmental sleep studies reveal that eliminating ambient room light down to below 0.1 lux reduces nocturnal micro-arousals and awakenings by 30%.",
+      "currency": "Faint light from streetlamps or electronics penetrates closed eyelids, triggering subtle stress responses that disrupt deep sleep continuity.",
+      "move": "Install blackout curtains or wear a comfortable sleep eye mask to eliminate all light exposure.",
+      "truth": "Ambient light triggers subtle awakenings. Pitch-black darkness preserves deep sleep continuity."
+    },
+    {
+      "id": "sleep-39",
+      "category": "brain",
+      "intensity": "standard",
+      "slots": [
+        "terminal_bedtime"
+      ],
+      "reframe": "Imagine if a zero-cost physical therapy session paralyzed your muscles every night to completely unweight motor tension and release deep physical stress.",
+      "proof": "Sleep neurobiology shows that brainstem GABAergic and glycinergic inhibition creates complete somatic muscle atonia during REM sleep, fully releasing motor system tension.",
+      "currency": "Skipping REM sleep cycles deprives your neuromuscular system of complete motor unweighting, leaving you waking up with physical stiffness and tension.",
+      "move": "Protect your late-morning REM cycles by avoiding early alarms whenever possible.",
+      "truth": "Neuromuscular tension accumulates without rest. REM sleep completely unweights physical stress."
+    },
+    {
+      "id": "sleep-40",
+      "category": "biometrics",
+      "intensity": "standard",
+      "slots": [
+        "morning_reflection"
+      ],
+      "reframe": "Imagine an advanced wearable device on your finger that tracks your sleep cycles with the accuracy of a full university medical lab. That device is on your hand right now.",
+      "proof": "Clinical validation trials demonstrate that modern wearable photoplethysmography ring algorithms achieve 91.8% overall sleep/wake accuracy compared to simultaneous laboratory polysomnography.",
+      "currency": "Having clinical-grade biometric data on your hand means you no longer have to guess about your recovery; your data reveals your exact sleep status every morning.",
+      "move": "Check your Oura recovery trend every morning and adjust your daily activity to match your true physiological readiness.",
+      "truth": "Biometric guessing leads to overtraining. Precise biometric tracking empowers elite optimization."
+    }
+  ]
+}

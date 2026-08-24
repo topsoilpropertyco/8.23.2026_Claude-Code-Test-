@@ -1,0 +1,67 @@
+name: Sleep OS Dispatch
+
+# The engine polls every 10 minutes and sends any slot whose jittered target
+# time has passed. Polling rather than scheduling six exact crons is deliberate:
+# GitHub's scheduler routinely fires several minutes late, and a poll absorbs
+# that drift instead of compounding it. The schedule itself is computed
+# deterministically from the date, so extra polls never move the target times.
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+    inputs:
+      slot:
+        description: 'Force a specific slot (e.g. work_shutdown). Leave blank to send whatever is due.'
+        required: false
+        type: string
+      dry_run:
+        description: 'Render without sending'
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: sleep-os-dispatch
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Dispatch due reminders
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if [ -n "${{ inputs.slot }}" ]; then
+            node bin/sleep-os.js send "${{ inputs.slot }}" ${{ inputs.dry_run && '--dry-run' || '' }}
+          else
+            node bin/sleep-os.js dispatch ${{ inputs.dry_run && '--dry-run' || '' }}
+          fi
+
+      - name: Persist rotation state
+        run: |
+          if [ -z "$(git status --porcelain state/)" ]; then
+            echo "No state change."
+            exit 0
+          fi
+          git config user.name  "sleep-os[bot]"
+          git config user.email "sleep-os@users.noreply.github.com"
+          git add state/
+          git commit -m "chore(state): rotation update $(date -u +%Y-%m-%dT%H:%MZ)"
+          # Another poll may have landed a commit while this one ran.
+          for attempt in 1 2 3 4; do
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}" && exit 0
+            echo "push attempt $attempt failed; retrying"
+            sleep $((2 ** attempt))
+          done
+          exit 1

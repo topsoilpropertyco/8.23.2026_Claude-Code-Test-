@@ -1,0 +1,20 @@
+{
+  "name": "sleep-os",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sleep OS Reminder System - the behavioral software overlay for your sleep stack.",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dispatch": "node bin/sleep-os.js dispatch",
+    "preview": "node bin/sleep-os.js preview",
+    "today": "node bin/sleep-os.js today",
+    "send": "node bin/sleep-os.js send",
+    "whoami": "node bin/sleep-os.js whoami",
+    "stats": "node bin/sleep-os.js stats",
+    "test": "node --test test/*.test.js",
+    "journal": "node bin/sleep-os.js journal"
+  }
+}
