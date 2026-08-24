@@ -1,3 +1,7 @@
 {"date":"2026-08-23","slot":"intake","status":"sent","kind":"intake","targetLabel":"6:00 AM","at":"2026-08-23T15:47:23.309Z"}
 {"date":"2026-08-23","slot":"terminal_bedtime","status":"sent","kind":"fact","factId":"sleep-31","library":"sleep","category":"brain","jackpot":false,"cycle":0,"promptId":"p01","mechanism":"implementation_intention","targetLabel":"10:08 PM","at":"2026-08-23T15:47:24.013Z"}
 {"date":"2026-08-23","slot":"morning_reflection","status":"missed","at":"2026-08-23T15:56:03.456Z"}
+{"date":"2026-08-23","slot":"midday_essentialism","status":"missed","at":"2026-08-24T01:54:41.862Z"}
+{"date":"2026-08-23","slot":"afternoon_boundary","status":"missed","at":"2026-08-24T01:54:41.862Z"}
+{"date":"2026-08-23","slot":"evening_winddown","status":"missed","at":"2026-08-24T01:54:41.862Z"}
+{"date":"2026-08-23","slot":"work_shutdown","status":"sent","kind":"fact","factId":"sleep-30","library":"sleep","category":"cognition","jackpot":false,"cycle":0,"promptId":"p05","mechanism":"identity","targetLabel":"8:40 PM","at":"2026-08-24T01:54:43.395Z"}
