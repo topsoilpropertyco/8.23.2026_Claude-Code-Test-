@@ -1,0 +1,89 @@
+{
+  "_note": "Replies to journal entries. Every inbound message gets one -- silence on the path where the most work was done is the thing this exists to fix.\n\nDesign rules held here: praise habituates within a week, so the strongest shapes reference evidence instead. `mechanism` names what the entry actually did, using the mechanism already stored on the entry. `streak` states a fact about who Seth is. `short` stays warm but small, because an effusive reply to a two-word entry teaches that two-word entries pay. `identity` is the always-available fallback so no path can ever be silent.",
+  "mechanism": {
+    "implementation_intention": [
+      "You just turned an intention into a trigger. That is the whole difference between wanting and doing.",
+      "Naming when and where is the part almost everyone skips. You didn't."
+    ],
+    "identity": [
+      "That's a vote for the person you're becoming. They accumulate.",
+      "You just described yourself as someone who does this. That sentence does more work than the plan."
+    ],
+    "elaborative_interrogation": [
+      "Asking why it works is how it stops being a rule and starts being yours.",
+      "You interrogated it instead of accepting it. That's the version that sticks."
+    ],
+    "prospective_regret": [
+      "Looking at the cost before you pay it is how you stop paying it.",
+      "You just made the future consequence present. That's the hard part."
+    ],
+    "mental_contrasting": [
+      "That's mental contrasting. Most people skip straight to the plan and wonder why it fails.",
+      "Wanting it and naming what's in the way, in the same breath. That's the mechanism."
+    ],
+    "anchoring": [
+      "You anchored it to something that already happens. Habits that ride existing ones survive.",
+      "Attaching it to a fixed point is why it will still be there in a month."
+    ],
+    "self_efficacy": [
+      "You just recorded evidence that you can. Read that back on a bad week.",
+      "That's not confidence, it's proof. Different thing, more durable."
+    ],
+    "attribution": [
+      "You gave the credit to something you control. That's the attribution that compounds.",
+      "How you explain a good night decides whether you can repeat it."
+    ],
+    "commitment": [
+      "Written down is a different commitment from thought about. You know this.",
+      "That's on the record now. Which was the point."
+    ],
+    "episodic_future_thinking": [
+      "You just made tomorrow concrete enough to plan for. Vague futures don't get honoured.",
+      "Rehearsing it is most of the work. The rest is showing up."
+    ],
+    "subtraction": [
+      "Taking something away is harder than adding, and it holds better.",
+      "You removed instead of adding. That's the rarer instinct."
+    ],
+    "minimum_viable": [
+      "The smallest version you'll actually do beats the best one you won't.",
+      "You shrank it until it was inevitable. Correct move."
+    ]
+  },
+  "identity": [
+    "Logged. That's the kind of thing that separates people who track from people who intend to.",
+    "In the record. You're building a case file on yourself.",
+    "Got it. Another night you showed up for this.",
+    "Noted. The consistency is the asset, not any single entry.",
+    "Down. You keep doing this on the nights it would be easy not to.",
+    "Filed. This is what the good version of you does at this hour.",
+    "Saved. Most people quit tracking in week two. You're past that.",
+    "Recorded. That's one more data point nobody else has on you.",
+    "Kept. You're the person who writes it down. That's not nothing.",
+    "In. The habit is the point; the entry is just the evidence.",
+    "Logged. Doing this tired is worth more than doing it fresh.",
+    "Held. Every one of these makes the coaching sharper."
+  ],
+  "short": [
+    "Short one. Still counts.",
+    "Taken. Even the brief ones keep the chain intact.",
+    "Logged. A line is enough on a night like this.",
+    "Got it. Showing up beats writing well.",
+    "In. Brief is fine — missing is the only failure."
+  ],
+  "streak": [
+    "{n} nights running.",
+    "{n} in a row now.",
+    "That's {n} consecutive.",
+    "{n} straight. The chain's holding."
+  ],
+  "milestone": {
+    "3": "Three in a row. That's the point where it stops being a decision each time.",
+    "7": "A full week, every night. Most tracking habits die before here.",
+    "14": "Fourteen consecutive. Two weeks is where the baseline starts being worth trusting.",
+    "21": "Twenty-one straight. You've written more about your sleep this month than most people do in a life.",
+    "30": "Thirty nights unbroken. That's a month of evidence about who you are.",
+    "50": "Fifty in a row. This isn't a streak any more, it's just what you do.",
+    "100": "One hundred consecutive nights. Sit with that one for a second."
+  }
+}

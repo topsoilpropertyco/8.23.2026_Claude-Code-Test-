@@ -7,7 +7,8 @@
 
 import { getUpdates, sendMessage } from './telegram.js';
 import { parseEntry, buildCoachResponse } from './coach.js';
-import { addJournalEntry, addSleepEntry, sleepSeries, readJournal } from './journal.js';
+import { addJournalEntry, addSleepEntry, sleepSeries, readJournal, journalStreak } from './journal.js';
+import { buildAffirmation } from './affirm.js';
 import { morningPrompt } from './prompts.js';
 import { localDateString, localTimeString, formatClock12 } from './time.js';
 import { buildDaySchedule } from './schedule.js';
@@ -248,8 +249,29 @@ export async function processInbox({ config, state, token, chatId, now = new Dat
           mechanism: context?.mechanism ?? null,
           slot: context?.slot ?? null,
         });
-        log(`journal entry logged${context?.promptId ? ` against ${context.promptId}` : ''}`);
-        handled.push({ type: 'journal', promptId: context?.promptId ?? null });
+
+        // Close the loop. This branch used to write the entry and say nothing,
+        // which made the one path carrying the most effort the only silent one.
+        // The reply is computed locally -- no model, no extra network call --
+        // so it costs nothing and cannot fail the send it rides with.
+        const streak = journalStreak(readJournal(), dateString);
+        const affirmation = buildAffirmation({
+          text,
+          mechanism: context?.mechanism ?? null,
+          streak,
+          state,
+          dateString,
+        });
+        await sendMessage(token, chatId, affirmation.text);
+
+        log(`journal entry logged${context?.promptId ? ` against ${context.promptId}` : ''}` +
+            ` → ${affirmation.shape}${affirmation.streakShown ? ` +streak ${streak}` : ''}`);
+        handled.push({
+          type: 'journal',
+          promptId: context?.promptId ?? null,
+          affirmed: affirmation.shape,
+          streak,
+        });
       }
 
       ack();

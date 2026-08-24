@@ -66,3 +66,26 @@ export function sleepSeries() {
   for (const e of readSleepLog()) byDate.set(e.date, e);
   return [...byDate.values()].sort((a, b) => a.date.localeCompare(b.date));
 }
+
+/**
+ * Consecutive days ending today that carry at least one journal entry.
+ *
+ * A streak is the strongest thing the affirmation layer can say, because it is
+ * evidence rather than an adjective: "nine nights running" is a fact about who
+ * you are, where "well done" is a gold star. So it has to be honest -- the run
+ * must reach today, and a missed day breaks it rather than being forgiven.
+ */
+export function journalStreak(entries, todayString) {
+  const days = new Set(entries.map((e) => e.date).filter(Boolean));
+  if (!days.has(todayString)) return 0;
+
+  let streak = 0;
+  // Walk backwards in UTC from the given date string. Dates are already local
+  // calendar strings, so stepping by 86,400,000 ms never crosses a DST seam.
+  const cursor = new Date(`${todayString}T00:00:00Z`);
+  while (days.has(cursor.toISOString().slice(0, 10))) {
+    streak += 1;
+    cursor.setTime(cursor.getTime() - 86400000);
+  }
+  return streak;
+}

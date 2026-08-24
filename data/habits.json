@@ -1,0 +1,261 @@
+{
+  "_note": "Habit anchors. The cue never changes; the reason rotates. Rationales are written to be true rather than persuasive -- where the evidence is thin the card says so, because a claim Seth later finds was oversold poisons every other claim in the library.",
+  "habits": {
+    "morning_light": {
+      "cue": "Outside. Eyes up. Now.",
+      "action": "Sky, not sun. Five to ten minutes. No sunglasses.",
+      "optional": "Optional: a few poses out there, shirt off.",
+      "optionalOdds": 0.3333,
+      "why": [
+        {
+          "id": "ml01",
+          "hook": "Here's the switch almost nobody flips.",
+          "why": "Light hitting your eyes in the first hour after waking is the single strongest signal your circadian clock takes. Not caffeine, not food, not movement. Light."
+        },
+        {
+          "id": "ml02",
+          "hook": "Here's the number that should annoy you.",
+          "why": "A bright indoor room is 100 to 300 lux. Outside on an overcast morning is 1,000 to 10,000. Direct sun is over 50,000. Your kitchen is not a substitute; it is two orders of magnitude short."
+        },
+        {
+          "id": "ml03",
+          "hook": "Here's the cell you didn't know you had.",
+          "why": "Your retina has receptors that do nothing for vision. They exist only to tell your brain what time it is. They are most sensitive to the blue-heavy light of morning sky."
+        },
+        {
+          "id": "ml04",
+          "hook": "Here's what you're actually setting.",
+          "why": "Morning light advances your clock, which pulls tonight's melatonin release earlier. You are not waking yourself up. You are scheduling tonight's sleepiness."
+        },
+        {
+          "id": "ml05",
+          "hook": "Here's the one that costs you nothing.",
+          "why": "Five to ten minutes on a clear morning. Fifteen to twenty if it's grey. That's the whole intervention."
+        },
+        {
+          "id": "ml06",
+          "hook": "Here's the mistake that wastes the whole thing.",
+          "why": "Window glass cuts the intensity hard, and you are usually further from the light than you think. Through a window is a fraction of the dose. Go outside."
+        },
+        {
+          "id": "ml07",
+          "hook": "Here's the accessory that cancels it.",
+          "why": "Sunglasses defeat the point. Contacts and clear glasses are fine. This is the one time of day you want your eyes uncovered."
+        },
+        {
+          "id": "ml08",
+          "hook": "Here's what you never look at.",
+          "why": "Never look directly at the sun. You don't need to. Sky, not sun — the ambient field is what carries the dose."
+        },
+        {
+          "id": "ml09",
+          "hook": "Here's why the grey days matter most.",
+          "why": "Overcast still delivers many times what your ceiling light does. The mornings you'd skip are the mornings the gap between inside and outside is widest."
+        },
+        {
+          "id": "ml10",
+          "hook": "Here's the trade that beats duration.",
+          "why": "Ten minutes every morning beats forty minutes twice a week. This system responds to consistency, not to volume."
+        },
+        {
+          "id": "ml11",
+          "hook": "Here's the second lever, free.",
+          "why": "Cortisol has a natural spike shortly after waking — it is supposed to happen. Morning light sharpens it, which is why the day starts cleaner and the evening crash is less abrupt."
+        },
+        {
+          "id": "ml12",
+          "hook": "Here's the one that compounds.",
+          "why": "Every morning you anchor the clock, the next night's sleep onset gets a little more predictable. This is the input with the longest tail in the whole system."
+        },
+        {
+          "id": "ml13",
+          "hook": "Here's what the winter version looks like.",
+          "why": "Shorter days means less signal, later. Going out at the same clock time matters more in January than in July, not less."
+        },
+        {
+          "id": "ml14",
+          "hook": "Here's the sequencing most people get backwards.",
+          "why": "Light first, then coffee. Caffeine masks the adenosine you should be clearing with light. One is a signal, the other is a mute button."
+        },
+        {
+          "id": "ml15",
+          "hook": "Here's the cheap upgrade.",
+          "why": "Face east if you can see the horizon. Low-angle morning light is spectrally different from midday and it is exactly what the system evolved on."
+        },
+        {
+          "id": "ml16",
+          "hook": "Here's the honest limit.",
+          "why": "This will not fix a bad night. It sets the phase of tomorrow's night. Judge it over two weeks, not over one morning."
+        },
+        {
+          "id": "ml17",
+          "hook": "Here's the version for a bad start.",
+          "why": "Overslept, rushed, no time? Thirty seconds on the step still beats zero. The dose is graded, not all-or-nothing."
+        },
+        {
+          "id": "ml18",
+          "hook": "Here's what it does to sleep onset.",
+          "why": "A clock that is properly anchored in the morning stops drifting later. Drift is why bedtime creeps and why you lie there awake."
+        },
+        {
+          "id": "ml19",
+          "hook": "Here's the mood note, stated carefully.",
+          "why": "Bright light in the morning has real evidence behind it for mood, strongest in seasonal low mood. Not a treatment. A tailwind."
+        },
+        {
+          "id": "ml20",
+          "hook": "Here's the pairing that stacks.",
+          "why": "Movement in the light beats light alone — temperature, heart rate and the clock all get the same message at once. A slow walk is enough."
+        },
+        {
+          "id": "ml21",
+          "hook": "Here's the shirt-off version.",
+          "why": "Skin exposure adds vitamin D synthesis to the light dose. Low-angle morning sun is the safest window for it. Optional, not the point."
+        },
+        {
+          "id": "ml22",
+          "hook": "Here's the yoga version.",
+          "why": "A few poses outside turns a two-minute errand into a ritual. Rituals survive bad weeks; errands don't."
+        },
+        {
+          "id": "ml23",
+          "hook": "Here's what to do when there's no sun at all.",
+          "why": "Still go out. Cloud cover changes the intensity, not the fact that outside beats inside by a factor you cannot make up indoors."
+        },
+        {
+          "id": "ml24",
+          "hook": "Here's the identity, not the tactic.",
+          "why": "People who sleep well are outside within an hour of waking. Not because they're disciplined. Because it became the first thing they do."
+        }
+      ]
+    },
+    "blue_blockers": {
+      "cue": "Glasses on. Now.",
+      "action": "Blue blockers until you're asleep. Overheads off if you can.",
+      "optional": null,
+      "optionalOdds": 0,
+      "why": [
+        {
+          "id": "bb01",
+          "hook": "Here's the wavelength that does it.",
+          "why": "The receptors that tell your brain what time it is peak around 480 nanometres — the blue-cyan band. Evening light in that band reads as daytime."
+        },
+        {
+          "id": "bb02",
+          "hook": "Here's what's actually well established.",
+          "why": "Evening light suppresses melatonin. That part is solid and repeatable. The glasses are one way to cut it, and they are the cheapest."
+        },
+        {
+          "id": "bb03",
+          "hook": "Here's the honest caveat, up front.",
+          "why": "Evidence that blockers improve sleep is thinner than the internet suggests — small trials, mixed results. The mechanism is sound, the effect size is uncertain. It costs almost nothing, so it stays."
+        },
+        {
+          "id": "bb04",
+          "hook": "Here's the mistake in the product category.",
+          "why": "Faintly yellow 'computer glasses' block very little. If the lens isn't visibly amber or orange, it is mostly reassurance."
+        },
+        {
+          "id": "bb05",
+          "hook": "Here's the thing that beats the glasses.",
+          "why": "Turning the overhead lights off does more than any lens. Glasses are the backup when you can't control the room."
+        },
+        {
+          "id": "bb06",
+          "hook": "Here's the timing.",
+          "why": "Two to three hours before bed is the window that matters. Yours is 7:30 for a 22:30 target. Earlier is fine; later is mostly wasted."
+        },
+        {
+          "id": "bb07",
+          "hook": "Here's the source you're ignoring.",
+          "why": "Your ceiling light is probably brighter than your phone. People blame screens and sit under a 1,000-lumen fixture."
+        },
+        {
+          "id": "bb08",
+          "hook": "Here's the geometry nobody mentions.",
+          "why": "Light from above hits the lower retina, where those clock receptors are densest. Overhead lighting is worse than a lamp at eye level for the same brightness."
+        },
+        {
+          "id": "bb09",
+          "hook": "Here's the second job the glasses do.",
+          "why": "Putting them on is a cue. It tells your own nervous system the day is closing. Half the value is the ritual, and that half is real."
+        },
+        {
+          "id": "bb10",
+          "hook": "Here's what 'night mode' is worth.",
+          "why": "Screen colour shifting reduces the blue fraction but not the total brightness, and brightness matters too. It is a partial measure, not a solution."
+        },
+        {
+          "id": "bb11",
+          "hook": "Here's the compounding cost.",
+          "why": "Melatonin release delayed by an hour tonight is not an hour of lost sleep tonight — it is a clock that starts drifting later all week."
+        },
+        {
+          "id": "bb12",
+          "hook": "Here's the dose relationship.",
+          "why": "Intensity and duration both matter, not just wavelength. Two hours of dim beats twenty minutes of bright. Blocking the whole evening beats blocking the last ten minutes."
+        },
+        {
+          "id": "bb13",
+          "hook": "Here's the one that surprises people.",
+          "why": "Melatonin isn't a sedative. It's a timing signal. Suppressing it doesn't make you less tired — it makes your body think it's earlier than it is."
+        },
+        {
+          "id": "bb14",
+          "hook": "Here's the test you can run yourself.",
+          "why": "Two weeks on, two weeks off, same bedtime, and watch your sleep latency. You have 1,000-plus nights of baseline. You can actually answer this for yourself."
+        },
+        {
+          "id": "bb15",
+          "hook": "Here's the failure mode.",
+          "why": "Glasses on, then three hours under bright lights on a screen until midnight. The lens is not a licence. It is a reduction on top of an already-dim evening."
+        },
+        {
+          "id": "bb16",
+          "hook": "Here's the cheapest version of all.",
+          "why": "Lamps instead of ceiling lights, and put them low. Free, permanent, and it works whether or not you remember the glasses."
+        },
+        {
+          "id": "bb17",
+          "hook": "Here's what the ancestral argument is worth.",
+          "why": "Fire is warm-spectrum and dim. Every artificial light before about 1880 was. That's context, not proof — but the direction of the evidence agrees with it."
+        },
+        {
+          "id": "bb18",
+          "hook": "Here's the compliance trick.",
+          "why": "Keep them where the evening starts, not by the bed. A habit that needs you to walk somewhere is a habit that fails."
+        },
+        {
+          "id": "bb19",
+          "hook": "Here's the individual-variation caveat.",
+          "why": "Sensitivity to evening light varies a lot between people — several-fold in the same conditions. You might be at either end. That is what your own two-week test would tell you."
+        },
+        {
+          "id": "bb20",
+          "hook": "Here's what it buys the morning.",
+          "why": "Protecting tonight's melatonin onset makes tomorrow's wake time easier. The evening habit and the morning habit are the same lever from opposite ends."
+        },
+        {
+          "id": "bb21",
+          "hook": "Here's the bit about alertness.",
+          "why": "Evening light doesn't only shift the clock; it acutely increases alertness. Some of what keeps you up isn't the melatonin, it's the light saying 'stay awake'."
+        },
+        {
+          "id": "bb22",
+          "hook": "Here's the version for a social evening.",
+          "why": "Out with people, no glasses? Fine. Get them on when you're home. A partial evening is not a failed one."
+        },
+        {
+          "id": "bb23",
+          "hook": "Here's the honest ranking.",
+          "why": "Dim the room. Then get off overhead lighting. Then the glasses. Doing only the third is doing the weakest one."
+        },
+        {
+          "id": "bb24",
+          "hook": "Here's the identity, not the tactic.",
+          "why": "People who sleep well treat the last three hours as part of the night, not the end of the day. The glasses are just the visible edge of that."
+        }
+      ]
+    }
+  }
+}

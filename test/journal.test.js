@@ -413,3 +413,203 @@ test('a baseline too thin to be meaningful is refused', async () => {
   assert.throws(() => buildNightData([...thin, { date: '2026-08-23', sleep_score: 88 }],
     'America/Detroit'), /need 30/);
 });
+
+/* ------------------------------------------------------- Phase 6: habits */
+
+test('habit anchors do not jitter, because a cue at 7:52 is not a 7:30 habit', () => {
+  const config = loadConfig();
+  const habitSlots = config.slots.filter((s) => s.type === 'habit');
+  assert.equal(habitSlots.length, 2, 'expected morning_light and blue_blockers');
+
+  // Across a month, every habit slot must land exactly on its anchor while the
+  // fact slots move around. That contrast is the whole scheduling argument.
+  let factMoved = false;
+  for (let d = 1; d <= 28; d++) {
+    const schedule = buildDaySchedule(config, `2026-09-${String(d).padStart(2, '0')}`);
+    for (const s of schedule) {
+      if (s.type === 'habit') assert.equal(s.offsetMinutes, 0, `${s.id} jittered on day ${d}`);
+      if (s.type === 'fact' && s.offsetMinutes !== 0) factMoved = true;
+    }
+  }
+  assert.ok(factMoved, 'fact slots should still jitter');
+});
+
+test('the glasses cue owns the evening light window', () => {
+  const config = loadConfig();
+  const at = (id) => config.slots.find((s) => s.id === id).anchor;
+  // Both messages are about light; thirty minutes apart they would collide.
+  const gap = Number(at('blue_blockers').slice(0, 2)) - Number(at('evening_winddown').slice(0, 2));
+  assert.ok(gap >= 1, `wind-down ${at('evening_winddown')} too close to ${at('blue_blockers')}`);
+});
+
+test('a habit rotates every reason before repeating any', async () => {
+  const { loadHabits, selectRationale } = await import('../src/habits.js');
+  const habits = loadHabits();
+
+  for (const [habitId, habit] of Object.entries(habits)) {
+    assert.ok(habit.why.length >= 20, `${habitId} needs 20+ reasons, has ${habit.why.length}`);
+
+    const state = {};
+    const seen = [];
+    for (let d = 0; d < habit.why.length; d++) {
+      const pick = selectRationale({ habit, habitId, state, dateString: `2026-09-${d + 1}` });
+      state.habitRotation = { ...state.habitRotation, [habitId]: { cycle: pick.cycle, remaining: pick.remaining } };
+      seen.push(pick.why.id);
+    }
+    assert.equal(new Set(seen).size, habit.why.length, `${habitId} repeated inside one cycle`);
+  }
+});
+
+test('the two habits rotate independently', async () => {
+  const { loadHabits, selectRationale } = await import('../src/habits.js');
+  const habits = loadHabits();
+  const state = {};
+
+  selectRationale({ habit: habits.morning_light, habitId: 'morning_light', state, dateString: '2026-09-01' });
+  const before = state.habitRotation;
+  // Advancing one habit must not consume the other's pool.
+  const a = selectRationale({ habit: habits.blue_blockers, habitId: 'blue_blockers', state, dateString: '2026-09-01' });
+  assert.ok(a.why.id.startsWith('bb'), 'blue_blockers drew from the wrong pool');
+  assert.equal(before, state.habitRotation, 'selectRationale must not mutate rotation state itself');
+});
+
+test('the habit message leads with the cue, so it works from a lock screen', async () => {
+  const { loadHabits, selectRationale } = await import('../src/habits.js');
+  const { renderHabit } = await import('../src/render.js');
+  const habits = loadHabits();
+  const habit = habits.blue_blockers;
+  const pick = selectRationale({ habit, habitId: 'blue_blockers', state: {}, dateString: '2026-08-24' });
+
+  const slot = { name: '08: Blue Blockers', targetLabel: '7:30 PM' };
+  const text = renderHabit({ habit, slot, why: pick.why, showOptional: false });
+
+  assert.equal(text.split('\n')[0], habit.cue, 'first line must be the cue');
+  assert.ok(!text.includes('*') && !text.includes('_'), 'no markdown, per the locked format');
+  assert.ok(text.includes(pick.why.why));
+});
+
+test('the optional line is deterministic for a date and off for habits without one', async () => {
+  const { loadHabits, selectRationale } = await import('../src/habits.js');
+  const habits = loadHabits();
+
+  const a = selectRationale({ habit: habits.morning_light, habitId: 'morning_light', state: {}, dateString: '2026-08-24' });
+  const b = selectRationale({ habit: habits.morning_light, habitId: 'morning_light', state: {}, dateString: '2026-08-24' });
+  assert.equal(a.showOptional, b.showOptional, 're-running the same day must not re-roll');
+
+  const bb = selectRationale({ habit: habits.blue_blockers, habitId: 'blue_blockers', state: {}, dateString: '2026-08-24' });
+  assert.equal(bb.showOptional, false, 'blue_blockers has no optional line');
+
+  // Over a month it should appear sometimes and not always.
+  let shown = 0;
+  for (let d = 1; d <= 30; d++) {
+    const r = selectRationale({ habit: habits.morning_light, habitId: 'morning_light', state: {}, dateString: `2026-09-${d}` });
+    if (r.showOptional) shown++;
+  }
+  assert.ok(shown > 2 && shown < 22, `optional line appeared ${shown}/30 times`);
+});
+
+/* -------------------------------------------------- Phase 7: affirmations */
+
+test('every mechanism in the prompt library has something to say back', async () => {
+  const { loadAffirmations } = await import('../src/affirm.js');
+  const lib = loadAffirmations();
+  const prompts = loadPrompts();
+  const list = Array.isArray(prompts) ? prompts : (prompts.prompts ?? Object.values(prompts).flat());
+  const mechanisms = [...new Set(list.map((p) => p.mechanism).filter(Boolean))];
+
+  assert.ok(mechanisms.length >= 10);
+  for (const m of mechanisms) {
+    assert.ok(lib.mechanism[m]?.length, `no affirmation for mechanism ${m}`);
+  }
+});
+
+test('no journal entry is ever met with silence', async () => {
+  const { buildAffirmation, loadAffirmations } = await import('../src/affirm.js');
+  const lib = loadAffirmations();
+
+  const inputs = ['', '   ', 'ok', 'no', '.', 'A properly considered entry about last night.',
+    'x'.repeat(600), '🙂', '84 7.5 4 but as prose'];
+  for (const text of inputs) {
+    for (const mech of [null, 'identity', 'not_a_real_mechanism']) {
+      const r = buildAffirmation({ text, mechanism: mech, streak: 0, state: {}, dateString: '2026-08-24', library: lib });
+      assert.ok(r.text && r.text.trim().length > 0, `silent on ${JSON.stringify(text)} / ${mech}`);
+    }
+  }
+});
+
+test('a two-word entry is answered warmly but not effusively', async () => {
+  const { buildAffirmation, loadAffirmations, isShortEntry } = await import('../src/affirm.js');
+  const lib = loadAffirmations();
+  assert.ok(isShortEntry('slept ok'));
+  assert.ok(!isShortEntry('I moved my shutdown earlier and it made the whole evening calmer.'));
+
+  // Even with a rich mechanism available, a throwaway entry gets the short
+  // shape -- rewarding it fully would teach that throwaway entries pay.
+  const r = buildAffirmation({ text: 'slept ok', mechanism: 'mental_contrasting', streak: 9,
+    state: {}, dateString: '2026-08-24', library: lib });
+  assert.equal(r.shape, 'short');
+  assert.ok(lib.short.some((line) => r.text.startsWith(line)), 'should open with a short line');
+  assert.ok(!Object.values(lib.mechanism).flat().some((line) => r.text.includes(line)),
+    'a throwaway entry must not draw the full mechanism reply');
+  // A streak may still ride along: it rewards showing up, which is exactly what
+  // a two-word entry did. That is evidence, not effusive praise.
+});
+
+test('affirmations do not repeat while others are unseen', async () => {
+  const { buildAffirmation, loadAffirmations } = await import('../src/affirm.js');
+  const lib = loadAffirmations();
+  const state = {};
+  const seen = [];
+  const long = 'A considered entry about how the evening actually went and what I would change.';
+  for (let i = 0; i < lib.identity.length; i++) {
+    seen.push(buildAffirmation({ text: long, mechanism: null, streak: 0, state,
+      dateString: `2026-09-${i + 1}`, library: lib }).text);
+  }
+  assert.equal(new Set(seen).size, lib.identity.length, 'identity pool repeated early');
+});
+
+test('a milestone outranks everything and a thin streak is not named', async () => {
+  const { buildAffirmation, loadAffirmations } = await import('../src/affirm.js');
+  const lib = loadAffirmations();
+  const long = 'A considered entry about how the evening actually went and what I would change.';
+
+  const m = buildAffirmation({ text: long, mechanism: 'anchoring', streak: 7, state: {},
+    dateString: '2026-08-24', library: lib });
+  assert.equal(m.shape, 'milestone');
+  assert.equal(m.text, lib.milestone['7']);
+
+  // Streaks of 1 or 2 are not worth announcing and must never appear.
+  for (let s = 0; s <= 2; s++) {
+    for (let d = 1; d <= 28; d++) {
+      const r = buildAffirmation({ text: long, mechanism: 'anchoring', streak: s, state: {},
+        dateString: `2026-09-${d}`, library: lib });
+      assert.equal(r.streakShown, false, `streak ${s} announced on day ${d}`);
+    }
+  }
+});
+
+test('the streak line is occasional, not constant', async () => {
+  const { buildAffirmation, loadAffirmations } = await import('../src/affirm.js');
+  const lib = loadAffirmations();
+  const long = 'A considered entry about how the evening actually went and what I would change.';
+  let shown = 0;
+  for (let d = 1; d <= 60; d++) {
+    const r = buildAffirmation({ text: long, mechanism: 'anchoring', streak: 5, state: {},
+      dateString: `2026-10-${d}`, library: lib });
+    if (r.streakShown) shown++;
+  }
+  // Constant-magnitude reward flattens into noise; never showing wastes the
+  // strongest line available. Both extremes are failures.
+  assert.ok(shown > 3 && shown < 40, `streak line appeared ${shown}/60 times`);
+});
+
+test('a streak must reach today, and a gap breaks it', async () => {
+  const { journalStreak } = await import('../src/journal.js');
+  const e = (date) => ({ date });
+  assert.equal(journalStreak([e('2026-08-22'), e('2026-08-23'), e('2026-08-24')], '2026-08-24'), 3);
+  assert.equal(journalStreak([e('2026-08-20'), e('2026-08-22'), e('2026-08-24')], '2026-08-24'), 1);
+  assert.equal(journalStreak([e('2026-08-22'), e('2026-08-23')], '2026-08-24'), 0, 'must reach today');
+  assert.equal(journalStreak([e('2026-08-23'), e('2026-08-23'), e('2026-08-24')], '2026-08-24'), 2, 'two entries in a day are one day');
+  assert.equal(journalStreak([e('2026-07-31'), e('2026-08-01')], '2026-08-01'), 2, 'must cross a month boundary');
+  assert.equal(journalStreak([], '2026-08-24'), 0);
+});

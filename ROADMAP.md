@@ -36,13 +36,30 @@ Small, unblocked, and worth doing whenever there's a gap.
 - **Design phases 1–3** — spec, rubric, 18 real Mobbin references, 15 variants, scored comparison artifact
 - **Design phase 5** — motion pass on the composite (motion 13.1.1, inlined)
 - **Live last-night screen** — the composite renders from real telemetry via `web/build-night.js`, built in CI, delivered as a private workflow artifact
+- **Phase 6 — habit anchors** — two daily cues, 24 rotating rationales each, jitter provably off
+- **Phase 7 — closing the loop** — journal entries now get an immediate reply; no inbound path is silent
 
 ---
 
-# Phase 6 — Habit anchors
+# Phase 6 — Habit anchors — SHIPPED
 
-**Status:** specified, not started. This is the newest idea and the next thing
-to build.
+**Status:** built and tested. Decisions taken, since the instruction was to keep
+building rather than wait:
+
+- **M1 — fixed 07:15 anchor.** Firing off the intake reply is the better answer
+  and is now cheap to add, because Phase 7 put a handler on that path. Follow-up.
+- **M2 — Evening Wind-Down moved 19:00 → 18:15**, so the 19:30 glasses cue is
+  the only light message in that window.
+- **M3 — the shirtless-yoga line rides along on roughly one morning in three**,
+  rolled deterministically from the date so a re-run never re-rolls it.
+- **M4 — no journal prompt on habits.** They are actions, not ideas.
+
+Delivered: `data/habits.json` (24 rationales per habit — a reason a day for
+most of a month), `src/habits.js`, `renderHabit` in `src/render.js`, routing in
+`src/dispatch.js`, and two slots with `jitter: false`.
+
+A bug found while wiring it: the dispatch summary assumed anything that was not
+an intake was a fact, and read `.fact` off an array habits never push to. Fixed.
 
 ## What Seth asked for
 
@@ -176,10 +193,22 @@ provably off, and the existing 55-fact rotation is untouched.
 
 ---
 
-# Phase 7 — Closing the loop on every reply
+# Phase 7 — Closing the loop on every reply — SHIPPED (polling path)
 
-**Status:** specified, not started. Sits next to Phase 6 — both are message-layer
-work and should probably ship together.
+**Status:** built and tested on the existing 10-minute polling path.
+
+**L1 was deliberately NOT decided.** Adding an always-on serverless component
+to a deliberately serverless design is Seth's architectural call, not one to
+take while he is not looking. So the affirmation ships on the path that already
+exists: today it arrives within 0–10 minutes of a journal entry. Everything in
+`src/affirm.js` is a local lookup and a deterministic roll — no model, no
+network — so moving it behind a webhook later is a call-site change and nothing
+more. **The instant version is still available whenever Seth wants it.**
+
+Delivered: `data/affirmations.json` (12 mechanism pairs covering every mechanism
+in the prompt library, plus identity, short, streak and milestone pools),
+`src/affirm.js`, `journalStreak` in `src/journal.js`, and the missing
+`sendMessage` on the journal branch of `src/inbox.js`.
 
 ## What Seth asked for
 

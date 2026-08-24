@@ -40,6 +40,28 @@ export function renderMessage({ fact, slot, jackpot, prompt }) {
   return lines.join('\n');
 }
 
+/**
+ * A habit anchor. The cue comes first and stands alone, because this message
+ * has to be actionable from a lock-screen preview without being opened -- the
+ * reason is why you keep doing it, but the cue is what you act on.
+ */
+export function renderHabit({ habit, slot, why, showOptional }) {
+  const lines = [
+    habit.cue,
+    habit.action,
+    '',
+    `SLEEP OS  //  ${slot.name}  ·  ${slot.targetLabel}`,
+    '',
+    why.hook,
+    why.why,
+  ];
+  if (showOptional && habit.optional) {
+    lines.push('');
+    lines.push(habit.optional);
+  }
+  return lines.join('\n');
+}
+
 /** The 6 AM intake ask. No fact -- this slot collects rather than delivers. */
 export function renderIntake({ slot, request }) {
   return [`SLEEP OS  //  ${slot.name}`, `${slot.targetLabel}  ·  ${slot.objective}`, '', request].join('\n');
