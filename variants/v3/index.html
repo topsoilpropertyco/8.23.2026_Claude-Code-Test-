@@ -47,14 +47,18 @@ body{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased
 
 /* stage key — three words, no legend swatches, no boxes */
 .stages{width:100%;margin-top:30px;display:flex;gap:0}
-.stages div{flex:1;padding-top:9px;border-top:2px solid}
+/* `.stages div` also matched the inner .k and .v divs -- twelve borders
+   instead of four -- and its shorthand set border-top-color to currentColor
+   at a higher specificity than .s-deep etc, so every stage rendered white.
+   Same bug as v10. Scope to direct children and set the colour longhand. */
+.stages>div{flex:1;padding-top:9px;border-top-width:2px;border-top-style:solid}
 .stages .k{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;
   color:var(--ink-quiet)}
 .stages .v{font-size:19px;font-weight:700;margin-top:4px;letter-spacing:-.025em}
-.s-deep{border-color:var(--accent)}
-.s-rem{border-color:#8A7A5E}
-.s-light{border-color:#3A3833}
-.s-wake{border-color:#232120}
+.stages>.s-deep{border-top-color:var(--accent)}
+.stages>.s-rem{border-top-color:#8A7A5E}
+.stages>.s-light{border-top-color:#3A3833}
+.stages>.s-wake{border-top-color:#232120}
 
 /* footer ledger — mono, right-aligned, tight */
 .meta{width:100%;margin-top:38px;padding-top:20px;border-top:1px solid #1C1B19;

@@ -225,3 +225,97 @@ round. Both are authenticated but switched off for this chat, so neither ran.
 Every one of the fifteen is hand-authored, which means all fifteen share one
 hand. Sets B and C widen the *references*; they do not widen the *maker*.
 That remains genuinely untested.
+
+---
+
+# The composite — built, and given the Phase 5 motion pass
+
+`variants/composite/index.html`. The round-two recommendation, made real.
+
+| | Distinct | Type | Legib. | Motion | Restraint | Craft | **Total** | **less motion** |
+|---|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+| **Composite** | 4 | 5 | 5 | 4 | 4 | 4 | **26** | **22** |
+
+- **Distinct 4** — it is v3's dial, so within this set it is familiar by
+  construction. Against the category it is still unlike anything: no other sleep
+  app makes the ring out of 99 real five-minute ticks coloured by stage.
+- **Type 5** — 132px Chivo Black against 10px Plex Mono is 13:1, well past the
+  floor, and the sentence at 21px gives a genuine third step.
+- **Legibility 5** — the score and *"you slept better than 844 of your last
+  1,042 nights"* land in one downward sweep. This is the thing none of the
+  fifteen managed, and it is the whole reason the composite exists.
+- **Motion 4** — real springs from `references/MOTION.md`, entrance inside the
+  600–900ms view band, reduced-motion collapsed rather than disabled. Held off
+  a 5 because the delight moment is discoverable-only: nothing tells you the
+  dial is pressable.
+- **Restraint 4** — v3's eight marginalia rows cut to four. `MEAN` and `Z` went
+  because the sentence already carries them; keeping both would state the
+  comparison twice. Not a 5 — v8 still cuts more and makes the emptiness work
+  harder.
+- **Craft 4** — two real bugs found and fixed in the build, below.
+
+## What the composite takes from where
+
+| From | What | Why |
+|---|---|---|
+| v3 The Dial | the ring, the palette, Chivo Black | clock and hypnogram in a single mark |
+| v15 The Brutalist | the declarative sentence | the only comparison treatment needing no decoding |
+| v8 Ma | the discipline to cut | eight marginalia rows became four |
+
+## Phase 5 — motion
+
+Library: **motion 13.1.1**, the `mini` build, bundled to 8KB and inlined. No
+CDN, so the file stays self-contained and works offline.
+
+- **Entrance** — the 99 ticks sweep in the direction the night ran, compressed
+  into 620ms. A true 40ms stagger across 99 elements would take four seconds.
+- **The score** — GLIDE, fade and 10px lift. It does **not** count up; MOTION.md
+  forbids it and a bounce at 132px reads as cheap.
+- **The sentence** — SETTLE, one 40ms step later. The only arrival meant to be
+  noticed, because it carries the comparison.
+- **Delight** — press the dial and the deep-sleep ticks hold while the rest
+  recede to 18%. Answers "where was my deep sleep" without a legend. TAP spring.
+- **Reduced motion** — collapsed to a one-frame opacity settle, verified
+  complete at 60ms. Not disabled.
+
+**Removed, as Phase 5 requires:** the stage row and marginalia had a staggered
+SETTLE entrance at 40ms intervals. It pushed the full entrance past 1.1s —
+outside the 900ms band — and made the screen read as a slideshow, three groups
+queueing for attention instead of one hierarchy. They are reference data, not
+news; the right treatment is to be already there when the eye arrives.
+
+## Two bugs the build exposed, both of which also affected v3
+
+1. **The dial was thirteen minutes too long.** v3's hand-condensed phase string
+   is 101 characters. At five minutes a tick that is 505 minutes; the night was
+   492. The composite derives the series from the authoritative segment list
+   instead, giving 99 ticks whose stage proportions reproduce the published
+   totals (deep exact, the others within two minutes — sampling error at
+   five-minute resolution).
+2. **Every stage swatch was rendering white.** `.stages div` also matched the
+   inner label and value divs — twelve borders instead of four — and its
+   shorthand set `border-top-color` to `currentColor` at a higher specificity
+   than `.s-deep`. The same bug found in v10, inherited here from v3.
+   **Fixed in v3 as well.**
+
+Also: the four coloured rules originally butted together and read as a
+proportional stacked bar, but the cells are equal width — deep 1:29 and light
+4:09 looked the same length. A 6px gap now makes them read as a legend.
+
+---
+
+# Correction — the earlier screenshots were rendered in the wrong fonts
+
+Headless Chromium cannot reach `fonts.googleapis.com` through this
+environment's egress proxy (`ERR_CONNECTION_RESET`), although `curl` can. Every
+render before this point therefore fell back to system faces, and the first
+published artifact showed fallback typography for all fifteen screens.
+
+Fonts are now fetched with curl and inlined for rendering; the shipped variant
+files still carry the `<link>`, which is what a real browser and the artifact
+CSP will load.
+
+**This invalidated one earlier verification.** v9 The Specimen was measured at
+exactly 390×844 against fallback metrics; with Anton's real metrics it
+overflowed to 873px. Now fixed. Layout verified against substitute fonts is not
+verification — every future round must render with the real faces resolved.

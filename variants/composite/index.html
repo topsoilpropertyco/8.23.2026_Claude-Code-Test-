@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Composite · Sleep OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chivo:wght@300;400;700;900&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* COMPOSITE -- the recommendation from JUDGING.md round two, built.
+   Base            v3 The Dial      clock and hypnogram in one mark
+   Comparison      v15 The Brutalist  the declarative sentence
+   Restraint       v8 Ma            cut until the emptiness does work
+   Motion          Phase 5          motion/mini 13.1.1, inlined, 8KB
+
+   The one thing none of the fifteen did was make the comparison as dominant
+   as the score AND stay restrained. v3 gets the score into a single fixation;
+   v15's sentence gets the comparison there without a second chart competing
+   for the same space; v8's discipline is what pays for both, by removing the
+   marginalia that made v3 an eight-row grid. */
+:root{
+  --ground:#08080A;
+  --ink:#EDEBE6;
+  --ink-quiet:#6B6862;
+  --rule:#1C1B19;
+  --accent:#E8A33D;
+  --sans:'Chivo',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  /* references/MOTION.md */
+  --ease-out-quart:cubic-bezier(0.25,1,0.5,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--ground)}
+body{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased;
+  font-variant-numeric:tabular-nums}
+.screen{width:390px;min-height:844px;margin:0 auto;background:var(--ground);
+  padding:38px 24px 30px;display:flex;flex-direction:column;align-items:center}
+
+.head{width:100%;display:flex;justify-content:space-between;align-items:baseline}
+.head .l{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-quiet)}
+.head .r{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--accent)}
+
+.dial{position:relative;width:342px;height:342px;margin-top:12px}
+.dial svg{display:block}
+.dial line{transform-box:fill-box;transform-origin:center}
+.centre{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;pointer-events:none}
+.centre .n{font-size:132px;font-weight:900;line-height:.84;letter-spacing:-.055em}
+.centre .u{font-family:var(--mono);font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--ink-quiet);margin-top:10px}
+
+/* the sentence -- second largest thing on the screen, and the only place the
+   comparison is stated. Nothing else on this screen repeats it. */
+.said{width:100%;margin-top:30px;font-size:21px;font-weight:700;line-height:1.26;
+  letter-spacing:-.018em;text-wrap:balance}
+.said b{color:var(--accent);font-weight:700}
+.said .sub{display:block;font-family:var(--mono);font-size:10px;font-weight:400;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ink-quiet);margin-top:9px}
+
+.ends{width:100%;display:flex;justify-content:space-between;margin-top:34px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.06em}
+.ends .lab{display:block;font-size:9px;letter-spacing:.18em;color:var(--ink-quiet);
+  text-transform:uppercase;margin-bottom:3px}
+
+/* 6px gaps: butted together the four rules read as a proportional stacked
+   bar, but the cells are equal width -- deep 1:29 and light 4:09 would look
+   the same length. Separated, they read as what they are: a legend. */
+.stages{width:100%;margin-top:38px;display:flex;gap:6px}
+/* `.stages div` also matched the inner .k and .v divs -- twelve borders
+   instead of four -- and its shorthand set border-top-color to currentColor
+   at a higher specificity than .s-deep etc, so every stage rendered white.
+   Same bug as v10. Scope to direct children and set the colour longhand. */
+.stages>div{flex:1;padding-top:9px;border-top-width:2px;border-top-style:solid}
+.stages .k{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-quiet)}
+.stages .v{font-size:19px;font-weight:700;margin-top:4px;letter-spacing:-.025em}
+.stages>.s-deep{border-top-color:var(--accent)}
+.stages>.s-rem{border-top-color:#8A7A5E}
+.stages>.s-light{border-top-color:#3A3833}
+.stages>.s-wake{border-top-color:#232120}
+
+/* four rows, down from v3's eight. See the note in the script. */
+.meta{width:100%;margin-top:auto;padding-top:20px;border-top:1px solid var(--rule);
+  display:grid;grid-template-columns:1fr 1fr;gap:9px 26px}
+.meta .row{display:flex;align-items:baseline;font-family:var(--mono);font-size:11px}
+.meta .row .k{color:var(--ink-quiet);letter-spacing:.08em}
+.meta .row .v{margin-left:auto;color:var(--ink);font-weight:500}
+
+/* Everything that animates starts hidden ONLY when motion is allowed. With
+   reduced motion the screen must be complete and static from frame one, so
+   these are re-shown immediately below. */
+@media (prefers-reduced-motion:no-preference){
+  .anim{opacity:0}
+}
+</style></head>
+<body>
+<div class="screen">
+
+  <div class="head">
+    <span class="l">23 Aug &middot; Sleep OS</span>
+    <span class="r">81ST</span>
+  </div>
+
+  <div class="dial">
+    <svg width="342" height="342" viewBox="0 0 342 342" role="img"
+         aria-label="The night from 23:15 to 07:26 as a radial dial. Each tick is five minutes, coloured by sleep stage.">
+      <g id="ticks"></g>
+    </svg>
+    <div class="centre">
+      <div class="n anim" id="score">88</div>
+      <div class="u anim" id="scorelab">Sleep score</div>
+    </div>
+  </div>
+
+  <p class="said anim" id="said">You slept better than <b>844</b> of your last <b>1,042</b> nights.
+    <span class="sub">81st percentile &middot; +0.92 SD above a 79.3 mean</span></p>
+
+  <div class="ends">
+    <div><span class="lab">Lights out</span>23:15</div>
+    <div style="text-align:right"><span class="lab">Woke</span>07:26</div>
+  </div>
+
+  <div class="stages">
+    <div class="s-deep"><div class="k">Deep</div><div class="v">1:29</div></div>
+    <div class="s-rem"><div class="k">REM</div><div class="v">2:07</div></div>
+    <div class="s-light"><div class="k">Light</div><div class="v">4:09</div></div>
+    <div class="s-wake"><div class="k">Awake</div><div class="v">0:27</div></div>
+  </div>
+
+  <div class="meta">
+    <div class="row"><span class="k">ASLEEP</span><span class="v">7h 45m</span></div>
+    <div class="row"><span class="k">EFFIC</span><span class="v">94%</span></div>
+    <div class="row"><span class="k">LATENCY</span><span class="v">2m 30s</span></div>
+    <div class="row"><span class="k">READY</span><span class="v">85</span></div>
+  </div>
+
+</div>
+
+<script>var MM=(()=>{var M=Object.defineProperty;var oe=Object.getOwnPropertyDescriptor;var re=Object.getOwnPropertyNames;var ie=Object.prototype.hasOwnProperty;var ne=(t,e)=>{for(var o in e)M(t,o,{get:e[o],enumerable:!0})},ae=(t,e,o,r)=>{if(e&&typeof e=="object"||typeof e=="function")for(let i of re(e))!ie.call(t,i)&&i!==o&&M(t,i,{get:()=>e[i],enumerable:!(r=oe(e,i))||r.enumerable});return t};var se=t=>ae(M({},"__esModule",{value:!0}),t);var le={};ne(le,{animate:()=>L});var h=()=>{};function B(t){let e;return()=>(e===void 0&&(e=t()),e)}var D=t=>t;var d=t=>t*1e3,g=t=>t/1e3;var P=t=>Array.isArray(t)&&typeof t[0]=="number";var z=(t,e,o=10)=>{let r="",i=Math.max(Math.round(e/o),2);for(let m=0;m<i;m++)r+=Math.round(t(m/(i-1))*1e4)/1e4+", ";return`linear(${r.substring(0,r.length-2)})`};var me=t=>t!==null;function j(t,{repeat:e,repeatType:o="loop"},r,i=1){let m=t.filter(me),c=i<0||e&&o!=="loop"&&e%2===1?0:m.length-1;return!c||r===void 0?m[c]:r}var V=class{constructor(){this.updateFinished()}get finished(){return this._finished}updateFinished(){this._finished=new Promise(e=>{this.resolve=e})}notifyFinished(){this.resolve()}then(e,o){return this.finished.then(e,o)}};function w(t){for(let e=1;e<t.length;e++)t[e]??(t[e]=t[e-1])}var S=t=>t.startsWith("--");function q(t,e,o){S(e)?t.style.setProperty(e,o):t.style[e]=o}var H={};function A(t,e){let o=B(t);return()=>H[e]??o()}var $=A(()=>window.ScrollTimeline!==void 0,"scrollTimeline");var E=A(()=>{try{document.createElement("div").animate({opacity:0},{easing:"linear(0, 1)"})}catch{return!1}return!0},"linearEasing");var x=([t,e,o,r])=>`cubic-bezier(${t}, ${e}, ${o}, ${r})`;var C={linear:"linear",ease:"ease",easeIn:"ease-in",easeOut:"ease-out",easeInOut:"ease-in-out",circIn:x([0,.65,.55,1]),circOut:x([.55,0,1,.45]),backIn:x([.31,.01,.66,-.59]),backOut:x([.33,1.53,.69,.99])};function F(t,e){if(t)return typeof t=="function"?E()?z(t,e):"ease-out":P(t)?x(t):Array.isArray(t)?t.map(o=>F(o,e)||C.easeOut):C[t]}function _(t,e,o,{delay:r=0,duration:i=300,repeat:m=0,repeatType:u="loop",ease:c="easeOut",times:s}={},n=void 0){let a={[e]:o};s&&(a.offset=s);let l=F(c,i);Array.isArray(l)&&(a.easing=l);let p={delay:r,duration:i,easing:Array.isArray(l)?"linear":l,fill:"both",iterations:m+1,direction:u==="reverse"?"alternate":"normal"};return n&&(p.pseudoElement=n),t.animate(a,p)}function U(t){return typeof t=="function"&&"applyToOptions"in t}function Z({type:t,...e}){return U(t)&&E()?t.applyToOptions(e):(e.duration??(e.duration=300),e.ease??(e.ease="easeOut"),e)}var y=class extends V{constructor(e){if(super(),this.finishedTime=null,this.isStopped=!1,this.manualStartTime=null,!e)return;let{element:o,name:r,keyframes:i,pseudoElement:m,allowFlatten:u=!1,finalKeyframe:c,onComplete:s}=e;this.isPseudoElement=!!m,this.allowFlatten=u,this.options=e,h(typeof e.type!="string",`Mini animate() doesn't support "type" as a string.`,"mini-spring");let n=Z(e);this.animation=_(o,r,i,n,m),n.autoplay===!1&&this.animation.pause(),this.animation.onfinish=()=>{if(this.finishedTime=this.time,!m){let a=j(i,this.options,c,this.speed);this.updateMotionValue&&this.updateMotionValue(a),q(o,r,a),this.animation.cancel()}s?.(),this.notifyFinished()}}play(){this.isStopped||(this.manualStartTime=null,this.animation.play(),this.state==="finished"&&this.updateFinished())}pause(){this.animation.pause()}complete(){this.animation.finish?.()}cancel(){try{this.animation.cancel()}catch{}}stop(){if(this.isStopped)return;this.isStopped=!0;let{state:e}=this;e==="idle"||e==="finished"||(this.updateMotionValue?this.updateMotionValue():this.commitStyles(),this.isPseudoElement||this.cancel())}commitStyles(){let e=this.options?.element;!this.isPseudoElement&&e?.isConnected&&this.animation.commitStyles?.()}get duration(){let e=this.animation.effect?.getComputedTiming?.().duration||0;return g(Number(e))}get iterationDuration(){let{delay:e=0}=this.options||{};return this.duration+g(e)}get time(){return g(Number(this.animation.currentTime)||0)}set time(e){let o=this.finishedTime!==null;this.manualStartTime=null,this.finishedTime=null,this.animation.currentTime=d(e),o&&this.animation.pause()}get speed(){return this.animation.playbackRate}set speed(e){e<0&&(this.finishedTime=null),this.animation.playbackRate=e}get state(){return this.finishedTime!==null?"finished":this.animation.playState}get startTime(){return this.manualStartTime??Number(this.animation.startTime)}set startTime(e){this.manualStartTime=this.animation.startTime=e}attachTimeline({timeline:e,rangeStart:o,rangeEnd:r,observe:i}){return this.allowFlatten&&this.animation.effect?.updateTiming({easing:"linear"}),this.animation.onfinish=null,e&&$()?(this.animation.timeline=e,o&&(this.animation.rangeStart=o),r&&(this.animation.rangeEnd=r),D):i(this)}};var b=class{constructor(e){this.stop=()=>this.runAll("stop"),this.animations=e.filter(Boolean)}get finished(){return Promise.all(this.animations.map(e=>e.finished))}getAll(e){return this.animations[0][e]}setAll(e,o){for(let r=0;r<this.animations.length;r++)this.animations[r][e]=o}attachTimeline(e){let o=this.animations.map(r=>r.attachTimeline(e));return()=>{o.forEach((r,i)=>{r&&r(),this.animations[i].stop()})}}get time(){return this.getAll("time")}set time(e){this.setAll("time",e)}get speed(){return this.getAll("speed")}set speed(e){this.setAll("speed",e)}get state(){return this.getAll("state")}get startTime(){return this.getAll("startTime")}get duration(){return J(this.animations,"duration")}get iterationDuration(){return J(this.animations,"iterationDuration")}runAll(e){this.animations.forEach(o=>o[e]())}play(){this.runAll("play")}pause(){this.runAll("pause")}cancel(){this.runAll("cancel")}complete(){this.runAll("complete")}};function J(t,e){let o=0;for(let r=0;r<t.length;r++){let i=t[r][e];i!==null&&i>o&&(o=i)}return o}var T=class extends b{then(e,o){return this.finished.finally(e).then(()=>{})}};var X=new WeakMap,I=(t,e="")=>`${t}:${e}`;function R(t){let e=X.get(t);return e||(e=new Map,X.set(t,e)),e}function Y(t,e){if(t?.inherit&&e){let{inherit:o,...r}=t;return{...e,...r}}return t}function k(t,e){let o=t?.[e]??t?.default??t;return o!==t?Y(o,t):o}var Q=["borderTopLeftRadius","borderTopRightRadius","borderBottomRightRadius","borderBottomLeftRadius"];var ee=new Set(["borderWidth","borderTopWidth","borderRightWidth","borderBottomWidth","borderLeftWidth","borderRadius",...Q,"width","maxWidth","height","maxHeight","top","right","bottom","left","inset","insetBlock","insetBlockStart","insetBlockEnd","insetInline","insetInlineStart","insetInlineEnd","padding","paddingTop","paddingRight","paddingBottom","paddingLeft","paddingBlock","paddingBlockStart","paddingBlockEnd","paddingInline","paddingInlineStart","paddingInlineEnd","margin","marginTop","marginRight","marginBottom","marginLeft","marginBlock","marginBlockStart","marginBlockEnd","marginInline","marginInlineStart","marginInlineEnd","fontSize","backgroundPositionX","backgroundPositionY"]);function O(t,e){for(let o=0;o<t.length;o++)typeof t[o]=="number"&&ee.has(e)&&(t[o]=t[o]+"px")}function N(t,e,o){if(t==null)return[];if(t instanceof EventTarget)return[t];if(typeof t=="string"){let r=document;e&&(r=e.current);let i=o?.[t]??r.querySelectorAll(t);return i?Array.from(i):[]}return Array.from(t).filter(r=>r!=null)}function v(t,e){let o=window.getComputedStyle(t);return S(e)?o.getPropertyValue(e):o[e]}function te(t,e,o,r){if(t==null)return[];let i=N(t,r),m=i.length;h(!!m,"No valid elements provided.","no-valid-elements");let u=[];for(let s=0;s<m;s++){let n=i[s],a={...o};typeof a.delay=="function"&&(a.delay=a.delay(s,m));for(let l in e){let p=e[l];Array.isArray(p)||(p=[p]);let f={...k(a,l)};f.duration&&(f.duration=d(f.duration)),f.delay&&(f.delay=d(f.delay));let W=R(n),G=I(l,f.pseudoElement||""),K=W.get(G);K&&K.stop(),u.push({map:W,key:G,unresolvedKeyframes:p,options:{...f,element:n,name:l,allowFlatten:!a.type&&!a.ease}})}}for(let s=0;s<u.length;s++){let{unresolvedKeyframes:n,options:a}=u[s],{element:l,name:p,pseudoElement:f}=a;!f&&n[0]===null&&(n[0]=v(l,p)),w(n),O(n,p),!f&&n.length<2&&n.unshift(v(l,p)),a.keyframes=n}let c=[];for(let s=0;s<u.length;s++){let{map:n,key:a,options:l}=u[s],p=new y(l);n.set(a,p),p.finished.finally(()=>n.delete(a)),c.push(p)}return c}var pe=t=>{function e(o,r,i){return new T(te(o,r,i,t))}return e},L=pe();return se(le);})();
+</script>
+<script>
+/* ------------------------------------------------------------------ *
+ * THE DIAL -- unchanged from v3. 99 ticks, one per five minutes of the
+ * 8h 12m in bed, swept over 300 degrees with the gap at the bottom.
+ * ------------------------------------------------------------------ */
+var TICKS=(function(){
+  /* v3 carried a hand-condensed phase string of 101 characters. At five
+     minutes a tick that is 505 minutes, but the night was 492 -- the dial was
+     thirteen minutes long. Derived from the authoritative segment list here
+     instead, so the ring is exactly the night and the stage proportions on the
+     face match the published totals. */
+  var NIGHT=[['w',3],['l',22],['d',38],['l',14],['r',12],['l',18],['d',31],['l',20],
+   ['r',26],['w',4],['l',24],['d',20],['l',22],['r',34],['l',16],['w',6],['l',30],
+   ['r',30],['l',27],['w',8],['l',28],['r',25],['l',28],['w',6]];
+  var CODE={d:1,l:2,r:3,w:4}, TOT=492, N=99;
+  var byMinute=[]; NIGHT.forEach(function(seg){
+    for(var k=0;k<seg[1];k++) byMinute.push(CODE[seg[0]]);
+  });
+  var phases=[]; for(var i=0;i<N;i++){
+    phases.push(byMinute[Math.min(TOT-1, Math.floor((i+0.5)*TOT/N))]);
+  }
+
+  var CX=171, CY=171, R=150;
+  var START=120, SWEEP=300;
+  var COL={1:'#E8A33D',2:'#3A3833',3:'#8A7A5E',4:'#232120'};
+  var LEN={1:30,2:15,3:22,4:9};
+  var g=document.getElementById('ticks'), ns='http://www.w3.org/2000/svg';
+
+  var ring=document.createElementNS(ns,'circle');
+  ring.setAttribute('cx',CX); ring.setAttribute('cy',CY); ring.setAttribute('r',R-16);
+  ring.setAttribute('fill','none'); ring.setAttribute('stroke','#16151A');
+  ring.setAttribute('stroke-width','1'); g.appendChild(ring);
+
+  var made=[];
+  phases.forEach(function(p,i){
+    var a=(START + SWEEP*(i/(phases.length-1)) ) * Math.PI/180;
+    var len=LEN[p]||14, inner=R-len, outer=R;
+    var line=document.createElementNS(ns,'line');
+    line.setAttribute('x1',CX+Math.cos(a)*inner); line.setAttribute('y1',CY+Math.sin(a)*inner);
+    line.setAttribute('x2',CX+Math.cos(a)*outer); line.setAttribute('y2',CY+Math.sin(a)*outer);
+    line.setAttribute('stroke',COL[p]||'#2A2825');
+    line.setAttribute('stroke-width', p===1 ? 2.6 : 2);
+    line.setAttribute('stroke-linecap','round');
+    line.dataset.stage=p;
+    g.appendChild(line);
+    made.push(line);
+  });
+  return made;
+})();
+
+/* ------------------------------------------------------------------ *
+ * PHASE 5 -- MOTION
+ *
+ * Library: motion 13.1.1, the  build (8KB), bundled inline. No CDN,
+ * so this file stays self-contained and works offline.
+ *
+ * Springs are the three from references/MOTION.md and nothing else:
+ *   SETTLE  stiffness 260  damping 30  mass 1     ~450ms
+ *   GLIDE   stiffness 140  damping 26  mass 1.1   ~700ms
+ *   TAP     stiffness 500  damping 28  mass 0.6   ~250ms
+ *
+ * What does NOT animate here, per that file's list: the 88 never counts up;
+ * the marginalia numbers never tick; nothing loops, breathes or floats;
+ * there is no parallax and no animated gradient.
+ * ------------------------------------------------------------------ */
+var animate = MM.animate;
+var SETTLE={type:'spring',stiffness:260,damping:30,mass:1};
+var GLIDE ={type:'spring',stiffness:140,damping:26,mass:1.1};
+var TAP   ={type:'spring',stiffness:500,damping:28,mass:0.6};
+var STAGGER=0.04;                      /* 40ms, per MOTION.md */
+
+var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+if (reduced) {
+  /* Collapsed, not disabled. One frame of opacity and the screen is done --
+     it should still feel intentional, just instant. */
+  document.querySelectorAll('.anim').forEach(function(el){
+    animate(el, {opacity:[0,1]}, {duration:0.001});
+    el.style.opacity=1;
+  });
+} else {
+  /* ENTRANCE -- one sequence, inside the 600-900ms view band.
+     The ticks sweep in the direction the night ran, so the entrance is the
+     night replaying rather than a decorative reveal. 99 ticks at a real 40ms
+     stagger would take four seconds, so the sweep is compressed into 620ms
+     and the stagger is proportional to angle. */
+  TICKS.forEach(function(line,i){
+    var t = i/(TICKS.length-1);
+    animate(line,
+      {opacity:[0,1], scale:[0.55,1]},
+      Object.assign({}, GLIDE, {delay: t*0.62}));
+  });
+
+  /* The score. GLIDE because display-scale type must not wobble -- a bounce
+     at 132px reads as cheap instantly. It fades and lifts; it does not count. */
+  animate(document.getElementById('score'),
+    {opacity:[0,1], y:[10,0]}, Object.assign({}, GLIDE, {delay:0.10}));
+  animate(document.getElementById('scorelab'),
+    {opacity:[0,1]}, {duration:0.4, ease:'easeOut', delay:0.10+STAGGER});
+
+  /* The sentence -- SETTLE, one stagger step after the score. This is the
+     only element whose arrival is deliberately noticed: it carries the
+     comparison, and the comparison is the thing the first fifteen buried. */
+  animate(document.getElementById('said'),
+    {opacity:[0,1], y:[8,0]}, Object.assign({}, SETTLE, {delay:0.10+STAGGER*2}));
+
+  /* ---------------------------------------------------------------- *
+   * REMOVED (Phase 5 requires cutting one animation, and this is it)
+   *
+   * The stage row and the four marginalia rows had a staggered SETTLE
+   * entrance, 40ms apart, starting at 260ms. Two reasons it is gone:
+   *
+   * 1. It pushed the full entrance to roughly 1.1s, past the 900ms view
+   *    band in MOTION.md. "A screen you open at 7am must not make you wait."
+   * 2. With the ticks already sweeping and the sentence arriving, a third
+   *    staggered group made the screen read as a slideshow -- three things
+   *    queueing for attention instead of one hierarchy.
+   *
+   * They are reference data, not news. The right treatment is to be
+   * already there when the eye arrives.
+   * ---------------------------------------------------------------- */
+
+  /* DELIGHT -- press the dial and the deep-sleep ticks hold while the rest
+     recede, so "where was my deep sleep" is answerable without a legend.
+     TAP spring, releases on pointerup. Purposeful, not decorative. */
+  var dial=document.querySelector('.dial'), held=false;
+  function emphasise(on){
+    if (held===on) return; held=on;
+    TICKS.forEach(function(line){
+      var deep = line.dataset.stage==='1';
+      animate(line,
+        {opacity: on ? (deep?1:0.18) : 1, scale: on && deep ? 1.1 : 1},
+        TAP);
+    });
+  }
+  dial.addEventListener('pointerdown', function(){ emphasise(true); });
+  ['pointerup','pointerleave','pointercancel'].forEach(function(ev){
+    dial.addEventListener(ev, function(){ emphasise(false); });
+  });
+}
+</script>
+</body></html>
