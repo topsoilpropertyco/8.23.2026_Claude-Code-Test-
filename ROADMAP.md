@@ -1,158 +1,243 @@
-# Sleep OS — Build Roadmap
+# Sleep OS — roadmap
 
-Last updated: 2026-08-23
+## How this file works
+
+Seth drops ideas whenever he has them. Nothing stops to build them. They land in
+**Inbox** raw, get triaged into a phase with enough specification to be picked
+up cold, and stay there until they're scheduled.
+
+A phase is only "ready" when it names what it touches, what decision it needs
+from Seth, and how you'd know it worked.
 
 ---
 
-## Where we are
+## Inbox — raw, not yet triaged
 
-**Phase 1 is complete and running unattended.** Cards deliver, replies come
-back, nights get logged, the coach responds, the journal records it — all on a
-schedule GitHub drives with no involvement from anyone.
+*(empty — everything below has been placed)*
 
-Verified: four workflow runs, three consecutive green, the last one reading the
-encrypted journal successfully. The repository is public (unlimited Actions
-minutes), and the journal is unreadable to anyone without the data key.
+---
 
-The first message to arrive with nobody watching will be the 6:00 AM intake.
+## Standing items
 
-| | |
+Small, unblocked, and worth doing whenever there's a gap.
+
+| | Item | Why it matters |
+|---|---|---|
+| S1 | **Revoke the exposed Telegram bot token** via @BotFather, then update `SLEEPOS_TELEGRAM_BOT_TOKEN` | The token was pasted into chat early on. The repo is public. Rotating it costs two minutes and closes the only known credential exposure. **Needs Seth** — BotFather is a human conversation. |
+| S2 | Decide the **8:1 display-to-body type floor** | Four design variants can't meet it because signage, clinical forms, receipts and strip-chart recorders have no concept of a hero number. Either the floor stands and those disciplines are out, or it's negotiable and v11's reference-interval mechanism becomes available. **Needs Seth.** Blocks any final composite decision. |
+
+---
+
+## Shipped
+
+- **Phase 1 / 1.6** — 55-fact library, jittered rotation, Telegram delivery, journal prompts, reply capture, 6 AM intake, coaching with SD and percentile
+- **Phase 2** — Oura OAuth2, 1,043 nights backfilled, encrypted telemetry, biometric coach
+- **Design phases 1–3** — spec, rubric, 18 real Mobbin references, 15 variants, scored comparison artifact
+- **Design phase 5** — motion pass on the composite (motion 13.1.1, inlined)
+- **Live last-night screen** — the composite renders from real telemetry via `web/build-night.js`, built in CI, delivered as a private workflow artifact
+
+---
+
+# Phase 6 — Habit anchors
+
+**Status:** specified, not started. This is the newest idea and the next thing
+to build.
+
+## What Seth asked for
+
+Two new daily messages, each cueing one specific physical habit at a specific
+time, each carrying a rotating scientific reason for doing it:
+
+1. **Evening, 7:30 PM** — "Put your blue-light blocking glasses on now," plus a
+   fact about why evening short-wavelength light matters.
+2. **Morning, on waking** — "Get your eyes on the sun, right now." The
+   circadian-entrainment case for outdoor light immediately after waking.
+   Optionally: a couple of yoga poses in the sun, shirt off.
+
+## Why this is a new type, not two more facts
+
+The existing 55-fact rotation varies *what it tells you* and loops forever
+through the library. A habit anchor is the inverse: **the instruction never
+changes, only the reason does.** Same action, every day, with a fresh argument
+for it. That's a different content shape and a different scheduling policy, so
+it wants its own type rather than being forced into the fact library.
+
+Concretely, three differences:
+
+| | Fact slot | Habit anchor |
+|---|---|---|
+| Content | one of 55 cards, rotating | one fixed cue + rotating rationale |
+| Timing | jittered ±20 min, so it never feels robotic | **must not jitter** — a habit cue at 7:52 is not a 7:30 habit |
+| Goal | keep the idea fresh | make the action automatic |
+
+The jitter that makes the fact rotation feel alive is exactly wrong here. A
+habit forms on a consistent cue. `config.json` already supports `jitter: false`
+per slot, so this needs no new scheduling code.
+
+## What it touches
+
+| File | Change |
 |---|---|
-| Repo | `topsoilpropertyco/8.23.2026_Claude-Code-Test-` |
-| Branch | `claude/first-app-build-3wp3ge` |
-| Bot | `@SleepOSMissionTopOnePercent_Bot` |
-| Chat | `8760828708` (Salus) |
-| Timezone | `America/Detroit` |
-| Target bedtime | 22:30 |
-| Library | 55 facts · 28 journal prompts · 7 morning prompts |
-| Secrets | `SLEEPOS_TELEGRAM_BOT_TOKEN`, `SLEEPOS_TELEGRAM_CHAT_ID`, `SLEEPOS_DATA_KEY` |
-| Visibility | Public — unlimited Actions minutes |
-| Tests | 45 passing, zero runtime dependencies |
+| `config.json` | two new slots, `type: "habit"`, `jitter: false` |
+| `data/habits.json` | **new.** One entry per habit: fixed `cue`, fixed `action`, and a pool of rotating `why` cards |
+| `src/render.js` | a habit renderer — cue first, reason second. The cue must be readable without reading the reason |
+| `src/selector.js` | rotate the `why` pool per habit, looping forever, same no-repeat-until-exhausted discipline as facts |
+| `src/dispatch.js` | route `type: "habit"` to the habit renderer |
+| `test/` | rotation loops and never repeats early; jitter is genuinely off; cue survives a missing rationale |
+
+## Proposed slots
+
+```jsonc
+{
+  "id": "morning_light",
+  "name": "07: Morning Light",
+  "anchor": "07:15",            // see open question M1
+  "objective": "Set the circadian clock: eyes on outdoor light within minutes of waking.",
+  "type": "habit",
+  "habit": "morning_light",
+  "jitter": false,
+  "enabled": true
+},
+{
+  "id": "blue_blockers",
+  "name": "08: Blue Blockers",
+  "anchor": "19:30",
+  "objective": "Cut short-wavelength light three hours before bed.",
+  "type": "habit",
+  "habit": "blue_blockers",
+  "jitter": false,
+  "enabled": true
+}
+```
+
+## Content model
+
+```jsonc
+{
+  "blue_blockers": {
+    "cue": "Glasses on. Now.",
+    "action": "Blue-light blockers, until you're asleep.",
+    "why": [
+      { "hook": "…", "claim": "…", "mechanism": "…" }
+      // pool of 20–30, rotating, looping forever
+    ]
+  }
+}
+```
+
+The `why` pool needs **20–30 entries per habit** so a reason doesn't repeat
+inside a month. Fewer than that and the rotation becomes visible, which is the
+thing that kills a daily message.
+
+Keep the established framing — "here's the secret," "here's the expensive
+thing" — but the cue line comes first and stands alone. On a phone lock screen
+Seth should be able to act on the notification without opening it.
+
+**Evidence guardrail:** morning light for circadian entrainment is solidly
+supported. Evening blue-blocking is real but the literature is more mixed than
+the wellness internet suggests. The `why` pool must not overclaim — if the
+strongest honest version of a claim is "this probably helps and costs nothing,"
+write that. The project has held to unrounded, unembellished numbers
+throughout; the same standard applies to the science.
+
+## Open questions for Seth
+
+- **M1 — What does "upon waking" mean in practice?** Three options:
+  - **(a) Fixed 07:15.** Simplest. Your Oura wake is 07:26, so it usually lands
+    just before you're up. Wrong on a lie-in.
+  - **(b) Fire on your intake reply.** You already answer the 6 AM intake — the
+    cue could follow your first message of the day. Truly "on waking," but only
+    if you reply promptly.
+  - **(c) Off Oura's detected wake.** Most accurate, and **not workable**: Oura
+    telemetry isn't pulled until 11:00, hours too late.
+
+  *Recommendation: (a) now, (b) as a follow-up once the habit type exists.*
+
+- **M2 — 7:30 PM collides with the 7:00 PM Evening Wind-Down.** Two messages 30
+  minutes apart, both about light. Options: move wind-down to 18:30, fold the
+  glasses cue into it, or accept the double-tap. *Recommendation: shift Evening
+  Wind-Down to 18:15 so the glasses cue is the only light message in that
+  window.*
+
+- **M3 — Does the shirtless-yoga line ship every day, or rotate in?** Daily makes
+  it noise; occasional makes it a nudge. *Recommendation: attach it to roughly
+  one morning in three, as an optional second line.*
+
+- **M4 — Do habit anchors get journal prompts?** Facts each carry one. Habits
+  are actions, not ideas. *Recommendation: no prompt, but track completion —
+  see Phase 8.*
+
+## Done when
+
+Both messages arrive at fixed times daily, the cue is actionable from a lock
+screen, the rationale differs every day for at least 20 days, jitter is
+provably off, and the existing 55-fact rotation is untouched.
 
 ---
 
-## Phase 1 — Reminder engine · **BUILT**
+# Phase 7 — Generator bake-off
 
-Seven slots a day: a 6 AM intake plus six fact cards, drawn from a 55-fact
-library that cycles fully before repeating.
+**Status:** fully specified in `SUPERPROMPT-PHASE4.md`. Needs a session with the
+Magic Patterns and Lovable connectors live.
 
-- Rotation with no repeats until the pool is exhausted (~9.2 days at full cadence)
-- Slot affinity at 93–100% on-theme
-- Jackpot drops on ~1 in 7 sends, restricted to the 23 high-intensity cards
-- Gaussian jitter to ±20 min on fact slots; the intake stays fixed so it can
-  become a habit
-- DST-safe wall-clock scheduling in `America/Detroit`
-- GitHub Actions polls every 10 minutes and sends whatever is due
-- CLI: `today`, `preview`, `dispatch`, `send`, `whoami`, `stats`, `journal`
+At least 5 designs from each tool, scored on the same rubric, ranked against the
+existing 16, published as one artifact. The question it exists to answer: **all
+16 current screens were made by one model — does a different maker produce
+something structurally different, or does everything converge?**
 
-## Phase 1.6 — Journal, intake and coach · **BUILT**
-
-- 28 prompts across 12 named behaviour-change mechanisms, one per card,
-  rotating independently of the facts and never repeating a mechanism twice
-  running
-- Reply capture through `getUpdates` polling on the existing schedule — no
-  webhook, no server, no public endpoint
-- Replies matched back to the card that prompted them
-- 6:00 AM manual intake with a forgiving parse
-- Rule-based morning coach with confidence tiers, so no statistic is claimed
-  before the record supports it; every recommendation is drawn from a real
-  fact's move
-
-## Phase 1.5 — Content hardening · **CLOSED**
-
-- ~~Citations for the 40 sleep facts~~ — dropped. Solo build, not needed.
-- ~~More caffeine facts~~ — resolved differently. Seth does not drink coffee,
-  so the 4 PM slot was repointed at the boundaries that actually apply to him:
-  dinner timing, locking tonight's shutdown, and an occasional kombucha cutoff
-  at 12:30 PM. Pool widened from 5 facts to 9; on-theme rate 67% → 93%.
+Budget: 6 Magic Patterns generations (0 spent). Lovable spends real credits —
+one project with five routes, not five projects.
 
 ---
 
-## Phase 2 — Oura ingestion · **NEXT UP**
+# Phase 8 — Getting the night screen in front of you
 
-**Needs from Seth:** an Oura Personal Access Token.
+**Status:** not specified. Needs a decision before it's worth planning.
 
-- Oura API v2 client with bearer auth and 429 handling
-- **Full historical backfill on day one.** The endpoints accept date ranges, so
-  an entire year of history lands immediately rather than accumulating over
-  months. This is what makes Phase 3 useful the day it ships instead of the
-  following season.
-- Daily pull at 11:00 AM local with exponential-backoff retry until the ring
-  has synced
-- Reconciliation against the manual log — the manual entry stays, because
-  writing it down by hand is the behavioural point; Oura becomes the source of
-  truth for the analytics
+`web/build-night.js` produces the real screen, but it's delivered as a **GitHub
+Actions artifact** — you'd have to open Actions, find the run, download a zip.
+Nobody does that daily. The screen exists and is effectively unreachable.
 
-Note: Oura webhooks need a registered OAuth application and cannot be driven by
-a Personal Access Token, so this is cron-only. The original spec already
-designs that fallback.
+Options, roughly in order of effort:
 
-## Phase 3 — Analytics · **AFTER PHASE 2**
+1. **Telegram photo.** Render the screen headless in CI and send it as an image
+   with the morning coaching. Zero new infrastructure — it rides the pipe that
+   already works. Loses interactivity.
+2. **Private published page.** Push to a URL only you have. Live and tappable;
+   needs somewhere to host and a way to keep real biometrics off a public repo.
+3. **On-demand.** A `/night` command to the bot that renders and replies. No
+   daily push, no storage.
 
-- Rolling mean and standard deviation, z-scores, percentile ranks
-- Trailing windows T7 / T30 / T90 / T180 / T365 with ticker deltas
-- MSRI composite index with EWMA smoothing
-- The morning coach upgrades from manual score to full biometric context
+*Recommendation: 1 first — it's a day's work and gets the thing in front of you
+tomorrow. 3 as a companion. 2 only if you want the motion and the press
+interaction, which are the parts a screenshot throws away.*
 
-Three decisions still open before MSRI can be implemented properly:
-
-1. `CDF_Percentile_Multiplier` is referenced in the spec but never defined.
-2. The autonomic and architecture factors are unbounded above, so the index is
-   not actually bounded 0–100 as claimed. Even with caps it currently pins near
-   95 on an average night and cannot discriminate.
-3. The EWMA has no seed value for the first night.
-
-Also settled in passing: the coach already uses an **empirical** percentile
-rank rather than a normal CDF, because sleep scores are bounded at 100 and
-left-skewed. Phase 3 should keep that choice.
-
-## Phase 4 — Live dashboard · **AFTER PHASE 3**
-
-The preview at `web/dashboard.html` already exists and is wired to the live
-engine. Making it real means pointing it at actual history instead of seeded
-telemetry, then publishing to GitHub Pages — free, no server, rebuilt on every
-workflow run.
-
-The original spec called for Next.js, Supabase, auth and an onboarding wizard.
-For a solo app that is a great deal of machinery for very little; a static page
-reading the same JSON delivers the visible value at a fraction of the cost.
-Revisit only if other people are going to sign up.
-
-## Phase 5 — Deeper engagement · **LARGELY ALREADY BUILT**
-
-Phase 1.6 delivered most of what this was going to be. What is left:
-
-- Z-score-driven prompt routing (identity consolidation on strong nights,
-  atomic micro-steps at baseline, attribution correction on poor ones) — needs
-  Phase 3
-- Weekly, monthly and quarterly milestone deep-dives
-- Streak tracking and compounding visualisations
+Also folds in here: **habit completion tracking** from Phase 6 M4. If habits are
+tracked, the night screen is where the streak belongs.
 
 ---
 
-## Reliability work done alongside Phase 1
+# Phase 9 — Statistical integrity
 
-- Telegram calls retry with backoff and honour rate limits, so a network blip
-  no longer costs a card
-- State conflicts resolve in favour of the run that did the sending, so a lost
-  push race cannot cause a duplicate delivery
-- Inbound messages are acknowledged only after they are safely stored, so a
-  failed write leaves the message queued rather than dropping it
-- Journal and sleep log are AES-256-GCM encrypted per record; plaintext was
-  scrubbed from git history before the repository went public
-- `web/dashboard.html` is a build artifact, not tracked content — it embeds
-  real journal text
+**Status:** known defects, no user-visible symptom yet.
 
-## Recommended order
+The MSRI composite on the dashboard has three real problems:
 
-1. **Live with it for a week.** Which slots get acted on, whether the prompts
-   stay interesting, whether a nine-day fact loop is too tight.
-2. **Phase 2 + 3 together**, once there is an Oura token. Backfill makes them
-   land as one useful thing rather than two half-features.
-3. **Phase 4**, then the rest of Phase 5.
+- `CDF_Percentile_Multiplier` is referenced but never defined
+- several contributing factors are unbounded, so one bad night can dominate
+- the EWMA has no seed value, so early terms are unstable
 
-## Open questions
+None of this affects the Telegram coaching, which uses `src/stats.js` directly
+and is sound. It affects one number on the dashboard. Worth fixing before that
+number is ever quoted as if it means something.
 
-- Revoke and replace the bot token, which was pasted into a chat transcript.
-  Housekeeping, not urgent.
-- MSRI formula decisions (see Phase 3).
+---
+
+## Deliberately not doing
+
+- **Multi-user.** Seth asked for a solo app. Every design decision assumes one
+  person, one timezone, one history.
+- **A native app.** Telegram plus a rendered screen covers it without an app
+  store.
+- **Auto-pulling the manual sleep log.** The 6 AM hand-entry is deliberate even
+  though Oura could fill it automatically — the typing is the point.
