@@ -6,3 +6,4 @@
 {"date":"2026-08-23","slot":"evening_winddown","status":"missed","at":"2026-08-24T01:54:41.862Z"}
 {"date":"2026-08-23","slot":"work_shutdown","status":"sent","kind":"fact","factId":"sleep-30","library":"sleep","category":"cognition","jackpot":false,"cycle":0,"promptId":"p05","mechanism":"identity","targetLabel":"8:40 PM","at":"2026-08-24T01:54:43.395Z"}
 {"date":"2026-08-24","slot":"intake","status":"sent","kind":"intake","targetLabel":"6:00 AM","at":"2026-08-24T10:20:46.199Z"}
+{"date":"2026-08-24","slot":"morning_reflection","status":"missed","at":"2026-08-24T14:24:47.921Z"}

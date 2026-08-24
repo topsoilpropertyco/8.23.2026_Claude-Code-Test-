@@ -113,11 +113,23 @@
         "kind": "intake",
         "targetLabel": "6:00 AM",
         "at": "2026-08-24T10:20:46.199Z"
+      },
+      "morning_reflection": {
+        "status": "missed",
+        "at": "2026-08-24T14:24:47.921Z"
       }
     }
   },
-  "inboxOffset": 697606356,
+  "inboxOffset": 697606357,
   "pending": [
+    {
+      "messageId": 25,
+      "kind": "morning-prompt",
+      "promptId": "m02",
+      "mechanism": "identity",
+      "slot": "intake",
+      "at": "2026-08-24T14:24:49.145Z"
+    },
     {
       "messageId": 23,
       "kind": "intake",
@@ -192,5 +204,5 @@
     "p24",
     "p07"
   ],
-  "coachRotation": 1
+  "coachRotation": 2
 }
