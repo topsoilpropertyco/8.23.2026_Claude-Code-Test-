@@ -25,7 +25,7 @@ Small, unblocked, and worth doing whenever there's a gap.
 | | Item | Why it matters |
 |---|---|---|
 | S1 | **Revoke the exposed Telegram bot token** via @BotFather, then update `SLEEPOS_TELEGRAM_BOT_TOKEN` | The token was pasted into chat early on. The repo is public. Rotating it costs two minutes and closes the only known credential exposure. **Needs Seth** — BotFather is a human conversation. |
-| S2 | Decide the **8:1 display-to-body type floor** | Four design variants can't meet it because signage, clinical forms, receipts and strip-chart recorders have no concept of a hero number. Either the floor stands and those disciplines are out, or it's negotiable and v11's reference-interval mechanism becomes available. **Needs Seth.** Blocks any final composite decision. |
+| S2 | ~~Decide the **8:1 type floor**~~ — **DECIDED, floor stands** | Delegated to Claude 2026-08-24; reasoning in `RUBRIC.md`. v11's reference-interval mechanism is kept and portable; the flat emphasis model is not. The note names the condition to reopen. |
 
 ---
 
@@ -38,6 +38,9 @@ Small, unblocked, and worth doing whenever there's a gap.
 - **Live last-night screen** — the composite renders from real telemetry via `web/build-night.js`, built in CI, delivered as a private workflow artifact
 - **Phase 6 — habit anchors** — two daily cues, 24 rotating rationales each, jitter provably off
 - **Phase 7 — closing the loop** — journal entries now get an immediate reply; no inbound path is silent
+- **L1 — replies in seconds** — long-poll listen window plus a 5-minute cron, no webhook and no new infrastructure
+- **Phase 8 — the night screen arrives** — rendered to PNG and sent as a Telegram photo once a day, when the ingest writes a new night
+- **S2 — the 8:1 type floor** — decided; it stands, with v11's reference interval carried forward separately
 
 ---
 
@@ -391,3 +394,27 @@ number is ever quoted as if it means something.
   store.
 - **Auto-pulling the manual sleep log.** The 6 AM hand-entry is deliberate even
   though Oura could fill it automatically — the typing is the point.
+
+
+---
+
+# Still blocked, and what would unblock it
+
+| | Blocker | What's needed |
+|---|---|---|
+| **S1** | Exposed Telegram bot token | Two minutes at a computer with @BotFather, then update `SLEEPOS_TELEGRAM_BOT_TOKEN`. Only open security item. |
+| **Generators** | Magic Patterns and Lovable are `enabledInChat: false` | Platform-side, not a decision. Either enable them for a chat, or paste `SUPERPROMPT-PHASE4.md` into a session where they are live. |
+
+## Open questions, not blockers
+
+- **Is "usually seconds" enough?** The long-poll window makes the common case a
+  second or two. It is not guaranteed — GitHub's scheduler runs late under load
+  and there is a gap between runs. A webhook is the only certain version, and
+  it is still the first always-on component. Worth revisiting only if the delay
+  is actually noticeable in use.
+- **When should the night photo land?** Right now it goes out when the Oura
+  ingest writes the new night, which is around 11:00. The alternative is
+  holding it and attaching it to the morning coaching reply. Currently: as soon
+  as the data exists.
+- **The cron is now every 5 minutes.** Unlimited Actions minutes on a public
+  repo, so there is no cost, but it is twice the previous run rate.
