@@ -148,7 +148,7 @@
       }
     }
   },
-  "inboxOffset": 697606359,
+  "inboxOffset": 697606360,
   "pending": [
     {
       "messageId": 31,
@@ -255,6 +255,9 @@
     ],
     "mechanism:prospective_regret": [
       1
+    ],
+    "mechanism:anchoring": [
+      0
     ]
   }
 }
