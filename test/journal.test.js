@@ -189,3 +189,48 @@ test('fact slots are still jittered', () => {
   }
   assert.ok(offsets.size > 4);
 });
+
+/* ------------------------------------------------------------- encryption */
+
+test('a journal record round-trips through encryption', async () => {
+  const { encryptLine, decryptLine } = await import('../src/crypto.js');
+  process.env.SLEEPOS_DATA_KEY = 'dGVzdGtleXRlc3RrZXl0ZXN0a2V5dGVzdGtleTEyMzQ=';
+
+  const record = JSON.stringify({ text: 'When I reach for my phone, I will go get a book.', date: '2026-08-23' });
+  const cipher = encryptLine(record);
+
+  assert.notEqual(cipher, record);
+  assert.doesNotMatch(cipher, /phone|book/, 'plaintext leaked into the ciphertext');
+  assert.equal(decryptLine(cipher), record);
+});
+
+test('the same record encrypts differently every time', async () => {
+  const { encryptLine } = await import('../src/crypto.js');
+  process.env.SLEEPOS_DATA_KEY = 'dGVzdGtleXRlc3RrZXl0ZXN0a2V5dGVzdGtleTEyMzQ=';
+  assert.notEqual(encryptLine('same input'), encryptLine('same input'), 'IV is not being randomised');
+});
+
+test('a wrong key yields nothing rather than garbage', async () => {
+  const { encryptLine, decryptLine } = await import('../src/crypto.js');
+  process.env.SLEEPOS_DATA_KEY = 'dGVzdGtleXRlc3RrZXl0ZXN0a2V5dGVzdGtleTEyMzQ=';
+  const cipher = encryptLine('{"secret":true}');
+
+  process.env.SLEEPOS_DATA_KEY = 'd3Jvbmdrd3Jvbmdrd3Jvbmdrd3Jvbmdrd3JvbmdrMTI=';
+  assert.equal(decryptLine(cipher), '', 'a tampered or foreign record should be dropped');
+
+  process.env.SLEEPOS_DATA_KEY = 'dGVzdGtleXRlc3RrZXl0ZXN0a2V5dGVzdGtleTEyMzQ=';
+});
+
+test('pre-encryption plaintext records stay readable', async () => {
+  const { decryptLine } = await import('../src/crypto.js');
+  process.env.SLEEPOS_DATA_KEY = 'dGVzdGtleXRlc3RrZXl0ZXN0a2V5dGVzdGtleTEyMzQ=';
+  assert.equal(decryptLine('{"legacy":true}'), '{"legacy":true}');
+});
+
+test('writing without a key fails loudly instead of writing plaintext', async () => {
+  const { encryptLine, MissingKeyError } = await import('../src/crypto.js');
+  const saved = process.env.SLEEPOS_DATA_KEY;
+  delete process.env.SLEEPOS_DATA_KEY;
+  assert.throws(() => encryptLine('anything'), MissingKeyError);
+  process.env.SLEEPOS_DATA_KEY = saved;
+});

@@ -41,6 +41,7 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.SLEEPOS_TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.SLEEPOS_TELEGRAM_CHAT_ID }}
+          SLEEPOS_DATA_KEY: ${{ secrets.SLEEPOS_DATA_KEY }}
         run: |
           if [ -n "${{ inputs.slot }}" ]; then
             node bin/sleep-os.js send "${{ inputs.slot }}" ${{ inputs.dry_run && '--dry-run' || '' }}
