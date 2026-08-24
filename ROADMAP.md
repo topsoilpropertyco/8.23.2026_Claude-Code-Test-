@@ -6,12 +6,15 @@ Last updated: 2026-08-23
 
 ## Where we are
 
-**Phases 1 and 1.6 are built and proven end to end.** Cards deliver, replies
-come back, nights get logged, the coach responds, the journal records it.
-All of it has been demonstrated live on Seth's phone.
+**Phase 1 is complete and running unattended.** Cards deliver, replies come
+back, nights get logged, the coach responds, the journal records it — all on a
+schedule GitHub drives with no involvement from anyone.
 
-**None of it runs on its own yet.** One task remains, and it is not a
-build task: two secrets in GitHub repository settings.
+Verified: four workflow runs, three consecutive green, the last one reading the
+encrypted journal successfully. The repository is public (unlimited Actions
+minutes), and the journal is unreadable to anyone without the data key.
+
+The first message to arrive with nobody watching will be the 6:00 AM intake.
 
 | | |
 |---|---|
@@ -22,7 +25,9 @@ build task: two secrets in GitHub repository settings.
 | Timezone | `America/Detroit` |
 | Target bedtime | 22:30 |
 | Library | 55 facts · 28 journal prompts · 7 morning prompts |
-| Tests | 40 passing, zero runtime dependencies |
+| Secrets | `SLEEPOS_TELEGRAM_BOT_TOKEN`, `SLEEPOS_TELEGRAM_CHAT_ID`, `SLEEPOS_DATA_KEY` |
+| Visibility | Public — unlimited Actions minutes |
+| Tests | 45 passing, zero runtime dependencies |
 
 ---
 
@@ -125,19 +130,29 @@ Phase 1.6 delivered most of what this was going to be. What is left:
 
 ---
 
+## Reliability work done alongside Phase 1
+
+- Telegram calls retry with backoff and honour rate limits, so a network blip
+  no longer costs a card
+- State conflicts resolve in favour of the run that did the sending, so a lost
+  push race cannot cause a duplicate delivery
+- Inbound messages are acknowledged only after they are safely stored, so a
+  failed write leaves the message queued rather than dropping it
+- Journal and sleep log are AES-256-GCM encrypted per record; plaintext was
+  scrubbed from git history before the repository went public
+- `web/dashboard.html` is a build artifact, not tracked content — it embeds
+  real journal text
+
 ## Recommended order
 
-1. **Add the two repo secrets.** Two minutes. Nothing downstream is worth
-   building until cards arrive unprompted.
-2. **Live with it for a week.** Which slots get acted on, whether the prompts
-   stay interesting, whether nine days is too tight a loop.
-3. **Phase 2 + 3 together**, once there is an Oura token. Backfill makes them
+1. **Live with it for a week.** Which slots get acted on, whether the prompts
+   stay interesting, whether a nine-day fact loop is too tight.
+2. **Phase 2 + 3 together**, once there is an Oura token. Backfill makes them
    land as one useful thing rather than two half-features.
-4. **Phase 4**, then the rest of Phase 5.
+3. **Phase 4**, then the rest of Phase 5.
 
 ## Open questions
 
-- Public or private repo? (Public gives unlimited Actions minutes and matches
-  the open-source manifesto.)
 - Revoke and replace the bot token, which was pasted into a chat transcript.
+  Housekeeping, not urgent.
 - MSRI formula decisions (see Phase 3).
