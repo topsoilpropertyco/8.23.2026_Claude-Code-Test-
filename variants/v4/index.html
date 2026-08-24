@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>v4 · The Almanac</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* v4 THE ALMANAC — someone who typesets printed statistical annuals.
+   The distribution IS the design: 1,042 prior nights as a field of marks,
+   last night picked out. You read your position before you read your score.
+   Deliberately light, on warm paper — the one variant that rejects the
+   category's darkness outright. */
+:root{
+  --ground:#F4F1E8;      /* warm paper, not white */
+  --raised:#EAE5D8;
+  --ink:#1C1A16;
+  --ink-quiet:#8B8578;
+  --accent:#B03A2B;      /* one red, three appearances */
+  --rule:#D6D0C0;
+  --serif:'Instrument Serif',Georgia,serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--ground)}
+body{font-family:var(--mono);color:var(--ink);-webkit-font-smoothing:antialiased;
+  font-variant-numeric:tabular-nums}
+.screen{width:390px;min-height:844px;margin:0 auto;background:var(--ground);
+  padding:42px 26px 30px;display:flex;flex-direction:column}
+
+.rule-top{border-bottom:2px solid var(--ink);padding-bottom:8px;
+  display:flex;justify-content:space-between;align-items:baseline}
+.rule-top .t{font-family:var(--serif);font-size:21px;letter-spacing:-.01em}
+.rule-top .d{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-quiet)}
+
+/* --- the statement, serif, italic figure ---------------------------- */
+.statement{margin-top:22px;font-family:var(--serif);font-size:31px;line-height:1.18;
+  letter-spacing:-.015em}
+.statement em{font-style:italic;color:var(--accent)}
+
+/* --- the field: 1,042 nights ----------------------------------------- */
+.fieldhead{margin-top:28px;display:flex;justify-content:space-between;align-items:baseline;
+  padding-bottom:7px;border-bottom:1px solid var(--rule)}
+.fieldhead .k{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-quiet)}
+.field{margin-top:12px}
+.field svg{display:block;width:100%;height:126px}
+.axis{display:flex;justify-content:space-between;margin-top:7px;
+  font-size:9.5px;color:var(--ink-quiet);letter-spacing:.1em}
+
+/* --- the score, set as a printed figure ------------------------------ */
+.figure{margin-top:26px;display:flex;align-items:flex-end;gap:16px;
+  padding-bottom:10px;border-bottom:2px solid var(--ink)}
+.figure .n{font-family:var(--serif);font-size:112px;line-height:.78;letter-spacing:-.03em}
+.figure .col{padding-bottom:8px}
+.figure .col .a{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-quiet)}
+.figure .col .b{font-family:var(--serif);font-size:26px;margin-top:2px;letter-spacing:-.01em}
+.figure .col .c{font-size:10px;color:var(--ink-quiet);letter-spacing:.08em;margin-top:3px}
+
+/* --- table ----------------------------------------------------------- */
+.tbl{margin-top:16px}
+.tbl .r{display:flex;align-items:baseline;padding:6px 0;border-bottom:1px solid var(--rule)}
+.tbl .r .k{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-quiet)}
+.tbl .r .v{margin-left:auto;font-size:12.5px;font-weight:500}
+.tbl .r .v.a{color:var(--accent)}
+
+.colophon{margin-top:auto;padding-top:18px;font-size:9px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-quiet);display:flex;justify-content:space-between}
+</style></head>
+<body>
+<div class="screen">
+
+  <div class="rule-top">
+    <span class="t">Sleep OS</span>
+    <span class="d">Night MXLIII &middot; 23 Aug 2026</span>
+  </div>
+
+  <div class="statement">
+    You slept better than <em>81%</em> of the nights you have on record.
+  </div>
+
+  <div class="fieldhead">
+    <span class="k">1,042 prior nights, by score</span>
+    <span class="k">SD 9.54</span>
+  </div>
+  <div class="field">
+    <svg viewBox="0 0 338 126" preserveAspectRatio="none" role="img"
+         aria-label="Distribution of 1,042 prior sleep scores from 41 to 96. Last night at 88 sits in the upper tail.">
+      <g id="dist"></g>
+    </svg>
+    <div class="axis"><span>41</span><span>MEAN 79.3</span><span>96</span></div>
+  </div>
+
+  <div class="figure">
+    <div class="n">88</div>
+    <div class="col">
+      <div class="a">Above mean</div>
+      <div class="b">+8.7</div>
+      <div class="c">+0.92&sigma;</div>
+    </div>
+    <div class="col" style="margin-left:auto;text-align:right">
+      <div class="a">Crown nights</div>
+      <div class="b">351</div>
+      <div class="c">33.7% of all</div>
+    </div>
+  </div>
+
+  <div class="tbl">
+    <div class="r"><span class="k">In bed</span><span class="v">23:15 &ndash; 07:26</span></div>
+    <div class="r"><span class="k">Asleep</span><span class="v">7h 45m &middot; 94%</span></div>
+    <div class="r"><span class="k">Deep / REM / Light</span><span class="v">1:29 &middot; 2:07 &middot; 4:09</span></div>
+    <div class="r"><span class="k">HRV / Lowest HR</span><span class="v">37 ms &middot; 55 bpm</span></div>
+    <div class="r"><span class="k">Trailing 7 / 30 / 90</span><span class="v a">79.4 &middot; 79.2 &middot; 73.9</span></div>
+  </div>
+
+  <div class="colophon"><span>Oura &middot; est. 25 Aug 2023</span><span>Readiness 85</span></div>
+
+</div>
+
+<script>
+// The field is the design. 1,042 prior nights, one mark each, laid out as a
+// histogram of ~2-point buckets so the shape of three years is visible at a
+// glance and last night's 88 can be picked out inside it.
+(function(){
+  var MEAN=79.3, SD=9.54, N=1042, MIN=41, MAX=96, W=338, H=126;
+  var buckets=28, span=(MAX-MIN)/buckets, counts=new Array(buckets).fill(0);
+  // Reconstruct a left-skewed distribution matching the real mean/sd/range.
+  var seed=20260823;
+  function rnd(){ seed=(seed*1103515245+12345)&0x7fffffff; return seed/0x7fffffff; }
+  for(var i=0;i<N;i++){
+    var u1=Math.max(rnd(),1e-9), u2=rnd();
+    var z=Math.sqrt(-2*Math.log(u1))*Math.cos(2*Math.PI*u2);
+    var v=MEAN+z*SD; v=v-Math.max(0,(v-MEAN))*0.16;      // gentle left skew
+    v=Math.max(MIN,Math.min(MAX,v));
+    counts[Math.min(buckets-1,Math.floor((v-MIN)/span))]++;
+  }
+  var peak=Math.max.apply(null,counts);
+  var g=document.getElementById('dist'), ns='http://www.w3.org/2000/svg';
+  var bw=W/buckets, dotR=1.5, rowH=3.4;
+  counts.forEach(function(c,b){
+    var lo=MIN+b*span, hi=lo+span;
+    var isLast = 88>=lo && 88<hi;
+    var rows=Math.round(c/peak*(H/rowH));
+    for(var r=0;r<rows;r++){
+      var d=document.createElementNS(ns,'circle');
+      d.setAttribute('cx', b*bw+bw/2);
+      d.setAttribute('cy', H-4-r*rowH);
+      d.setAttribute('r', dotR);
+      d.setAttribute('fill', isLast ? '#B03A2B' : '#1C1A16');
+      d.setAttribute('opacity', isLast ? '1' : '0.20');
+      g.appendChild(d);
+    }
+    if(isLast){
+      var l=document.createElementNS(ns,'line');
+      l.setAttribute('x1',b*bw+bw/2); l.setAttribute('x2',b*bw+bw/2);
+      l.setAttribute('y1',0); l.setAttribute('y2',H);
+      l.setAttribute('stroke','#B03A2B'); l.setAttribute('stroke-width','1');
+      l.setAttribute('opacity','.35'); g.insertBefore(l,g.firstChild);
+    }
+  });
+  // mean marker, a hairline only
+  var mx=(MEAN-MIN)/(MAX-MIN)*W;
+  var m=document.createElementNS(ns,'line');
+  m.setAttribute('x1',mx); m.setAttribute('x2',mx); m.setAttribute('y1',0); m.setAttribute('y2',H);
+  m.setAttribute('stroke','#1C1A16'); m.setAttribute('stroke-width','0.75');
+  m.setAttribute('stroke-dasharray','2 3'); m.setAttribute('opacity','.4');
+  g.insertBefore(m,g.firstChild);
+})();
+</script>
+</body></html>

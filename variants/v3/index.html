@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>v3 · The Dial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chivo:wght@300;400;700;900&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* v3 THE DIAL — a watchmaker.
+   The night as a radial sweep of minute ticks, each coloured by sleep stage,
+   so the dial is a clock and a hypnogram at once. Time is the organising
+   principle, not duration. */
+:root{
+  --ground:#08080A;
+  --raised:#0F0F12;
+  --ink:#EDEBE6;
+  --ink-quiet:#6B6862;
+  --accent:#E8A33D;      /* warm amber, the only accent */
+  --sans:'Chivo',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--ground)}
+body{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased;
+  font-variant-numeric:tabular-nums}
+.screen{width:390px;min-height:844px;margin:0 auto;background:var(--ground);
+  padding:38px 24px 28px;display:flex;flex-direction:column;align-items:center}
+
+.head{width:100%;display:flex;justify-content:space-between;align-items:baseline}
+.head .l{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-quiet)}
+.head .r{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--accent)}
+
+.dial{position:relative;width:342px;height:342px;margin-top:14px}
+.dial svg{display:block}
+.centre{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;pointer-events:none}
+.centre .n{font-size:132px;font-weight:900;line-height:.84;letter-spacing:-.055em}
+.centre .u{font-family:var(--mono);font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;
+  color:var(--ink-quiet);margin-top:10px}
+
+/* the two clock ends, set as real times on the face */
+.ends{width:100%;display:flex;justify-content:space-between;margin-top:2px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.06em}
+.ends .lab{display:block;font-size:9px;letter-spacing:.18em;color:var(--ink-quiet);
+  text-transform:uppercase;margin-bottom:3px}
+
+/* stage key — three words, no legend swatches, no boxes */
+.stages{width:100%;margin-top:30px;display:flex;gap:0}
+.stages div{flex:1;padding-top:9px;border-top:2px solid}
+.stages .k{font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-quiet)}
+.stages .v{font-size:19px;font-weight:700;margin-top:4px;letter-spacing:-.025em}
+.s-deep{border-color:var(--accent)}
+.s-rem{border-color:#8A7A5E}
+.s-light{border-color:#3A3833}
+.s-wake{border-color:#232120}
+
+/* footer ledger — mono, right-aligned, tight */
+.meta{width:100%;margin-top:38px;padding-top:20px;border-top:1px solid #1C1B19;
+  display:grid;grid-template-columns:1fr 1fr;gap:9px 26px}
+.meta .row{display:flex;align-items:baseline;font-family:var(--mono);font-size:11px}
+.meta .row .k{color:var(--ink-quiet);letter-spacing:.08em}
+.meta .row .v{margin-left:auto;color:var(--ink);font-weight:500}
+.meta .row .v.a{color:var(--accent)}
+</style></head>
+<body>
+<div class="screen">
+
+  <div class="head">
+    <span class="l">24 Aug &middot; Sleep OS</span>
+    <span class="r">81ST</span>
+  </div>
+
+  <div class="dial">
+    <svg width="342" height="342" viewBox="0 0 342 342" role="img"
+         aria-label="The night from 23:15 to 07:26 as a radial dial. Each tick is five minutes, coloured by sleep stage.">
+      <g id="ticks"></g>
+    </svg>
+    <div class="centre">
+      <div class="n">88</div>
+      <div class="u">Sleep score</div>
+    </div>
+  </div>
+
+  <div class="ends">
+    <div><span class="lab">Lights out</span>23:15</div>
+    <div style="text-align:right"><span class="lab">Woke</span>07:26</div>
+  </div>
+
+  <div class="stages">
+    <div class="s-deep"><div class="k">Deep</div><div class="v">1:29</div></div>
+    <div class="s-rem"><div class="k">REM</div><div class="v">2:07</div></div>
+    <div class="s-light"><div class="k">Light</div><div class="v">4:09</div></div>
+    <div class="s-wake"><div class="k">Awake</div><div class="v">0:27</div></div>
+  </div>
+
+  <div class="meta">
+    <div class="row"><span class="k">ASLEEP</span><span class="v">7h 45m</span></div>
+    <div class="row"><span class="k">EFFIC</span><span class="v">94%</span></div>
+    <div class="row"><span class="k">HRV</span><span class="v">37 ms</span></div>
+    <div class="row"><span class="k">LOW HR</span><span class="v">55</span></div>
+    <div class="row"><span class="k">READY</span><span class="v">85</span></div>
+    <div class="row"><span class="k">LATENCY</span><span class="v">2m 30s</span></div>
+    <div class="row"><span class="k">MEAN</span><span class="v">79.3</span></div>
+    <div class="row"><span class="k">Z</span><span class="v a">+0.92 SD</span></div>
+  </div>
+
+</div>
+
+<script>
+// The dial is generated rather than hand-drawn: 99 ticks, one per five minutes
+// of the 8h 12m in bed, swept over 300 degrees with the gap at the bottom.
+// Each tick's length and colour encode the stage at that moment, so the ring
+// is simultaneously a clock face and a hypnogram.
+(function(){
+  // Real 5-minute phase series, condensed: 4=awake 3=REM 2=light 1=deep
+  var phases = ("4222111112222222333322221111111222233333222111112222" +
+                "3333222211112223333322221122333344222233332222444").split('').map(Number);
+  var CX=171, CY=171, R=150;
+  var START=120, SWEEP=300;                    // degrees; gap centred at bottom
+  var COL={1:'#E8A33D',2:'#3A3833',3:'#8A7A5E',4:'#232120'};
+  var LEN={1:30,2:15,3:22,4:9};
+  var g=document.getElementById('ticks'), ns='http://www.w3.org/2000/svg';
+
+  // faint full ring, so the unslept gap is legible as absence
+  var ring=document.createElementNS(ns,'circle');
+  ring.setAttribute('cx',CX); ring.setAttribute('cy',CY); ring.setAttribute('r',R-16);
+  ring.setAttribute('fill','none'); ring.setAttribute('stroke','#16151A');
+  ring.setAttribute('stroke-width','1'); g.appendChild(ring);
+
+  phases.forEach(function(p,i){
+    var a=(START + SWEEP*(i/(phases.length-1)) ) * Math.PI/180;
+    var len=LEN[p]||14, inner=R-len, outer=R;
+    var line=document.createElementNS(ns,'line');
+    line.setAttribute('x1',CX+Math.cos(a)*inner); line.setAttribute('y1',CY+Math.sin(a)*inner);
+    line.setAttribute('x2',CX+Math.cos(a)*outer); line.setAttribute('y2',CY+Math.sin(a)*outer);
+    line.setAttribute('stroke',COL[p]||'#2A2825');
+    line.setAttribute('stroke-width', p===1 ? 2.6 : 2);
+    line.setAttribute('stroke-linecap','round');
+    g.appendChild(line);
+  });
+})();
+</script>
+</body></html>

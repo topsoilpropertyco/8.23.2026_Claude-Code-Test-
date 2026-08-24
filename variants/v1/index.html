@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>v1 · The Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Archivo+Black&display=swap">
+<style>
+/* v1 THE LEDGER — a Swiss modernist who works in print.
+   No chart. Rules only. The score as a slab. */
+:root{
+  --ground:#14120F;      /* warm near-black, not blue-black */
+  --raised:#14120F;      /* deliberately identical: there is no elevated plane */
+  --ink:#EAE4D9;         /* bone */
+  --ink-quiet:#7E786C;   /* warm grey */
+  --accent:#D9401F;      /* vermilion — appears exactly 3 times */
+  --rule:#2E2A24;
+  --sans:'Archivo',system-ui,sans-serif;
+  --slab:'Archivo Black','Archivo',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--ground)}
+body{
+  font-family:var(--sans);color:var(--ink);
+  -webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums;
+}
+.screen{width:390px;min-height:844px;margin:0 auto;background:var(--ground);
+  padding:44px 28px 30px;display:flex;flex-direction:column}
+
+.eyebrow{font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--ink-quiet)}
+
+/* --- masthead ------------------------------------------------------- */
+.masthead{display:flex;justify-content:space-between;align-items:baseline;
+  padding-bottom:10px;border-bottom:1.5px solid var(--ink)}
+.masthead .date{font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase}
+
+/* --- the night, as a fact ------------------------------------------- */
+.window{display:flex;align-items:baseline;gap:10px;margin-top:20px}
+.window .t{font-size:26px;font-weight:600;letter-spacing:-.02em}
+.window .arrow{color:var(--accent);font-size:20px;line-height:1;transform:translateY(-2px)}
+.window .dur{margin-left:auto;font-size:11px;color:var(--ink-quiet);letter-spacing:.04em}
+
+/* --- the slab -------------------------------------------------------- */
+.slab{margin:6px 0 0;display:flex;align-items:flex-start;gap:14px}
+.slab .n{font-family:var(--slab);font-size:196px;line-height:.76;letter-spacing:-.055em;
+  color:var(--ink);margin-left:-11px}  /* optical: pull left to align the 8's bowl to margin */
+.slab .side{padding-top:16px}
+.slab .side .lab{font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-quiet);writing-mode:vertical-rl;transform:rotate(180deg)}
+
+/* --- position -------------------------------------------------------- */
+.position{margin-top:10px;padding-top:12px;border-top:1.5px solid var(--ink);
+  display:flex;align-items:baseline;gap:8px}
+.position .pct{font-family:var(--slab);font-size:40px;line-height:1;letter-spacing:-.03em;
+  color:var(--accent)}
+.position .ord{font-size:13px;font-weight:600;color:var(--accent);align-self:flex-start;
+  padding-top:4px}
+.position .of{font-size:12px;color:var(--ink-quiet);margin-left:auto;text-align:right;
+  line-height:1.5}
+.position .of b{color:var(--ink);font-weight:600}
+
+/* --- ledger ---------------------------------------------------------- */
+.ledger{margin-top:18px}
+.ledger .grp{margin-bottom:2px}
+.ledger .grp + .grp{margin-top:16px}
+.row{display:flex;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--rule)}
+.row:first-child{border-top:1px solid var(--rule)}
+.row .k{font-size:11px;letter-spacing:.05em;color:var(--ink-quiet);text-transform:uppercase}
+.row .v{margin-left:auto;font-size:13px;font-weight:600;letter-spacing:-.01em}
+.row .v small{font-size:10px;font-weight:400;color:var(--ink-quiet);margin-left:3px}
+.row.em .v{color:var(--ink)}
+
+/* --- baseline strip -------------------------------------------------- */
+.baseline{margin-top:auto;padding-top:20px;border-top:1.5px solid var(--ink);
+  display:flex;justify-content:space-between}
+.baseline div{text-align:left}
+.baseline .k{font-size:9px;font-weight:600;letter-spacing:.18em;color:var(--ink-quiet)}
+.baseline .v{font-size:16px;font-weight:600;margin-top:3px;letter-spacing:-.02em}
+.baseline .d{font-size:10px;color:var(--ink-quiet);margin-top:1px}
+
+.foot{margin-top:18px;font-size:9px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-quiet);display:flex;justify-content:space-between}
+</style></head>
+<body>
+<div class="screen">
+
+  <div class="masthead">
+    <span class="date">Sunday 24 August</span>
+    <span class="eyebrow">Sleep OS</span>
+  </div>
+
+  <div class="window">
+    <span class="t">23:15</span>
+    <span class="arrow">&rarr;</span>
+    <span class="t">07:26</span>
+    <span class="dur">8H 12M IN BED</span>
+  </div>
+
+  <div class="slab">
+    <div class="n">88</div>
+    <div class="side"><div class="lab">Sleep score</div></div>
+  </div>
+
+  <div class="position">
+    <span class="pct">81</span><span class="ord">ST</span>
+    <span class="of">percentile of<br><b>1,042 nights</b></span>
+  </div>
+
+  <div class="ledger">
+    <div class="grp">
+      <div class="row em"><span class="k">Asleep</span><span class="v">7h 45m</span></div>
+      <div class="row"><span class="k">Efficiency</span><span class="v">94<small>%</small></span></div>
+      <div class="row"><span class="k">Latency</span><span class="v">2m 30s</span></div>
+    </div>
+    <div class="grp">
+      <div class="row"><span class="k">Deep</span><span class="v">1h 29m</span></div>
+      <div class="row"><span class="k">REM</span><span class="v">2h 07m</span></div>
+      <div class="row"><span class="k">Light</span><span class="v">4h 09m</span></div>
+      <div class="row"><span class="k">Awake</span><span class="v">27m</span></div>
+    </div>
+    <div class="grp">
+      <div class="row"><span class="k">Heart rate variability</span><span class="v">37<small>MS</small></span></div>
+      <div class="row"><span class="k">Lowest heart rate</span><span class="v">55<small>BPM</small></span></div>
+      <div class="row"><span class="k">Readiness</span><span class="v">85</span></div>
+    </div>
+  </div>
+
+  <div class="baseline">
+    <div><div class="k">7 NIGHT</div><div class="v">79.4</div><div class="d">+8.6</div></div>
+    <div><div class="k">30 NIGHT</div><div class="v">79.2</div><div class="d">+8.8</div></div>
+    <div><div class="k">90 NIGHT</div><div class="v">73.9</div><div class="d">+14.1</div></div>
+    <div><div class="k">ALL TIME</div><div class="v">79.3</div><div class="d">+0.92 SD</div></div>
+  </div>
+
+  <div class="foot"><span>Oura &middot; 1,043 nights</span><span>Est. 25 Aug 2023</span></div>
+
+</div>
+</body></html>

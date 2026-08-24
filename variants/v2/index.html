@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>v2 · The Night</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* v2 THE NIGHT — someone who makes data sculptures.
+   The hypnogram stops being a chart and becomes one unbroken form.
+   No axes. No gridlines. No legend. Shape carries the data. */
+:root{
+  --ground:#05070D;
+  --raised:#0B111C;
+  --ink:#E6E3DB;
+  --ink-quiet:#5C6577;
+  --accent:#9FC7E8;
+  --sans:'Sora',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--ground)}
+body{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased;
+  font-variant-numeric:tabular-nums}
+.screen{width:390px;min-height:844px;margin:0 auto;background:var(--ground);
+  position:relative;overflow:hidden;display:flex;flex-direction:column}
+
+.top{padding:52px 26px 0}
+.kicker{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-quiet)}
+
+/* the score, set light and large, with the unit tucked to its baseline */
+.score{display:flex;align-items:baseline;gap:12px;margin-top:26px}
+.score .n{font-size:150px;font-weight:200;line-height:.82;letter-spacing:-.06em}
+.score .meta{padding-bottom:12px}
+.score .meta .a{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.06em}
+.score .meta .b{font-family:var(--mono);font-size:11px;color:var(--ink-quiet);
+  letter-spacing:.06em;margin-top:4px}
+
+.sentence{margin-top:18px;font-size:15px;font-weight:300;line-height:1.55;
+  color:var(--ink-quiet);max-width:31ch}
+.sentence b{color:var(--ink);font-weight:400}
+
+/* --- the form: full bleed, no chrome -------------------------------- */
+.formwrap{margin-top:8px;position:relative}
+svg.night{display:block;width:100%;height:300px}
+.timeline{display:flex;justify-content:space-between;padding:10px 26px 0;
+  font-family:var(--mono);font-size:10px;color:var(--ink-quiet);letter-spacing:.08em}
+
+/* --- marginalia: a single quiet band -------------------------------- */
+.band{margin-top:auto;padding:22px 26px 34px;border-top:1px solid #141B28;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:18px 10px}
+.cell .k{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-quiet)}
+.cell .v{font-size:17px;font-weight:300;margin-top:5px;letter-spacing:-.02em}
+.cell .v span{font-size:10px;color:var(--ink-quiet);margin-left:2px}
+</style></head>
+<body>
+<div class="screen">
+
+  <div class="top">
+    <div class="kicker">Night of 23 August</div>
+
+    <div class="score">
+      <div class="n">88</div>
+      <div class="meta">
+        <div class="a">81st percentile</div>
+        <div class="b">of 1,042 nights</div>
+      </div>
+    </div>
+
+    <p class="sentence">
+      Eight hours twelve in bed, <b>7h 45m</b> of it asleep.
+      Nearly a full standard deviation above your own mean.
+    </p>
+  </div>
+
+  <div class="formwrap">
+    <svg class="night" viewBox="0 0 390 280" preserveAspectRatio="none" role="img"
+         aria-label="The night as one continuous form, 23:15 to 07:26. Depth of the form is depth of sleep.">
+      <defs>
+        <linearGradient id="fill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"  stop-color="#9FC7E8" stop-opacity=".30"/>
+          <stop offset="55%" stop-color="#3E5B7E" stop-opacity=".14"/>
+          <stop offset="100%" stop-color="#05070D" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+
+      <!-- One unbroken ribbon. Vertical position is sleep depth. Traced from the
+           real 5-minute phase series: deep is front-loaded into the first two
+           cycles, each subsequent cycle surfaces higher and carries more REM,
+           and there is one brief near-waking at 05:10. The curve never breaks
+           into bars, so the night reads as a single object. -->
+      <path fill="url(#fill)" stroke="none" d="
+        M0,26
+        C 10,30 16,88 26,132 C 34,168 44,214 58,224
+        C 72,234 84,206 94,176 C 102,152 108,118 118,104
+        C 128,90 138,104 148,132 C 158,160 166,206 180,214
+        C 194,222 206,192 216,162 C 224,138 230,110 240,100
+        C 250,90 260,110 268,138 C 276,166 282,188 294,192
+        C 304,196 312,170 318,140 C 322,120 326,74 334,66
+        C 340,60 346,86 352,110 C 358,134 364,152 372,148
+        C 380,144 386,96 390,58
+        L 390,280 L 0,280 Z"/>
+      <path fill="none" stroke="#E6E3DB" stroke-width="1.5" stroke-linecap="round"
+            stroke-linejoin="round" d="
+        M0,26
+        C 10,30 16,88 26,132 C 34,168 44,214 58,224
+        C 72,234 84,206 94,176 C 102,152 108,118 118,104
+        C 128,90 138,104 148,132 C 158,160 166,206 180,214
+        C 194,222 206,192 216,162 C 224,138 230,110 240,100
+        C 250,90 260,110 268,138 C 276,166 282,188 294,192
+        C 304,196 312,170 318,140 C 322,120 326,74 334,66
+        C 340,60 346,86 352,110 C 358,134 364,152 372,148
+        C 380,144 386,96 390,58"/>
+
+      <!-- The two genuinely deep passages, and the 05:10 surfacing.
+           Marked by a dot only; no labels. The shape is the information. -->
+      <circle cx="58"  cy="224" r="3.4" fill="#9FC7E8"/>
+      <circle cx="180" cy="214" r="3.4" fill="#9FC7E8"/>
+      <circle cx="334" cy="66"  r="2.8" fill="#9FC7E8" opacity=".5"/>
+    </svg>
+    <div class="timeline"><span>23:15</span><span>03:20</span><span>07:26</span></div>
+  </div>
+
+  <div class="band">
+    <div class="cell"><div class="k">Deep</div><div class="v">1<span>h</span>29<span>m</span></div></div>
+    <div class="cell"><div class="k">REM</div><div class="v">2<span>h</span>07<span>m</span></div></div>
+    <div class="cell"><div class="k">Effic.</div><div class="v">94<span>%</span></div></div>
+    <div class="cell"><div class="k">Awake</div><div class="v">27<span>m</span></div></div>
+    <div class="cell"><div class="k">HRV</div><div class="v">37<span>ms</span></div></div>
+    <div class="cell"><div class="k">Low HR</div><div class="v">55</div></div>
+    <div class="cell"><div class="k">Ready</div><div class="v">85</div></div>
+    <div class="cell"><div class="k">T30</div><div class="v">79.2</div></div>
+  </div>
+
+</div>
+</body></html>

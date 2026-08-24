@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sleep OS · Five Directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Bake-off view. Deliberately no chrome: the frames sit on a neutral ground at
+   true 390x844 so nothing here flatters or disadvantages any variant. */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#1A1A1C}
+body{font-family:'IBM Plex Mono',ui-monospace,monospace;color:#8A8A8E;padding:40px 32px 64px}
+h1{font-size:12px;font-weight:500;letter-spacing:.24em;text-transform:uppercase;color:#E4E4E6}
+.sub{font-size:11px;margin-top:8px;line-height:1.6;max-width:76ch}
+.rail{display:flex;gap:28px;margin-top:36px;overflow-x:auto;padding-bottom:20px}
+.slot{flex:0 0 auto;width:390px}
+.cap{display:flex;align-items:baseline;gap:10px;margin-bottom:12px}
+.cap .n{font-size:11px;font-weight:500;color:#E4E4E6;letter-spacing:.2em}
+.cap .t{font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+.idea{font-size:10.5px;line-height:1.65;margin-bottom:12px;height:52px;color:#78787C}
+iframe{width:390px;height:844px;border:0;display:block;background:#000}
+.meta{display:flex;gap:14px;margin-top:10px;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase}
+.sw{display:inline-block;width:9px;height:9px;border-radius:50%;vertical-align:-1px;margin-right:4px}
+</style></head>
+<body>
+<h1>Sleep OS · last night · five directions</h1>
+<p class="sub">Same data, same anti-patterns, five independent designers. 390&times;844, true scale.
+Scroll sideways. Judged against RUBRIC.md — written before any of these existed.</p>
+
+<div class="rail">
+  <div class="slot">
+    <div class="cap"><span class="n">V1</span><span class="t">The Ledger</span></div>
+    <div class="idea">Swiss modernist, print. No chart at all — the night as a hairline-ruled table with the score as a 196px slab.</div>
+    <iframe src="variants/v1/index.html" title="v1 The Ledger"></iframe>
+    <div class="meta"><span><i class="sw" style="background:#D9401F"></i>Vermilion</span><span>Archivo Black</span></div>
+  </div>
+
+  <div class="slot">
+    <div class="cap"><span class="n">V2</span><span class="t">The Night</span></div>
+    <div class="idea">Data sculpture. The hypnogram stops being a chart and becomes one unbroken ribbon — no axes, no legend.</div>
+    <iframe src="variants/v2/index.html" title="v2 The Night"></iframe>
+    <div class="meta"><span><i class="sw" style="background:#9FC7E8"></i>Ice</span><span>Sora Light</span></div>
+  </div>
+
+  <div class="slot">
+    <div class="cap"><span class="n">V3</span><span class="t">The Dial</span></div>
+    <div class="idea">Watchmaker. 99 minute-ticks over 300°, each coloured by stage — the face is clock and hypnogram at once.</div>
+    <iframe src="variants/v3/index.html" title="v3 The Dial"></iframe>
+    <div class="meta"><span><i class="sw" style="background:#E8A33D"></i>Amber</span><span>Chivo Black</span></div>
+  </div>
+
+  <div class="slot">
+    <div class="cap"><span class="n">V4</span><span class="t">The Almanac</span></div>
+    <div class="idea">Statistical annual. 1,042 prior nights as a field of marks, last night picked out. Light, on warm paper.</div>
+    <iframe src="variants/v4/index.html" title="v4 The Almanac"></iframe>
+    <div class="meta"><span><i class="sw" style="background:#B03A2B"></i>Red</span><span>Instrument Serif</span></div>
+  </div>
+
+  <div class="slot">
+    <div class="cap"><span class="n">V5</span><span class="t">The Dispatch</span></div>
+    <div class="idea">Magazine art director. Prose is the headline — opens with a sentence, figures woven into the line.</div>
+    <iframe src="variants/v5/index.html" title="v5 The Dispatch"></iframe>
+    <div class="meta"><span><i class="sw" style="background:#C9A227"></i>Brass</span><span>Fraunces</span></div>
+  </div>
+</div>
+</body></html>

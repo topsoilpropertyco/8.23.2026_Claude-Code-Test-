@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>v5 · The Dispatch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,700&family=Newsreader:ital,wght@0,300;0,400;1,300&display=swap">
+<style>
+/* v5 THE DISPATCH — a magazine art director.
+   Prose is the headline. The screen opens with a sentence, not a number, and
+   the figures are woven into the line. Marginalia becomes a colophon. */
+:root{
+  --ground:#0D1410;      /* deep green-black */
+  --raised:#131C17;
+  --ink:#F0EADC;         /* cream */
+  --ink-quiet:#77857C;
+  --accent:#C9A227;      /* brass — three appearances */
+  --rule:#22302A;
+  --display:'Fraunces',Georgia,serif;
+  --text:'Newsreader',Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--ground)}
+body{font-family:var(--text);color:var(--ink);-webkit-font-smoothing:antialiased;
+  font-variant-numeric:tabular-nums}
+.screen{width:390px;min-height:844px;margin:0 auto;background:var(--ground);
+  padding:46px 30px 30px;display:flex;flex-direction:column}
+
+.folio{display:flex;justify-content:space-between;align-items:baseline;
+  font-family:var(--text);font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-quiet)}
+.folio .no{color:var(--accent)}
+
+/* --- the sentence: this is the dominant element ---------------------- */
+.lede{margin-top:34px;font-family:var(--display);font-size:43px;line-height:1.05;
+  font-weight:300;letter-spacing:-.022em;font-optical-sizing:auto}
+.lede .fig{font-weight:700;font-style:normal}
+.lede .gold{color:var(--accent)}
+
+.standfirst{margin-top:22px;font-size:17px;font-weight:300;line-height:1.6;
+  color:var(--ink-quiet);max-width:33ch}
+.standfirst b{color:var(--ink);font-weight:400}
+
+/* --- a single hairline measure of the night -------------------------- */
+.measure{margin-top:38px}
+.measure .lab{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-quiet);display:flex;justify-content:space-between;margin-bottom:9px}
+.bar{display:flex;height:3px;gap:2px}
+.bar i{display:block;border-radius:2px}
+.bar .deep{background:var(--accent);flex:89}     /* 1h29 */
+.bar .rem{background:#6E7F72;flex:127}           /* 2h07 */
+.bar .light{background:#2E3C35;flex:249}         /* 4h09 */
+.bar .wake{background:#1A2420;flex:27}           /* 27m  */
+.legendless{margin-top:9px;display:flex;justify-content:space-between;
+  font-size:10.5px;color:var(--ink-quiet);letter-spacing:.04em}
+.legendless b{color:var(--ink);font-weight:400}
+
+/* --- the colophon ----------------------------------------------------- */
+.colophon{margin-top:38px;padding-top:26px;border-top:1px solid var(--rule)}
+.colophon .ttl{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-quiet);margin-bottom:14px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:11px 24px}
+.cols .r{display:flex;align-items:baseline;font-size:12.5px}
+.cols .r .k{color:var(--ink-quiet);font-size:11px}
+.cols .r .dots{flex:1;border-bottom:1px dotted var(--rule);margin:0 6px 3px}
+.cols .r .v{font-weight:400}
+.sign{margin-top:auto;padding-top:22px;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-quiet);display:flex;justify-content:space-between}
+</style></head>
+<body>
+<div class="screen">
+
+  <div class="folio">
+    <span>Sleep OS &middot; Detroit</span>
+    <span class="no">No. 1,043</span>
+  </div>
+
+  <div class="lede">
+    You slept better than <span class="fig gold">81%</span> of the nights you have ever recorded.
+  </div>
+
+  <p class="standfirst">
+    Down at <b>23:15</b>, up at <b>07:26</b>. Seven hours forty-five of it asleep &mdash;
+    <b>+0.92</b> standard deviations above three years of your own average.
+  </p>
+
+  <div class="measure">
+    <div class="lab"><span>The night, in proportion</span><span>8h 12m</span></div>
+    <div class="bar">
+      <i class="deep"></i><i class="rem"></i><i class="light"></i><i class="wake"></i>
+    </div>
+    <div class="legendless">
+      <span><b>1:29</b> deep</span>
+      <span><b>2:07</b> REM</span>
+      <span><b>4:09</b> light</span>
+      <span><b>0:27</b> awake</span>
+    </div>
+  </div>
+
+  <div style="margin-top:34px;padding-left:16px;border-left:2px solid var(--accent)">
+    <div style="font-family:var(--display);font-size:19px;font-weight:300;line-height:1.35;
+         letter-spacing:-.01em;color:var(--ink)">
+      Deep sleep front-loaded into the first two cycles &mdash; the shape of a night
+      that started on time.
+    </div>
+  </div>
+
+  <div class="colophon">
+    <div class="ttl">Particulars</div>
+    <div class="cols">
+      <div class="r"><span class="k">Score</span><span class="dots"></span><span class="v">88</span></div>
+      <div class="r"><span class="k">Readiness</span><span class="dots"></span><span class="v">85</span></div>
+      <div class="r"><span class="k">Efficiency</span><span class="dots"></span><span class="v">94%</span></div>
+      <div class="r"><span class="k">Latency</span><span class="dots"></span><span class="v">2m 30s</span></div>
+      <div class="r"><span class="k">HRV</span><span class="dots"></span><span class="v">37 ms</span></div>
+      <div class="r"><span class="k">Low HR</span><span class="dots"></span><span class="v">55 bpm</span></div>
+      <div class="r"><span class="k">Mean</span><span class="dots"></span><span class="v">79.3</span></div>
+      <div class="r"><span class="k">Last 7</span><span class="dots"></span><span class="v">79.4</span></div>
+    </div>
+    <div class="sign"><span>Oura &middot; since 25 Aug 2023</span><span>1,043 nights</span></div>
+  </div>
+
+</div>
+</body></html>
