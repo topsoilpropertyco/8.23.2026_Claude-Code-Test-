@@ -12,7 +12,13 @@ import { readFileSync, writeFileSync, existsSync, appendFileSync, mkdirSync } fr
 import { join } from 'node:path';
 import { ROOT } from './facts.js';
 
-const STATE_DIR = join(ROOT, 'state');
+// Overridable for exactly the same reason journal.js is: without it, any test
+// that records a send appends fabricated rows to the REAL history.ndjson and
+// mutates the real state.json. That has now happened twice -- once in the
+// journal, which was fixed there and not here, and once in the delivery history,
+// which planted two 2026-09-15 records three weeks in the future. A stray row in
+// history.ndjson is not cosmetic: state.sends is what stops a slot double-sending.
+const STATE_DIR = process.env.SLEEPOS_STATE_DIR || join(ROOT, 'state');
 const STATE_FILE = join(STATE_DIR, 'state.json');
 const HISTORY_FILE = join(STATE_DIR, 'history.ndjson');
 const RETAIN_DAYS = 40;

@@ -1100,3 +1100,34 @@ test('one corrupt legacy record must not block future sleep entries', async () =
   process.env.SLEEPOS_STATE_DIR = savedDir;
   process.env.SLEEPOS_DATA_KEY = savedKey;
 });
+
+/* --------------------------- tests must never write to real state, ever */
+
+// This has now bitten twice. journal.js was made overridable after a test
+// appended fabricated entries to the real journal; state.js was not, so a test
+// that recorded a send later planted two 2026-09-15 rows in the real
+// history.ndjson. That file is not cosmetic -- state.sends is what stops a slot
+// double-sending -- so a stray future-dated row can suppress a real send.
+test('state.js writes under SLEEPOS_STATE_DIR, never into the real state dir', async () => {
+  const { mkdtempSync: mk, existsSync: ex, readFileSync: rf } = await import('node:fs');
+  const { join: j } = await import('node:path');
+  const dir = mk(j(tmpdir(), 'sleep-os-state-'));
+  const saved = process.env.SLEEPOS_STATE_DIR;
+  process.env.SLEEPOS_STATE_DIR = dir;
+
+  const st = await import(`../src/state.js?isolated=${Date.now()}`);
+  const state = st.loadState();
+  st.recordSend(state, '2099-01-01', 'terminal_bedtime',
+    { status: 'sent', at: new Date().toISOString() });
+
+  assert.ok(ex(j(dir, 'history.ndjson')), 'the send was recorded in the scratch dir');
+  assert.match(rf(j(dir, 'history.ndjson'), 'utf8'), /2099-01-01/,
+    'the scratch history holds the record');
+
+  // The real files must be untouched by anything above.
+  const realHistory = rf(j(process.cwd(), 'state', 'history.ndjson'), 'utf8');
+  assert.ok(!realHistory.includes('2099-01-01'),
+    'the REAL history.ndjson must never receive a test record');
+
+  process.env.SLEEPOS_STATE_DIR = saved;
+});
