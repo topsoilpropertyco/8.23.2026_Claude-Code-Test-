@@ -95,17 +95,18 @@ test('state is pushed as soon as something is sent, not at the end', async () =>
     persist: async () => pushes.push(c.now() / 1000),
     now: c.now, log: quiet,
   });
-  assert.equal(pushes.length, 2, 'one push per cycle that sent something');
-  assert.ok(pushes[0] < 100, 'the first push must not wait for the window to end');
+  // Three: the startup flush, then one per cycle that sent something.
+  assert.equal(pushes.length, 3, 'startup flush plus one push per sending cycle');
+  assert.ok(pushes[1] < 100, 'the send must be recorded long before the window ends');
 });
 
-test('nothing sent means nothing pushed', async () => {
+test('a quiet window pushes once at startup and then not at all', async () => {
   const c = clock();
   let pushes = 0;
-  await serve({ seconds: 200, sliceSeconds: 25, dispatchFn: fakeDispatch(),
+  await serve({ seconds: 600, sliceSeconds: 25, dispatchFn: fakeDispatch(),
                 listenFn: fakeListen(c), persist: async () => { pushes += 1; },
                 now: c.now, log: quiet });
-  assert.equal(pushes, 0, 'a quiet window must not churn commits');
+  assert.equal(pushes, 1, 'the startup flush only; 23 further quiet cycles add nothing');
 });
 
 test('an answered reply is persisted too', async () => {
@@ -115,7 +116,8 @@ test('an answered reply is persisted too', async () => {
     listenFn: fakeListen(c, { handledOn: [2] }), persist: async () => { pushes += 1; },
     now: c.now, log: quiet });
   assert.equal(r.handled, 1);
-  assert.equal(pushes, 1, 'the reply record has to survive the job being killed');
+  assert.equal(pushes, 2, 'startup flush, then the reply record — which has to '
+    + 'survive the job being killed');
 });
 
 /* ------------------------------------------------- nothing may end the window */

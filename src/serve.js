@@ -134,7 +134,13 @@ export async function serve({
     // 3. Persist immediately after a send. Not on a timer: the window between
     //    delivering a message and recording that it was delivered is exactly
     //    the window in which a killed job causes a duplicate tomorrow.
-    if (persist && (sentThisLoop > 0 || nightsSeen > 0)) {
+    // The first cycle always flushes. Steps before this one (the ingest, the
+    // deck, the health record) leave changes in state/ that would otherwise sit
+    // unpushed for the whole window -- and a window that gets killed takes them
+    // with it. It also means the pipeline's health is visible within a minute of
+    // a run starting rather than when it ends, which for a six-hour window is
+    // the difference between observable and not.
+    if (persist && (loops === 1 || sentThisLoop > 0 || nightsSeen > 0)) {
       try {
         await persist();
         nightsSeen = 0;
