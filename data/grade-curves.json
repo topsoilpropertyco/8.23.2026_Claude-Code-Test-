@@ -1,0 +1,207 @@
+{
+  "_comment": "Letter-grade curves. Read by src/grades.js and bin/build-screens.py so a curve is defined exactly once. `bands` are inclusive lower bounds on the PERCENTILE, ordered high to low; first band whose min is met wins. All three grade a rank, not a raw score - computing the standard grade from the score instead of the percentile is a bug the source document found and fixed, so do not reintroduce it.",
+  "_source": "references/07-SCORE-REFERENCE-TABLE.md, references/04-percentile-table.csv",
+  "curves": [
+    {
+      "id": "standard",
+      "name": "Standard",
+      "order": 0,
+      "blurb": "School cutoffs on the percentile. Harshest of the three.",
+      "note": "Fails ~60% of nights by construction: a pass line at the 60th percentile fails 60% of any dataset, always. That is a property of ranking, not of sleep.",
+      "shares": null,
+      "derived": false,
+      "bands": [
+        {
+          "grade": "A+",
+          "min": 97
+        },
+        {
+          "grade": "A",
+          "min": 93
+        },
+        {
+          "grade": "A-",
+          "min": 90
+        },
+        {
+          "grade": "B+",
+          "min": 87
+        },
+        {
+          "grade": "B",
+          "min": 83
+        },
+        {
+          "grade": "B-",
+          "min": 80
+        },
+        {
+          "grade": "C+",
+          "min": 77
+        },
+        {
+          "grade": "C",
+          "min": 73
+        },
+        {
+          "grade": "C-",
+          "min": 70
+        },
+        {
+          "grade": "D+",
+          "min": 67
+        },
+        {
+          "grade": "D",
+          "min": 63
+        },
+        {
+          "grade": "D-",
+          "min": 60
+        },
+        {
+          "grade": "F",
+          "min": 0
+        }
+      ]
+    },
+    {
+      "id": "bell",
+      "name": "Bell",
+      "order": 1,
+      "blurb": "Forced normal distribution: 10% A, 20% B, 40% C, 20% D, 10% F. The average night is a C by construction.",
+      "note": "A redistribution, not a boost. It reshapes the middle and leaves the top alone.",
+      "shares": {
+        "A": 10,
+        "B": 20,
+        "C": 40,
+        "D": 20,
+        "F": 10
+      },
+      "derived": true,
+      "bands": [
+        {
+          "grade": "A+",
+          "min": 96.6666666667
+        },
+        {
+          "grade": "A",
+          "min": 93.3333333333
+        },
+        {
+          "grade": "A-",
+          "min": 90
+        },
+        {
+          "grade": "B+",
+          "min": 83.3333333333
+        },
+        {
+          "grade": "B",
+          "min": 76.6666666667
+        },
+        {
+          "grade": "B-",
+          "min": 70
+        },
+        {
+          "grade": "C+",
+          "min": 56.6666666667
+        },
+        {
+          "grade": "C",
+          "min": 43.3333333333
+        },
+        {
+          "grade": "C-",
+          "min": 30
+        },
+        {
+          "grade": "D+",
+          "min": 23.3333333333
+        },
+        {
+          "grade": "D",
+          "min": 16.6666666667
+        },
+        {
+          "grade": "D-",
+          "min": 10
+        },
+        {
+          "grade": "F",
+          "min": 0
+        }
+      ]
+    },
+    {
+      "id": "curved",
+      "name": "Curved",
+      "order": 2,
+      "blurb": "Generous curve: A top 25%, B next 35%, C next 25%, D next 10%, F bottom 5%. A typical night is a B-.",
+      "note": "The one to feature on a screen, per the source document. The five shares are the dial; turning them changes only this column.",
+      "shares": {
+        "A": 25,
+        "B": 35,
+        "C": 25,
+        "D": 10,
+        "F": 5
+      },
+      "derived": true,
+      "bands": [
+        {
+          "grade": "A+",
+          "min": 91.6666666667
+        },
+        {
+          "grade": "A",
+          "min": 83.3333333333
+        },
+        {
+          "grade": "A-",
+          "min": 75
+        },
+        {
+          "grade": "B+",
+          "min": 63.3333333333
+        },
+        {
+          "grade": "B",
+          "min": 51.6666666667
+        },
+        {
+          "grade": "B-",
+          "min": 40
+        },
+        {
+          "grade": "C+",
+          "min": 31.6666666667
+        },
+        {
+          "grade": "C",
+          "min": 23.3333333333
+        },
+        {
+          "grade": "C-",
+          "min": 15
+        },
+        {
+          "grade": "D+",
+          "min": 11.6666666667
+        },
+        {
+          "grade": "D",
+          "min": 8.3333333333
+        },
+        {
+          "grade": "D-",
+          "min": 5
+        },
+        {
+          "grade": "F",
+          "min": 0
+        }
+      ]
+    }
+  ]
+}

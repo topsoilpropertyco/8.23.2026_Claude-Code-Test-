@@ -88,6 +88,31 @@ jobs:
             echo "changed=false" >> "$GITHUB_OUTPUT"
           fi
 
+      # The grade table has to be counted, not fitted, and only the runner can
+      # read the encrypted history. Rebuilding here replaces every modelled row
+      # with a census of real nights, then --check fails loudly if the key was
+      # missing and the output is still provisional.
+      - name: Rebuild the grade table from real nights
+        if: inputs.oura_action == '' && steps.telem.outputs.changed == 'true'
+        continue-on-error: true
+        env:
+          SLEEPOS_DATA_KEY: ${{ secrets.SLEEPOS_DATA_KEY }}
+        run: |
+          node bin/build-grades.mjs --check
+          python3 bin/build-screens.py
+          python3 bin/build-deck.py
+
+      - name: Upload the grade table
+        if: inputs.oura_action == '' && steps.telem.outputs.changed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: grade-table
+          path: |
+            references/08-MY-SCORE-TABLE.md
+            data/my-score-table.json
+          retention-days: 14
+          if-no-files-found: ignore
+
       - name: Build the last-night screen
         if: inputs.oura_action == '' && steps.telem.outputs.changed == 'true'
         continue-on-error: true

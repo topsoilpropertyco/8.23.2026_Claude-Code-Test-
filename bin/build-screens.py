@@ -173,7 +173,7 @@ body = f"""  <p class="q">Where am I?</p>
   {N:,} recorded nights scored lower and <b>{ABOVE}</b> scored higher — the {PCT}st percentile
   exactly. Rank <b>{RANK}</b> of {N:,}.</p>
 """
-write('s1', page('1 of 8', 'Where am I', 's1 — Where am I',
+write('s1', page('1 of 10', 'Where am I', 's1 — Where am I',
     'Score first at the same size as the percentile, per revision 2.', extra, body, f'{N:,} nights'))
 
 # ---------------------------------------------------------------- s2  the curve
@@ -253,7 +253,7 @@ body = f"""  <p class="q">How rare is a night like this?</p>
   normal curve fitted to your real mean <b>{MEAN}</b> and SD <b>{SD}</b>. Last night's
   <b>{PCT}st</b> is the measured rank.</p>
 """
-write('s2', page('2 of 8', 'The curve', 's2 — The curve',
+write('s2', page('2 of 10', 'The curve', 's2 — The curve',
     'Curve banded into thirds of his own history; percentile set under the score.',
     extra, body, f'mean {MEAN} · SD {SD}'))
 print('s1, s2 written')
@@ -324,7 +324,7 @@ body = f"""  <p class="q">How far from ordinary?</p>
   percentile row is a normal fit, so those tick figures are approximate. The <b>{PCT}st</b>
   in the band is your real rank.</p>
 """
-write('s3', page('3 of 8', 'The scale', 's3 — The scale',
+write('s3', page('3 of 10', 'The scale', 's3 — The scale',
     'SD strip, each tick spelled out as a score and a percentile.', extra, body, f'z +{Z}'))
 
 # ---------------------------------------------------------------- s4  how many have I beaten
@@ -423,7 +423,7 @@ body = f"""  <p class="q">How many nights have I beaten?</p>
   document.getElementById('marks').appendChild(f);
   </script>
 """
-write('s4', page('4 of 8', 'Nights beaten', 's4 — How many nights have I beaten',
+write('s4', page('4 of 10', 'Nights beaten', 's4 — How many nights have I beaten',
     'Waffle banded into exact rank thirds; question renamed to something answerable.',
     extra, body, 'one square = one night'))
 print('s3, s4 written')
@@ -508,7 +508,7 @@ body = f"""  <p class="q">Am I heading the right direction?</p>
   <code>coach.js</code> now asks for them, but this build cannot open the encrypted log to
   fill them in.</p>
 """
-write('s5', page('5 of 8', 'The direction', 's5 — The direction',
+write('s5', page('5 of 10', 'The direction', 's5 — The direction',
     'Rebuilt: last night first, one stated baseline, 180/365 wired and pending.',
     extra, body, f'baseline {MEAN}'))
 
@@ -594,7 +594,7 @@ body = f"""  <p class="q">What actually happened?</p>
   no fault, 2m 30s is fast not failing. The five grey rows need <b>your own</b> baseline,
   which <code>coach.js</code> derives but this build has no key to read.</p>
 """
-write('s6', page('6 of 8', 'Last night', 's6 — Last night',
+write('s6', page('6 of 10', 'Last night', 's6 — Last night',
     'Each row coloured by the basis it can honestly be judged against, with that basis shown.',
     extra, body, 'bars = share of 7h 45m asleep'))
 print('s5, s6 written')
@@ -664,7 +664,7 @@ body = f"""  <p class="q">How do I compare with everyone else?</p>
   <b>These are Oura members, not a national population</b> — people who bought a ring to
   optimise sleep, so the bar sits higher than the public at large.</p>
 """
-write('n1', page('7 of 8', 'Vs members', 'n1 — Vs Oura members',
+write('n1', page('7 of 10', 'Vs members', 'n1 — Vs Oura members',
     'Compares on the published member average. Percentile deliberately absent: Oura publishes no spread.',
     extra, body, f'avg {GLOBAL_MEAN:g}', kind='nat'))
 
@@ -713,7 +713,189 @@ body = f"""  <p class="q">Where would I rank as a country?</p>
   leading countries are published, so this is the top of the table, not all of it. The United
   States average is <b>not published</b>.</p>
 """
-write('n2', page('8 of 8', 'Country ladder', 'n2 — The country ladder',
+write('n2', page('8 of 10', 'Country ladder', 'n2 — The country ladder',
     'His all-time average dropped into the published country-average table.',
     extra, body, 'Oura 2024', kind='nat'))
 print('n1, n2 written')
+
+# =====================================================================  GRADES
+# Two screens, one question: what letter is last night worth? The answer depends
+# entirely on which curve you grade it on, so the screen shows all three at once
+# rather than picking one and hiding the choice.
+#
+# The visual only works because all three curves grade the SAME quantity -- a
+# percentile. That means one vertical marker cuts through all three bars, and the
+# reason the letters differ is visible rather than asserted: the bands sit in
+# different places. Standard's enormous F block is the whole argument against it.
+import json
+
+CURVES = json.load(open('data/grade-curves.json'))['curves']
+GRADE_FILL = {'A': '#CFE0C8', 'B': '#E1E8C7', 'C': '#F0E5C2', 'D': '#F0DCC6', 'F': '#EFD3CC'}
+GRADE_INK  = {'A': '#2F7A44', 'B': '#5E7226', 'C': '#96761C', 'D': '#A85F22', 'F': '#B23A2F'}
+
+def letter_spans(curve):
+    """Collapse the 13 +/- bands into 5 letter blocks: [(letter, lo, hi), ...]."""
+    spans, top = [], 100.0
+    for letter in 'ABCDF':
+        mins = [b['min'] for b in curve['bands'] if b['grade'][0] == letter]
+        lo = min(mins)
+        spans.append((letter, lo, top))
+        top = lo
+    return list(reversed(spans))
+
+BARW, BARH = 342, 27
+
+def grade_at(pct, curve):
+    for b in curve['bands']:
+        if pct >= b['min']: return b['grade']
+    return None
+
+def spectrum(curve, pct, earned, ci=None):
+    """One curve as a labelled 0-100 percentile bar with the night marked on it.
+
+    With `ci`, the 90% interval is washed over the bar. That is deliberate weight:
+    the source research calls the interval "the real answer" and the percentile
+    only its middle, and drawing it shows what a number cannot -- that across the
+    interval the earned letter itself moves.
+    """
+    segs = []
+    for letter, lo, hi in letter_spans(curve):
+        w = (hi - lo) / 100 * BARW
+        # A 5%-wide block cannot hold a letter legibly; leave it as pure colour.
+        label = (f'<span style="color:{GRADE_INK[letter]}">{letter}</span>'
+                 if w >= 21 else '')
+        segs.append(f'<div class="seg" style="width:{w:.2f}px;background:{GRADE_FILL[letter]}">{label}</div>')
+    x = pct / 100 * BARW
+    wash = ''
+    rng = ''
+    if ci:
+        lo, hi = ci
+        gl, gh = grade_at(lo, curve), grade_at(hi, curve)
+        wash = (f'<div class="ci" style="left:{lo / 100 * BARW:.2f}px;'
+                f'width:{(hi - lo) / 100 * BARW:.2f}px"></div>')
+        if gl != gh:
+            rng = f'<span class="crng mono">{gl}&ndash;{gh}</span>'
+    return f"""  <div class="crow">
+    <div class="ctop">
+      <span class="clab mono">{curve['name']}</span>
+      <span>{rng}<span class="cgrade mono" style="color:{GRADE_INK[earned[0]]}">{earned}</span></span>
+    </div>
+    <div class="bar">{''.join(segs)}{wash}
+      <div class="mk" style="left:{x:.2f}px"></div>
+    </div>
+  </div>"""
+
+GRADE_EXTRA = """
+.gscore{display:flex;align-items:flex-end;gap:0;justify-content:space-between}
+.gcell{display:flex;flex-direction:column}
+.gcell .k{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:QUIET;font-weight:500}
+.gcell .v{font-size:54px;line-height:.9;letter-spacing:-.035em;font-weight:500;margin-top:2px}
+.gcell.r{align-items:flex-end;text-align:right}
+.gcell.r .v{font-size:48px}
+.crow{margin-top:11px}
+.ctop{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.clab{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:QUIET;font-weight:600}
+.cgrade{font-size:17px;font-weight:600;letter-spacing:.02em}
+.bar{position:relative;display:flex;height:BARHpx;width:BARWpx}
+.seg{display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;
+  font-size:9.5px;font-weight:600;letter-spacing:.1em;overflow:hidden}
+.ci{position:absolute;top:0;bottom:0;background:rgba(26,24,20,.13);
+  border-left:1px solid rgba(26,24,20,.32);border-right:1px solid rgba(26,24,20,.32)}
+.crng{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;color:QUIET;
+  font-weight:500;margin-right:8px}
+.mk{position:absolute;top:-4px;bottom:-4px;width:2px;background:INK;z-index:2}
+.mk:after{content:'';position:absolute;top:-4px;left:-3px;border-left:4px solid transparent;
+  border-right:4px solid transparent;border-top:5px solid INK}
+.legend{display:flex;justify-content:space-between;font-size:8px;letter-spacing:.14em;
+  text-transform:uppercase;color:QUIET;font-family:'IBM Plex Mono',monospace;margin-top:9px}
+.feat{display:flex;align-items:baseline;gap:11px;margin-top:15px}
+.feat .fg{font-size:40px;line-height:.9;font-weight:600;letter-spacing:-.02em;
+  font-family:'IBM Plex Mono',monospace;flex:0 0 auto}
+.feat .fx{font-size:10.5px;line-height:1.5;color:QUIET}
+.warn{margin-top:10px;padding:6px 9px 5px;font-family:'IBM Plex Mono',monospace;font-size:8.5px;
+  line-height:1.45;letter-spacing:.03em;background:#EFD3CC;color:#8A2C22;font-weight:500}
+""".replace('BARW', str(BARW)).replace('BARH', str(BARH)).replace('QUIET', QUIET).replace('INK', INK)
+
+# ------------------------------------------------------------- g1  vs members
+REF = json.load(open('data/oura-score-reference.json'))
+ROW = next(r for r in REF['table'] if r['score'] == SCORE)
+MP = ROW['percentile']
+MG = ROW['grades']
+POP = REF['population']
+
+bars = '\n'.join(spectrum(c, MP, MG[c['id']], ci=ROW['ci']) for c in CURVES)
+body = f"""  <p class="q">What is last night worth?</p>
+  <p class="ans">A letter is a choice of curve, so here are all three — and
+  where each one draws its lines.</p>
+  <div class="gscore">
+    <div class="gcell"><span class="k mono">Sleep score</span><span class="v mono">{SCORE}</span></div>
+    <div class="gcell r"><span class="k mono">Member percentile</span>
+      <span class="v mono">{MP:.1f}</span></div>
+  </div>
+  <div class="hair" style="margin:16px 0 2px"></div>
+{bars}
+  <div class="legend"><span>0th</span><span>50th percentile</span><span>100th</span></div>
+  <div class="feat">
+    <span class="fg" style="color:{GRADE_INK[MG['curved'][0]]}">{MG['curved']}</span>
+    <span class="fx">on the <b>curved</b> scale — the one to trust here.
+    Standard fails 60% of all nights by construction, whatever anyone scores.</span>
+  </div>
+  <div class="hair" style="margin-top:15px"></div>
+  <p class="note mono" style="margin-top:11px">The shaded band is the <b>90% interval</b>
+  ({ROW['ci'][0]}–{ROW['ci'][1]}) — the real answer, with the percentile only its middle. It is that
+  wide because Oura has never published a spread. Read across it and the letter moves too: the
+  curved grade holds from <b>{grade_at(ROW['ci'][0], CURVES[2])}</b> to
+  <b>{grade_at(ROW['ci'][1], CURVES[2])}</b>, and standard swings
+  <b>{grade_at(ROW['ci'][0], CURVES[0])}</b> to <b>{grade_at(ROW['ci'][1], CURVES[0])}</b>.</p>
+  <div class="hair" style="margin-top:12px"></div>
+  <p class="note mono" style="margin-top:11px"><b>Oura member nights</b>, not a national figure —
+  members bought a ring to optimise sleep. The unit is a <b>night, not a person</b>: better than
+  {MP:.1f}% of member <i>nights</i> holds; better than {MP:.1f}% of members is a different claim
+  nothing here answers. Mean <b>{POP['mean']}</b> is published, the spread <b>is not</b> — SD
+  {POP['sd']} is inferred, so this sits at {ROW['ci'][0]}–{ROW['ci'][1]}. <b>No member count is
+  published</b>, so none is shown.</p>
+"""
+write('g1', page('9 of 10', 'Grades vs members', 'g1 — Letter grades vs Oura members',
+    'Three curves on one percentile axis; the marker is last night.',
+    GRADE_EXTRA, body, f'Percentile {MP:.1f}', kind='nat'))
+
+# ------------------------------------------------------------- g2  vs my own
+MY = json.load(open('data/my-score-table.json'))
+MYROW = next(r for r in MY['table'] if r['score'] == SCORE)
+OP, OG = MYROW['percentile'], MYROW['grades']
+MODELLED = MY['population'].get('modelled', False)
+
+bars = '\n'.join(spectrum(c, OP, OG[c['id']]) for c in CURVES)
+drop = ('the same letter' if OG['curved'] == MG['curved']
+        else f"{MG['curved']} against members, {OG['curved']} against yourself")
+warn = (f'<div class="warn">PROVISIONAL — these percentiles are a fitted model, not counted '
+        f'nights. This session cannot read the encrypted history. Rebuilt from the real '
+        f'{N:,} nights wherever the key is present.</div>' if MODELLED else '')
+body = f"""  <p class="q">And against my own nights?</p>
+  <p class="ans">The identical three curves, moved onto your own {N:,} nights.
+  {'Fitted for now — see below.' if MODELLED else 'Counted, not modelled: no spread is inferred here.'}</p>
+  <div class="gscore">
+    <div class="gcell"><span class="k mono">Sleep score</span><span class="v mono">{SCORE}</span></div>
+    <div class="gcell r"><span class="k mono">Your percentile</span>
+      <span class="v mono">{OP:.1f}</span></div>
+  </div>
+  <div class="hair" style="margin:16px 0 2px"></div>
+{bars}
+  <div class="legend"><span>0th</span><span>50th percentile</span><span>100th</span></div>
+  <div class="feat">
+    <span class="fg" style="color:{GRADE_INK[OG['curved'][0]]}">{OG['curved']}</span>
+    <span class="fx">on the <b>curved</b> scale. Harsher than the member grade —
+    {drop} — because you outsleep the member average, so your own history is the
+    tougher field.</span>
+  </div>
+  {warn}
+  <div class="hair" style="margin-top:12px"></div>
+  <p class="note mono" style="margin-top:11px">Same curves, different population. An {SCORE} sits at
+  <b>{OP:.1f}</b> among your own nights and <b>{MP:.1f}</b> among member nights — a
+  <b>{MP - OP:+.1f}</b> point gap, and the gap is the finding. Worth keeping in view: a letter reads
+  as a verdict in a way a percentile does not. An F describes where a night sat in a distribution,
+  not a judgement about you.</p>
+"""
+write('g2', page('10 of 10', 'Grades vs my own', 'g2 — Letter grades vs my own nights',
+    'The identical curves on his own empirical distribution.',
+    GRADE_EXTRA, body, f'Percentile {OP:.1f}', kind='own'))

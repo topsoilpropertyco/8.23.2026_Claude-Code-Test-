@@ -1,0 +1,1041 @@
+{
+  "_comment": "Oura MEMBER-NIGHT reference. Not national, not general population - members are self-selected people who bought a ring to optimise sleep. The unit is a NIGHT, not a person: 'better than 89% of member nights' is supported, 'better than 89% of members' is not. Rows with confidence 'low' must not display a percentile number on a screen.",
+  "_source": "references/04-percentile-table.csv (verified identical to 07-SCORE-REFERENCE-TABLE.md)",
+  "population": {
+    "label": "Oura member nights",
+    "mean": 77.0,
+    "sd": 9.9,
+    "sdPublished": false,
+    "meanPublished": true,
+    "meanSource": "Oura 2024 Year in Review, countries with >=2,000 members",
+    "sdSource": "inferred from six non-Oura cohorts, n=10 to n=100",
+    "n": null,
+    "nNote": "No member count is published for the 77.0 figure and no row of the table carries an n_support value. Do not print a population size.",
+    "medianModelled": 77.5,
+    "validUntil": "2027-08-25"
+  },
+  "suppressBelow": 60,
+  "suppressAbove": 93,
+  "table": [
+    {
+      "score": 40,
+      "percentile": 0.1,
+      "grades": {
+        "standard": "F",
+        "bell": "F",
+        "curved": "F"
+      },
+      "ci": [
+        0.0,
+        0.4
+      ],
+      "sd": -3.74,
+      "sdDirection": "below",
+      "basis": "extrapolated",
+      "confidence": "low"
+    },
+    {
+      "score": 41,
+      "percentile": 0.1,
+      "grades": {
+        "standard": "F",
+        "bell": "F",
+        "curved": "F"
+      },
+      "ci": [
+        0.0,
+        0.4
+      ],
+      "sd": -3.64,
+      "sdDirection": "below",
+      "basis": "extrapolated",
+      "confidence": "low"
+    },
+    {
+      "score": 42,
+      "percentile": 0.2,
+      "grades": {
+        "standard": "F",
+        "bell": "F",
+        "curved": "F"
+      },
+      "ci": [
+        0.0,
+        0.5
+      ],
+      "sd": -3.54,
+      "sdDirection": "below",
+      "basis": "extrapolated",
+      "confidence": "low"
+    },
+    {
+      "score": 43,
+      "percentile": 0.2,
+      "grades": {
+        "standard": "F",
+        "bell": "F",
+        "curved": "F"
+      },
+      "ci": [
+        0.0,
+        0.6
+      ],
+      "sd": -3.43,
+      "sdDirection": "below",
+      "basis": "extrapolated",
+      "confidence": "low"
+    },
+    {
+      "score": 44,
+      "percentile": 0.3,
+      "grades": {
+        "standard": "F",
+        "bell": "F",
+        "curved": "F"
+      },
+      "ci": [
+        0.0,
+        0.7
+      ],
+      "sd": -3.33,
+      "sdDirection": "below",
+      "basis": "extrapolated",
+      "confidence": "low"
+    },
+    {
+      "score": 45,
+      "percentile": 0.4,
+      "grades": {
+        "standard": "F",
+        "bell": "F",
+        "curved": "F"
+      },
+      "ci": [
+        0.1,
+        0.8
+      ],
+      "sd": -3.23,
+      "sdDirection": "below",
+      "basis": "extrapolated",
+      "confidence": "low"
+    },
+    {
+      "score": 46,
+      "percentile": 0.5,
+      "grades": {
+        "standard": "F",
+        "bell": "F",
+        "curved": "F"
+      },
+      "ci": [
+        0.1,
+        1.0
+      ],
+      "sd": -3.13,
+      "sdDirection": "below",
+      "basis": "extrapolated",
+      "confidence": "low"
+    },
+    {
+      "score": 47,
+      "percentile": 0.6,
+      "grades": {
+        "standard": "F",
+        "bell": "F",
+        "curved": "F"
+      },
+      "ci": [
+        0.1,
+        1.1
+      ],
+      "sd": -3.03,
+      "sdDirection": "below",
+      "basis": "extrapolated",
+      "confidence": "low"
+    },
+    {
+      "score": 48,
+      "percentile": 0.7,
+      "grades": {
+        "standard": "F",
+        "bell": "F",
+        "curved": "F"
+      },
+      "ci": [
+        0.1,
+        1.3
+      ],
+      "sd": -2.93,
+      "sdDirection": "below",
+      "basis": "extrapolated",
+      "confidence": "low"
+    },
+    {
+      "score": 49,
+      "percentile": 0.8,
+      "grades": {
+        "standard": "F",
+        "bell": "F",
+        "curved": "F"
+      },
+      "ci": [
+        0.2,
+        1.6
+      ],
+      "sd": -2.83,
+      "sdDirection": "below",
+      "basis": "extrapolated",
+      "confidence": "low"
+    },
+    {
+      "score": 50,
+      "percentile": 1.0,
+      "grades": {
+        "standard": "F",
+        "bell": "F",
+        "curved": "F"
+      },
+      "ci": [
+        0.3,
+        1.9
+      ],
+      "sd": -2.73,
+      "sdDirection": "below",
+      "basis": "extrapolated",
+      "confidence": "low"
+    },
+    {
+      "score": 51,
+      "percentile": 1.2,
+      "grades": {
+        "standard": "F",
+        "bell": "F",
+        "curved": "F"
+      },
+      "ci": [
+        0.4,
+        2.2
+      ],
+      "sd": -2.63,
+      "sdDirection": "below",
+      "basis": "extrapolated",
+      "confidence": "low"
+    },
+    {
+      "score": 52,
+      "percentile": 1.5,
+      "grades": {
+        "standard": "F",
+        "bell": "F",
+        "curved": "F"
+      },
+      "ci": [
+        0.5,
+        2.6
+      ],
+      "sd": -2.53,
+      "sdDirection": "below",
+      "basis": "interpolated",
+      "confidence": "low"
+    },
+    {
+      "score": 53,
+      "percentile": 1.8,
+      "grades": {
+        "standard": "F",
+        "bell": "F",
+        "curved": "F"
+      },
+      "ci": [
+        0.7,
+        3.0
+      ],
+      "sd": -2.42,
+      "sdDirection": "below",
+      "basis": "interpolated",
+      "confidence": "low"
+    },
+    {
+      "score": 54,
+      "percentile": 2.1,
+      "grades": {
+        "standard": "F",
+        "bell": "F",
+        "curved": "F"
+      },
+      "ci": [
+        0.9,
+        3.5
+      ],
+      "sd": -2.32,
+      "sdDirection": "below",
+      "basis": "interpolated",
+      "confidence": "low"
+    },
+    {
+      "score": 55,
+      "percentile": 2.5,
+      "grades": {
+        "standard": "F",
+        "bell": "F",
+        "curved": "F"
+      },
+      "ci": [
+        1.2,
+        4.1
+      ],
+      "sd": -2.22,
+      "sdDirection": "below",
+      "basis": "interpolated",
+      "confidence": "low"
+    },
+    {
+      "score": 56,
+      "percentile": 3.0,
+      "grades": {
+        "standard": "F",
+        "bell": "F",
+        "curved": "F"
+      },
+      "ci": [
+        1.5,
+        4.7
+      ],
+      "sd": -2.12,
+      "sdDirection": "below",
+      "basis": "interpolated",
+      "confidence": "low"
+    },
+    {
+      "score": 57,
+      "percentile": 3.6,
+      "grades": {
+        "standard": "F",
+        "bell": "F",
+        "curved": "F"
+      },
+      "ci": [
+        2.0,
+        5.4
+      ],
+      "sd": -2.02,
+      "sdDirection": "below",
+      "basis": "interpolated",
+      "confidence": "low"
+    },
+    {
+      "score": 58,
+      "percentile": 4.2,
+      "grades": {
+        "standard": "F",
+        "bell": "F",
+        "curved": "F"
+      },
+      "ci": [
+        2.5,
+        6.3
+      ],
+      "sd": -1.92,
+      "sdDirection": "below",
+      "basis": "interpolated",
+      "confidence": "low"
+    },
+    {
+      "score": 59,
+      "percentile": 5.0,
+      "grades": {
+        "standard": "F",
+        "bell": "F",
+        "curved": "D-"
+      },
+      "ci": [
+        3.0,
+        7.2
+      ],
+      "sd": -1.82,
+      "sdDirection": "below",
+      "basis": "interpolated",
+      "confidence": "low"
+    },
+    {
+      "score": 60,
+      "percentile": 5.8,
+      "grades": {
+        "standard": "F",
+        "bell": "F",
+        "curved": "D-"
+      },
+      "ci": [
+        3.7,
+        8.2
+      ],
+      "sd": -1.72,
+      "sdDirection": "below",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 61,
+      "percentile": 6.8,
+      "grades": {
+        "standard": "F",
+        "bell": "F",
+        "curved": "D-"
+      },
+      "ci": [
+        4.4,
+        9.4
+      ],
+      "sd": -1.62,
+      "sdDirection": "below",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 62,
+      "percentile": 8.0,
+      "grades": {
+        "standard": "F",
+        "bell": "F",
+        "curved": "D-"
+      },
+      "ci": [
+        5.3,
+        10.7
+      ],
+      "sd": -1.52,
+      "sdDirection": "below",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 63,
+      "percentile": 9.3,
+      "grades": {
+        "standard": "F",
+        "bell": "F",
+        "curved": "D"
+      },
+      "ci": [
+        6.3,
+        12.1
+      ],
+      "sd": -1.41,
+      "sdDirection": "below",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 64,
+      "percentile": 10.7,
+      "grades": {
+        "standard": "F",
+        "bell": "D-",
+        "curved": "D"
+      },
+      "ci": [
+        7.5,
+        13.7
+      ],
+      "sd": -1.31,
+      "sdDirection": "below",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 65,
+      "percentile": 12.3,
+      "grades": {
+        "standard": "F",
+        "bell": "D-",
+        "curved": "D+"
+      },
+      "ci": [
+        8.8,
+        15.5
+      ],
+      "sd": -1.21,
+      "sdDirection": "below",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 66,
+      "percentile": 14.2,
+      "grades": {
+        "standard": "F",
+        "bell": "D-",
+        "curved": "D+"
+      },
+      "ci": [
+        10.3,
+        17.5
+      ],
+      "sd": -1.11,
+      "sdDirection": "below",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 67,
+      "percentile": 16.2,
+      "grades": {
+        "standard": "F",
+        "bell": "D-",
+        "curved": "C-"
+      },
+      "ci": [
+        12.0,
+        19.6
+      ],
+      "sd": -1.01,
+      "sdDirection": "below",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 68,
+      "percentile": 18.3,
+      "grades": {
+        "standard": "F",
+        "bell": "D",
+        "curved": "C-"
+      },
+      "ci": [
+        13.9,
+        22.1
+      ],
+      "sd": -0.91,
+      "sdDirection": "below",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 69,
+      "percentile": 20.7,
+      "grades": {
+        "standard": "F",
+        "bell": "D",
+        "curved": "C-"
+      },
+      "ci": [
+        16.1,
+        24.7
+      ],
+      "sd": -0.81,
+      "sdDirection": "below",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 70,
+      "percentile": 23.3,
+      "grades": {
+        "standard": "F",
+        "bell": "D",
+        "curved": "C-"
+      },
+      "ci": [
+        18.6,
+        27.6
+      ],
+      "sd": -0.71,
+      "sdDirection": "below",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 71,
+      "percentile": 26.1,
+      "grades": {
+        "standard": "F",
+        "bell": "D+",
+        "curved": "C"
+      },
+      "ci": [
+        21.5,
+        30.7
+      ],
+      "sd": -0.61,
+      "sdDirection": "below",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 72,
+      "percentile": 29.1,
+      "grades": {
+        "standard": "F",
+        "bell": "D+",
+        "curved": "C"
+      },
+      "ci": [
+        24.7,
+        34.0
+      ],
+      "sd": -0.51,
+      "sdDirection": "below",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 73,
+      "percentile": 32.4,
+      "grades": {
+        "standard": "F",
+        "bell": "C-",
+        "curved": "C+"
+      },
+      "ci": [
+        28.1,
+        37.6
+      ],
+      "sd": -0.4,
+      "sdDirection": "below",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 74,
+      "percentile": 35.9,
+      "grades": {
+        "standard": "F",
+        "bell": "C-",
+        "curved": "C+"
+      },
+      "ci": [
+        31.8,
+        41.5
+      ],
+      "sd": -0.3,
+      "sdDirection": "below",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 75,
+      "percentile": 39.7,
+      "grades": {
+        "standard": "F",
+        "bell": "C-",
+        "curved": "C+"
+      },
+      "ci": [
+        35.4,
+        45.8
+      ],
+      "sd": -0.2,
+      "sdDirection": "below",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 76,
+      "percentile": 43.7,
+      "grades": {
+        "standard": "F",
+        "bell": "C",
+        "curved": "B-"
+      },
+      "ci": [
+        39.2,
+        50.7
+      ],
+      "sd": -0.1,
+      "sdDirection": "below",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 77,
+      "percentile": 47.9,
+      "grades": {
+        "standard": "F",
+        "bell": "C",
+        "curved": "B-"
+      },
+      "ci": [
+        42.8,
+        56.1
+      ],
+      "sd": 0.0,
+      "sdDirection": "at",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 78,
+      "percentile": 52.1,
+      "grades": {
+        "standard": "F",
+        "bell": "C",
+        "curved": "B"
+      },
+      "ci": [
+        46.6,
+        61.5
+      ],
+      "sd": 0.1,
+      "sdDirection": "above",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 79,
+      "percentile": 56.2,
+      "grades": {
+        "standard": "F",
+        "bell": "C",
+        "curved": "B"
+      },
+      "ci": [
+        50.5,
+        66.8
+      ],
+      "sd": 0.2,
+      "sdDirection": "above",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 80,
+      "percentile": 60.4,
+      "grades": {
+        "standard": "D-",
+        "bell": "C+",
+        "curved": "B"
+      },
+      "ci": [
+        54.4,
+        71.4
+      ],
+      "sd": 0.3,
+      "sdDirection": "above",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 81,
+      "percentile": 64.5,
+      "grades": {
+        "standard": "D",
+        "bell": "C+",
+        "curved": "B+"
+      },
+      "ci": [
+        58.4,
+        75.5
+      ],
+      "sd": 0.4,
+      "sdDirection": "above",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 82,
+      "percentile": 68.5,
+      "grades": {
+        "standard": "D+",
+        "bell": "C+",
+        "curved": "B+"
+      },
+      "ci": [
+        62.5,
+        79.0
+      ],
+      "sd": 0.51,
+      "sdDirection": "above",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 83,
+      "percentile": 72.5,
+      "grades": {
+        "standard": "C-",
+        "bell": "B-",
+        "curved": "B+"
+      },
+      "ci": [
+        66.5,
+        82.0
+      ],
+      "sd": 0.61,
+      "sdDirection": "above",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 84,
+      "percentile": 76.3,
+      "grades": {
+        "standard": "C",
+        "bell": "B-",
+        "curved": "A-"
+      },
+      "ci": [
+        70.5,
+        84.7
+      ],
+      "sd": 0.71,
+      "sdDirection": "above",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 85,
+      "percentile": 79.9,
+      "grades": {
+        "standard": "C+",
+        "bell": "B",
+        "curved": "A-"
+      },
+      "ci": [
+        74.4,
+        87.1
+      ],
+      "sd": 0.81,
+      "sdDirection": "above",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 86,
+      "percentile": 83.3,
+      "grades": {
+        "standard": "B",
+        "bell": "B",
+        "curved": "A-"
+      },
+      "ci": [
+        78.0,
+        89.2
+      ],
+      "sd": 0.91,
+      "sdDirection": "above",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 87,
+      "percentile": 86.4,
+      "grades": {
+        "standard": "B",
+        "bell": "B+",
+        "curved": "A"
+      },
+      "ci": [
+        81.5,
+        91.3
+      ],
+      "sd": 1.01,
+      "sdDirection": "above",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 88,
+      "percentile": 89.1,
+      "grades": {
+        "standard": "B+",
+        "bell": "B+",
+        "curved": "A"
+      },
+      "ci": [
+        84.6,
+        93.2
+      ],
+      "sd": 1.11,
+      "sdDirection": "above",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 89,
+      "percentile": 91.5,
+      "grades": {
+        "standard": "A-",
+        "bell": "A-",
+        "curved": "A"
+      },
+      "ci": [
+        87.5,
+        95.0
+      ],
+      "sd": 1.21,
+      "sdDirection": "above",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 90,
+      "percentile": 93.5,
+      "grades": {
+        "standard": "A",
+        "bell": "A",
+        "curved": "A+"
+      },
+      "ci": [
+        89.9,
+        96.7
+      ],
+      "sd": 1.31,
+      "sdDirection": "above",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 91,
+      "percentile": 95.0,
+      "grades": {
+        "standard": "A",
+        "bell": "A",
+        "curved": "A+"
+      },
+      "ci": [
+        92.1,
+        98.0
+      ],
+      "sd": 1.41,
+      "sdDirection": "above",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 92,
+      "percentile": 96.3,
+      "grades": {
+        "standard": "A",
+        "bell": "A",
+        "curved": "A+"
+      },
+      "ci": [
+        93.8,
+        98.9
+      ],
+      "sd": 1.52,
+      "sdDirection": "above",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 93,
+      "percentile": 97.4,
+      "grades": {
+        "standard": "A+",
+        "bell": "A+",
+        "curved": "A+"
+      },
+      "ci": [
+        95.3,
+        99.4
+      ],
+      "sd": 1.62,
+      "sdDirection": "above",
+      "basis": "interpolated",
+      "confidence": "medium"
+    },
+    {
+      "score": 94,
+      "percentile": 98.3,
+      "grades": {
+        "standard": "A+",
+        "bell": "A+",
+        "curved": "A+"
+      },
+      "ci": [
+        96.4,
+        99.7
+      ],
+      "sd": 1.72,
+      "sdDirection": "above",
+      "basis": "interpolated",
+      "confidence": "low"
+    },
+    {
+      "score": 95,
+      "percentile": 99.0,
+      "grades": {
+        "standard": "A+",
+        "bell": "A+",
+        "curved": "A+"
+      },
+      "ci": [
+        97.4,
+        99.9
+      ],
+      "sd": 1.82,
+      "sdDirection": "above",
+      "basis": "interpolated",
+      "confidence": "low"
+    },
+    {
+      "score": 96,
+      "percentile": 99.5,
+      "grades": {
+        "standard": "A+",
+        "bell": "A+",
+        "curved": "A+"
+      },
+      "ci": [
+        98.1,
+        100.0
+      ],
+      "sd": 1.92,
+      "sdDirection": "above",
+      "basis": "interpolated",
+      "confidence": "low"
+    },
+    {
+      "score": 97,
+      "percentile": 99.8,
+      "grades": {
+        "standard": "A+",
+        "bell": "A+",
+        "curved": "A+"
+      },
+      "ci": [
+        98.7,
+        100.0
+      ],
+      "sd": 2.02,
+      "sdDirection": "above",
+      "basis": "extrapolated",
+      "confidence": "low"
+    },
+    {
+      "score": 98,
+      "percentile": 99.9,
+      "grades": {
+        "standard": "A+",
+        "bell": "A+",
+        "curved": "A+"
+      },
+      "ci": [
+        99.2,
+        100.0
+      ],
+      "sd": 2.12,
+      "sdDirection": "above",
+      "basis": "extrapolated",
+      "confidence": "low"
+    },
+    {
+      "score": 99,
+      "percentile": 100.0,
+      "grades": {
+        "standard": "A+",
+        "bell": "A+",
+        "curved": "A+"
+      },
+      "ci": [
+        99.6,
+        100.0
+      ],
+      "sd": 2.22,
+      "sdDirection": "above",
+      "basis": "extrapolated",
+      "confidence": "low"
+    }
+  ]
+}

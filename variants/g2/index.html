@@ -1,0 +1,126 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>g2 — Letter grades vs my own nights</title>
+<meta name="viewport" content="width=390, initial-scale=1">
+<!-- The identical curves on his own empirical distribution. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#78756F}
+.s{position:relative;width:390px;height:844px;overflow:hidden;background:#F4F0E6;color:#1A1814;
+  font-family:'Newsreader',Georgia,serif;font-variant-numeric:tabular-nums lining-nums;
+  font-feature-settings:'tnum' 1,'lnum' 1;-webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;padding:30px 24px 26px}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.hd{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:9px;
+  border-bottom:1px solid #1A1814;flex:0 0 auto}
+.bd{flex:1;display:flex;flex-direction:column;padding:20px 0 10px;min-height:0}
+.grp{flex:0 0 auto}
+.grp:nth-child(2){flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0}
+.hd .brand{font-size:11px;letter-spacing:.24em;text-transform:uppercase;font-weight:600}
+.hd .num{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#7C7568}
+.q{font-size:23px;line-height:1.25;font-weight:400;letter-spacing:-.01em}
+.ans{margin-top:6px;font-size:11.5px;line-height:1.55;color:#7C7568;max-width:34ch}
+.lab{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:#7C7568;font-weight:500}
+.hair{height:1px;background:#D5CDBC}
+.ft{margin-top:auto;padding-top:12px;border-top:1px solid #D5CDBC;display:flex;
+  justify-content:space-between;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#7C7568}
+.note{font-size:9px;line-height:1.5;color:#7C7568;letter-spacing:.02em}
+.note b{color:#1A1814;font-weight:600}
+.pill{display:inline-block;padding:3px 9px 2px;font-size:9px;letter-spacing:.16em;
+  text-transform:uppercase;font-weight:600;font-family:'IBM Plex Mono',monospace}
+.prov{flex:0 0 auto;margin-top:9px;padding:5px 9px 4px;font-family:'IBM Plex Mono',monospace;
+  font-size:8.5px;letter-spacing:.17em;text-transform:uppercase;font-weight:600;
+  display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.s.nat{background:#E9EEF3}
+.s.nat .hair{background:#C2CDD8}
+.s.nat .ft{border-top-color:#C2CDD8}
+
+.gscore{display:flex;align-items:flex-end;gap:0;justify-content:space-between}
+.gcell{display:flex;flex-direction:column}
+.gcell .k{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#7C7568;font-weight:500}
+.gcell .v{font-size:54px;line-height:.9;letter-spacing:-.035em;font-weight:500;margin-top:2px}
+.gcell.r{align-items:flex-end;text-align:right}
+.gcell.r .v{font-size:48px}
+.crow{margin-top:11px}
+.ctop{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.clab{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#7C7568;font-weight:600}
+.cgrade{font-size:17px;font-weight:600;letter-spacing:.02em}
+.bar{position:relative;display:flex;height:27px;width:342px}
+.seg{display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;
+  font-size:9.5px;font-weight:600;letter-spacing:.1em;overflow:hidden}
+.ci{position:absolute;top:0;bottom:0;background:rgba(26,24,20,.13);
+  border-left:1px solid rgba(26,24,20,.32);border-right:1px solid rgba(26,24,20,.32)}
+.crng{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;color:#7C7568;
+  font-weight:500;margin-right:8px}
+.mk{position:absolute;top:-4px;bottom:-4px;width:2px;background:#1A1814;z-index:2}
+.mk:after{content:'';position:absolute;top:-4px;left:-3px;border-left:4px solid transparent;
+  border-right:4px solid transparent;border-top:5px solid #1A1814}
+.legend{display:flex;justify-content:space-between;font-size:8px;letter-spacing:.14em;
+  text-transform:uppercase;color:#7C7568;font-family:'IBM Plex Mono',monospace;margin-top:9px}
+.feat{display:flex;align-items:baseline;gap:11px;margin-top:15px}
+.feat .fg{font-size:40px;line-height:.9;font-weight:600;letter-spacing:-.02em;
+  font-family:'IBM Plex Mono',monospace;flex:0 0 auto}
+.feat .fx{font-size:10.5px;line-height:1.5;color:#7C7568}
+.warn{margin-top:10px;padding:6px 9px 5px;font-family:'IBM Plex Mono',monospace;font-size:8.5px;
+  line-height:1.45;letter-spacing:.03em;background:#EFD3CC;color:#8A2C22;font-weight:500}
+</style>
+<div class="s ">
+  <div class="hd"><span class="brand mono">Sleep OS</span><span class="num mono">10 of 10 &middot; Grades vs my own</span></div>
+  <div class="prov" style="background:#EFE6D2;color:#8A6D3B"><span>Compared with your own data</span><span>1,042 nights</span></div>
+  <div class="bd">
+<div class="grp">  <p class="q">And against my own nights?</p>
+  <p class="ans">The identical three curves, moved onto your own 1,042 nights.
+  Fitted for now — see below.</p></div><div class="grp">
+  <div class="gscore">
+    <div class="gcell"><span class="k mono">Sleep score</span><span class="v mono">88</span></div>
+    <div class="gcell r"><span class="k mono">Your percentile</span>
+      <span class="v mono">80.5</span></div>
+  </div>
+  <div class="hair" style="margin:16px 0 2px"></div>
+  <div class="crow">
+    <div class="ctop">
+      <span class="clab mono">Standard</span>
+      <span><span class="cgrade mono" style="color:#5E7226">B-</span></span>
+    </div>
+    <div class="bar"><div class="seg" style="width:205.20px;background:#EFD3CC"><span style="color:#B23A2F">F</span></div><div class="seg" style="width:34.20px;background:#F0DCC6"><span style="color:#A85F22">D</span></div><div class="seg" style="width:34.20px;background:#F0E5C2"><span style="color:#96761C">C</span></div><div class="seg" style="width:34.20px;background:#E1E8C7"><span style="color:#5E7226">B</span></div><div class="seg" style="width:34.20px;background:#CFE0C8"><span style="color:#2F7A44">A</span></div>
+      <div class="mk" style="left:275.31px"></div>
+    </div>
+  </div>
+  <div class="crow">
+    <div class="ctop">
+      <span class="clab mono">Bell</span>
+      <span><span class="cgrade mono" style="color:#5E7226">B</span></span>
+    </div>
+    <div class="bar"><div class="seg" style="width:34.20px;background:#EFD3CC"><span style="color:#B23A2F">F</span></div><div class="seg" style="width:68.40px;background:#F0DCC6"><span style="color:#A85F22">D</span></div><div class="seg" style="width:136.80px;background:#F0E5C2"><span style="color:#96761C">C</span></div><div class="seg" style="width:68.40px;background:#E1E8C7"><span style="color:#5E7226">B</span></div><div class="seg" style="width:34.20px;background:#CFE0C8"><span style="color:#2F7A44">A</span></div>
+      <div class="mk" style="left:275.31px"></div>
+    </div>
+  </div>
+  <div class="crow">
+    <div class="ctop">
+      <span class="clab mono">Curved</span>
+      <span><span class="cgrade mono" style="color:#2F7A44">A-</span></span>
+    </div>
+    <div class="bar"><div class="seg" style="width:17.10px;background:#EFD3CC"></div><div class="seg" style="width:34.20px;background:#F0DCC6"><span style="color:#A85F22">D</span></div><div class="seg" style="width:85.50px;background:#F0E5C2"><span style="color:#96761C">C</span></div><div class="seg" style="width:119.70px;background:#E1E8C7"><span style="color:#5E7226">B</span></div><div class="seg" style="width:85.50px;background:#CFE0C8"><span style="color:#2F7A44">A</span></div>
+      <div class="mk" style="left:275.31px"></div>
+    </div>
+  </div>
+  <div class="legend"><span>0th</span><span>50th percentile</span><span>100th</span></div>
+  <div class="feat">
+    <span class="fg" style="color:#2F7A44">A-</span>
+    <span class="fx">on the <b>curved</b> scale. Harsher than the member grade —
+    A against members, A- against yourself — because you outsleep the member average, so your own history is the
+    tougher field.</span>
+  </div>
+  <div class="warn">PROVISIONAL — these percentiles are a fitted model, not counted nights. This session cannot read the encrypted history. Rebuilt from the real 1,042 nights wherever the key is present.</div>
+  </div><div class="grp"><div class="hair" style="margin-top:12px"></div>
+  <p class="note mono" style="margin-top:11px">Same curves, different population. An 88 sits at
+  <b>80.5</b> among your own nights and <b>89.1</b> among member nights — a
+  <b>+8.6</b> point gap, and the gap is the finding. Worth keeping in view: a letter reads
+  as a verdict in a way a percentile does not. An F describes where a night sat in a distribution,
+  not a judgement about you.</p>
+</div>  </div>
+  <div class="ft mono"><span>Sun 23 Aug 2026</span><span>Percentile 80.5</span></div>
+</div>
