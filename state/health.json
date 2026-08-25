@@ -1,12 +1,12 @@
 {
   "_comment": "Score-free pipeline health, written by bin/build-night-data.mjs. Public file: counts and booleans only, never a score or a vital value.",
-  "generated": "2026-08-25T17:31:19.777Z",
+  "generated": "2026-08-25T20:21:01.509Z",
   "night": "2026-08-25",
   "daysBehind": 0,
   "stale": false,
   "nightsOnRecord": 1045,
-  "hasSleepPeriod": false,
-  "vitalsPresent": 0,
+  "hasSleepPeriod": true,
+  "vitalsPresent": 13,
   "vitalsTotal": 13,
-  "hypnogram": false
+  "hypnogram": true
 }
