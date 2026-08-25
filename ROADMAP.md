@@ -328,10 +328,16 @@ whether it feels like a reward or like a robot — that is the only real test.
 
 ---
 
-# Phase 8 — Generator bake-off
+# Phase 8 — Generator bake-off — SHIPPED
 
-**Status:** fully specified in `SUPERPROMPT-PHASE4.md`. Needs a session with the
-Magic Patterns and Lovable connectors live.
+**Status:** run 2026-08-25. Six Magic Patterns generations (zero re-rolls) and
+one Lovable message (one project, five routes, 9.3 credits). All eleven scored,
+ranked against the sixteen, published. Verdict recorded in `JUDGING.md`: the
+generators largely converged rather than diverging — five of eleven independently
+chose Bodoni Moda, two makers re-derived the same mechanism to 301.02px, and both
+unprompted runs landed on ground the hand-authored set already held. No generated
+screen beat the hand-authored 22; lv1 tied it, and produced the only screen in
+twenty-seven that satisfies the restraint criterion.
 
 At least 5 designs from each tool, scored on the same rubric, ranked against the
 existing 16, published as one artifact. The question it exists to answer: **all
@@ -343,9 +349,12 @@ one project with five routes, not five projects.
 
 ---
 
-# Phase 9 — Getting the night screen in front of you
+# Phase 9 — Getting the night screen in front of you — SHIPPED
 
-**Status:** not specified. Needs a decision before it's worth planning.
+**Status:** shipped as option 1. The screen renders headless in CI and arrives as
+a Telegram photo once a day when the ingest writes a new night. The Shipped list
+above records this as "Phase 8 — the night screen arrives"; the numbering drifted,
+the work is the same.
 
 `web/build-night.js` produces the real screen, but it's delivered as a **GitHub
 Actions artifact** — you'd have to open Actions, find the run, download a zip.
@@ -370,9 +379,14 @@ tracked, the night screen is where the streak belongs.
 
 ---
 
-# Phase 10 — Statistical integrity
+# Phase 10 — Statistical integrity — SHIPPED
 
-**Status:** known defects, no user-visible symptom yet.
+**Status:** fixed in `src/msri.js`, covered by tests. `CDF_Percentile_Multiplier`
+is gone rather than undefined, contributing factors are clamped, and the EWMA is
+seeded with its first observation instead of zero. Verified: a flat series stays
+flat from term one, and a step change is approached without overshoot.
+
+The original defect list, kept for the record:
 
 The MSRI composite on the dashboard has three real problems:
 
@@ -398,12 +412,30 @@ number is ever quoted as if it means something.
 
 ---
 
+# Phase 11 — The taste-driven redesign — SHIPPED
+
+**Status:** shipped 2026-08-25. Seth reviewed the twenty-seven screens one at a
+time; the picks compiled into eight rules (light ground, percentile in words and
+count in pictures, percentile leads and rank supports, every axis dual-labelled,
+comparable series tabular never prose, name the unit not the occasion, make it
+explicit, one element per screen). Those rules produced **eight screens in two
+provenance families** — six warm-paper against his own 1,042 nights, two
+cool-blue against published Oura member data — plus a swipeable deck and a link
+at the foot of the morning Telegram reply.
+
+The screen that did not exist before is **s5, "Am I heading the right
+direction?"** — a trend question effectively nothing in the twenty-seven
+answered. Full record in `taste/PICKS.md`.
+
+---
+
 # Still blocked, and what would unblock it
 
 | | Blocker | What's needed |
 |---|---|---|
 | **S1** | Exposed Telegram bot token | Two minutes at a computer with @BotFather, then update `SLEEPOS_TELEGRAM_BOT_TOKEN`. Only open security item. |
-| **Generators** | Magic Patterns and Lovable are `enabledInChat: false` | Platform-side, not a decision. Either enable them for a chat, or paste `SUPERPROMPT-PHASE4.md` into a session where they are live. |
+| **Oura population percentile** | Oura publishes a mean Sleep Score (77.0) and **no spread**, so a score cannot be placed on a population curve | A distribution, or a second parameter. `SUPERPROMPT-OURA-DISTRIBUTION.md` is written and ready to paste into Cowork; it searches first, then constructs from the score's documented inputs against a public sleep cohort. |
+| **T180 / T365 values** | `coach.js` now asks for them and `trailing()` computes them, but this build has no `SLEEPOS_DATA_KEY` | Nothing. They populate automatically on the runner, which holds the key. Screen s5 shows them as "pending" until then. |
 
 ## Open questions, not blockers
 
