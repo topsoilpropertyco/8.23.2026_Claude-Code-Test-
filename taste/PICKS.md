@@ -148,3 +148,52 @@ The keeper element: `EVERY NIGHT ON RECORD` — a waffle grid of 1,042 marks.
 - Distribution rendered three different ways (dot field, SD strip, waffle) and
   he has now asked to keep **all three**. Open question at compile: do they
   coexist, or does one absorb the others?
+
+---
+
+## Pick 4 — v7 THE BROADSHEET (hand-authored, round two, scored 20, ranked 8= of 27)
+
+Warm paper, Newsreader serif + Archivo sans labels, one teal `#0D7680`.
+Keeper element: `WHERE LAST NIGHT SITS` — a binned histogram of every night
+since 25 Aug 2023, marker bar in teal, dotted mean line.
+
+### What Seth said
+- LIKES: **the bell curve / binned histogram** as drawn here.
+- WANTS: **a properly labelled dual axis.** A `SLEEP SCORE` row of values across
+  the bottom, and a `PERCENTILE` row beneath it, each percentile aligned under
+  its own sleep score. "So it's easier to read, easy to understand."
+- WANTS: the marker callout to say **"Sleep score 88"**, not "Last night, 88".
+
+### What I observe
+- **This is Pick 2's request generalised, and it is now a rule.** In Pick 2 he
+  asked for a percentile under every SD tick. Here he asks for a percentile
+  under every sleep-score tick. Same instruction, different scale.
+  → **RULE: every axis on the screen is dual-labelled — raw unit on top,
+  percentile directly beneath, aligned.** He is consistently asking for the
+  percentile translation to be pre-computed for him rather than inferred.
+- **This probably answers the open question from Pick 3.** I flagged that he had
+  asked to keep three separate renderings of one distribution (v4 dot field,
+  mp4 SD strip, v15 waffle). A single histogram whose axis is labelled in
+  **score / percentile / SD** carries all three scales at once. The SD strip
+  stops being a separate component and becomes a third axis row. Strong
+  candidate for the unification — propose it at compile, do not assume it.
+- **He wants the unit named, not the event.** "Last night, 88" names when;
+  "Sleep score 88" names what. Consistent with every other ask so far —
+  he keeps removing the step where the reader has to infer something.
+- **Light ground, four for four.** Warm paper again.
+- **A possible exception to the Pick 2 prose rule, worth testing.** v7's body is
+  a running prose paragraph carrying score, mean, SD, percentile, 7-day mean and
+  duration — and he did not object, where he did object to mp4's prose trailing
+  means. Likely distinction: **a comparable series must be tabular; narrative
+  context may be prose.** T7/T30/T90 are three values of one measure and demand
+  a column. A sentence that sets the scene does not. Provisional.
+- The headline here is *"A good night — and, rarely, a top-fifth one."*
+  "Top-fifth" is a percentile in plain English — the same phrasing he reached
+  for unprompted in Pick 1 ("top 81 percent"). He did not comment on it, but it
+  is consistent with the percentile-leads rule.
+
+### Running through-line after four picks
+- Ground: **light**, four for four.
+- Comparison: **percentile in words, count in pictures, percentile under every axis.**
+- Repeated/comparable data: **tables and aligned rows, never prose.**
+- **Label the unit, not the occasion.**
