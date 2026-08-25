@@ -242,15 +242,25 @@ ZGUT = 74
 SW_ = 342 - ZGUT
 ZLO, ZHI = -2.5, 2.5
 you_x = (Z - ZLO) / (ZHI - ZLO) * SW_
-chips = ''.join(f'<div class="chip{" me" if z == 1 else ""}"></div>' for z in ZT)
+# Each chip is a 1 SD band centred on its label, so its verdict is the verdict of
+# the scores it covers: -2 and -1 sit wholly in the worst third, 0 straddles the
+# middle, +1 and +2 sit wholly in the best third.
+def chip_band(z):
+    p = phi(z) * 100
+    return band_of_pct(p)[1:3]          # (strong, light)
+chips = ''
+for z in ZT:
+    strong, light = chip_band(z)
+    me = (z == 1)
+    chips += (f'<div class="chip{" me" if me else ""}" style="background:{light};'
+              f'{f"box-shadow:inset 0 0 0 1.5px {strong};" if me else ""}"></div>')
 def zrow(label, vals, cls=''):
     return (f'<div class="zrow"><span class="zlab mono">{label}</span><div class="zcells">'
             + ''.join(f'<span class="zc {cls}">{v}</span>' for v in vals) + '</div></div>')
 extra = """
 .strip{display:flex;height:32px;margin-top:8px;border:1px solid INK}
-.chip{flex:1 1 0;background:#DDD6C6;border-right:1px solid INK}
+.chip{flex:1 1 0;border-right:1px solid INK}
 .chip:last-child{border-right:0}
-.chip.me{background:#C7D2E4}
 .zwrap{position:relative;width:342px}
 .zrow{display:flex;align-items:baseline;margin-top:7px}
 .zlab{width:74px;flex:0 0 74px;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:QUIET}
@@ -267,8 +277,9 @@ extra = """
 .inband .v{font-size:27px;font-weight:600;color:ACCENT}
 """.replace('ACCENT', ACCENT).replace('INK', INK).replace('QUIET', QUIET)
 body = f"""  <p class="q">How far from ordinary?</p>
-  <p class="ans">The same night measured in standard deviations. Each step is spelled out
-  in both a sleep score and a percentile, so the scale reads without any statistics.</p>
+  <p class="ans">The same night measured in standard deviations, banded the same way.
+  Each step is spelled out in both a sleep score and a percentile, so the scale reads
+  without any statistics.</p>
   <div class="zwrap">
     <div class="you" style="left:{ZGUT + you_x:.2f}px"><div class="t mono">You &middot; +{Z} SD</div></div>
     <div style="margin-left:{ZGUT}px;position:relative">
@@ -285,9 +296,11 @@ body = f"""  <p class="q">How far from ordinary?</p>
     <div class="v mono">{PCT}st</div>
   </div>
   <div class="hair" style="margin-top:18px"></div>
-  <p class="note mono" style="margin-top:12px">The strip's positions are measured — mean
-  <b>{MEAN}</b>, SD <b>{SD}</b>, last night <b>+{Z} SD</b>. The percentile row is a normal fit,
-  so the tick figures are approximate. The <b>{PCT}st</b> in the band is your real rank.</p>
+  <p class="note mono" style="margin-top:12px"><b>Measured against you, not a population.</b>
+  The SD of <b>{SD}</b> is the spread of your own {N:,} nights — Sleep OS reads only your
+  own Oura record and holds no national or population data. Positions are measured; the
+  percentile row is a normal fit, so those tick figures are approximate. The <b>{PCT}st</b>
+  in the band is your real rank.</p>
 """
 write('s3', page(3, 'The scale', 's3 — The scale',
     'SD strip, each tick spelled out as a score and a percentile.', extra, body, f'z +{Z}'))
@@ -296,9 +309,44 @@ write('s3', page(3, 'The scale', 's3 — The scale',
 # Thirds here are EXACT: the grid is sorted by rank, so the cuts are index cuts
 # on measured data -- no normal fit involved.
 T1, T2 = round(N/3), round(2*N/3)
+
+# The two outlines Seth asked for: one continuous thin line around every night
+# WORSE than last night, one around every night BETTER. Neither region is a
+# rectangle -- 844 cells is fourteen full rows plus 46 of a fifteenth -- so each
+# outline traces the true staircase rather than approximating it with a box.
+# The grid is CSS grid with an explicit column count so the geometry is exact.
+COLS, CELL, GAP = 57, 5, 1
+PITCH = CELL + GAP
+GRID_W, GRID_ROWS = COLS * PITCH - GAP, math.ceil(N / COLS)
+GRID_H = GRID_ROWS * PITCH - GAP
+
+def region_path(a, b):
+    """Outline of the contiguous index run a..b inclusive, in a row-major grid."""
+    rA, cA = divmod(a, COLS)
+    rB, cB = divmod(b, COLS)
+    P = lambda c, r: (c * PITCH - 0.5, r * PITCH - 0.5)
+    if rA == rB:
+        pts = [P(cA, rA), P(cB + 1, rA), P(cB + 1, rA + 1), P(cA, rA + 1)]
+    else:
+        pts = [P(cA, rA), P(COLS, rA), P(COLS, rB), P(cB + 1, rB),
+               P(cB + 1, rB + 1), P(0, rB + 1), P(0, rA + 1), P(cA, rA + 1)]
+    out = []
+    for pt in pts:
+        if not out or out[-1] != pt:
+            out.append(pt)
+    if len(out) > 1 and out[0] == out[-1]:
+        out.pop()
+    return ' '.join(f'{x:g},{y:g}' for x, y in out)
+
+WORSE_PATH = region_path(0, BELOW - 1)          # 844 nights, indices 0..843
+BETTER_PATH = region_path(BELOW + 1, N - 1)     # 197 nights, indices 845..1041
+WORSE_INK, BETTER_INK = '#4F4A40', ACCENT
+assert (BELOW) + 1 + (N - BELOW - 1) == N
 extra = """
-.marks{display:flex;flex-wrap:wrap;gap:1px;line-height:0;margin-top:16px;width:342px}
-.marks i{display:block;width:5px;height:5px;background:#DED7C7}
+.mwrap{position:relative;margin-top:16px;width:GRIDWpx}
+.marks{display:grid;grid-template-columns:repeat(COLSN,CELLpx);gap:GAPpx;line-height:0}
+.marks i{display:block;width:CELLpx;height:CELLpx;background:#DED7C7}
+.rings{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
 .marks i.bad{background:BADL}
 .marks i.ok{background:OKL}
 .marks i.good{background:GOODL}
@@ -306,19 +354,32 @@ extra = """
 .key{display:flex;gap:14px;margin-top:14px;flex-wrap:wrap;font-size:9px;letter-spacing:.05em;color:QUIET;
   font-family:'IBM Plex Mono',monospace}
 .key i{display:inline-block;width:8px;height:8px;vertical-align:-1px;margin-right:5px}
+.key u{display:inline-block;width:10px;height:8px;vertical-align:-1px;margin-right:5px;
+  border:1px solid;text-decoration:none}
 .split{display:flex;margin-top:20px;border-top:1px solid INK;padding-top:12px;gap:26px}
 .split .v{font-size:34px;line-height:1;font-weight:500;margin-top:4px}
-""".replace('BADL', BAD_L).replace('OKL', OK_L).replace('GOODL', GOOD_L)\
+""".replace('GRIDW', str(GRID_W)).replace('COLSN', str(COLS))\
+   .replace('CELL', str(CELL)).replace('GAP', str(GAP)).replace('BADL', BAD_L).replace('OKL', OK_L).replace('GOODL', GOOD_L)\
    .replace('BANDC', BAND_C).replace('INK', INK).replace('QUIET', QUIET)
 body = f"""  <p class="q">How many nights have I beaten?</p>
-  <p class="ans">One square for every night on record, worst to best, banded into thirds
-  of your own history. Last night is the outlined square.</p>
-  <div class="marks" id="marks"></div>
+  <p class="ans">One square for every night on record, worst to best. Two thin outlines:
+  everything you beat, and everything that beat you. Fill shows thirds of your own history.</p>
+  <div class="mwrap">
+    <div class="marks" id="marks"></div>
+    <svg class="rings" width="{GRID_W}" height="{GRID_H}" aria-hidden="true">
+      <polygon points="{WORSE_PATH}" fill="none" stroke="{WORSE_INK}" stroke-width="1"/>
+      <polygon points="{BETTER_PATH}" fill="none" stroke="{BETTER_INK}" stroke-width="1"/>
+    </svg>
+  </div>
   <div class="key">
+    <span><u style="border-color:{WORSE_INK}"></u>{BELOW} worse</span>
+    <span><u style="border-color:{BETTER_INK}"></u>{ABOVE} better</span>
+    <span><i style="background:{BAND_C}"></i>Last night</span>
+  </div>
+  <div class="key" style="margin-top:8px">
     <span><i style="background:{BAD_L}"></i>Worst third</span>
     <span><i style="background:{OK_L}"></i>Middle third</span>
     <span><i style="background:{GOOD_L}"></i>Best third</span>
-    <span><i style="background:{BAND_C}"></i>Last night</span>
   </div>
   <div class="split">
     <div><div class="lab mono">Nights you beat</div><div class="v mono">{BELOW}</div></div>

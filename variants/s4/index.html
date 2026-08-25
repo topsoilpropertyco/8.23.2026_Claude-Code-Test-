@@ -32,8 +32,10 @@ html,body{background:#78756F}
 .pill{display:inline-block;padding:3px 9px 2px;font-size:9px;letter-spacing:.16em;
   text-transform:uppercase;font-weight:600;font-family:'IBM Plex Mono',monospace}
 
-.marks{display:flex;flex-wrap:wrap;gap:1px;line-height:0;margin-top:16px;width:342px}
+.mwrap{position:relative;margin-top:16px;width:341px}
+.marks{display:grid;grid-template-columns:repeat(57,5px);gap:1px;line-height:0}
 .marks i{display:block;width:5px;height:5px;background:#DED7C7}
+.rings{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
 .marks i.bad{background:#EFD3CC}
 .marks i.ok{background:#EFE3C4}
 .marks i.good{background:#D2E3CC}
@@ -41,6 +43,8 @@ html,body{background:#78756F}
 .key{display:flex;gap:14px;margin-top:14px;flex-wrap:wrap;font-size:9px;letter-spacing:.05em;color:#7C7568;
   font-family:'IBM Plex Mono',monospace}
 .key i{display:inline-block;width:8px;height:8px;vertical-align:-1px;margin-right:5px}
+.key u{display:inline-block;width:10px;height:8px;vertical-align:-1px;margin-right:5px;
+  border:1px solid;text-decoration:none}
 .split{display:flex;margin-top:20px;border-top:1px solid #1A1814;padding-top:12px;gap:26px}
 .split .v{font-size:34px;line-height:1;font-weight:500;margin-top:4px}
 </style>
@@ -48,14 +52,24 @@ html,body{background:#78756F}
   <div class="hd"><span class="brand mono">Sleep OS</span><span class="num mono">4 of 6 &middot; Nights beaten</span></div>
   <div class="bd">
 <div class="grp">  <p class="q">How many nights have I beaten?</p>
-  <p class="ans">One square for every night on record, worst to best, banded into thirds
-  of your own history. Last night is the outlined square.</p></div><div class="grp">
-  <div class="marks" id="marks"></div>
+  <p class="ans">One square for every night on record, worst to best. Two thin outlines:
+  everything you beat, and everything that beat you. Fill shows thirds of your own history.</p></div><div class="grp">
+  <div class="mwrap">
+    <div class="marks" id="marks"></div>
+    <svg class="rings" width="341" height="113" aria-hidden="true">
+      <polygon points="-0.5,-0.5 341.5,-0.5 341.5,83.5 275.5,83.5 275.5,89.5 -0.5,89.5 -0.5,5.5" fill="none" stroke="#4F4A40" stroke-width="1"/>
+      <polygon points="281.5,83.5 341.5,83.5 341.5,107.5 95.5,107.5 95.5,113.5 -0.5,113.5 -0.5,89.5 281.5,89.5" fill="none" stroke="#1F4B8F" stroke-width="1"/>
+    </svg>
+  </div>
   <div class="key">
+    <span><u style="border-color:#4F4A40"></u>844 worse</span>
+    <span><u style="border-color:#1F4B8F"></u>197 better</span>
+    <span><i style="background:#2F7A44"></i>Last night</span>
+  </div>
+  <div class="key" style="margin-top:8px">
     <span><i style="background:#EFD3CC"></i>Worst third</span>
     <span><i style="background:#EFE3C4"></i>Middle third</span>
     <span><i style="background:#D2E3CC"></i>Best third</span>
-    <span><i style="background:#2F7A44"></i>Last night</span>
   </div>
   <div class="split">
     <div><div class="lab mono">Nights you beat</div><div class="v mono">844</div></div>

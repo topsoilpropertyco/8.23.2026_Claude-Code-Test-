@@ -331,3 +331,38 @@ He then proposed: one screen against his own data, one against the national Oura
 dataset. **That second screen cannot be built from anything currently available**
 — it needs a population distribution the project does not have and the Oura API
 does not expose here. Flag as a data-acquisition question before a design one.
+
+---
+
+# REVISION 3
+
+- **s3** chips banded red/red/amber/green/green. Each chip is a 1 SD band, so its
+  verdict is the verdict of the scores it covers: -2 and -1 sit wholly in the
+  worst third, 0 straddles the middle, +1 and +2 wholly in the best third. The
+  chip holding last night carries an inner outline in the strong band colour.
+- **s3** now states the data source on the screen, since that was his question.
+- **s4** two thin outlines: one continuous line around all 844 nights he beat,
+  one around all 197 that beat him. **Neither region is a rectangle** — 844 cells
+  is fourteen full rows plus 46 of a fifteenth — so each outline traces the true
+  staircase (an 8-vertex orthogonal polygon) rather than approximating with a box.
+  The grid was switched from flex-wrap to CSS grid with an explicit 57 columns so
+  the geometry is exact and verifiable. Nice property that falls out of it: the
+  marked night sits precisely in the 6px gap between the two outlines, so the two
+  boxes meet at last night.
+
+## ANSWERED — where the standard deviation comes from
+
+**His own data, only.** Verified in source, not from memory:
+- `stdev(a)` (src/stats.js) is the sample SD, n-1 denominator, over whatever
+  array it is handed.
+- `zScore(value, history)` = `(value - mean(history)) / stdev(history)` — the
+  history is his own logged scores. SD 9.54 is the spread of his 1,042 nights.
+- The Oura client (src/oura.js) has exactly one API base:
+  `https://api.ouraring.com/v2/usercollection` — the authorising user's own
+  namespace. There is no population, cohort, norm or benchmark call anywhere.
+
+**Consequence for his proposed "national Oura" screen:** it cannot be built from
+anything in this project. Oura does not expose a population distribution through
+the user API, so a comparison screen would need a source the project does not
+have. Data acquisition question before a design one — do not mock it up as if
+the numbers exist.
