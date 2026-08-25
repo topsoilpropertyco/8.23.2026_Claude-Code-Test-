@@ -100,3 +100,51 @@ five-chip SD calibration strip. Same screenshot source: the published sheet on p
    (the +1 chip is roughly the 69th–93rd). A point value at the tick is cleaner
    and is what he asked for. Confirm the strip reads as a scale with ticks,
    not five buckets.
+
+---
+
+## Pick 3 — v15 THE BRUTALIST (hand-authored, round two, scored 20, ranked 8= of 27)
+
+White ground, black bands, one hazard yellow `#FFE800`, Helvetica/system.
+The keeper element: `EVERY NIGHT ON RECORD` — a waffle grid of 1,042 marks.
+
+### What Seth said
+- LIKES: **the block pattern showing how many nights were below and above.**
+  "Just a cool visual."
+- **Percentile beats the raw count in words.** "Thinking of percentile is still
+  easier than doing the math of 'I slept better than 844 of 1,042 nights.'"
+
+### What I observe
+- **This resolves cleanly with Picks 1 and 2 rather than contradicting them,
+  and the resolution is the sharpest rule yet.** v4's headline says *81%*;
+  v15's says *844 of 1,042*. He liked the first and just rejected the second.
+  But the grid he likes IS the raw count — 844 dark cells against 198 light.
+  So: **he wants the ratio SHOWN, not STATED.** The picture does the division
+  for you instantly; the sentence makes you do it yourself.
+  → Headline speaks in percentile. The count gets drawn, never narrated.
+- **Reconciles the apparent conflict with Pick 1.** He said he liked "rank out
+  of all nights" there. Rank 198 of 1,042 is a raw count too — but it sat in
+  marginalia, not in the headline. Rule: **percentile leads, rank supports.**
+- **The grid is honest and that is why it works.** Verified in source: 1,042
+  real marks, one per night, nothing aggregated or sampled; the marker sits at
+  exactly index 844, on the true boundary. Preserve that property — a waffle
+  that rounds to "1 cell = 5 nights" would lose the thing that makes it land.
+- **Breaks two patterns I had provisionally logged.** This pick is a SANS
+  (Helvetica/system), where Picks 1–2 were serif; and it is stark white/black
+  where they were warm. So type and warmth are NOT the through-line.
+  What survives all three: **light ground, distribution-forward, comparison
+  made explicit.**
+- **Tabular data, liked again.** v15's ledger is a hard-ruled two-column table,
+  and it is the third table he has responded well to. Consistent with the
+  Pick 2 rule.
+- He did not mention the yellow highlighter marks on `844` / `1,042` in the
+  headline — the very numbers he then said were hard to parse. Suggestive:
+  emphasis did not rescue the format.
+
+### Running through-line after three picks
+- Ground: **light**, three for three.
+- Comparison: **percentile in words, count in pictures.**
+- Repeated data: **tables, not sentences.**
+- Distribution rendered three different ways (dot field, SD strip, waffle) and
+  he has now asked to keep **all three**. Open question at compile: do they
+  coexist, or does one absorb the others?
