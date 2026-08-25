@@ -275,3 +275,59 @@ the lifetime mean.
 Read: a bad ninety-day stretch that the last thirty days have recovered from,
 with the last seven holding. **Direction of travel: improving.** That is a real
 answer to his second question, and it comes out of the real data.
+
+---
+
+# REVISION 2 — Seth's feedback on the six screens
+
+| Screen | Asked for | Done |
+|---|---|---|
+| s1 | Sleep score first, percentile second, both the same size | Both 146px, score leads, verdict pill beside it |
+| s2 | Band the curve red/amber/green; percentile under the score | Thirds of his own history; `81st pct` under `88` |
+| s4 | Same banding; rename the question | Banded; renamed "How many nights have I beaten?" |
+| s5 | Last night first; ONE clear baseline; pull 180 and 365 | Rebuilt; baseline = all-time 79.3, stated in a banner |
+| s6 | Same format, slightly more visual | Proportion bar on the five rows where a proportion is real |
+
+## The correction I owe him
+
+He said "we have that data" about T180/T365. **He was right and I was wrong.**
+`trailing()` in `src/stats.js` already defaults to `[7, 30, 90, 180, 365]`;
+`src/coach.js:188` was explicitly narrowing the call to `[7, 30, 90]` and
+discarding the other two. Fixed — the caller now takes the default, and a
+1,042-night series emits T7 T30 T90 T180 T365 (verified), degrading correctly
+on short series. What remains true is narrower: this session has no
+`SLEEPOS_DATA_KEY`, so it cannot print the two values, and s5 shows them as
+**pending** rather than inventing them.
+
+Lesson: "the data does not exist" was a claim about *this session's access*
+that I stated as a claim about *the product*. Check the pipeline before
+declaring an absence.
+
+## The baseline question, resolved
+
+He said the chained comparison was confusing: "compare last night against what?
+The last seven against what?" Fixed by collapsing to **one baseline for every
+row — the all-time average, 79.3** — stated once in a banner above the table.
+Every row is that window minus 79.3. Reading down now gives the trend for free:
+last night +8.7, last 7 +0.1, last 30 -0.1, last 90 -5.4. A rough quarter,
+climbed out of.
+
+## Verdict bands
+
+Thirds of his own history, never an external norm.
+- s4 thirds are **exact** — the grid is rank-sorted, so the cuts are index cuts
+  at nights 347 and 695 on measured data.
+- s2 thirds have to be expressed in score space (75.2 / 83.4), which needs the
+  normal fit, and the screen says so.
+
+## OPEN — his own question, to raise next session
+
+He asked me to remind him: **where does the standard deviation come from — his
+own dataset, or a national/Oura population?** Answer: **entirely his own.**
+`stdev()` in `src/stats.js` runs over his logged scores; DESIGN.md §6's SD 9.54
+is the SD of his 1,042 nights. There is no population data anywhere in the repo
+and the Oura layer does not fetch any.
+He then proposed: one screen against his own data, one against the national Oura
+dataset. **That second screen cannot be built from anything currently available**
+— it needs a population distribution the project does not have and the Oura API
+does not expose here. Flag as a data-acquisition question before a design one.

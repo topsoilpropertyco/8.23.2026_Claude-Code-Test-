@@ -185,7 +185,12 @@ export function buildCoachResponse({ entry, history, rotation = 0, morningPrompt
       if (p !== null) lines.push(`It sits at the ${ordinal(p)} percentile of every night you have logged.`);
     }
 
-    const tw = trailing(scores, [7, 30, 90]);
+    // 180 and 365 were being discarded here: trailing() already defaults to
+    // [7, 30, 90, 180, 365] and handles short and duplicate windows itself
+    // (a window with fewer than two nights is dropped, and two windows covering
+    // the identical slice collapse to one). Narrowing the call threw away two
+    // real baselines the log can already support.
+    const tw = trailing(scores);
     if (tw.length) {
       lines.push('');
       for (const t of tw) {

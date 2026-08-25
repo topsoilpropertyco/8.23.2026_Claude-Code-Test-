@@ -8,17 +8,17 @@ The built page is gitignored; re-run this to rebuild it.
 import base64, os
 
 SCREENS = [
- ("s1","Where am I?","Percentile as the hero","mp2 + your pick-1 ask to make the percentile explicit",
+ ("s1","Where am I?","Score first, percentile second, same size","mp2, then your revision-2 note on order and size",
   "Every figure measured."),
- ("s2","How rare is a night like this?","The curve, dual-labelled","v7 + your pick-4 ask for a percentile row under the axis",
-  "Bar shape is a normal fit and says so; 81st is the measured rank."),
- ("s3","How far from ordinary?","The SD scale, spelled out","mp4 + your pick-2 ask for a percentile under each tick",
+ ("s2","How rare is a night like this?","The curve, banded and dual-labelled","v7, then your revision-2 note on colour bands",
+  "Band edges and bar shape modelled and labelled; 81st is the measured rank."),
+ ("s3","How far from ordinary?","The SD scale, spelled out","mp4 + your ask for a percentile under each tick",
   "Positions measured; tick percentiles modelled and labelled."),
- ("s4","What does 844 of 1,042 look like?","One square per night","v15",
-  "Fully measured. 844 + 1 + 197 = 1,042, nothing aggregated."),
- ("s5","Am I heading the right direction?","Trailing windows, chained","v4 + your pick-1 ask for 180/365 and arrows",
-  "T7/T30/T90 measured. T180/T365 absent and drawn as empty."),
- ("s6","What actually happened?","The night in full","the tables you kept picking",
+ ("s4","How many nights have I beaten?","One square per night, banded","v15, renamed and banded in revision 2",
+  "Fully measured, and the thirds are exact index cuts."),
+ ("s5","Am I heading the right direction?","Last night first, one baseline","v4, rebuilt in revision 2",
+  "T7/T30/T90 measured. T180/T365 now wired in code, pending the key."),
+ ("s6","What actually happened?","The night in full, with real proportions","the tables you kept picking",
   "Every value measured and unrounded."),
 ]
 RULES = [
@@ -107,13 +107,17 @@ footer{{margin-top:clamp(40px,5vw,70px);border-top:1px solid var(--rule);padding
 </style>
 <div class="wrap">
 <header>
-  <p class="eyebrow">Sleep OS &middot; Phase 5 &middot; built from your picks</p>
+  <p class="eyebrow">Sleep OS &middot; Phase 5 &middot; revision 2</p>
   <h1>Six screens, one question each</h1>
   <p class="stand">You picked five screens out of twenty-seven and told me what worked in
   each. Those picks compile into eight rules, and the rules say the answer is not one
   crowded screen — it is <b>six screens that each answer exactly one thing.</b>
   Two questions run underneath all of it: <b>where am I</b>, and <b>am I heading the right
   direction.</b> The second one had never been answered before this.</p>
+  <p class="stand" style="margin-top:12px">Revision 2, from your notes: the score now leads
+  and shares the percentile's size; the curve and the grid are banded into thirds of your own
+  history; and the direction screen is rebuilt around <b>one stated baseline</b> instead of a
+  chain you had to decode.</p>
 </header>
 
 <div class="grid">{cards}</div>
@@ -131,15 +135,17 @@ footer{{margin-top:clamp(40px,5vw,70px);border-top:1px solid var(--rule);padding
   Neither was invented.</p>
   <div class="notes">
     <div class="note">
-      <h3>Trailing 180 and 365 are not in the log</h3>
-      <p>You asked for them, and they are genuinely absent — <code>state/sleeplog.ndjson</code>
-      and <code>state/oura.enc</code> are AES-256-GCM ciphertext and the key is a repository
-      secret held outside the source. Only <b>T7, T30 and T90</b> exist as real figures.</p>
+      <h3>Trailing 180 and 365 — you were right</h3>
+      <p>I said the data did not exist. It does. <code>trailing()</code> in
+      <code>src/stats.js</code> already defaults to <code>[7, 30, 90, 180, 365]</code>, and
+      <code>src/coach.js</code> was <b>explicitly narrowing the call to [7, 30, 90]</b> and
+      throwing the other two away. That caller is now fixed, so the product emits all five.</p>
       <div class="hr"></div>
-      <p>So screen 5 <b>builds both rows and leaves them empty</b>, hatched and labelled
-      &ldquo;no data&rdquo;. The design is ready the moment the log can be read. Filling them
-      with a plausible number is exactly the failure one generated screen was marked down
-      for last round, when it invented a series start date.</p>
+      <p>What is still true is narrower: this build cannot open the encrypted log
+      (<code>SLEEPOS_DATA_KEY</code> is not present), so it cannot print the two values here.
+      Screen 5 shows both rows as <b>pending</b> rather than filling them with a plausible
+      number — that invention is exactly what one generated screen was marked down for
+      last round.</p>
     </div>
     <div class="note">
       <h3>Measured versus modelled, kept apart</h3>

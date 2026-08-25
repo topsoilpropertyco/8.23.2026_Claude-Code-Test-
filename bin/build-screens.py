@@ -1,27 +1,28 @@
 #!/usr/bin/env python3
-"""Build the Phase 5 screens -- the redesign from Seth's taste log.
+"""Build the Phase 5 screens -- the redesign from Seth's taste log, revision 2.
 
-Six screens, each answering exactly one question, per taste/PICKS.md:
-  s1 where am I          percentile as hero            (from mp2, + pick 1 ask)
-  s2 the curve           histogram, dual-labelled axis (from v7,  + pick 4 ask)
-  s3 the scale           SD strip with percentiles     (from mp4, + pick 2 ask)
-  s4 every night         1,042-cell waffle             (from v15)
-  s5 the direction       trailing windows + arrows     (from v4,  + pick 1 ask)
-  s6 last night          the detail table              (tabular, liked repeatedly)
+Six screens, each answering exactly one question (taste/PICKS.md).
 
-DATA HONESTY -- this is the part that matters.
-state/sleeplog.ndjson and state/oura.enc are AES-256-GCM ciphertext and the key
-is a repo secret absent from source, so the per-night series cannot be read.
-Therefore:
-  * MEASURED, and used as such: mean 79.3, SD 9.54, n 1,042, z +0.92,
-    rank 198, 844 below / 197 above, percentile 81st, T7/T30/T90, last night.
-  * MODELLED, and labelled on screen wherever it appears: the histogram SHAPE
-    and every tick percentile other than last night's. A normal fit puts +0.92
-    SD at the 82.1st percentile while the measured rank is the 81st; that ~1
-    point gap is disclosed on s2 and s3 rather than quietly reconciled.
-  * ABSENT: T180 and T365 exist nowhere in the data. They are rendered as a
-    designed empty state, never invented -- inventing them is exactly what mp6
-    was marked down for.
+REVISION 2 -- Seth's feedback:
+  s1  sleep score FIRST, percentile second, both the same size
+  s2  the curve banded red/amber/green, and the percentile set under the score
+  s4  cells banded the same way; the question renamed to something answerable
+  s5  rebuilt: last night first, ONE stated baseline, 180 and 365 rows wired
+  s6  same format, but the rows that carry a real proportion now show it
+
+VERDICT BANDS. Thirds of Seth's own history, never an external norm:
+  bottom third  = a bad night      middle third = a decent night
+  top third     = a good night
+On s4 the thirds are exact -- the grid is sorted by rank, so the cuts are index
+cuts on measured data. On s2 the same thirds have to be expressed in SCORE space
+(75.2 and 83.4), which needs the normal fit, and the screen says so.
+
+DATA. state/sleeplog.ndjson and state/oura.enc are AES-256-GCM and SLEEPOS_DATA_KEY
+is not in this session, so the per-night series cannot be read HERE. That is not
+the same as the data not existing: src/stats.js trailing() already defaults to
+[7,30,90,180,365] and src/coach.js was narrowing it to [7,30,90]; that caller is
+now fixed, so production emits all five. The two rows this session cannot fill
+render as an explicit pending state rather than an invented number.
 """
 import math, os
 
@@ -31,12 +32,30 @@ SCORE, BELOW, ABOVE, RANK, PCT = 88, 844, 197, 198, 81
 Z = 0.92
 
 GROUND, RAISED, INK, QUIET, RULE = '#F4F0E6', '#E9E3D4', '#1A1814', '#7C7568', '#D5CDBC'
-ACCENT = '#1F4B8F'                       # non-semantic on purpose: the direction
-UP, FLAT, DOWN = '#2F7A44', '#B07D1A', '#B23A2F'   # trio must not collide with it
+ACCENT = '#1F4B8F'
+BAD_L, BAD   = '#EFD3CC', '#B23A2F'
+OK_L,  OK    = '#EFE3C4', '#96761C'
+GOOD_L, GOOD = '#D2E3CC', '#2F7A44'
 
 def phi(z): return 0.5 * (1 + math.erf(z / math.sqrt(2)))
+def inv_phi(p):
+    lo, hi = -6.0, 6.0
+    for _ in range(200):
+        mid = (lo + hi) / 2
+        if phi(mid) < p: lo = mid
+        else: hi = mid
+    return (lo + hi) / 2
 def pct_at(score): return phi((score - MEAN) / SD) * 100
 def score_at(z): return MEAN + z * SD
+
+CUT_LO_P, CUT_HI_P = 1/3, 2/3
+CUT_LO_S = MEAN + inv_phi(CUT_LO_P) * SD      # ~75.2
+CUT_HI_S = MEAN + inv_phi(CUT_HI_P) * SD      # ~83.4
+def band_of_pct(p):
+    if p >= CUT_HI_P * 100: return ('good', GOOD, GOOD_L, 'a good night')
+    if p >= CUT_LO_P * 100: return ('decent', OK, OK_L, 'a decent night')
+    return ('bad', BAD, BAD_L, 'a bad night')
+BAND, BAND_C, BAND_L, BAND_WORD = band_of_pct(PCT)
 
 CSS = """
 *{box-sizing:border-box;margin:0;padding:0}
@@ -48,21 +67,21 @@ html,body{background:#78756F}
 .mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
 .hd{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:9px;
   border-bottom:1px solid INK;flex:0 0 auto}
-.bd{flex:1;display:flex;flex-direction:column;padding:22px 0 10px;min-height:0}
+.bd{flex:1;display:flex;flex-direction:column;padding:20px 0 10px;min-height:0}
 .grp{flex:0 0 auto}
 .grp:nth-child(2){flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0}
 .hd .brand{font-size:11px;letter-spacing:.24em;text-transform:uppercase;font-weight:600}
 .hd .num{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:QUIET}
 .q{font-size:23px;line-height:1.25;font-weight:400;letter-spacing:-.01em}
-.q b{font-weight:600}
-.ans{margin-top:6px;font-size:11.5px;line-height:1.55;color:QUIET;max-width:33ch}
+.ans{margin-top:6px;font-size:11.5px;line-height:1.55;color:QUIET;max-width:34ch}
 .lab{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:QUIET;font-weight:500}
 .hair{height:1px;background:RULE}
-.rule{height:1px;background:INK}
 .ft{margin-top:auto;padding-top:12px;border-top:1px solid RULE;display:flex;
   justify-content:space-between;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:QUIET}
 .note{font-size:9px;line-height:1.5;color:QUIET;letter-spacing:.02em}
 .note b{color:INK;font-weight:600}
+.pill{display:inline-block;padding:3px 9px 2px;font-size:9px;letter-spacing:.16em;
+  text-transform:uppercase;font-weight:600;font-family:'IBM Plex Mono',monospace}
 """
 CSS = CSS.replace('GROUND', GROUND).replace('INK', INK).replace('QUIET', QUIET).replace('RULE', RULE)
 
@@ -85,89 +104,87 @@ FOOT = """  </div>
 """
 
 def group(body):
-    """Bind each question to its own explanatory paragraph, and the closing rule
-    to its provenance note, so that distributing the column with space-between
-    opens gaps BETWEEN the three groups rather than inside them."""
     i = body.find('class="ans"')
-    if i == -1:
-        i = body.find('class="q"')
+    if i == -1: i = body.find('class="q"')
     j = body.find('</p>', i) + 4
     k = body.rfind('<div class="hair"')
     if k == -1:
         return '<div class="grp">' + body[:j] + '</div><div class="grp">' + body[j:] + '</div>'
-    return ('<div class="grp">' + body[:j] + '</div>'
-            + '<div class="grp">' + body[j:k] + '</div>'
-            + '<div class="grp">' + body[k:] + '</div>')
+    return ('<div class="grp">' + body[:j] + '</div><div class="grp">' + body[j:k]
+            + '</div><div class="grp">' + body[k:] + '</div>')
 
 def page(idx, kicker, title, note, extra, body, right):
     return (HEAD.format(idx=idx, kicker=kicker, title=title, note=note, css=CSS, extra=extra)
             + group(body) + FOOT.format(right=right))
 
-os.makedirs('variants', exist_ok=True)
 def write(key, html):
     os.makedirs(f'variants/{key}', exist_ok=True)
     open(f'variants/{key}/index.html', 'w').write(html)
+print(f'bands: bad <{CUT_LO_S:.1f}  decent {CUT_LO_S:.1f}-{CUT_HI_S:.1f}  good >{CUT_HI_S:.1f}  -> last night is {BAND}')
 
 # ---------------------------------------------------------------- s1  where am I
 extra = """
-.big{font-size:210px;line-height:.82;letter-spacing:-.05em;font-weight:500;margin-top:14px}
-.ord{font-size:46px;line-height:1;vertical-align:.86em;font-weight:400;margin-left:12px;
+.line{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:QUIET;font-weight:500}
+.big{font-size:146px;line-height:.86;letter-spacing:-.045em;font-weight:500;margin-top:2px}
+.ord{font-size:44px;line-height:1;vertical-align:.9em;font-weight:400;margin-left:11px;
   letter-spacing:.06em;font-variant-ligatures:none}
-.pl{margin-top:2px;font-size:15px;letter-spacing:.26em;text-transform:uppercase;color:ACCENT;font-weight:600}
-.grid2{display:flex;gap:34px;margin-top:26px}
-.g2 .v{font-size:30px;line-height:1;font-weight:500;margin-top:5px}
-""".replace('ACCENT', ACCENT).replace('INK', INK)
+.pctlab{font-size:13px;letter-spacing:.26em;text-transform:uppercase;color:ACCENT;
+  font-weight:600;margin-top:2px}
+.rowline{display:flex;align-items:baseline;gap:12px}
+""".replace('ACCENT', ACCENT).replace('QUIET', QUIET)
 body = f"""  <p class="q">Where am I?</p>
-  <p class="ans">Out of every night on record, last night sits here.
-  One number, no arithmetic.</p>
-  <div class="big">{PCT}<span class="ord">st</span></div>
-  <div class="pl mono">Percentile</div>
-  <div class="hair" style="margin-top:24px"></div>
-  <div class="grid2">
-    <div class="g2"><div class="lab mono">Rank of all nights</div>
-      <div class="v mono">{RANK}<span style="color:{QUIET}">/{N:,}</span></div></div>
-    <div class="g2"><div class="lab mono">Sleep score</div>
-      <div class="v mono">{SCORE}</div></div>
+  <p class="ans">The score first, then what it is worth. Same size, because
+  neither one means much without the other.</p>
+  <div>
+    <div class="line mono">Last night your sleep score was</div>
+    <div class="rowline">
+      <div class="big mono">{SCORE}</div>
+      <span class="pill" style="background:{BAND_L};color:{BAND_C}">{BAND_WORD}</span>
+    </div>
+    <div class="hair" style="margin:20px 0 18px"></div>
+    <div class="line mono">Which puts it at the</div>
+    <div class="big mono">{PCT}<span class="ord">st</span></div>
+    <div class="pctlab mono">Percentile</div>
   </div>
-  <div class="hair" style="margin-top:22px"></div>
-  <p class="note mono" style="margin-top:14px">Measured, not modelled: <b>{BELOW}</b> of your
-  {N:,} recorded nights scored lower than last night and <b>{ABOVE}</b> scored higher.
-  That is the {PCT}st percentile exactly.</p>
+  <div class="hair" style="margin-top:20px"></div>
+  <p class="note mono" style="margin-top:12px">Measured, not modelled: <b>{BELOW}</b> of your
+  {N:,} recorded nights scored lower and <b>{ABOVE}</b> scored higher — the {PCT}st percentile
+  exactly. Rank <b>{RANK}</b> of {N:,}.</p>
 """
 write('s1', page(1, 'Where am I', 's1 — Where am I',
-    'Percentile as the hero, rank demoted to support. Every figure here is measured.',
-    extra, body, f'{N:,} nights'))
+    'Score first at the same size as the percentile, per revision 2.', extra, body, f'{N:,} nights'))
 
 # ---------------------------------------------------------------- s2  the curve
 GUT = 68
-PW, PH = 342 - GUT, 158
+PW, PH = 342 - GUT, 150
 LO, HI, STEP = 44, 104, 2
-bins = []
-for lo in range(LO, HI, STEP):
-    c = lo + STEP / 2
-    bins.append((c, math.exp(-((c - MEAN) ** 2) / (2 * SD * SD))))
-mx = max(h for _, h in bins)
-bw = PW / len(bins) - 2.0
+bins = [(lo + STEP/2, math.exp(-((lo + STEP/2 - MEAN)**2)/(2*SD*SD))) for lo in range(LO, HI, STEP)]
+mxh = max(h for _, h in bins)
+bw = PW/len(bins) - 2.0
+def band_fill(c):
+    if c >= CUT_HI_S: return GOOD_L, GOOD
+    if c >= CUT_LO_S: return OK_L, OK
+    return BAD_L, BAD
 rects = ''
 for c, h in bins:
-    hh = max(1.0, h / mx * (PH - 12))
-    x = (c - LO) / (HI - LO) * PW - bw / 2
-    fill = '#C9C1AE' if c < SCORE else 'none'
-    stroke = 'none' if c < SCORE else '#C9C1AE'
+    hh = max(1.0, h/mxh*(PH-12))
+    x = (c-LO)/(HI-LO)*PW - bw/2
+    fl, st = band_fill(c)
     rects += (f'<rect x="{x:.2f}" y="{PH-hh:.2f}" width="{bw:.2f}" height="{hh:.2f}" '
-              f'fill="{fill}" stroke="{stroke}" stroke-width=".8"/>')
-mx_x = (SCORE - LO) / (HI - LO) * PW
-gut_mx = GUT + mx_x
-mean_x = (MEAN - LO) / (HI - LO) * PW
+              f'fill="{fl}" stroke="{st}" stroke-width=".55" stroke-opacity=".45"/>')
+mx_x = (SCORE-LO)/(HI-LO)*PW
+mean_x = (MEAN-LO)/(HI-LO)*PW
 TICKS = [55, 65, 75, 85, 95]
-tick_marks = ''.join(
-    f'<line x1="{(t-LO)/(HI-LO)*PW:.2f}" x2="{(t-LO)/(HI-LO)*PW:.2f}" y1="{PH}" y2="{PH+4}" '
-    f'stroke="{QUIET}" stroke-width=".8"/>' for t in TICKS)
+tick_marks = ''.join(f'<line x1="{(t-LO)/(HI-LO)*PW:.2f}" x2="{(t-LO)/(HI-LO)*PW:.2f}" y1="{PH}" '
+                     f'y2="{PH+4}" stroke="{QUIET}" stroke-width=".8"/>' for t in TICKS)
 def axis_row(label, vals, cls=''):
-    cells = ''.join(
-        f'<span class="ax {cls}" style="left:{(t-LO)/(HI-LO)*PW:.2f}px">{v}</span>'
-        for t, v in zip(TICKS, vals))
-    return f'<div class="axrow"><span class="axlab mono">{label}</span>{cells}</div>'
+    return ('<div class="axrow"><span class="axlab mono">' + label + '</span>'
+            + ''.join(f'<span class="ax {cls}" style="left:{(t-LO)/(HI-LO)*PW:.2f}px">{v}</span>'
+                      for t, v in zip(TICKS, vals)) + '</div>')
+zone_key = ''.join(
+    f'<span class="zk"><i style="background:{l};border-color:{c}"></i>{w}</span>'
+    for l, c, w in [(BAD_L, BAD, f'Bad &lt;{CUT_LO_S:.0f}'), (OK_L, OK, f'Decent {CUT_LO_S:.0f}&ndash;{CUT_HI_S:.0f}'),
+                    (GOOD_L, GOOD, f'Good &gt;{CUT_HI_S:.0f}')])
 extra = """
 .plot{position:relative;width:342px}
 .pin{margin-left:68px;position:relative}
@@ -177,60 +194,65 @@ extra = """
 .ax.p{color:ACCENT}
 .axlab{position:absolute;left:-68px;top:3px;font-size:8px;letter-spacing:.16em;
   text-transform:uppercase;color:QUIET}
-.callout{position:absolute;transform:translateX(-50%);text-align:center;line-height:1.25}
-.callout .a{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:ACCENT;font-weight:600}
-.callout .b{font-size:19px;font-weight:600;color:ACCENT}
-""".replace('ACCENT', ACCENT).replace('INK', INK).replace('QUIET', QUIET)
+.callout{position:absolute;transform:translateX(-50%);text-align:center;line-height:1.2}
+.callout .a{font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:QUIET;font-weight:600}
+.callout .b{font-size:21px;font-weight:600;color:BANDC}
+.callout .c{font-size:9.5px;font-weight:600;color:BANDC;letter-spacing:.04em}
+.zkey{display:flex;gap:12px;margin-top:12px;margin-left:68px;flex-wrap:wrap}
+.zk{font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:QUIET;
+  font-family:'IBM Plex Mono',monospace}
+.zk i{display:inline-block;width:9px;height:9px;vertical-align:-1px;margin-right:5px;border:1px solid}
+""".replace('ACCENT', ACCENT).replace('INK', INK).replace('QUIET', QUIET).replace('BANDC', BAND_C)
 body = f"""  <p class="q">How rare is a night like this?</p>
-  <p class="ans">Every night on record, binned by score. Taller means more common.
-  The row under the axis converts each score straight into a percentile, so you
-  never have to.</p>
+  <p class="ans">Every night on record, binned by score, banded into thirds of your own
+  history. The row under the axis turns each score into a percentile, so you never
+  have to.</p>
   <div class="plot">
-    <div class="callout" style="left:{gut_mx:.2f}px;top:-6px">
+    <div class="callout" style="left:{GUT + mx_x:.2f}px;top:-16px">
       <div class="a mono">Sleep score</div><div class="b mono">{SCORE}</div>
+      <div class="c mono">{PCT}st pct</div>
     </div>
     <div class="pin">
-    <svg width="{PW}" height="{PH+5}" viewBox="0 0 {PW} {PH+5}" style="display:block;margin-top:34px" aria-hidden="true">
+    <svg width="{PW}" height="{PH+5}" viewBox="0 0 {PW} {PH+5}" style="display:block;margin-top:52px" aria-hidden="true">
       {rects}
-      <line x1="{mean_x:.2f}" x2="{mean_x:.2f}" y1="16" y2="{PH}" stroke="{QUIET}" stroke-width="1" stroke-dasharray="1 3"/>
-      <line x1="{mx_x:.2f}" x2="{mx_x:.2f}" y1="0" y2="{PH}" stroke="{ACCENT}" stroke-width="1.6"/>
-      <circle cx="{mx_x:.2f}" cy="3" r="3.2" fill="{ACCENT}"/>
+      <line x1="{mean_x:.2f}" x2="{mean_x:.2f}" y1="14" y2="{PH}" stroke="{QUIET}" stroke-width="1" stroke-dasharray="1 3"/>
+      <line x1="{mx_x:.2f}" x2="{mx_x:.2f}" y1="0" y2="{PH}" stroke="{BAND_C}" stroke-width="1.8"/>
+      <circle cx="{mx_x:.2f}" cy="3" r="3.2" fill="{BAND_C}"/>
       <line x1="0" x2="{PW}" y1="{PH}" y2="{PH}" stroke="{INK}" stroke-width="1"/>
       {tick_marks}
     </svg></div>
     {axis_row('Sleep score', TICKS)}
     {axis_row('Percentile', [f'{pct_at(t):.0f}' for t in TICKS], 'p')}
+    <div class="zkey">{zone_key}</div>
   </div>
-  <div class="hair" style="margin-top:16px"></div>
-  <p class="note mono" style="margin-top:12px">The bars are a normal curve fitted to your real
-  mean <b>{MEAN}</b> and SD <b>{SD}</b>; the percentile row is read off that same fit.
-  Last night's <b>{PCT}st</b> is the measured rank and is the number to trust — the fitted
-  curve puts it at {pct_at(SCORE):.0f}nd, about a point out, because {N:,} real nights are
-  not perfectly normal.</p>
+  <div class="hair" style="margin-top:14px"></div>
+  <p class="note mono" style="margin-top:11px">Bands are thirds of <b>your own</b> history, not
+  an outside norm. The bar shape and the band edges ({CUT_LO_S:.1f} / {CUT_HI_S:.1f}) come from a
+  normal curve fitted to your real mean <b>{MEAN}</b> and SD <b>{SD}</b>. Last night's
+  <b>{PCT}st</b> is the measured rank.</p>
 """
 write('s2', page(2, 'The curve', 's2 — The curve',
-    'Histogram with a dual-labelled axis: score on top, percentile beneath. Shape is a normal fit and says so.',
+    'Curve banded into thirds of his own history; percentile set under the score.',
     extra, body, f'mean {MEAN} · SD {SD}'))
 print('s1, s2 written')
 
-# ---------------------------------------------------------------- s3  the scale
+# ---------------------------------------------------------------- s3  the scale (unchanged)
 ZT = [-2, -1, 0, 1, 2]
-ZGUT = 74                       # label column
-SW_ = 342 - ZGUT                # the strip itself
-ZLO, ZHI = -2.5, 2.5            # five bands of 1 SD, centred on the labels
-chips = ''.join(
-    f'<div class="chip{" me" if z == 1 else ""}"></div>' for z in ZT)
-def zrow(label, vals, cls=''):
-    cells = ''.join(f'<span class="zc {cls}">{v}</span>' for v in vals)
-    return f'<div class="zrow"><span class="zlab mono">{label}</span><div class="zcells">{cells}</div></div>'
+ZGUT = 74
+SW_ = 342 - ZGUT
+ZLO, ZHI = -2.5, 2.5
 you_x = (Z - ZLO) / (ZHI - ZLO) * SW_
+chips = ''.join(f'<div class="chip{" me" if z == 1 else ""}"></div>' for z in ZT)
+def zrow(label, vals, cls=''):
+    return (f'<div class="zrow"><span class="zlab mono">{label}</span><div class="zcells">'
+            + ''.join(f'<span class="zc {cls}">{v}</span>' for v in vals) + '</div></div>')
 extra = """
-.strip{display:flex;height:30px;margin-top:8px;border:1px solid INK}
+.strip{display:flex;height:32px;margin-top:8px;border:1px solid INK}
 .chip{flex:1 1 0;background:#DDD6C6;border-right:1px solid INK}
 .chip:last-child{border-right:0}
 .chip.me{background:#C7D2E4}
-.zwrap{position:relative;margin-top:22px;width:342px}
-.zrow{display:flex;align-items:baseline;margin-top:6px}
+.zwrap{position:relative;width:342px}
+.zrow{display:flex;align-items:baseline;margin-top:7px}
 .zlab{width:74px;flex:0 0 74px;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:QUIET}
 .zcells{flex:1;display:flex}
 .zc{flex:1 1 0;text-align:center;font-size:10.5px;
@@ -238,20 +260,17 @@ extra = """
 .zc.p{color:ACCENT}
 .you{position:absolute;top:-20px;transform:translateX(-50%);text-align:center;white-space:nowrap}
 .you .t{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:ACCENT;font-weight:600}
-.youline{position:absolute;top:-4px;width:1.6px;height:38px;background:ACCENT;transform:translateX(-50%)}
-.inband{margin-top:16px;border:1px solid ACCENT;padding:12px 14px;display:flex;
+.youline{position:absolute;top:-4px;width:1.6px;height:40px;background:ACCENT;transform:translateX(-50%)}
+.inband{margin-top:18px;border:1px solid ACCENT;padding:12px 14px;display:flex;
   justify-content:space-between;align-items:baseline}
 .inband .k{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:ACCENT;font-weight:600}
 .inband .v{font-size:27px;font-weight:600;color:ACCENT}
 """.replace('ACCENT', ACCENT).replace('INK', INK).replace('QUIET', QUIET)
 body = f"""  <p class="q">How far from ordinary?</p>
-  <p class="ans">The same night measured in standard deviations. Each step is
-  spelled out in both a sleep score and a percentile, so the scale reads without
-  any statistics.</p>
+  <p class="ans">The same night measured in standard deviations. Each step is spelled out
+  in both a sleep score and a percentile, so the scale reads without any statistics.</p>
   <div class="zwrap">
-    <div class="you" style="left:{ZGUT + you_x:.2f}px">
-      <div class="t mono">You &middot; +{Z} SD</div>
-    </div>
+    <div class="you" style="left:{ZGUT + you_x:.2f}px"><div class="t mono">You &middot; +{Z} SD</div></div>
     <div style="margin-left:{ZGUT}px;position:relative">
       <div class="strip">{chips}</div>
       <div class="youline" style="left:{you_x:.2f}px"></div>
@@ -267,154 +286,176 @@ body = f"""  <p class="q">How far from ordinary?</p>
   </div>
   <div class="hair" style="margin-top:18px"></div>
   <p class="note mono" style="margin-top:12px">The strip's positions are measured — mean
-  <b>{MEAN}</b>, SD <b>{SD}</b>, last night <b>+{Z} SD</b>. The percentile row is a normal
-  fit, so the tick figures are approximate. The <b>{PCT}st</b> in the band is your real rank.</p>
+  <b>{MEAN}</b>, SD <b>{SD}</b>, last night <b>+{Z} SD</b>. The percentile row is a normal fit,
+  so the tick figures are approximate. The <b>{PCT}st</b> in the band is your real rank.</p>
 """
 write('s3', page(3, 'The scale', 's3 — The scale',
-    'SD calibration strip, each tick spelled out as a score and a percentile. Positions measured, tick percentiles modelled.',
-    extra, body, f'z +{Z}'))
+    'SD strip, each tick spelled out as a score and a percentile.', extra, body, f'z +{Z}'))
 
-# ---------------------------------------------------------------- s4  every night
+# ---------------------------------------------------------------- s4  how many have I beaten
+# Thirds here are EXACT: the grid is sorted by rank, so the cuts are index cuts
+# on measured data -- no normal fit involved.
+T1, T2 = round(N/3), round(2*N/3)
 extra = """
-.marks{display:flex;flex-wrap:wrap;gap:1px;line-height:0;margin-top:18px;width:342px}
+.marks{display:flex;flex-wrap:wrap;gap:1px;line-height:0;margin-top:16px;width:342px}
 .marks i{display:block;width:5px;height:5px;background:#DED7C7}
-.marks i.b{background:#4A463E}
-.marks i.you{background:ACCENT;outline:2px solid INK;position:relative;z-index:2}
-.key{display:flex;gap:16px;margin-top:14px;flex-wrap:wrap;font-size:9.5px;letter-spacing:.06em;color:QUIET}
-.key b{color:INK}
+.marks i.bad{background:BADL}
+.marks i.ok{background:OKL}
+.marks i.good{background:GOODL}
+.marks i.you{background:BANDC;outline:2px solid INK;position:relative;z-index:2}
+.key{display:flex;gap:14px;margin-top:14px;flex-wrap:wrap;font-size:9px;letter-spacing:.05em;color:QUIET;
+  font-family:'IBM Plex Mono',monospace}
 .key i{display:inline-block;width:8px;height:8px;vertical-align:-1px;margin-right:5px}
 .split{display:flex;margin-top:20px;border-top:1px solid INK;padding-top:12px;gap:26px}
 .split .v{font-size:34px;line-height:1;font-weight:500;margin-top:4px}
-""".replace('ACCENT', ACCENT).replace('INK', INK).replace('QUIET', QUIET)
-body = f"""  <p class="q">What does {BELOW} of {N:,} look like?</p>
-  <p class="ans">One square for every night on record, worst to best, nothing
-  averaged or sampled. Last night is the marked square.</p>
+""".replace('BADL', BAD_L).replace('OKL', OK_L).replace('GOODL', GOOD_L)\
+   .replace('BANDC', BAND_C).replace('INK', INK).replace('QUIET', QUIET)
+body = f"""  <p class="q">How many nights have I beaten?</p>
+  <p class="ans">One square for every night on record, worst to best, banded into thirds
+  of your own history. Last night is the outlined square.</p>
   <div class="marks" id="marks"></div>
-  <div class="key mono">
-    <span><i style="background:#4A463E"></i>Below <b>{BELOW}</b></span>
-    <span><i style="background:{ACCENT}"></i>Last night</span>
-    <span><i style="background:#DED7C7"></i>Above <b>{ABOVE}</b></span>
+  <div class="key">
+    <span><i style="background:{BAD_L}"></i>Worst third</span>
+    <span><i style="background:{OK_L}"></i>Middle third</span>
+    <span><i style="background:{GOOD_L}"></i>Best third</span>
+    <span><i style="background:{BAND_C}"></i>Last night</span>
   </div>
   <div class="split">
     <div><div class="lab mono">Nights you beat</div><div class="v mono">{BELOW}</div></div>
     <div><div class="lab mono">Nights that beat you</div><div class="v mono">{ABOVE}</div></div>
   </div>
-  <div class="hair" style="margin-top:20px"></div>
-  <p class="note mono" style="margin-top:12px">Fully measured. {BELOW} + 1 + {ABOVE} =
-  <b>{N:,}</b> — every night drawn once, at its true position in the order.</p>
+  <div class="hair" style="margin-top:18px"></div>
+  <p class="note mono" style="margin-top:12px">Fully measured — {BELOW} + 1 + {ABOVE} =
+  <b>{N:,}</b>, every night drawn once at its true position. The thirds are exact here too:
+  the grid is sorted by rank, so the cuts fall at nights <b>{T1:,}</b> and <b>{T2:,}</b>.
+  Last night sits in the <b>best third</b>.</p>
   <script>
-  var N={N},BELOW={BELOW},f=document.createDocumentFragment();
-  for(var i=0;i<N;i++){{var e=document.createElement('i');
-    if(i===BELOW)e.className='you';else if(i<BELOW)e.className='b';f.appendChild(e);}}
+  var N={N},BELOW={BELOW},T1={T1},T2={T2},f=document.createDocumentFragment();
+  for(var i=0;i<N;i++){{
+    var e=document.createElement('i');
+    if(i===BELOW){{e.className='you';}}
+    else {{e.className = i<T1 ? 'bad' : (i<T2 ? 'ok' : 'good');}}
+    f.appendChild(e);
+  }}
   document.getElementById('marks').appendChild(f);
   </script>
 """
-write('s4', page(4, 'Every night', 's4 — Every night',
-    '1,042 marks, one per night, split at the true boundary. Nothing aggregated.',
+write('s4', page(4, 'Nights beaten', 's4 — How many nights have I beaten',
+    'Waffle banded into exact rank thirds; question renamed to something answerable.',
     extra, body, 'one square = one night'))
 print('s3, s4 written')
 
 # ---------------------------------------------------------------- s5  the direction
-# Chain: each window against the next LONGER window that has data; the longest
-# available against the lifetime mean. T180/T365 have no data and are drawn as
-# an explicit empty state -- never invented.
-AX_LO, AX_HI, TW = 70.0, 85.0, 182.0
-WINDOWS = [('Last 7', 79.4), ('Last 30', 79.2), ('Last 90', 73.9),
-           ('Last 180', None), ('Last 365', None), ('All time', MEAN)]
-avail = [(k, v) for k, v in WINDOWS[:-1] if v is not None]
-deltas = {}
-for i, (k, v) in enumerate(avail):
-    nxt = avail[i + 1][1] if i + 1 < len(avail) else MEAN
-    deltas[k] = v - nxt
-def arrow(d):
-    if d is None: return ('', QUIET, '')
-    if d > 0.5:  return ('&#9650;', UP, f'+{d:.1f}')
-    if d < -0.5: return ('&#9660;', DOWN, f'{d:.1f}')
-    return ('&#9644;', FLAT, f'{d:+.1f}')
+# ONE baseline, stated once: the all-time average. Every row -- including last
+# night -- is measured against that single line, which is what Seth asked for
+# after the chained comparison read as confusing.
+AX_LO, AX_HI, TW = 70.0, 90.0, 142.0
+ROWS = [('Last night', float(SCORE), True), ('Last 7', 79.4, False), ('Last 30', 79.2, False),
+        ('Last 90', 73.9, False), ('Last 180', None, False), ('Last 365', None, False)]
+def mark(d):
+    if d > 0.5:  return ('&#9650;', GOOD)
+    if d < -0.5: return ('&#9660;', BAD)
+    return ('&#9644;', OK)
 rows = ''
-for k, v in WINDOWS:
-    last = k == 'All time'
+for k, v, is_night in ROWS:
     if v is None:
         rows += (f'<div class="trow empty"><span class="tk mono">{k}</span>'
-                 f'<span class="track"></span>'
-                 f'<span class="tv mono">&mdash;</span>'
-                 f'<span class="ta mono">no data</span></div>')
+                 f'<span class="track"></span><span class="tv mono">&mdash;</span>'
+                 f'<span class="td mono">pending</span></div>')
         continue
+    d = v - MEAN
+    g, col = mark(d)
     x = (v - AX_LO) / (AX_HI - AX_LO) * TW
-    g, col, dtxt = arrow(deltas.get(k)) if not last else ('', QUIET, '')
-    dot = (f'<span class="dot" style="left:{x:.2f}px;background:{ACCENT if not last else QUIET}"></span>')
-    rows += (f'<div class="trow{" base" if last else ""}"><span class="tk mono">{k}</span>'
-             f'<span class="track">{dot}</span>'
-             f'<span class="tv mono">{v}</span>'
-             f'<span class="ta mono" style="color:{col}">{g}<i>{dtxt}</i></span></div>')
-mean_x = (MEAN - AX_LO) / (AX_HI - AX_LO) * TW
+    rows += (f'<div class="trow{" night" if is_night else ""}">'
+             f'<span class="tk mono">{k}</span>'
+             f'<span class="track"><span class="dot" style="left:{x:.2f}px;background:{col}"></span></span>'
+             f'<span class="tv mono">{v:g}</span>'
+             f'<span class="td mono" style="color:{col}">{g}<i>{d:+.1f}</i></span></div>')
+base_x = (MEAN - AX_LO) / (AX_HI - AX_LO) * TW
 extra = """
-.verdict{margin-top:16px;font-size:44px;line-height:1;font-weight:600;letter-spacing:-.02em;color:UP}
-.tbl{position:relative;margin-top:20px}
-.meanline{position:absolute;top:16px;bottom:26px;width:1px;background:QUIET;z-index:0}
-.trow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid RULE;position:relative;z-index:1}
-.trow.base{border-bottom:0;border-top:1px solid INK;margin-top:2px}
-.trow.empty .tk,.trow.empty .tv{color:#B3AB9A}
-.tk{width:58px;flex:0 0 58px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+.verdict{font-size:42px;line-height:1;font-weight:600;letter-spacing:-.02em;color:GOOD}
+.baseband{margin-top:14px;background:RAISED;padding:9px 12px;font-size:9.5px;
+  letter-spacing:.1em;text-transform:uppercase;color:INK;font-family:'IBM Plex Mono',monospace;
+  display:flex;justify-content:space-between;align-items:baseline}
+.baseband b{font-weight:600}
+.tbl{position:relative;margin-top:2px}
+.baseline{position:absolute;top:6px;bottom:20px;width:1px;background:#9C948A;z-index:0}
+.trow{display:flex;align-items:center;gap:7px;padding:8px 0;border-bottom:1px solid RULE;
+  position:relative;z-index:1}
+.trow.night{border-bottom:1px solid INK}
+.trow.night .tk,.trow.night .tv{color:INK;font-weight:600}
+.trow.empty .tk,.trow.empty .tv,.trow.empty .td{color:#B3AB9A}
+.tk{width:64px;flex:0 0 64px;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;
   color:QUIET;white-space:nowrap}
-.track{flex:0 0 182px;height:9px;position:relative;background:#E4DDCD}
+.track{flex:0 0 142px;height:9px;position:relative;background:#E4DDCD}
 .trow.empty .track{background:repeating-linear-gradient(90deg,#E4DDCD 0 4px,transparent 4px 8px)}
 .dot{position:absolute;top:-2px;width:3px;height:13px;transform:translateX(-1.5px)}
-.tv{width:36px;flex:0 0 36px;text-align:right;font-size:12.5px;font-weight:500}
-.ta{flex:1;min-width:0;font-size:10.5px;display:flex;align-items:baseline;gap:4px;white-space:nowrap}
-.ta i{font-style:normal;font-size:9.5px}
-.axline{display:flex;margin-top:7px}
-.axline .sp{width:66px;flex:0 0 66px}
-.axline .e{flex:0 0 182px;display:flex;justify-content:space-between;font-size:8.5px;
+.tv{width:34px;flex:0 0 34px;text-align:right;font-size:12.5px;font-weight:500}
+.td{flex:1;min-width:0;font-size:10.5px;display:flex;align-items:baseline;gap:4px;white-space:nowrap}
+.td i{font-style:normal;font-size:9.5px}
+.axline{display:flex;margin-top:6px}
+.axline .sp{width:71px;flex:0 0 71px}
+.axline .e{flex:0 0 142px;display:flex;justify-content:space-between;font-size:8.5px;
   letter-spacing:.1em;color:QUIET;font-family:'IBM Plex Mono',monospace}
-""".replace('ACCENT', ACCENT).replace('INK', INK).replace('QUIET', QUIET)\
-   .replace('RULE', RULE).replace('UP', UP)
+""".replace('GOOD', GOOD).replace('RAISED', RAISED).replace('INK', INK)\
+   .replace('QUIET', QUIET).replace('RULE', RULE)
 body = f"""  <p class="q">Am I heading the right direction?</p>
-  <div class="verdict">Improving.</div>
-  <p class="ans" style="margin-top:8px">Your last 30 nights sit <b style="color:{UP}">5.3
-  points</b> above your last 90 — a bad stretch you have already climbed out of.
-  The last 7 are holding steady.</p>
-  <div class="tbl">
-    <div class="meanline" style="left:{66 + mean_x:.2f}px"></div>
-    {rows}
+  <p class="ans">Last night first, then every window behind it. All of them measured
+  against one single line.</p>
+  <div>
+    <div class="verdict">Improving.</div>
+    <div class="baseband"><span>Baseline &mdash; your all-time average</span><b>{MEAN}</b></div>
+    <div class="tbl">
+      <div class="baseline" style="left:{71 + base_x:.2f}px"></div>
+      {rows}
+    </div>
+    <div class="axline"><span class="sp"></span><span class="e"><span>{AX_LO:.0f}</span>
+      <span>{MEAN}</span><span>{AX_HI:.0f}</span></span></div>
   </div>
-  <div class="axline"><span class="sp"></span><span class="e"><span>{AX_LO:.0f}</span>
-    <span>mean {MEAN}</span><span>{AX_HI:.0f}</span></span></div>
   <div class="hair" style="margin-top:16px"></div>
-  <p class="note mono" style="margin-top:12px">Each arrow compares that window with the next
-  longer one; the longest compares with the all-time mean.
-  <b style="color:{UP}">&#9650;</b> better than the window below it &middot;
-  <b style="color:{FLAT}">&#9644;</b> within 0.5 &middot;
-  <b style="color:{DOWN}">&#9660;</b> worse.
-  <b>Last 180 and last 365 are not in the log</b> — the rows are built and stay empty
-  rather than carry a number that was never measured.</p>
+  <p class="note mono" style="margin-top:11px">Every row is that window's average minus your
+  all-time <b>{MEAN}</b> — one baseline, the same for all of them.
+  Your last 90 ran <b style="color:{BAD}">5.4 below</b> it, your last 30 are back
+  <b style="color:{OK}">level</b>, and the last 7 sit <b style="color:{GOOD}">just above</b>:
+  a rough quarter you have climbed out of.
+  <b>180 and 365 read &ldquo;pending&rdquo;</b> — <code>trailing()</code> already computes them and
+  <code>coach.js</code> now asks for them, but this build cannot open the encrypted log to
+  fill them in.</p>
 """
 write('s5', page(5, 'The direction', 's5 — The direction',
-    'Trailing windows chained against each other. T180/T365 are a designed empty state, never fabricated.',
-    extra, body, 'trailing means'))
+    'Rebuilt: last night first, one stated baseline, 180/365 wired and pending.',
+    extra, body, f'baseline {MEAN}'))
 
 # ---------------------------------------------------------------- s6  last night
-DETAIL = [('Asleep', '7h 45m'), ('In bed', '8h 12m'), ('Efficiency', '94%'),
-          ('Deep', '1h 29m'), ('REM', '2h 07m'), ('Light', '4h 09m'),
-          ('Awake', '27m'), ('Latency', '2m 30s'), ('Bedtime', '23:15'),
-          ('Wake', '07:26'), ('HRV', '37 ms'), ('Lowest HR', '55 bpm'),
-          ('Average HR', '60.1 bpm'), ('Respiration', '14.4 /min'),
-          ('Restless periods', '174'), ('Readiness', '85')]
-rows = ''.join(f'<div class="drow"><span class="dk mono">{k}</span>'
-               f'<span class="dv mono">{v}</span></div>' for k, v in DETAIL)
+BEDMIN = 492
+DETAIL = [('Asleep', '7h 45m', None), ('In bed', '8h 12m', None), ('Efficiency', '94%', 0.94),
+          ('Deep', '1h 29m', 89/BEDMIN), ('REM', '2h 07m', 127/BEDMIN),
+          ('Light', '4h 09m', 249/BEDMIN), ('Awake', '27m', 27/BEDMIN),
+          ('Latency', '2m 30s', None), ('Bedtime', '23:15', None), ('Wake', '07:26', None),
+          ('HRV', '37 ms', None), ('Lowest HR', '55 bpm', None), ('Average HR', '60.1 bpm', None),
+          ('Respiration', '14.4 /min', None), ('Restless periods', '174', None),
+          ('Readiness', '85', None)]
+rows = ''
+for k, v, frac in DETAIL:
+    bar = (f'<div class="mbar"><span style="width:{frac*100:.2f}%"></span></div>'
+           if frac is not None else '')
+    rows += (f'<div class="drow"><div class="dtop"><span class="dk mono">{k}</span>'
+             f'<span class="dv mono">{v}</span></div>{bar}</div>')
 extra = """
-.dtbl{margin-top:18px;border-top:1px solid INK}
-.drow{display:flex;justify-content:space-between;align-items:baseline;padding:8.5px 0;
-  border-bottom:1px solid RULE}
+.dtbl{margin-top:14px;border-top:1px solid INK}
+.drow{padding:7px 0 6px;border-bottom:1px solid RULE}
+.dtop{display:flex;justify-content:space-between;align-items:baseline}
 .dk{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:QUIET}
 .dv{font-size:13px;font-weight:500}
+.mbar{height:3px;background:#E4DDCD;margin-top:5px}
+.mbar span{display:block;height:100%;background:#9C948A}
 """.replace('INK', INK).replace('QUIET', QUIET).replace('RULE', RULE)
 body = f"""  <p class="q">What actually happened?</p>
-  <p class="ans">The whole night, one row per measure, nothing ranked or
-  interpreted. Here to be looked up, not read.</p>
+  <p class="ans">The whole night, one row per measure. The five rows that carry a real
+  proportion show it; the rest are figures, because a bar would be inventing a scale.</p>
   <div class="dtbl">{rows}</div>
 """
 write('s6', page(6, 'Last night', 's6 — Last night',
-    'The detail table. Every value measured and unrounded.',
-    extra, body, 'Oura Gen3'))
+    'Same format, with a proportion bar on the five rows where a proportion is real.',
+    extra, body, 'bars = share of 8h 12m'))
 print('s5, s6 written')

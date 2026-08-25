@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <title>s1 — Where am I</title>
 <meta name="viewport" content="width=390, initial-scale=1">
-<!-- Percentile as the hero, rank demoted to support. Every figure here is measured. -->
+<!-- Score first at the same size as the percentile, per revision 2. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -16,48 +16,51 @@ html,body{background:#78756F}
 .mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
 .hd{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:9px;
   border-bottom:1px solid #1A1814;flex:0 0 auto}
-.bd{flex:1;display:flex;flex-direction:column;padding:22px 0 10px;min-height:0}
+.bd{flex:1;display:flex;flex-direction:column;padding:20px 0 10px;min-height:0}
 .grp{flex:0 0 auto}
 .grp:nth-child(2){flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0}
 .hd .brand{font-size:11px;letter-spacing:.24em;text-transform:uppercase;font-weight:600}
 .hd .num{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#7C7568}
 .q{font-size:23px;line-height:1.25;font-weight:400;letter-spacing:-.01em}
-.q b{font-weight:600}
-.ans{margin-top:6px;font-size:11.5px;line-height:1.55;color:#7C7568;max-width:33ch}
+.ans{margin-top:6px;font-size:11.5px;line-height:1.55;color:#7C7568;max-width:34ch}
 .lab{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:#7C7568;font-weight:500}
 .hair{height:1px;background:#D5CDBC}
-.rule{height:1px;background:#1A1814}
 .ft{margin-top:auto;padding-top:12px;border-top:1px solid #D5CDBC;display:flex;
   justify-content:space-between;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#7C7568}
 .note{font-size:9px;line-height:1.5;color:#7C7568;letter-spacing:.02em}
 .note b{color:#1A1814;font-weight:600}
+.pill{display:inline-block;padding:3px 9px 2px;font-size:9px;letter-spacing:.16em;
+  text-transform:uppercase;font-weight:600;font-family:'IBM Plex Mono',monospace}
 
-.big{font-size:210px;line-height:.82;letter-spacing:-.05em;font-weight:500;margin-top:14px}
-.ord{font-size:46px;line-height:1;vertical-align:.86em;font-weight:400;margin-left:12px;
+.line{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#7C7568;font-weight:500}
+.big{font-size:146px;line-height:.86;letter-spacing:-.045em;font-weight:500;margin-top:2px}
+.ord{font-size:44px;line-height:1;vertical-align:.9em;font-weight:400;margin-left:11px;
   letter-spacing:.06em;font-variant-ligatures:none}
-.pl{margin-top:2px;font-size:15px;letter-spacing:.26em;text-transform:uppercase;color:#1F4B8F;font-weight:600}
-.grid2{display:flex;gap:34px;margin-top:26px}
-.g2 .v{font-size:30px;line-height:1;font-weight:500;margin-top:5px}
+.pctlab{font-size:13px;letter-spacing:.26em;text-transform:uppercase;color:#1F4B8F;
+  font-weight:600;margin-top:2px}
+.rowline{display:flex;align-items:baseline;gap:12px}
 </style>
 <div class="s">
   <div class="hd"><span class="brand mono">Sleep OS</span><span class="num mono">1 of 6 &middot; Where am I</span></div>
   <div class="bd">
 <div class="grp">  <p class="q">Where am I?</p>
-  <p class="ans">Out of every night on record, last night sits here.
-  One number, no arithmetic.</p></div><div class="grp">
-  <div class="big">81<span class="ord">st</span></div>
-  <div class="pl mono">Percentile</div>
-  <div class="hair" style="margin-top:24px"></div>
-  <div class="grid2">
-    <div class="g2"><div class="lab mono">Rank of all nights</div>
-      <div class="v mono">198<span style="color:#7C7568">/1,042</span></div></div>
-    <div class="g2"><div class="lab mono">Sleep score</div>
-      <div class="v mono">88</div></div>
+  <p class="ans">The score first, then what it is worth. Same size, because
+  neither one means much without the other.</p></div><div class="grp">
+  <div>
+    <div class="line mono">Last night your sleep score was</div>
+    <div class="rowline">
+      <div class="big mono">88</div>
+      <span class="pill" style="background:#D2E3CC;color:#2F7A44">a good night</span>
+    </div>
+    <div class="hair" style="margin:20px 0 18px"></div>
+    <div class="line mono">Which puts it at the</div>
+    <div class="big mono">81<span class="ord">st</span></div>
+    <div class="pctlab mono">Percentile</div>
   </div>
-  </div><div class="grp"><div class="hair" style="margin-top:22px"></div>
-  <p class="note mono" style="margin-top:14px">Measured, not modelled: <b>844</b> of your
-  1,042 recorded nights scored lower than last night and <b>197</b> scored higher.
-  That is the 81st percentile exactly.</p>
+  </div><div class="grp"><div class="hair" style="margin-top:20px"></div>
+  <p class="note mono" style="margin-top:12px">Measured, not modelled: <b>844</b> of your
+  1,042 recorded nights scored lower and <b>197</b> scored higher — the 81st percentile
+  exactly. Rank <b>198</b> of 1,042.</p>
 </div>  </div>
   <div class="ft mono"><span>Sun 23 Aug 2026</span><span>1,042 nights</span></div>
 </div>
