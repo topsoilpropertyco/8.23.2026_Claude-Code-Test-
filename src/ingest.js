@@ -74,6 +74,37 @@ async function fetchRange(token, start, end, log) {
   const scoreless = [...s.keys()].filter((d) => !p.has(d));
   if (scoreless.length) log(`  no sleep period yet for: ${scoreless.join(', ')}`);
 
+  // Written to disk because a six-hour job will not release its log until it
+  // ends, and this is the question that has now been wrong twice: the score
+  // comes from daily_sleep, every duration and vital comes from the period, and
+  // widening the period request by a day did not fix the newest day still
+  // arriving without one. Dates and counts only -- no scores, no vital values.
+  try {
+    const { writeFileSync, mkdirSync } = await import('node:fs');
+    const { join, dirname } = await import('node:path');
+    const { fileURLToPath } = await import('node:url');
+    const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+    mkdirSync(join(root, 'state'), { recursive: true });
+    writeFileSync(join(root, 'state/health.ingest.json'), `${JSON.stringify({
+      _comment: 'What the last Oura pull actually saw. Public file: dates and counts only.',
+      at: new Date().toISOString(),
+      requested: { start, end, periodEnd },
+      rows: { dailySleep: sleep.length, periods: periods.length,
+              readiness: readiness.length, stress: stress.length },
+      // The diagnosis. If a date appears here, daily_sleep had it and the sleep
+      // collection did not -- so the gap is Oura's, not the merge's. If this is
+      // empty and vitals are still missing, the merge is dropping them.
+      daysWithScoreButNoPeriod: scoreless,
+      periodDays: [...p.keys()].sort(),
+      // A period can exist and still be discarded: mainSleep prefers a
+      // long_sleep row and falls back to the longest. A day whose only period is
+      // a nap would land here with a period but no useful night.
+      periodTypes: [...new Set((periods ?? []).map((r) => r?.type).filter(Boolean))],
+    }, null, 2)}\n`);
+  } catch {
+    // Diagnostics must never break an ingest.
+  }
+
   return days.map((day) =>
     normalise({ day, sleep: s.get(day), readiness: r.get(day), stress: t.get(day), periods: p.get(day) }),
   );
