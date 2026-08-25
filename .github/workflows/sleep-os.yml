@@ -31,6 +31,15 @@ on:
         description: 'Authorisation code from the redirect URL (only with oura_action=code)'
         required: false
         type: string
+      send_deck:
+        description: 'Send the swipeable deck now, even if tonight''s data has not changed'
+        required: false
+        type: boolean
+        default: false
+      deck_date:
+        description: 'Which night the deck should show (YYYY-MM-DD). Blank = the latest on record.'
+        required: false
+        type: string
 
 concurrency:
   group: sleep-os-dispatch
@@ -93,7 +102,9 @@ jobs:
       # with a census of real nights, then --check fails loudly if the key was
       # missing and the output is still provisional.
       - name: Rebuild the grade table from real nights
-        if: inputs.oura_action == '' && steps.telem.outputs.changed == 'true'
+        if: >-
+          inputs.oura_action == ''
+          && (steps.telem.outputs.changed == 'true' || inputs.send_deck == true)
         continue-on-error: true
         env:
           SLEEPOS_DATA_KEY: ${{ secrets.SLEEPOS_DATA_KEY }}
@@ -154,7 +165,9 @@ jobs:
       # artefact left to go stale, and it stays inside a private chat -- which a
       # Pages site could not, this repository being public.
       - name: Send the swipeable deck
-        if: inputs.oura_action == '' && steps.telem.outputs.changed == 'true' && inputs.dry_run != true
+        if: >-
+          inputs.oura_action == '' && inputs.dry_run != true
+          && (steps.telem.outputs.changed == 'true' || inputs.send_deck == true)
         continue-on-error: true
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.SLEEPOS_TELEGRAM_BOT_TOKEN }}
@@ -163,7 +176,7 @@ jobs:
           CHROMIUM_PATH: /usr/bin/google-chrome
         run: |
           npm install --no-save --silent playwright-core
-          node bin/send-deck.mjs
+          node bin/send-deck.mjs ${{ inputs.deck_date }}
 
       # Hold an open long poll for most of what is left of the interval. Runs
       # last so a slow or failing poll can never delay a scheduled send, and
