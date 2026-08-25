@@ -31,6 +31,8 @@ html,body{background:#78756F}
 .note b{color:#1A1814;font-weight:600}
 .pill{display:inline-block;padding:3px 9px 2px;font-size:9px;letter-spacing:.16em;
   text-transform:uppercase;font-weight:600;font-family:'IBM Plex Mono',monospace}
+.samp{margin-bottom:12px;padding:5px 8px 4px;background:#EFD3CC;color:#8A2C22;
+  font-size:8px;line-height:1.4;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
 .prov{flex:0 0 auto;margin-top:9px;padding:5px 9px 4px;font-family:'IBM Plex Mono',monospace;
   font-size:8.5px;letter-spacing:.17em;text-transform:uppercase;font-weight:600;
   display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -57,22 +59,21 @@ html,body{background:#78756F}
   <div class="hd"><span class="brand mono">Sleep OS</span><span class="num mono">7 of 10 &middot; Vs members</span></div>
   <div class="prov" style="background:#D6E2EE;color:#2C5F86"><span>Compared with Oura members</span><span>Published averages</span></div>
   <div class="bd">
-<div class="grp">  <p class="q">How do I compare with everyone else?</p>
+<div class="grp"><div class="samp mono">SAMPLE DATA &mdash; layout only. Not a real night. Rebuilt from telemetry wherever SLEEPOS_DATA_KEY exists.</div>  <p class="q">How do I compare with everyone else?</p>
   <p class="ans">Oura publishes one population figure for the Sleep Score: the average
   across all members. So this compares on the average &mdash; the only axis the
   published data actually supports.</p></div><div class="grp">
   <div>
-    <div class="big2 mono"><s>+</s>11</div>
+    <div class="big2 mono"><s>+</s>-3</div>
     <div class="lab mono" style="color:#2C5F86;margin-top:2px">Points above the member average</div>
-    <div style="margin-top:18px"><div class="nrow"><span class="nk mono">Oura member average</span><span class="ntrack"><span class="nfill" style="width:31.12px;background:#8FA6B8"></span></span><span class="nv mono">77</span></div><div class="nrow"><span class="nk mono">Your all-time average</span><span class="ntrack"><span class="nfill" style="width:54.99px;background:#2C5F86"></span></span><span class="nv mono">79.3</span><span class="nd mono" style="color:#2C5F86">+2.3</span></div><div class="nrow"><span class="nk mono">Your last night</span><span class="ntrack"><span class="nfill" style="width:145.25px;background:#2F7A44"></span></span><span class="nv mono">88</span><span class="nd mono" style="color:#2F7A44">+11.0</span></div></div>
+    <div style="margin-top:18px"><div class="nrow"><span class="nk mono">Oura member average</span><span class="ntrack"><span class="nfill" style="width:83.00px;background:#8FA6B8"></span></span><span class="nv mono">77</span></div><div class="nrow"><span class="nk mono">Your all-time average</span><span class="ntrack"><span class="nfill" style="width:121.18px;background:#2C5F86"></span></span><span class="nv mono">79.3</span><span class="nd mono" style="color:#2C5F86">+2.3</span></div><div class="nrow"><span class="nk mono">Your last night</span><span class="ntrack"><span class="nfill" style="width:33.20px;background:#2F7A44"></span></span><span class="nv mono">74</span><span class="nd mono" style="color:#2F7A44">+-3.0</span></div></div>
     <div class="nax"><span class="sp"></span><span class="e">
-      <span>74</span><span>77 avg</span><span>90</span></span></div>
+      <span>72</span><span>77 avg</span><span>82</span></span></div>
     <div class="warn">
-      <p class="note mono" style="color:#3C6584"><b>No percentile here, and that is deliberate.</b>
-      Turning a score into a percentile needs a spread as well as an average. Oura publishes
-      the average and <b>not</b> the spread &mdash; no SD, no distribution, no quantiles &mdash;
-      so &ldquo;88 is the Nth percentile of all members&rdquo; cannot be computed. Any N would
-      be invented.</p>
+      <p class="note mono" style="color:#3C6584"><b>Averages only here, deliberately.</b>
+      A percentile needs a spread as well as an average, and Oura publishes the average and
+      <b>not</b> the spread. Screen 9 does give one for 74, but only by <b>inferring</b>
+      a spread from outside cohorts &mdash; hence its wide interval.</p>
     </div>
   </div>
   </div><div class="grp"><div class="hair" style="margin-top:14px"></div>
@@ -81,5 +82,5 @@ html,body{background:#78756F}
   <b>These are Oura members, not a national population</b> — people who bought a ring to
   optimise sleep, so the bar sits higher than the public at large.</p>
 </div>  </div>
-  <div class="ft mono"><span>Sun 23 Aug 2026</span><span>avg 77</span></div>
+  <div class="ft mono"><span>Sample night</span><span>avg 77</span></div>
 </div>

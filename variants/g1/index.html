@@ -31,6 +31,8 @@ html,body{background:#78756F}
 .note b{color:#1A1814;font-weight:600}
 .pill{display:inline-block;padding:3px 9px 2px;font-size:9px;letter-spacing:.16em;
   text-transform:uppercase;font-weight:600;font-family:'IBM Plex Mono',monospace}
+.samp{margin-bottom:12px;padding:5px 8px 4px;background:#EFD3CC;color:#8A2C22;
+  font-size:8px;line-height:1.4;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
 .prov{flex:0 0 auto;margin-top:9px;padding:5px 9px 4px;font-family:'IBM Plex Mono',monospace;
   font-size:8.5px;letter-spacing:.17em;text-transform:uppercase;font-weight:600;
   display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -71,62 +73,62 @@ html,body{background:#78756F}
   <div class="hd"><span class="brand mono">Sleep OS</span><span class="num mono">9 of 10 &middot; Grades vs members</span></div>
   <div class="prov" style="background:#D6E2EE;color:#2C5F86"><span>Compared with Oura members</span><span>Published averages</span></div>
   <div class="bd">
-<div class="grp">  <p class="q">What is last night worth?</p>
+<div class="grp"><div class="samp mono">SAMPLE DATA &mdash; layout only. Not a real night. Rebuilt from telemetry wherever SLEEPOS_DATA_KEY exists.</div>  <p class="q">What is last night worth?</p>
   <p class="ans">A letter is a choice of curve, so here are all three — and
   where each one draws its lines.</p></div><div class="grp">
   <div class="gscore">
-    <div class="gcell"><span class="k mono">Sleep score</span><span class="v mono">88</span></div>
+    <div class="gcell"><span class="k mono">Sleep score</span><span class="v mono">74</span></div>
     <div class="gcell r"><span class="k mono">Member percentile</span>
-      <span class="v mono">89.1</span></div>
+      <span class="v mono">35.9</span></div>
   </div>
   <div class="hair" style="margin:16px 0 2px"></div>
   <div class="crow">
     <div class="ctop">
       <span class="clab mono">Standard</span>
-      <span><span class="crng mono">B&ndash;A</span><span class="cgrade mono" style="color:#5E7226">B+</span></span>
+      <span><span class="cgrade mono" style="color:#B23A2F">F</span></span>
     </div>
-    <div class="bar"><div class="seg" style="width:205.20px;background:#EFD3CC"><span style="color:#B23A2F">F</span></div><div class="seg" style="width:34.20px;background:#F0DCC6"><span style="color:#A85F22">D</span></div><div class="seg" style="width:34.20px;background:#F0E5C2"><span style="color:#96761C">C</span></div><div class="seg" style="width:34.20px;background:#E1E8C7"><span style="color:#5E7226">B</span></div><div class="seg" style="width:34.20px;background:#CFE0C8"><span style="color:#2F7A44">A</span></div><div class="ci" style="left:289.33px;width:29.41px"></div>
-      <div class="mk" style="left:304.72px"></div>
+    <div class="bar"><div class="seg" style="width:205.20px;background:#EFD3CC"><span style="color:#B23A2F">F</span></div><div class="seg" style="width:34.20px;background:#F0DCC6"><span style="color:#A85F22">D</span></div><div class="seg" style="width:34.20px;background:#F0E5C2"><span style="color:#96761C">C</span></div><div class="seg" style="width:34.20px;background:#E1E8C7"><span style="color:#5E7226">B</span></div><div class="seg" style="width:34.20px;background:#CFE0C8"><span style="color:#2F7A44">A</span></div><div class="ci" style="left:108.76px;width:33.17px"></div>
+      <div class="mk" style="left:122.78px"></div>
     </div>
   </div>
   <div class="crow">
     <div class="ctop">
       <span class="clab mono">Bell</span>
-      <span><span class="crng mono">B+&ndash;A-</span><span class="cgrade mono" style="color:#5E7226">B+</span></span>
+      <span><span class="cgrade mono" style="color:#96761C">C-</span></span>
     </div>
-    <div class="bar"><div class="seg" style="width:34.20px;background:#EFD3CC"><span style="color:#B23A2F">F</span></div><div class="seg" style="width:68.40px;background:#F0DCC6"><span style="color:#A85F22">D</span></div><div class="seg" style="width:136.80px;background:#F0E5C2"><span style="color:#96761C">C</span></div><div class="seg" style="width:68.40px;background:#E1E8C7"><span style="color:#5E7226">B</span></div><div class="seg" style="width:34.20px;background:#CFE0C8"><span style="color:#2F7A44">A</span></div><div class="ci" style="left:289.33px;width:29.41px"></div>
-      <div class="mk" style="left:304.72px"></div>
+    <div class="bar"><div class="seg" style="width:34.20px;background:#EFD3CC"><span style="color:#B23A2F">F</span></div><div class="seg" style="width:68.40px;background:#F0DCC6"><span style="color:#A85F22">D</span></div><div class="seg" style="width:136.80px;background:#F0E5C2"><span style="color:#96761C">C</span></div><div class="seg" style="width:68.40px;background:#E1E8C7"><span style="color:#5E7226">B</span></div><div class="seg" style="width:34.20px;background:#CFE0C8"><span style="color:#2F7A44">A</span></div><div class="ci" style="left:108.76px;width:33.17px"></div>
+      <div class="mk" style="left:122.78px"></div>
     </div>
   </div>
   <div class="crow">
     <div class="ctop">
       <span class="clab mono">Curved</span>
-      <span><span class="crng mono">A&ndash;A+</span><span class="cgrade mono" style="color:#2F7A44">A</span></span>
+      <span><span class="crng mono">C+&ndash;B-</span><span class="cgrade mono" style="color:#96761C">C+</span></span>
     </div>
-    <div class="bar"><div class="seg" style="width:17.10px;background:#EFD3CC"></div><div class="seg" style="width:34.20px;background:#F0DCC6"><span style="color:#A85F22">D</span></div><div class="seg" style="width:85.50px;background:#F0E5C2"><span style="color:#96761C">C</span></div><div class="seg" style="width:119.70px;background:#E1E8C7"><span style="color:#5E7226">B</span></div><div class="seg" style="width:85.50px;background:#CFE0C8"><span style="color:#2F7A44">A</span></div><div class="ci" style="left:289.33px;width:29.41px"></div>
-      <div class="mk" style="left:304.72px"></div>
+    <div class="bar"><div class="seg" style="width:17.10px;background:#EFD3CC"></div><div class="seg" style="width:34.20px;background:#F0DCC6"><span style="color:#A85F22">D</span></div><div class="seg" style="width:85.50px;background:#F0E5C2"><span style="color:#96761C">C</span></div><div class="seg" style="width:119.70px;background:#E1E8C7"><span style="color:#5E7226">B</span></div><div class="seg" style="width:85.50px;background:#CFE0C8"><span style="color:#2F7A44">A</span></div><div class="ci" style="left:108.76px;width:33.17px"></div>
+      <div class="mk" style="left:122.78px"></div>
     </div>
   </div>
   <div class="legend"><span>0th</span><span>50th percentile</span><span>100th</span></div>
   <div class="feat">
-    <span class="fg" style="color:#2F7A44">A</span>
+    <span class="fg" style="color:#96761C">C+</span>
     <span class="fx">on the <b>curved</b> scale — the one to trust here.
     Standard fails 60% of all nights by construction, whatever anyone scores.</span>
   </div>
   <div class="hair" style="margin-top:15px"></div>
   <p class="note mono" style="margin-top:11px">The shaded band is the <b>90% interval</b>
-  (84.6–93.2) — the real answer, with the percentile only its middle. It is that
+  (31.8–41.5) — the real answer, with the percentile only its middle. It is that
   wide because Oura has never published a spread. Read across it and the letter moves too: the
-  curved grade holds from <b>A</b> to
-  <b>A+</b>, and standard swings
-  <b>B</b> to <b>A</b>.</p>
+  curved grade holds from <b>C+</b> to
+  <b>B-</b>, and standard swings
+  <b>F</b> to <b>F</b>.</p>
   </div><div class="grp"><div class="hair" style="margin-top:12px"></div>
   <p class="note mono" style="margin-top:11px"><b>Oura member nights</b>, not a national figure —
   members bought a ring to optimise sleep. The unit is a <b>night, not a person</b>: better than
-  89.1% of member <i>nights</i> holds; better than 89.1% of members is a different claim
+  35.9% of member <i>nights</i> holds; better than 35.9% of members is a different claim
   nothing here answers. Mean <b>77.0</b> is published, the spread <b>is not</b> — SD
-  9.9 is inferred, so this sits at 84.6–93.2. <b>No member count is
+  9.9 is inferred, so this sits at 31.8–41.5. <b>No member count is
   published</b>, so none is shown.</p>
 </div>  </div>
-  <div class="ft mono"><span>Sun 23 Aug 2026</span><span>Percentile 89.1</span></div>
+  <div class="ft mono"><span>Sample night</span><span>Percentile 35.9</span></div>
 </div>

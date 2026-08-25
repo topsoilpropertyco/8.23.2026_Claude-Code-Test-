@@ -24,12 +24,56 @@ the same as the data not existing: src/stats.js trailing() already defaults to
 now fixed, so production emits all five. The two rows this session cannot fill
 render as an explicit pending state rather than an invented number.
 """
-import math, os
+import math, os, sys, json
 
 W, H = 390, 844
-MEAN, SD, N = 79.3, 9.54, 1042
-SCORE, BELOW, ABOVE, RANK, PCT = 88, 844, 197, 198, 81
-Z = 0.92
+
+# The night is DATA, not source. It used to be a line of constants right here,
+# which made every screen a photograph of one morning: rebuilding changed
+# nothing because there was no input to change. Seth found it by getting a
+# message about a 74 whose link still showed him an 88.
+#
+# Refusing to run without the file is the point. There is no fallback and no
+# default score, so a stale night is no longer expressible.
+try:
+    NIGHT = json.load(open('data/last-night.json'))
+except FileNotFoundError:
+    sys.exit('build-screens: data/last-night.json missing.\n'
+             '  Run: node bin/build-night-data.mjs            (real, needs SLEEPOS_DATA_KEY)\n'
+             '   or: node bin/build-night-data.mjs --sample 74 (layout only, renders a banner)')
+
+SAMPLE = NIGHT.get('sample', False)
+SCORE = NIGHT['score']
+MEAN, SD, N = NIGHT['population']['mean'], NIGHT['population']['sd'], NIGHT['population']['n']
+BELOW, ABOVE = NIGHT['standing']['below'], NIGHT['standing']['above']
+TIES = NIGHT['standing']['ties']
+RANK, PCT = NIGHT['standing']['rank'], NIGHT['standing']['percentile']
+Z = NIGHT['standing']['z']
+NIGHT_DATE = NIGHT['date']
+TRAIL = {t['window']: t for t in NIGHT['trailing']}
+SAMPLE_BANNER = ('<div class="samp mono">SAMPLE DATA &mdash; layout only. Not a real night. '
+                 'Rebuilt from telemetry wherever SLEEPOS_DATA_KEY exists.</div>') if SAMPLE else ''
+
+def ordinal(v):
+    """Suffix for a rank or percentile. Decimals always take 'th'."""
+    if float(v) != int(v): return 'th'
+    n = int(v) % 100
+    if 11 <= n <= 13: return 'th'
+    return {1: 'st', 2: 'nd', 3: 'rd'}.get(n % 10, 'th')
+
+def _date_label(iso):
+    if not iso or len(iso) != 10 or iso[4] != '-':
+        return iso or 'no date'
+    y, m, d = int(iso[0:4]), int(iso[5:7]), int(iso[8:10])
+    # Zeller, so the weekday comes from the date rather than from a fixed string.
+    mm, yy = (m, y) if m > 2 else (m + 12, y - 1)
+    kk, jj = yy % 100, yy // 100
+    h = (d + (13 * (mm + 1)) // 5 + kk + kk // 4 + jj // 4 + 5 * jj) % 7
+    wd = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'][h]
+    mon = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m - 1]
+    return f'{wd} {d} {mon} {y}'
+
+DATE_LABEL = 'Sample night' if SAMPLE else _date_label(NIGHT_DATE)
 
 GROUND, RAISED, INK, QUIET, RULE = '#F4F0E6', '#E9E3D4', '#1A1814', '#7C7568', '#D5CDBC'
 # Provenance hues. Every screen declares what it measures against in the ground
@@ -88,6 +132,8 @@ html,body{background:#78756F}
 .note b{color:INK;font-weight:600}
 .pill{display:inline-block;padding:3px 9px 2px;font-size:9px;letter-spacing:.16em;
   text-transform:uppercase;font-weight:600;font-family:'IBM Plex Mono',monospace}
+.samp{margin-bottom:12px;padding:5px 8px 4px;background:#EFD3CC;color:#8A2C22;
+  font-size:8px;line-height:1.4;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
 .prov{flex:0 0 auto;margin-top:9px;padding:5px 9px 4px;font-family:'IBM Plex Mono',monospace;
   font-size:8.5px;letter-spacing:.17em;text-transform:uppercase;font-weight:600;
   display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -112,7 +158,7 @@ HEAD = """<!doctype html>
   <div class="bd">
 """
 FOOT = """  </div>
-  <div class="ft mono"><span>Sun 23 Aug 2026</span><span>{right}</span></div>
+  <div class="ft mono"><span>{daten}</span><span>{right}</span></div>
 </div>
 """
 
@@ -127,6 +173,7 @@ def group(body):
             + '</div><div class="grp">' + body[k:] + '</div>')
 
 def page(idx, kicker, title, note, extra, body, right, kind='own'):
+    body = SAMPLE_BANNER + body
     """kind='own' -> warm paper, measured against Seth's own 1,042 nights.
        kind='nat' -> cool paper, measured against published Oura member data."""
     prov = dict(
@@ -137,7 +184,7 @@ def page(idx, kicker, title, note, extra, body, right, kind='own'):
     )[kind]
     return (HEAD.format(idx=idx, kicker=kicker, title=title, note=note, css=CSS,
                         extra=extra, **prov)
-            + group(body) + FOOT.format(right=right))
+            + group(body) + FOOT.format(right=right, daten=DATE_LABEL))
 
 def write(key, html):
     os.makedirs(f'variants/{key}', exist_ok=True)
@@ -145,15 +192,28 @@ def write(key, html):
 print(f'bands: bad <{CUT_LO_S:.1f}  decent {CUT_LO_S:.1f}-{CUT_HI_S:.1f}  good >{CUT_HI_S:.1f}  -> last night is {BAND}')
 
 # ---------------------------------------------------------------- s1  where am I
+# Seth asked for the score and the percentile at the SAME size. A decimal is 4
+# glyphs against the score's 2, and at 146px its ordinal ran off the edge -- so
+# the hero rounds to a whole percentile and the note below carries the exact
+# figure. The dynamic sizing stays as a guard in case that ever changes.
+PCT_HERO = round(PCT)
+PCT_STR = f'{PCT_HERO:g}'
+_PCTSIZE = {1: 146, 2: 146, 3: 122, 4: 100}.get(len(PCT_STR), 88)
 extra = """
 .line{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:QUIET;font-weight:500}
 .big{font-size:146px;line-height:.86;letter-spacing:-.045em;font-weight:500;margin-top:2px}
+/* The percentile can be 4 glyphs wide ("27.7") where the score is always 2, and
+   at 146px that pushed its ordinal off the right edge -- it rendered as "27.7t".
+   Sized from the string so the suffix always has room. */
+.big.pct{font-size:PCTSIZEpx}
 .ord{font-size:44px;line-height:1;vertical-align:.9em;font-weight:400;margin-left:11px;
   letter-spacing:.06em;font-variant-ligatures:none}
+.big.pct .ord{font-size:ORDSIZEpx;margin-left:8px}
 .pctlab{font-size:13px;letter-spacing:.26em;text-transform:uppercase;color:ACCENT;
   font-weight:600;margin-top:2px}
 .rowline{display:flex;align-items:baseline;gap:12px}
-""".replace('ACCENT', ACCENT).replace('QUIET', QUIET)
+""".replace('ACCENT', ACCENT).replace('QUIET', QUIET) \
+ .replace('PCTSIZE', str(_PCTSIZE)).replace('ORDSIZE', str(round(_PCTSIZE * 0.30)))
 body = f"""  <p class="q">Where am I?</p>
   <p class="ans">The score first, then what it is worth. Same size, because
   neither one means much without the other.</p>
@@ -165,13 +225,13 @@ body = f"""  <p class="q">Where am I?</p>
     </div>
     <div class="hair" style="margin:20px 0 18px"></div>
     <div class="line mono">Which puts it at the</div>
-    <div class="big mono">{PCT}<span class="ord">st</span></div>
+    <div class="big pct mono">{PCT_STR}<span class="ord">{ordinal(PCT_HERO)}</span></div>
     <div class="pctlab mono">Percentile</div>
   </div>
   <div class="hair" style="margin-top:20px"></div>
   <p class="note mono" style="margin-top:12px">Measured, not modelled: <b>{BELOW}</b> of your
-  {N:,} recorded nights scored lower and <b>{ABOVE}</b> scored higher — the {PCT}st percentile
-  exactly. Rank <b>{RANK}</b> of {N:,}.</p>
+  {N:,} recorded nights scored lower and <b>{ABOVE}</b> scored higher — the
+  <b>{PCT}{ordinal(PCT)}</b> percentile exactly. Rank <b>{RANK}</b> of {N:,}.</p>
 """
 write('s1', page('1 of 10', 'Where am I', 's1 — Where am I',
     'Score first at the same size as the percentile, per revision 2.', extra, body, f'{N:,} nights'))
@@ -232,7 +292,7 @@ body = f"""  <p class="q">How rare is a night like this?</p>
   <div class="plot">
     <div class="callout" style="left:{GUT + mx_x:.2f}px;top:-16px">
       <div class="a mono">Sleep score</div><div class="b mono">{SCORE}</div>
-      <div class="c mono">{PCT}st pct</div>
+      <div class="c mono">{PCT}{ordinal(PCT)} pct</div>
     </div>
     <div class="pin">
     <svg width="{PW}" height="{PH+5}" viewBox="0 0 {PW} {PH+5}" style="display:block;margin-top:52px" aria-hidden="true">
@@ -251,7 +311,7 @@ body = f"""  <p class="q">How rare is a night like this?</p>
   <p class="note mono" style="margin-top:11px">Bands are thirds of <b>your own</b> history, not
   an outside norm. The bar shape and the band edges ({CUT_LO_S:.1f} / {CUT_HI_S:.1f}) come from a
   normal curve fitted to your real mean <b>{MEAN}</b> and SD <b>{SD}</b>. Last night's
-  <b>{PCT}st</b> is the measured rank.</p>
+  <b>{PCT}{ordinal(PCT)}</b> is the measured rank.</p>
 """
 write('s2', page('2 of 10', 'The curve', 's2 — The curve',
     'Curve banded into thirds of his own history; percentile set under the score.',
@@ -270,10 +330,13 @@ you_x = (Z - ZLO) / (ZHI - ZLO) * SW_
 def chip_band(z):
     p = phi(z) * 100
     return band_of_pct(p)[1:3]          # (strong, light)
+# The band the night actually falls in, not a fixed one. Clamped because the
+# strip only runs -2..+2 and a 3-SD night still has to highlight something.
+ZBAND = max(ZT[0], min(ZT[-1], int(round(Z))))
 chips = ''
 for z in ZT:
     strong, light = chip_band(z)
-    me = (z == 1)
+    me = (z == ZBAND)
     chips += (f'<div class="chip{" me" if me else ""}" style="background:{light};'
               f'{f"box-shadow:inset 0 0 0 1.5px {strong};" if me else ""}"></div>')
 def zrow(label, vals, cls=''):
@@ -303,7 +366,7 @@ body = f"""  <p class="q">How far from ordinary?</p>
   Each step is spelled out in both a sleep score and a percentile, so the scale reads
   without any statistics.</p>
   <div class="zwrap">
-    <div class="you" style="left:{ZGUT + you_x:.2f}px"><div class="t mono">You &middot; +{Z} SD</div></div>
+    <div class="you" style="left:{ZGUT + you_x:.2f}px"><div class="t mono">You &middot; {Z:+.2f} SD</div></div>
     <div style="margin-left:{ZGUT}px;position:relative">
       <div class="strip">{chips}</div>
       <div class="youline" style="left:{you_x:.2f}px"></div>
@@ -314,23 +377,28 @@ body = f"""  <p class="q">How far from ordinary?</p>
   </div>
   <div class="inband">
     <div><div class="k mono">You are in this band</div>
-      <div class="note mono" style="margin-top:4px">+1 SD &middot; score {score_at(1):.0f}</div></div>
-    <div class="v mono">{PCT}st</div>
+      <div class="note mono" style="margin-top:4px">{ZBAND:+d} SD &middot; band centre
+      {score_at(ZBAND):.0f} &middot; you scored <b>{SCORE}</b></div></div>
+    <div class="v mono">{PCT}{ordinal(PCT)}</div>
   </div>
   <div class="hair" style="margin-top:18px"></div>
   <p class="note mono" style="margin-top:12px"><b>Measured against you, not a population.</b>
   The SD of <b>{SD}</b> is the spread of your own {N:,} nights — Sleep OS reads only your
   own Oura record and holds no national or population data. Positions are measured; the
-  percentile row is a normal fit, so those tick figures are approximate. The <b>{PCT}st</b>
-  in the band is your real rank.</p>
+  percentile row is a normal fit, so those tick figures are approximate. The
+  <b>{PCT}{ordinal(PCT)}</b> in the band is your real rank.</p>
 """
 write('s3', page('3 of 10', 'The scale', 's3 — The scale',
-    'SD strip, each tick spelled out as a score and a percentile.', extra, body, f'z +{Z}'))
+    'SD strip, each tick spelled out as a score and a percentile.', extra, body, f'z {Z:+.2f}'))
 
 # ---------------------------------------------------------------- s4  how many have I beaten
 # Thirds here are EXACT: the grid is sorted by rank, so the cuts are index cuts
 # on measured data -- no normal fit involved.
 T1, T2 = round(N/3), round(2*N/3)
+# Which third last night actually lands in, from its position in the sorted grid.
+# This was the word "best" in the template, true only of the night it was written
+# for -- the same class of bug as the hardcoded score.
+THIRD_WORD = 'worst' if BELOW < T1 else ('middle' if BELOW < T2 else 'best')
 
 # The two outlines Seth asked for: one continuous thin line around every night
 # WORSE than last night, one around every night BETTER. Neither region is a
@@ -360,8 +428,8 @@ def region_path(a, b):
         out.pop()
     return ' '.join(f'{x:g},{y:g}' for x, y in out)
 
-WORSE_PATH = region_path(0, BELOW - 1)          # 844 nights, indices 0..843
-BETTER_PATH = region_path(BELOW + 1, N - 1)     # 197 nights, indices 845..1041
+WORSE_PATH = region_path(0, BELOW - 1)               # every night that scored lower
+BETTER_PATH = region_path(BELOW + TIES, N - 1)       # every night that scored higher
 WORSE_INK, BETTER_INK = '#4F4A40', ACCENT
 assert (BELOW) + 1 + (N - BELOW - 1) == N
 extra = """
@@ -411,7 +479,7 @@ body = f"""  <p class="q">How many nights have I beaten?</p>
   <p class="note mono" style="margin-top:12px">Fully measured — {BELOW} + 1 + {ABOVE} =
   <b>{N:,}</b>, every night drawn once at its true position. The thirds are exact here too:
   the grid is sorted by rank, so the cuts fall at nights <b>{T1:,}</b> and <b>{T2:,}</b>.
-  Last night sits in the <b>best third</b>.</p>
+  Last night sits in the <b>{THIRD_WORD} third</b>.</p>
   <script>
   var N={N},BELOW={BELOW},T1={T1},T2={T2},f=document.createDocumentFragment();
   for(var i=0;i<N;i++){{
@@ -432,9 +500,13 @@ print('s3, s4 written')
 # ONE baseline, stated once: the all-time average. Every row -- including last
 # night -- is measured against that single line, which is what Seth asked for
 # after the chained comparison read as confusing.
-AX_LO, AX_HI, TW = 70.0, 90.0, 142.0
-ROWS = [('Last night', float(SCORE), True), ('Last 7', 79.4, False), ('Last 30', 79.2, False),
-        ('Last 90', 73.9, False), ('Last 180', None, False), ('Last 365', None, False)]
+# The axis has to hold last night and every trailing average, whatever they are.
+_vals = [float(SCORE)] + [t['avg'] for t in TRAIL.values() if t['avg'] is not None] + [MEAN]
+AX_LO, AX_HI = math.floor(min(_vals) - 2), math.ceil(max(_vals) + 2)
+TW = 142.0
+ROWS = ([('Last night', float(SCORE), True)]
+        + [(f'Last {w}', TRAIL[w]['avg'] if w in TRAIL else None, False)
+           for w in (7, 30, 90, 180, 365)])
 def mark(d):
     if d > 0.5:  return ('&#9650;', GOOD, GOOD_L)
     if d < -0.5: return ('&#9660;', BAD, BAD_L)
@@ -527,29 +599,66 @@ write('s5', page('5 of 10', 'The direction', 's5 — The direction',
 #         for HR, since lower is better) -- so this is a real mechanism, not a
 #         hypothetical, and it is pending only because this build has no key.
 #   none  not a good/bad measure at all. Bedtime and wake are facts, not scores.
-ASLEEP_MIN = 465
+# Every value below comes from the night file. Where telemetry has no reading the
+# row renders as pending rather than as a number, because a plausible-looking
+# fabricated vital is the worst thing this screen could contain.
+NG = NIGHT['night']
+ASLEEP_MIN = NG['asleepMinutes'] or 0
+
+def _hm(mins):
+    if mins is None: return None
+    return f'{mins // 60}h {mins % 60:02d}m' if mins >= 60 else f'{mins}m'
+def _frac(stage):
+    if not stage or not ASLEEP_MIN: return None
+    return stage['minutes'] / ASLEEP_MIN
+def _pct_verdict(stage, lo, hi):
+    f = _frac(stage)
+    if f is None: return ''
+    return 'in' if lo <= f * 100 <= hi else 'out'
+def _num(v, unit='', dp=0):
+    if v is None: return None
+    return f'{v:.{dp}f}{unit}' if dp else f'{v:g}{unit}'
+def _clock(iso):
+    # Oura timestamps carry their own offset; the wall clock is what was slept.
+    if not iso or 'T' not in iso: return None
+    return iso.split('T')[1][:5]
+
+_eff = NG['efficiency']
+_lat = NG['latency']
+_awk = NG['awake']
 ROWS6 = [
- ('Asleep',           '7h 45m',    None,          'ref',  '7&ndash;9 h',            'in'),
- ('In bed',           '8h 12m',    None,          'none', '',                       ''),
- ('Efficiency',       '94%',       0.945,         'ref',  '&ge;85%',                'in'),
- ('Deep',             '1h 29m',    89/ASLEEP_MIN, 'ref',  '13&ndash;23% of sleep',  'in'),
- ('REM',              '2h 07m',    127/ASLEEP_MIN,'ref',  '20&ndash;25% of sleep',  'out'),
- ('Light',            '4h 09m',    249/ASLEEP_MIN,'ref',  '45&ndash;55% of sleep',  'in'),
- ('Awake',            '27m',       None,          'ref',  '&lt;30 min',             'in'),
- ('Latency',          '2m 30s',    None,          'ref',  '10&ndash;20 min',        'out'),
- ('Bedtime',          '23:15',     None,          'none', '',                       ''),
- ('Wake',             '07:26',     None,          'none', '',                       ''),
- ('HRV',              '37 ms',     None,          'self', 'vs your 30-night',       ''),
- ('Lowest HR',        '55 bpm',    None,          'self', 'vs your 30-night',       ''),
- ('Average HR',       '60.1 bpm',  None,          'self', 'vs your 30-night',       ''),
- ('Respiration',      '14.4 /min', None,          'ref',  '12&ndash;20 /min',       'in'),
- ('Restless periods', '174',       None,          'self', 'vs your 30-night',       ''),
- ('Readiness',        '85',        None,          'self', 'vs your 30-night',       ''),
+ ('Asleep',    _hm(NG['asleepMinutes']), None, 'ref', '7&ndash;9 h',
+  '' if NG['asleepMinutes'] is None else ('in' if 420 <= NG['asleepMinutes'] <= 540 else 'out')),
+ ('In bed',    _hm(NG['inBedMinutes']),  None, 'none', '', ''),
+ ('Efficiency', _num(_eff, '%'), (_eff / 100 if _eff is not None else None), 'ref', '&ge;85%',
+  '' if _eff is None else ('in' if _eff >= 85 else 'out')),
+ ('Deep',  NG['deep'] and NG['deep']['label'],  _frac(NG['deep']),  'ref', '13&ndash;23% of sleep',
+  _pct_verdict(NG['deep'], 13, 23)),
+ ('REM',   NG['rem'] and NG['rem']['label'],    _frac(NG['rem']),   'ref', '20&ndash;25% of sleep',
+  _pct_verdict(NG['rem'], 20, 25)),
+ ('Light', NG['light'] and NG['light']['label'], _frac(NG['light']), 'ref', '45&ndash;55% of sleep',
+  _pct_verdict(NG['light'], 45, 55)),
+ ('Awake', _awk and _awk['label'], None, 'ref', '&lt;30 min',
+  '' if not _awk else ('in' if _awk['minutes'] < 30 else 'out')),
+ ('Latency', _hm(_lat), None, 'ref', '10&ndash;20 min',
+  '' if _lat is None else ('in' if 10 <= _lat <= 20 else 'out')),
+ ('Bedtime', _clock(NG['bedtimeStart']), None, 'none', '', ''),
+ ('Wake',    _clock(NG['bedtimeEnd']),   None, 'none', '', ''),
+ ('HRV',        _num(NG['hrv'], ' ms'),        None, 'self', 'vs your 30-night', ''),
+ ('Lowest HR',  _num(NG['restingHr'], ' bpm'), None, 'self', 'vs your 30-night', ''),
+ ('Respiration', _num(NG['breath'], ' /min', 1), None, 'ref', '12&ndash;20 /min',
+  '' if NG['breath'] is None else ('in' if 12 <= NG['breath'] <= 20 else 'out')),
 ]
 CLS = {'in': 'v-in', 'out': 'v-out', '': ''}
+_missing = sum(1 for r in ROWS6 if r[1] is None)
+_pending_note = (f'<b>{_missing} of {len(ROWS6)}</b> rows have no reading for this night '
+                 f'and show a dash rather than a guess.' if _missing else '')
 rows = ''
 for k, v, frac, basis, rng, verdict in ROWS6:
-    cls = CLS[verdict] if basis == 'ref' else ('v-self' if basis == 'self' else 'v-none')
+    if v is None:
+        v, frac, basis, verdict = '&mdash;', None, 'pending', ''
+    cls = (CLS.get(verdict, '') if basis == 'ref'
+           else 'v-self' if basis == 'self' else 'v-none')
     hint = f'<em>{rng}</em>' if rng else ''
     bar = (f'<div class="mbar"><span style="width:{frac*100:.2f}%"></span></div>'
            if frac is not None else '')
@@ -590,13 +699,15 @@ body = f"""  <p class="q">What actually happened?</p>
   <div class="hair" style="margin-top:12px"></div>
   <p class="note mono" style="margin-top:9px"><b>The one screen using an outside norm</b> —
   every other measures you against yourself. Ranges are published adult typicals, printed
-  inline so the colour is checkable. Amber = <b>notable, not bad</b>: REM above the band is
-  no fault, 2m 30s is fast not failing. The five grey rows need <b>your own</b> baseline,
-  which <code>coach.js</code> derives but this build has no key to read.</p>
+  inline so the colour is checkable. Amber means <b>notable, not bad</b>: REM above the band
+  is no fault and a short latency is fast, not failing. The grey rows need <b>your own</b>
+  baseline, which <code>coach.js</code> derives from your telemetry.
+  {_pending_note}</p>
 """
 write('s6', page('6 of 10', 'Last night', 's6 — Last night',
     'Each row coloured by the basis it can honestly be judged against, with that basis shown.',
-    extra, body, 'bars = share of 7h 45m asleep'))
+    extra, body, (f"bars = share of {NG['asleepLabel']} asleep" if NG['asleepLabel']
+                  else 'no reading for this night')))
 print('s5, s6 written')
 
 # ================================================================= national
@@ -612,7 +723,11 @@ COUNTRIES = [('New Zealand', 79.8), ('Australia', 78.7), ('Sweden', 78.5),
 
 # ---------------------------------------------------------------- n1
 d_night, d_mine = SCORE - GLOBAL_MEAN, MY_ALLTIME - GLOBAL_MEAN
-NB_LO, NB_HI, NBW = 74.0, 90.0, 166.0
+# The axis has to contain every bar it draws. Fixed at 74..90 it silently
+# clipped any night above 90 -- the bar ran past the end of its own track.
+_nbvals = [float(SCORE), MY_ALLTIME, GLOBAL_MEAN] + [v for _, v in COUNTRIES]
+NB_LO, NB_HI = float(math.floor(min(_nbvals) - 2)), float(math.ceil(max(_nbvals) + 2))
+NBW = 166.0
 def nx(v): return (v - NB_LO) / (NB_HI - NB_LO) * NBW
 bars = [('Oura member average', GLOBAL_MEAN, None,   '#8FA6B8'),
         ('Your all-time average', MY_ALLTIME, d_mine, NAT_RAIL),
@@ -651,11 +766,10 @@ body = f"""  <p class="q">How do I compare with everyone else?</p>
     <div class="nax"><span class="sp"></span><span class="e">
       <span>{NB_LO:.0f}</span><span>{GLOBAL_MEAN:g} avg</span><span>{NB_HI:.0f}</span></span></div>
     <div class="warn">
-      <p class="note mono" style="color:#3C6584"><b>No percentile here, and that is deliberate.</b>
-      Turning a score into a percentile needs a spread as well as an average. Oura publishes
-      the average and <b>not</b> the spread &mdash; no SD, no distribution, no quantiles &mdash;
-      so &ldquo;88 is the Nth percentile of all members&rdquo; cannot be computed. Any N would
-      be invented.</p>
+      <p class="note mono" style="color:#3C6584"><b>Averages only here, deliberately.</b>
+      A percentile needs a spread as well as an average, and Oura publishes the average and
+      <b>not</b> the spread. Screen 9 does give one for {SCORE}, but only by <b>inferring</b>
+      a spread from outside cohorts &mdash; hence its wide interval.</p>
     </div>
   </div>
   <div class="hair" style="margin-top:14px"></div>

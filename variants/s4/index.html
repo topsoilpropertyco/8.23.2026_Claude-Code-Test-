@@ -31,6 +31,8 @@ html,body{background:#78756F}
 .note b{color:#1A1814;font-weight:600}
 .pill{display:inline-block;padding:3px 9px 2px;font-size:9px;letter-spacing:.16em;
   text-transform:uppercase;font-weight:600;font-family:'IBM Plex Mono',monospace}
+.samp{margin-bottom:12px;padding:5px 8px 4px;background:#EFD3CC;color:#8A2C22;
+  font-size:8px;line-height:1.4;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
 .prov{flex:0 0 auto;margin-top:9px;padding:5px 9px 4px;font-family:'IBM Plex Mono',monospace;
   font-size:8.5px;letter-spacing:.17em;text-transform:uppercase;font-weight:600;
   display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -45,7 +47,7 @@ html,body{background:#78756F}
 .marks i.bad{background:#EFD3CC}
 .marks i.ok{background:#EFE3C4}
 .marks i.good{background:#D2E3CC}
-.marks i.you{background:#2F7A44;outline:2px solid #1A1814;position:relative;z-index:2}
+.marks i.you{background:#B23A2F;outline:2px solid #1A1814;position:relative;z-index:2}
 .key{display:flex;gap:14px;margin-top:14px;flex-wrap:wrap;font-size:9px;letter-spacing:.05em;color:#7C7568;
   font-family:'IBM Plex Mono',monospace}
 .key i{display:inline-block;width:8px;height:8px;vertical-align:-1px;margin-right:5px}
@@ -58,20 +60,20 @@ html,body{background:#78756F}
   <div class="hd"><span class="brand mono">Sleep OS</span><span class="num mono">4 of 10 &middot; Nights beaten</span></div>
   <div class="prov" style="background:#EFE6D2;color:#8A6D3B"><span>Compared with your own data</span><span>1,042 nights</span></div>
   <div class="bd">
-<div class="grp">  <p class="q">How many nights have I beaten?</p>
+<div class="grp"><div class="samp mono">SAMPLE DATA &mdash; layout only. Not a real night. Rebuilt from telemetry wherever SLEEPOS_DATA_KEY exists.</div>  <p class="q">How many nights have I beaten?</p>
   <p class="ans">One square for every night on record, worst to best. Two thin outlines:
   everything you beat, and everything that beat you. Fill shows thirds of your own history.</p></div><div class="grp">
   <div class="mwrap">
     <div class="marks" id="marks"></div>
     <svg class="rings" width="341" height="113" aria-hidden="true">
-      <polygon points="-0.5,-0.5 341.5,-0.5 341.5,83.5 275.5,83.5 275.5,89.5 -0.5,89.5 -0.5,5.5" fill="none" stroke="#4F4A40" stroke-width="1"/>
-      <polygon points="281.5,83.5 341.5,83.5 341.5,107.5 95.5,107.5 95.5,113.5 -0.5,113.5 -0.5,89.5 281.5,89.5" fill="none" stroke="#1F4B8F" stroke-width="1"/>
+      <polygon points="-0.5,-0.5 341.5,-0.5 341.5,29.5 23.5,29.5 23.5,35.5 -0.5,35.5 -0.5,5.5" fill="none" stroke="#4F4A40" stroke-width="1"/>
+      <polygon points="29.5,29.5 341.5,29.5 341.5,107.5 95.5,107.5 95.5,113.5 -0.5,113.5 -0.5,35.5 29.5,35.5" fill="none" stroke="#1F4B8F" stroke-width="1"/>
     </svg>
   </div>
   <div class="key">
-    <span><u style="border-color:#4F4A40"></u>844 worse</span>
-    <span><u style="border-color:#1F4B8F"></u>197 better</span>
-    <span><i style="background:#2F7A44"></i>Last night</span>
+    <span><u style="border-color:#4F4A40"></u>289 worse</span>
+    <span><u style="border-color:#1F4B8F"></u>752 better</span>
+    <span><i style="background:#B23A2F"></i>Last night</span>
   </div>
   <div class="key" style="margin-top:8px">
     <span><i style="background:#EFD3CC"></i>Worst third</span>
@@ -79,16 +81,16 @@ html,body{background:#78756F}
     <span><i style="background:#D2E3CC"></i>Best third</span>
   </div>
   <div class="split">
-    <div><div class="lab mono">Nights you beat</div><div class="v mono">844</div></div>
-    <div><div class="lab mono">Nights that beat you</div><div class="v mono">197</div></div>
+    <div><div class="lab mono">Nights you beat</div><div class="v mono">289</div></div>
+    <div><div class="lab mono">Nights that beat you</div><div class="v mono">752</div></div>
   </div>
   </div><div class="grp"><div class="hair" style="margin-top:18px"></div>
-  <p class="note mono" style="margin-top:12px">Fully measured — 844 + 1 + 197 =
+  <p class="note mono" style="margin-top:12px">Fully measured — 289 + 1 + 752 =
   <b>1,042</b>, every night drawn once at its true position. The thirds are exact here too:
   the grid is sorted by rank, so the cuts fall at nights <b>347</b> and <b>695</b>.
-  Last night sits in the <b>best third</b>.</p>
+  Last night sits in the <b>worst third</b>.</p>
   <script>
-  var N=1042,BELOW=844,T1=347,T2=695,f=document.createDocumentFragment();
+  var N=1042,BELOW=289,T1=347,T2=695,f=document.createDocumentFragment();
   for(var i=0;i<N;i++){
     var e=document.createElement('i');
     if(i===BELOW){e.className='you';}
@@ -98,5 +100,5 @@ html,body{background:#78756F}
   document.getElementById('marks').appendChild(f);
   </script>
 </div>  </div>
-  <div class="ft mono"><span>Sun 23 Aug 2026</span><span>one square = one night</span></div>
+  <div class="ft mono"><span>Sample night</span><span>one square = one night</span></div>
 </div>

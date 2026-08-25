@@ -98,6 +98,7 @@ jobs:
         env:
           SLEEPOS_DATA_KEY: ${{ secrets.SLEEPOS_DATA_KEY }}
         run: |
+          node bin/build-night-data.mjs
           node bin/build-grades.mjs --check
           python3 bin/build-screens.py
           python3 bin/build-deck.py
@@ -145,6 +146,24 @@ jobs:
         run: |
           npm install --no-save --silent playwright-core
           node bin/sleep-os.js night
+
+      # The deck used to ship as a link to a published artifact, which is a
+      # photograph: nothing in a scheduled run can republish it, so it froze on
+      # whatever night it was built from and drifted from every message after.
+      # An album is re-rendered from telemetry at send time, so there is no
+      # artefact left to go stale, and it stays inside a private chat -- which a
+      # Pages site could not, this repository being public.
+      - name: Send the swipeable deck
+        if: inputs.oura_action == '' && steps.telem.outputs.changed == 'true' && inputs.dry_run != true
+        continue-on-error: true
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.SLEEPOS_TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.SLEEPOS_TELEGRAM_CHAT_ID }}
+          SLEEPOS_DATA_KEY: ${{ secrets.SLEEPOS_DATA_KEY }}
+          CHROMIUM_PATH: /usr/bin/google-chrome
+        run: |
+          npm install --no-save --silent playwright-core
+          node bin/send-deck.mjs
 
       # Hold an open long poll for most of what is left of the interval. Runs
       # last so a slow or failing poll can never delay a scheduled send, and

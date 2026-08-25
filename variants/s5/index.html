@@ -31,6 +31,8 @@ html,body{background:#78756F}
 .note b{color:#1A1814;font-weight:600}
 .pill{display:inline-block;padding:3px 9px 2px;font-size:9px;letter-spacing:.16em;
   text-transform:uppercase;font-weight:600;font-family:'IBM Plex Mono',monospace}
+.samp{margin-bottom:12px;padding:5px 8px 4px;background:#EFD3CC;color:#8A2C22;
+  font-size:8px;line-height:1.4;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
 .prov{flex:0 0 auto;margin-top:9px;padding:5px 9px 4px;font-family:'IBM Plex Mono',monospace;
   font-size:8.5px;letter-spacing:.17em;text-transform:uppercase;font-weight:600;
   display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -69,18 +71,18 @@ html,body{background:#78756F}
   <div class="hd"><span class="brand mono">Sleep OS</span><span class="num mono">5 of 10 &middot; The direction</span></div>
   <div class="prov" style="background:#EFE6D2;color:#8A6D3B"><span>Compared with your own data</span><span>1,042 nights</span></div>
   <div class="bd">
-<div class="grp">  <p class="q">Am I heading the right direction?</p>
+<div class="grp"><div class="samp mono">SAMPLE DATA &mdash; layout only. Not a real night. Rebuilt from telemetry wherever SLEEPOS_DATA_KEY exists.</div>  <p class="q">Am I heading the right direction?</p>
   <p class="ans">Last night first, then every window behind it. All of them measured
   against one single line.</p></div><div class="grp">
   <div>
     <div class="verdict">Improving.</div>
     <div class="baseband"><span>Baseline &mdash; your all-time average</span><b>79.3</b></div>
     <div class="tbl">
-      <div class="baseline" style="left:137.03px"></div>
-      <div class="trow night"><span class="tk mono">Last night</span><span class="track"><span class="dot" style="left:127.80px;background:#2F7A44"></span></span><span class="tv mono">88</span><span class="td"><span class="qbox mono" style="color:#2F7A44;background:#D2E3CC;border-color:#2F7A4433">&#9650;<i>+8.7</i></span></span></div><div class="trow"><span class="tk mono">Last 7</span><span class="track"><span class="dot" style="left:66.74px;background:#96761C"></span></span><span class="tv mono">79.4</span><span class="td"><span class="qbox mono" style="color:#96761C;background:#EFE3C4;border-color:#96761C33">&#9644;<i>+0.1</i></span></span></div><div class="trow"><span class="tk mono">Last 30</span><span class="track"><span class="dot" style="left:65.32px;background:#96761C"></span></span><span class="tv mono">79.2</span><span class="td"><span class="qbox mono" style="color:#96761C;background:#EFE3C4;border-color:#96761C33">&#9644;<i>-0.1</i></span></span></div><div class="trow"><span class="tk mono">Last 90</span><span class="track"><span class="dot" style="left:27.69px;background:#B23A2F"></span></span><span class="tv mono">73.9</span><span class="td"><span class="qbox mono" style="color:#B23A2F;background:#EFD3CC;border-color:#B23A2F33">&#9660;<i>-5.4</i></span></span></div><div class="trow empty"><span class="tk mono">Last 180</span><span class="track"></span><span class="tv mono">&mdash;</span><span class="td mono">pending</span></div><div class="trow empty"><span class="tk mono">Last 365</span><span class="track"></span><span class="tv mono">&mdash;</span><span class="td mono">pending</span></div>
+      <div class="baseline" style="left:174.66px"></div>
+      <div class="trow night"><span class="tk mono">Last night</span><span class="track"><span class="dot" style="left:28.40px;background:#B23A2F"></span></span><span class="tv mono">74</span><span class="td"><span class="qbox mono" style="color:#B23A2F;background:#EFD3CC;border-color:#B23A2F33">&#9660;<i>-5.3</i></span></span></div><div class="trow empty"><span class="tk mono">Last 7</span><span class="track"></span><span class="tv mono">&mdash;</span><span class="td mono">pending</span></div><div class="trow empty"><span class="tk mono">Last 30</span><span class="track"></span><span class="tv mono">&mdash;</span><span class="td mono">pending</span></div><div class="trow empty"><span class="tk mono">Last 90</span><span class="track"></span><span class="tv mono">&mdash;</span><span class="td mono">pending</span></div><div class="trow empty"><span class="tk mono">Last 180</span><span class="track"></span><span class="tv mono">&mdash;</span><span class="td mono">pending</span></div><div class="trow empty"><span class="tk mono">Last 365</span><span class="track"></span><span class="tv mono">&mdash;</span><span class="td mono">pending</span></div>
     </div>
-    <div class="axline"><span class="sp"></span><span class="e"><span>70</span>
-      <span>79.3</span><span>90</span></span></div>
+    <div class="axline"><span class="sp"></span><span class="e"><span>72</span>
+      <span>79.3</span><span>82</span></span></div>
   </div>
   </div><div class="grp"><div class="hair" style="margin-top:16px"></div>
   <p class="note mono" style="margin-top:11px">Every row is that window's average minus your
@@ -92,5 +94,5 @@ html,body{background:#78756F}
   <code>coach.js</code> now asks for them, but this build cannot open the encrypted log to
   fill them in.</p>
 </div>  </div>
-  <div class="ft mono"><span>Sun 23 Aug 2026</span><span>baseline 79.3</span></div>
+  <div class="ft mono"><span>Sample night</span><span>baseline 79.3</span></div>
 </div>

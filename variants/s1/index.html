@@ -31,6 +31,8 @@ html,body{background:#78756F}
 .note b{color:#1A1814;font-weight:600}
 .pill{display:inline-block;padding:3px 9px 2px;font-size:9px;letter-spacing:.16em;
   text-transform:uppercase;font-weight:600;font-family:'IBM Plex Mono',monospace}
+.samp{margin-bottom:12px;padding:5px 8px 4px;background:#EFD3CC;color:#8A2C22;
+  font-size:8px;line-height:1.4;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
 .prov{flex:0 0 auto;margin-top:9px;padding:5px 9px 4px;font-family:'IBM Plex Mono',monospace;
   font-size:8.5px;letter-spacing:.17em;text-transform:uppercase;font-weight:600;
   display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -40,8 +42,13 @@ html,body{background:#78756F}
 
 .line{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#7C7568;font-weight:500}
 .big{font-size:146px;line-height:.86;letter-spacing:-.045em;font-weight:500;margin-top:2px}
+/* The percentile can be 4 glyphs wide ("27.7") where the score is always 2, and
+   at 146px that pushed its ordinal off the right edge -- it rendered as "27.7t".
+   Sized from the string so the suffix always has room. */
+.big.pct{font-size:146px}
 .ord{font-size:44px;line-height:1;vertical-align:.9em;font-weight:400;margin-left:11px;
   letter-spacing:.06em;font-variant-ligatures:none}
+.big.pct .ord{font-size:44px;margin-left:8px}
 .pctlab{font-size:13px;letter-spacing:.26em;text-transform:uppercase;color:#1F4B8F;
   font-weight:600;margin-top:2px}
 .rowline{display:flex;align-items:baseline;gap:12px}
@@ -50,24 +57,24 @@ html,body{background:#78756F}
   <div class="hd"><span class="brand mono">Sleep OS</span><span class="num mono">1 of 10 &middot; Where am I</span></div>
   <div class="prov" style="background:#EFE6D2;color:#8A6D3B"><span>Compared with your own data</span><span>1,042 nights</span></div>
   <div class="bd">
-<div class="grp">  <p class="q">Where am I?</p>
+<div class="grp"><div class="samp mono">SAMPLE DATA &mdash; layout only. Not a real night. Rebuilt from telemetry wherever SLEEPOS_DATA_KEY exists.</div>  <p class="q">Where am I?</p>
   <p class="ans">The score first, then what it is worth. Same size, because
   neither one means much without the other.</p></div><div class="grp">
   <div>
     <div class="line mono">Last night your sleep score was</div>
     <div class="rowline">
-      <div class="big mono">88</div>
-      <span class="pill" style="background:#D2E3CC;color:#2F7A44">a good night</span>
+      <div class="big mono">74</div>
+      <span class="pill" style="background:#EFD3CC;color:#B23A2F">a bad night</span>
     </div>
     <div class="hair" style="margin:20px 0 18px"></div>
     <div class="line mono">Which puts it at the</div>
-    <div class="big mono">81<span class="ord">st</span></div>
+    <div class="big pct mono">28<span class="ord">th</span></div>
     <div class="pctlab mono">Percentile</div>
   </div>
   </div><div class="grp"><div class="hair" style="margin-top:20px"></div>
-  <p class="note mono" style="margin-top:12px">Measured, not modelled: <b>844</b> of your
-  1,042 recorded nights scored lower and <b>197</b> scored higher — the 81st percentile
-  exactly. Rank <b>198</b> of 1,042.</p>
+  <p class="note mono" style="margin-top:12px">Measured, not modelled: <b>289</b> of your
+  1,042 recorded nights scored lower and <b>752</b> scored higher — the
+  <b>27.7th</b> percentile exactly. Rank <b>753</b> of 1,042.</p>
 </div>  </div>
-  <div class="ft mono"><span>Sun 23 Aug 2026</span><span>1,042 nights</span></div>
+  <div class="ft mono"><span>Sample night</span><span>1,042 nights</span></div>
 </div>

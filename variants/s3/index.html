@@ -31,6 +31,8 @@ html,body{background:#78756F}
 .note b{color:#1A1814;font-weight:600}
 .pill{display:inline-block;padding:3px 9px 2px;font-size:9px;letter-spacing:.16em;
   text-transform:uppercase;font-weight:600;font-family:'IBM Plex Mono',monospace}
+.samp{margin-bottom:12px;padding:5px 8px 4px;background:#EFD3CC;color:#8A2C22;
+  font-size:8px;line-height:1.4;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
 .prov{flex:0 0 auto;margin-top:9px;padding:5px 9px 4px;font-family:'IBM Plex Mono',monospace;
   font-size:8.5px;letter-spacing:.17em;text-transform:uppercase;font-weight:600;
   display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -60,15 +62,15 @@ html,body{background:#78756F}
   <div class="hd"><span class="brand mono">Sleep OS</span><span class="num mono">3 of 10 &middot; The scale</span></div>
   <div class="prov" style="background:#EFE6D2;color:#8A6D3B"><span>Compared with your own data</span><span>1,042 nights</span></div>
   <div class="bd">
-<div class="grp">  <p class="q">How far from ordinary?</p>
+<div class="grp"><div class="samp mono">SAMPLE DATA &mdash; layout only. Not a real night. Rebuilt from telemetry wherever SLEEPOS_DATA_KEY exists.</div>  <p class="q">How far from ordinary?</p>
   <p class="ans">The same night measured in standard deviations, banded the same way.
   Each step is spelled out in both a sleep score and a percentile, so the scale reads
   without any statistics.</p></div><div class="grp">
   <div class="zwrap">
-    <div class="you" style="left:257.31px"><div class="t mono">You &middot; +0.92 SD</div></div>
+    <div class="you" style="left:177.98px"><div class="t mono">You &middot; -0.56 SD</div></div>
     <div style="margin-left:74px;position:relative">
-      <div class="strip"><div class="chip" style="background:#EFD3CC;"></div><div class="chip" style="background:#EFD3CC;"></div><div class="chip" style="background:#EFE3C4;"></div><div class="chip me" style="background:#D2E3CC;box-shadow:inset 0 0 0 1.5px #2F7A44;"></div><div class="chip" style="background:#D2E3CC;"></div></div>
-      <div class="youline" style="left:183.31px"></div>
+      <div class="strip"><div class="chip" style="background:#EFD3CC;"></div><div class="chip me" style="background:#EFD3CC;box-shadow:inset 0 0 0 1.5px #B23A2F;"></div><div class="chip" style="background:#EFE3C4;"></div><div class="chip" style="background:#D2E3CC;"></div><div class="chip" style="background:#D2E3CC;"></div></div>
+      <div class="youline" style="left:103.98px"></div>
     </div>
     <div class="zrow"><span class="zlab mono">Deviation</span><div class="zcells"><span class="zc ">-2</span><span class="zc ">-1</span><span class="zc ">&nbsp;0</span><span class="zc ">+1</span><span class="zc ">+2</span></div></div>
     <div class="zrow"><span class="zlab mono">Sleep score</span><div class="zcells"><span class="zc ">60</span><span class="zc ">70</span><span class="zc ">79</span><span class="zc ">89</span><span class="zc ">98</span></div></div>
@@ -76,15 +78,16 @@ html,body{background:#78756F}
   </div>
   <div class="inband">
     <div><div class="k mono">You are in this band</div>
-      <div class="note mono" style="margin-top:4px">+1 SD &middot; score 89</div></div>
-    <div class="v mono">81st</div>
+      <div class="note mono" style="margin-top:4px">-1 SD &middot; band centre
+      70 &middot; you scored <b>74</b></div></div>
+    <div class="v mono">27.7th</div>
   </div>
   </div><div class="grp"><div class="hair" style="margin-top:18px"></div>
   <p class="note mono" style="margin-top:12px"><b>Measured against you, not a population.</b>
   The SD of <b>9.54</b> is the spread of your own 1,042 nights — Sleep OS reads only your
   own Oura record and holds no national or population data. Positions are measured; the
-  percentile row is a normal fit, so those tick figures are approximate. The <b>81st</b>
-  in the band is your real rank.</p>
+  percentile row is a normal fit, so those tick figures are approximate. The
+  <b>27.7th</b> in the band is your real rank.</p>
 </div>  </div>
-  <div class="ft mono"><span>Sun 23 Aug 2026</span><span>z +0.92</span></div>
+  <div class="ft mono"><span>Sample night</span><span>z -0.56</span></div>
 </div>

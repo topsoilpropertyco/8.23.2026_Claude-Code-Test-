@@ -31,6 +31,8 @@ html,body{background:#78756F}
 .note b{color:#1A1814;font-weight:600}
 .pill{display:inline-block;padding:3px 9px 2px;font-size:9px;letter-spacing:.16em;
   text-transform:uppercase;font-weight:600;font-family:'IBM Plex Mono',monospace}
+.samp{margin-bottom:12px;padding:5px 8px 4px;background:#EFD3CC;color:#8A2C22;
+  font-size:8px;line-height:1.4;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
 .prov{flex:0 0 auto;margin-top:9px;padding:5px 9px 4px;font-family:'IBM Plex Mono',monospace;
   font-size:8.5px;letter-spacing:.17em;text-transform:uppercase;font-weight:600;
   display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -71,56 +73,56 @@ html,body{background:#78756F}
   <div class="hd"><span class="brand mono">Sleep OS</span><span class="num mono">10 of 10 &middot; Grades vs my own</span></div>
   <div class="prov" style="background:#EFE6D2;color:#8A6D3B"><span>Compared with your own data</span><span>1,042 nights</span></div>
   <div class="bd">
-<div class="grp">  <p class="q">And against my own nights?</p>
+<div class="grp"><div class="samp mono">SAMPLE DATA &mdash; layout only. Not a real night. Rebuilt from telemetry wherever SLEEPOS_DATA_KEY exists.</div>  <p class="q">And against my own nights?</p>
   <p class="ans">The identical three curves, moved onto your own 1,042 nights.
   Fitted for now — see below.</p></div><div class="grp">
   <div class="gscore">
-    <div class="gcell"><span class="k mono">Sleep score</span><span class="v mono">88</span></div>
+    <div class="gcell"><span class="k mono">Sleep score</span><span class="v mono">74</span></div>
     <div class="gcell r"><span class="k mono">Your percentile</span>
-      <span class="v mono">80.5</span></div>
+      <span class="v mono">27.7</span></div>
   </div>
   <div class="hair" style="margin:16px 0 2px"></div>
   <div class="crow">
     <div class="ctop">
       <span class="clab mono">Standard</span>
-      <span><span class="cgrade mono" style="color:#5E7226">B-</span></span>
+      <span><span class="cgrade mono" style="color:#B23A2F">F</span></span>
     </div>
     <div class="bar"><div class="seg" style="width:205.20px;background:#EFD3CC"><span style="color:#B23A2F">F</span></div><div class="seg" style="width:34.20px;background:#F0DCC6"><span style="color:#A85F22">D</span></div><div class="seg" style="width:34.20px;background:#F0E5C2"><span style="color:#96761C">C</span></div><div class="seg" style="width:34.20px;background:#E1E8C7"><span style="color:#5E7226">B</span></div><div class="seg" style="width:34.20px;background:#CFE0C8"><span style="color:#2F7A44">A</span></div>
-      <div class="mk" style="left:275.31px"></div>
+      <div class="mk" style="left:94.73px"></div>
     </div>
   </div>
   <div class="crow">
     <div class="ctop">
       <span class="clab mono">Bell</span>
-      <span><span class="cgrade mono" style="color:#5E7226">B</span></span>
+      <span><span class="cgrade mono" style="color:#A85F22">D+</span></span>
     </div>
     <div class="bar"><div class="seg" style="width:34.20px;background:#EFD3CC"><span style="color:#B23A2F">F</span></div><div class="seg" style="width:68.40px;background:#F0DCC6"><span style="color:#A85F22">D</span></div><div class="seg" style="width:136.80px;background:#F0E5C2"><span style="color:#96761C">C</span></div><div class="seg" style="width:68.40px;background:#E1E8C7"><span style="color:#5E7226">B</span></div><div class="seg" style="width:34.20px;background:#CFE0C8"><span style="color:#2F7A44">A</span></div>
-      <div class="mk" style="left:275.31px"></div>
+      <div class="mk" style="left:94.73px"></div>
     </div>
   </div>
   <div class="crow">
     <div class="ctop">
       <span class="clab mono">Curved</span>
-      <span><span class="cgrade mono" style="color:#2F7A44">A-</span></span>
+      <span><span class="cgrade mono" style="color:#96761C">C</span></span>
     </div>
     <div class="bar"><div class="seg" style="width:17.10px;background:#EFD3CC"></div><div class="seg" style="width:34.20px;background:#F0DCC6"><span style="color:#A85F22">D</span></div><div class="seg" style="width:85.50px;background:#F0E5C2"><span style="color:#96761C">C</span></div><div class="seg" style="width:119.70px;background:#E1E8C7"><span style="color:#5E7226">B</span></div><div class="seg" style="width:85.50px;background:#CFE0C8"><span style="color:#2F7A44">A</span></div>
-      <div class="mk" style="left:275.31px"></div>
+      <div class="mk" style="left:94.73px"></div>
     </div>
   </div>
   <div class="legend"><span>0th</span><span>50th percentile</span><span>100th</span></div>
   <div class="feat">
-    <span class="fg" style="color:#2F7A44">A-</span>
+    <span class="fg" style="color:#96761C">C</span>
     <span class="fx">on the <b>curved</b> scale. Harsher than the member grade —
-    A against members, A- against yourself — because you outsleep the member average, so your own history is the
+    C+ against members, C against yourself — because you outsleep the member average, so your own history is the
     tougher field.</span>
   </div>
   <div class="warn">PROVISIONAL — these percentiles are a fitted model, not counted nights. This session cannot read the encrypted history. Rebuilt from the real 1,042 nights wherever the key is present.</div>
   </div><div class="grp"><div class="hair" style="margin-top:12px"></div>
-  <p class="note mono" style="margin-top:11px">Same curves, different population. An 88 sits at
-  <b>80.5</b> among your own nights and <b>89.1</b> among member nights — a
-  <b>+8.6</b> point gap, and the gap is the finding. Worth keeping in view: a letter reads
+  <p class="note mono" style="margin-top:11px">Same curves, different population. An 74 sits at
+  <b>27.7</b> among your own nights and <b>35.9</b> among member nights — a
+  <b>+8.2</b> point gap, and the gap is the finding. Worth keeping in view: a letter reads
   as a verdict in a way a percentile does not. An F describes where a night sat in a distribution,
   not a judgement about you.</p>
 </div>  </div>
-  <div class="ft mono"><span>Sun 23 Aug 2026</span><span>Percentile 80.5</span></div>
+  <div class="ft mono"><span>Sample night</span><span>Percentile 27.7</span></div>
 </div>

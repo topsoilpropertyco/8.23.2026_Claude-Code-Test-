@@ -158,3 +158,67 @@ export async function sendPhoto(token, chatId, filePath, caption = '') {
   }
   throw lastError;
 }
+
+/** Telegram's hard cap on one album. Our deck is exactly this many screens. */
+export const MEDIA_GROUP_MAX = 10;
+
+/**
+ * Upload several images as ONE swipeable album.
+ *
+ * This is the delivery mechanism for the deck, and the reason is not cosmetic.
+ * A link has to point somewhere that can be rebuilt every morning; GitHub
+ * Actions cannot republish a claude.ai artifact, and this repository is public,
+ * so a Pages site would put sleep data on the open web. An album is rebuilt
+ * from telemetry on every run, arrives inside a private chat, and needs no
+ * hosting at all -- so it cannot go stale the way a pinned URL does.
+ *
+ * Only the FIRST item may carry a caption; Telegram shows it as the album's
+ * caption. Anything past the cap is dropped by the API, so refuse instead.
+ */
+export async function sendMediaGroup(token, chatId, filePaths, caption = '') {
+  const { readFile } = await import('node:fs/promises');
+  const { basename } = await import('node:path');
+  if (!filePaths.length) throw new TelegramError('sendMediaGroup: no files');
+  if (filePaths.length > MEDIA_GROUP_MAX) {
+    throw new TelegramError(
+      `sendMediaGroup: ${filePaths.length} files exceeds Telegram's limit of ${MEDIA_GROUP_MAX}; `
+      + 'the API would silently drop the remainder',
+    );
+  }
+
+  const files = await Promise.all(filePaths.map(async (p) => ({ path: p, bytes: await readFile(p) })));
+
+  let lastError;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    const form = new FormData();
+    form.append('chat_id', String(chatId));
+    const media = files.map((f, i) => ({
+      type: 'photo',
+      media: `attach://f${i}`,
+      ...(i === 0 && caption ? { caption: caption.slice(0, 1024) } : {}),
+    }));
+    form.append('media', JSON.stringify(media));
+    files.forEach((f, i) => {
+      form.append(`f${i}`, new Blob([f.bytes], { type: 'image/png' }), basename(f.path));
+    });
+
+    let res;
+    try {
+      res = await fetch(`${API}/bot${token}/sendMediaGroup`, { method: 'POST', body: form });
+    } catch (err) {
+      lastError = new TelegramError(`sendMediaGroup network error: ${err.message}`);
+      if (attempt < MAX_ATTEMPTS) { await sleep(2 ** attempt * 500); continue; }
+      throw lastError;
+    }
+
+    let body;
+    try { body = await res.json(); } catch { body = null; }
+    if (body?.ok) return body.result;
+
+    const description = body?.description ?? `HTTP ${res.status}`;
+    lastError = new TelegramError(`sendMediaGroup failed: ${description}`);
+    if (!(res.status === 429 || res.status >= 500) || attempt === MAX_ATTEMPTS) throw lastError;
+    await sleep((body?.parameters?.retry_after ?? 2 ** attempt) * 1000);
+  }
+  throw lastError;
+}
