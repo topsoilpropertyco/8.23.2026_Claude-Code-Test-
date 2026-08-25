@@ -1069,3 +1069,34 @@ test('long messages are split on natural boundaries, not mid-sentence', async ()
   assert.ok(hard.every((p) => p.length <= TELEGRAM_TEXT_LIMIT), 'hard split respects the limit');
   assert.equal(hard.join('').length, unbroken.length, 'hard split loses nothing');
 });
+
+test('one corrupt legacy record must not block future sleep entries', async () => {
+  const { mkdtempSync: mk, writeFileSync: wf, readFileSync: rf } = await import('node:fs');
+  const dir = mk(join(tmpdir(), 'sleep-os-partial-'));
+  const savedDir = process.env.SLEEPOS_STATE_DIR;
+  const savedKey = process.env.SLEEPOS_DATA_KEY;
+  process.env.SLEEPOS_STATE_DIR = dir;
+  process.env.SLEEPOS_DATA_KEY = 'dGVzdGtleXRlc3RrZXl0ZXN0a2V5dGVzdGtleTEyMzQ=';
+
+  const { encryptLine } = await import('../src/crypto.js');
+  // Two good records plus one that will never authenticate.
+  const good = [1, 2].map((i) => encryptLine(JSON.stringify({ date: `2026-08-0${i}`, score: 80 + i })));
+  const corrupt = Buffer.from('this is not a valid record at all, but it is long enough').toString('base64');
+  wf(join(dir, 'sleeplog.ndjson'), [...good, corrupt].join('\n') + '\n');
+
+  const fresh = await import(`../src/journal.js?partial=${Date.now()}`);
+  const health = fresh.logHealth();
+
+  assert.equal(health.ok, false, 'partial damage is still reported as not-ok');
+  assert.equal(health.unreadable, 1, 'exactly the one corrupt record is counted');
+  assert.equal(health.totallyBlind, false,
+    'partial damage is NOT totally blind - good records decoded');
+
+  // This is the property that matters: writing must still be allowed.
+  assert.doesNotThrow(() => fresh.addSleepEntry({ date: '2026-08-03', score: 88 }),
+    'a single corrupt legacy line must never block logging');
+  assert.equal(fresh.readSleepLog().length, 3, 'the new entry joined the two readable ones');
+
+  process.env.SLEEPOS_STATE_DIR = savedDir;
+  process.env.SLEEPOS_DATA_KEY = savedKey;
+});

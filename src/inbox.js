@@ -219,12 +219,17 @@ async function handleSleepEntry({ token, chatId, text, state, dateString, log, s
     return { type: 'parse-error' };
   }
 
-  // Refuse to write into a log we cannot read. If the key is wrong, appending
-  // would succeed under the new key and quietly split the history in two, and
-  // the coach would compare tonight against an empty past as if that were true.
-  // Better to lose one entry loudly than the whole record silently.
+  // Refuse to write only when the log is TOTALLY blind: records exist and not
+  // one of them decoded, which means the key is missing or wrong. Appending then
+  // would succeed under the new key and quietly split the history in two.
+  //
+  // Deliberately NOT triggered by a partial failure. decryptLine has always
+  // tolerated an individual corrupt record ("skipping it is better than failing
+  // the whole run"), so blocking on `!health.ok` would let one bad legacy line
+  // refuse every future entry -- turning a benign, already-handled condition
+  // into a total logging outage. Partial damage warns; it does not block.
   const health = logHealth();
-  if (!health.ok) {
+  if (health.totallyBlind) {
     await send(token, chatId, blindLogMessage(health));
     log?.({ type: 'sleep-entry-refused', unreadable: health.unreadable });
     return { type: 'log-unreadable', unreadable: health.unreadable };
