@@ -105,11 +105,27 @@ const stage = (sec) => {
 // that night's context rather than today's.
 const upto = all.slice(0, all.indexOf(night) + 1).map((r) => r.sleep_score);
 
+// How far behind the ring is. Oura only has a night once the phone app has
+// synced, so the newest record is routinely a day old and can be older. The
+// screens must never present that as "last night" -- which is half of what Seth
+// saw: his coach message read 74 from the intake he typed, while every
+// Oura-derived number was still the newest night the ring had delivered.
+const today = new Date().toISOString().slice(0, 10);
+const daysBehind = Math.round(
+  (Date.parse(`${today}T00:00:00Z`) - Date.parse(`${night.date}T00:00:00Z`)) / 86400000,
+);
+
 const out = {
   _comment: 'One night, extracted from real telemetry by bin/build-night-data.mjs. '
     + 'Never hand-edit: build-screens.py renders whatever is here as fact.',
   generated: new Date().toISOString(),
   date: night.date,
+  requested: wanted || 'latest',
+  daysBehind,
+  // 0 or 1 is normal: Oura labels a night by its wake date and syncs in the
+  // morning. 2 or more means the ring has not synced and the deck is showing
+  // an older night than the one being asked about.
+  stale: !wanted && daysBehind >= 2,
   score,
   population: {
     n: scores.length,
@@ -147,3 +163,7 @@ const out = {
 writeFileSync(join(ROOT, 'data/last-night.json'), JSON.stringify(out, null, 2));
 console.log(`build-night-data: ${out.date} score ${score} · rank ${out.standing.rank}/${out.population.n} `
   + `· ${out.standing.percentile}th percentile · mean ${out.population.mean} sd ${out.population.sd}`);
+if (out.stale) {
+  console.warn(`build-night-data: WARNING the newest Oura night is ${daysBehind} days old. `
+    + 'The ring has not synced. Screens will name the date they actually show.');
+}

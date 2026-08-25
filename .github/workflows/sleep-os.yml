@@ -115,7 +115,9 @@ jobs:
           python3 bin/build-deck.py
 
       - name: Upload the grade table
-        if: inputs.oura_action == '' && steps.telem.outputs.changed == 'true'
+        if: >-
+          inputs.oura_action == ''
+          && (steps.telem.outputs.changed == 'true' || inputs.send_deck == true)
         uses: actions/upload-artifact@v4
         with:
           name: grade-table

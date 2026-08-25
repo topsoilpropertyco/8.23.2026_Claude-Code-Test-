@@ -51,8 +51,8 @@ RANK, PCT = NIGHT['standing']['rank'], NIGHT['standing']['percentile']
 Z = NIGHT['standing']['z']
 NIGHT_DATE = NIGHT['date']
 TRAIL = {t['window']: t for t in NIGHT['trailing']}
-SAMPLE_BANNER = ('<div class="samp mono">SAMPLE DATA &mdash; layout only. Not a real night. '
-                 'Rebuilt from telemetry wherever SLEEPOS_DATA_KEY exists.</div>') if SAMPLE else ''
+STALE = NIGHT.get('stale', False)
+DAYS_BEHIND = NIGHT.get('daysBehind', 0)
 
 def ordinal(v):
     """Suffix for a rank or percentile. Decimals always take 'th'."""
@@ -132,8 +132,7 @@ html,body{background:#78756F}
 .note b{color:INK;font-weight:600}
 .pill{display:inline-block;padding:3px 9px 2px;font-size:9px;letter-spacing:.16em;
   text-transform:uppercase;font-weight:600;font-family:'IBM Plex Mono',monospace}
-.samp{margin-bottom:12px;padding:5px 8px 4px;background:#EFD3CC;color:#8A2C22;
-  font-size:8px;line-height:1.4;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.s.samp .prov{background:#EFD3CC!important;color:#8A2C22!important}
 .prov{flex:0 0 auto;margin-top:9px;padding:5px 9px 4px;font-family:'IBM Plex Mono',monospace;
   font-size:8.5px;letter-spacing:.17em;text-transform:uppercase;font-weight:600;
   display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -173,7 +172,6 @@ def group(body):
             + '</div><div class="grp">' + body[k:] + '</div>')
 
 def page(idx, kicker, title, note, extra, body, right, kind='own'):
-    body = SAMPLE_BANNER + body
     """kind='own' -> warm paper, measured against Seth's own 1,042 nights.
        kind='nat' -> cool paper, measured against published Oura member data."""
     prov = dict(
@@ -182,6 +180,14 @@ def page(idx, kicker, title, note, extra, body, right, kind='own'):
         nat=dict(cls='nat', rail=NAT_RAIL, railbg=NAT_RAIL_BG,
                  provl='Compared with Oura members', provr='Published averages'),
     )[kind]
+    if SAMPLE:
+        prov = dict(prov, cls=prov['cls'] + ' samp',
+                    provl='SAMPLE DATA &mdash; not a real night',
+                    provr='layout only')
+    elif STALE:
+        prov = dict(prov, cls=prov['cls'] + ' samp',
+                    provl=f'Showing {DATE_LABEL} &mdash; newest night Oura has',
+                    provr=f'{DAYS_BEHIND}d behind')
     return (HEAD.format(idx=idx, kicker=kicker, title=title, note=note, css=CSS,
                         extra=extra, **prov)
             + group(body) + FOOT.format(right=right, daten=DATE_LABEL))

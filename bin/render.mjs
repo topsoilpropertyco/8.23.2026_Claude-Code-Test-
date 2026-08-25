@@ -24,13 +24,32 @@
 //    can hang it. domcontentloaded plus a settle is enough, and the fontLoaded
 //    map confirms the faces arrived.
 //
-// The chromium that ships in this environment lives at chromium-1194, and it
-// needs the agent proxy passed explicitly or every external request resets.
+// The browser is wherever the host put it. This used to be a single hardcoded
+// path to the dev container's chromium, which meant the renderer worked here and
+// died on the CI runner -- the workflow was already setting CHROMIUM_PATH and
+// nothing read it. Env first, then the known locations, and if none exist say so
+// with the list that was tried rather than letting playwright report a path the
+// caller never chose.
 import { chromium } from 'playwright-core';
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-const EXEC = '/opt/pw-browsers/chromium-1194/chrome-linux/chrome';
+const CANDIDATES = [
+  process.env.CHROMIUM_PATH,
+  '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
+  '/opt/pw-browsers/chromium/chrome-linux/chrome',
+  '/usr/bin/google-chrome',
+  '/usr/bin/chromium-browser',
+  '/usr/bin/chromium',
+].filter(Boolean);
+
+const EXEC = CANDIDATES.find((p) => existsSync(p));
+if (!EXEC) {
+  console.error('render: no chromium found. Tried:');
+  for (const c of CANDIDATES) console.error(`  ${c}`);
+  console.error('Set CHROMIUM_PATH to the browser executable.');
+  process.exit(1);
+}
 const [outDir, ...specs] = process.argv.slice(2);
 if (!outDir || !specs.length) { console.error('usage: render.mjs <out-dir> <name=target>...'); process.exit(2); }
 mkdirSync(outDir, { recursive: true });

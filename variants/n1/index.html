@@ -31,8 +31,7 @@ html,body{background:#78756F}
 .note b{color:#1A1814;font-weight:600}
 .pill{display:inline-block;padding:3px 9px 2px;font-size:9px;letter-spacing:.16em;
   text-transform:uppercase;font-weight:600;font-family:'IBM Plex Mono',monospace}
-.samp{margin-bottom:12px;padding:5px 8px 4px;background:#EFD3CC;color:#8A2C22;
-  font-size:8px;line-height:1.4;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.s.samp .prov{background:#EFD3CC!important;color:#8A2C22!important}
 .prov{flex:0 0 auto;margin-top:9px;padding:5px 9px 4px;font-family:'IBM Plex Mono',monospace;
   font-size:8.5px;letter-spacing:.17em;text-transform:uppercase;font-weight:600;
   display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -55,11 +54,11 @@ html,body{background:#78756F}
 .warn{margin-top:14px;border:1px solid #C2CDD8;background:#DCE4EC;padding:10px 12px}
 .warn b{color:#22506F}
 </style>
-<div class="s nat">
+<div class="s nat samp">
   <div class="hd"><span class="brand mono">Sleep OS</span><span class="num mono">7 of 10 &middot; Vs members</span></div>
-  <div class="prov" style="background:#D6E2EE;color:#2C5F86"><span>Compared with Oura members</span><span>Published averages</span></div>
+  <div class="prov" style="background:#D6E2EE;color:#2C5F86"><span>SAMPLE DATA &mdash; not a real night</span><span>layout only</span></div>
   <div class="bd">
-<div class="grp"><div class="samp mono">SAMPLE DATA &mdash; layout only. Not a real night. Rebuilt from telemetry wherever SLEEPOS_DATA_KEY exists.</div>  <p class="q">How do I compare with everyone else?</p>
+<div class="grp">  <p class="q">How do I compare with everyone else?</p>
   <p class="ans">Oura publishes one population figure for the Sleep Score: the average
   across all members. So this compares on the average &mdash; the only axis the
   published data actually supports.</p></div><div class="grp">
