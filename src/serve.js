@@ -1,0 +1,158 @@
+// The long-running supervisor.
+//
+// WHY THIS EXISTS. The engine was 288 short runs a day on a `*/5` cron, each
+// sending what was due and then holding a 200-second long poll. That design is
+// correct only if the scheduler honours the interval, and measured over twenty
+// consecutive scheduled runs it does not: median gap 103 minutes, worst 206,
+// against a requested 5. GitHub deprioritises high-frequency crons on free
+// public repositories, and the consequences landed on the cues that matter most
+// -- a 9pm work-shutdown nudge delivered at 11:14pm, the 10pm bedtime cue in the
+// same batch. A bedtime reminder that late is a notification about the past.
+//
+// THE FIX. An Actions job may run for six hours, and public repositories have
+// unlimited minutes. So instead of many short runs hoping to be scheduled on
+// time, a few long ones: this loop checks what is due, answers replies, and
+// repeats every ~25 seconds for hours. Scheduler unreliability stops being a
+// precision problem and becomes a startup-latency problem -- once a run is
+// going, it covers its whole window to the second.
+//
+// WHAT THIS HAS TO GET RIGHT. State lives in git, and a six-hour run that only
+// persists at the end would lose a whole evening of delivery records if the job
+// were killed -- and then re-send all of it on the next run. So state is pushed
+// as soon as anything is actually sent, not on a timer and not at the end.
+
+import { dispatch } from './dispatch.js';
+import { listen } from './listen.js';
+import { loadConfig } from './facts.js';
+import { loadState } from './state.js';
+import { scoreSeries } from './telemetry.js';
+
+// Long enough that the loop is cheap, short enough that a slot fires within
+// half a minute of its target. Telegram's own long poll does the waiting, so
+// this costs one held connection rather than any spinning.
+const SLICE_SECONDS = 25;
+
+/** Newest scored night on record, or null. Used to notice a fresh ingest. */
+function newestNight() {
+  try {
+    const s = scoreSeries();
+    return s.length ? s[s.length - 1].date : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Run the engine continuously until the deadline.
+ *
+ * @param {number}   seconds     how long to stay up
+ * @param {function} persist     called after anything is sent; commits and pushes state
+ * @param {function} onNewNight  called with the date when the ingest lands a new night
+ */
+export async function serve({
+  seconds = 20700,
+  log = console.log,
+  now = () => Date.now(),
+  persist = null,
+  onNewNight = null,
+  sliceSeconds = SLICE_SECONDS,
+  dispatchFn = dispatch,
+  listenFn = listen,
+} = {}) {
+  const deadline = now() + seconds * 1000;
+  const started = now();
+  // A zero or negative window exits before touching the network, which is what
+  // makes `serve 0` a safe way to prove the command's wiring end to end.
+  if (seconds <= 0) {
+    log('serve: window is zero, nothing to do');
+    return { loops: 0, sent: 0, handled: 0, minutes: 0 };
+  }
+  let lastNight = newestNight();
+  let loops = 0;
+  let totalSent = 0;
+  let totalHandled = 0;
+  let nightsSeen = 0;
+
+  log(`serve: up for ${Math.round(seconds / 60)} min, checking every ${sliceSeconds}s`);
+  if (lastNight) log(`serve: newest night on record ${lastNight}`);
+
+  while (now() < deadline) {
+    loops += 1;
+    let sentThisLoop = 0;
+
+    // 1. Anything due goes out. Cheap when nothing is: dispatch reads the
+    //    schedule and returns without sending.
+    try {
+      const result = await dispatchFn({ log });
+      sentThisLoop = result?.sent?.length ?? 0;
+      totalSent += sentThisLoop;
+      totalHandled += result?.inbox?.handled ?? 0;
+    } catch (err) {
+      // A failed cycle must never end the window -- the next one is 25s away.
+      log(`serve: dispatch failed (continuing): ${err.message}`);
+    }
+
+    // 2. A new night means the deck is worth rebuilding and sending. Checked
+    //    here rather than once at startup because the ingest happens inside
+    //    dispatch, hours into the run.
+    const night = newestNight();
+    if (night && night !== lastNight) {
+      log(`serve: new night on record — ${night}`);
+      lastNight = night;
+      nightsSeen += 1;
+      if (onNewNight) {
+        try {
+          await onNewNight(night);
+        } catch (err) {
+          log(`serve: deck delivery failed (continuing): ${err.message}`);
+        }
+      }
+    }
+
+    // 3. Persist immediately after a send. Not on a timer: the window between
+    //    delivering a message and recording that it was delivered is exactly
+    //    the window in which a killed job causes a duplicate tomorrow.
+    if (persist && (sentThisLoop > 0 || nightsSeen > 0)) {
+      try {
+        await persist();
+        nightsSeen = 0;
+      } catch (err) {
+        log(`serve: state push failed (continuing): ${err.message}`);
+      }
+    }
+
+    // 4. Hold a long poll for the rest of the slice, so a reply is answered in
+    //    seconds rather than at the next loop.
+    const left = Math.floor((deadline - now()) / 1000);
+    if (left <= 1) break;
+    const slice = Math.min(sliceSeconds, left);
+    try {
+      const config = loadConfig();
+      const r = await listenFn({
+        config,
+        state: loadState(),
+        token: process.env.TELEGRAM_BOT_TOKEN,
+        chatId: process.env.TELEGRAM_CHAT_ID,
+        seconds: slice,
+        log: () => {},          // one line per 25s slice would be thousands
+      });
+      const h = r?.handled ?? 0;
+      if (h) {
+        totalHandled += h;
+        log(`serve: answered ${h} message(s)`);
+        if (persist) {
+          try { await persist(); } catch (err) { log(`serve: state push failed: ${err.message}`); }
+        }
+      }
+    } catch (err) {
+      log(`serve: listen failed (continuing): ${err.message}`);
+      // Without the long poll this loop would spin. Wait out the slice.
+      await new Promise((r) => setTimeout(r, slice * 1000));
+    }
+  }
+
+  const mins = Math.round((now() - started) / 60000);
+  log(`serve: window closed after ${mins} min — ${loops} cycles, ${totalSent} sent, `
+    + `${totalHandled} replies answered`);
+  return { loops, sent: totalSent, handled: totalHandled, minutes: mins };
+}

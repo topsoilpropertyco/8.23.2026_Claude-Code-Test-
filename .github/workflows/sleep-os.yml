@@ -9,7 +9,13 @@ name: Sleep OS Dispatch
 # deterministically from the date, so extra polls never move the target times.
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    # Every two hours, for a run that stays up for nearly six. The overlap is
+    # deliberate: GitHub delivers this cron at a measured median of 103 minutes
+    # rather than the interval asked for, so a start that slips by an hour is
+    # still covered by the run already in flight. concurrency queues rather than
+    # cancels, so a run that arrives while one is live simply waits and then
+    # extends the coverage instead of doubling it.
+    - cron: '0 */2 * * *'
   workflow_dispatch:
     inputs:
       slot:
@@ -55,11 +61,9 @@ jobs:
     # (bin/build-page.mjs) because this repository is public; the key rides in
     # the URL fragment, which never reaches GitHub's servers.
     permissions:
+      # The dashboard is published by pushing gh-pages from inside the run
+      # (bin/publish-page.mjs), so no pages/id-token scopes are needed.
       contents: write
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -76,8 +80,12 @@ jobs:
           OURA_CLIENT_SECRET: ${{ secrets.SLEEPOS_OURA_CLIENT_SECRET }}
         run: node bin/sleep-os.js oura ${{ inputs.oura_action }} "${{ inputs.oura_code }}"
 
-      - name: Dispatch due reminders
-        if: inputs.oura_action == ''
+      # A one-shot dispatch, kept for a forced slot and for dry runs. The
+      # scheduled path is the long-lived `serve` window at the end of this job:
+      # a single pass could only ever be as punctual as the scheduler that
+      # started it, and the scheduler is the thing that was wrong.
+      - name: Dispatch a forced slot
+        if: inputs.oura_action == '' && (inputs.slot != '' || inputs.dry_run == true)
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.SLEEPOS_TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.SLEEPOS_TELEGRAM_CHAT_ID }}
@@ -122,40 +130,6 @@ jobs:
           node bin/build-grades.mjs --check
           python3 bin/build-screens.py
           python3 bin/build-deck.py
-
-      # Encrypt and publish the dashboard. continue-on-error throughout: this is
-      # the least important thing the run does and must never stop a reminder or
-      # a delivery. Until Pages is enabled for the repository these steps fail
-      # and the deck still goes out as an album, which is why deckDelivery
-      # stays on "album" until the link is confirmed working.
-      - name: Encrypt the dashboard
-        if: >-
-          inputs.oura_action == ''
-          && (steps.telem.outputs.changed == 'true' || inputs.send_deck == true)
-        continue-on-error: true
-        id: page
-        env:
-          SLEEPOS_DATA_KEY: ${{ secrets.SLEEPOS_DATA_KEY }}
-        run: node bin/build-page.mjs
-
-      - name: Upload the dashboard to Pages
-        if: >-
-          inputs.oura_action == ''
-          && (steps.telem.outputs.changed == 'true' || inputs.send_deck == true)
-          && steps.page.outcome == 'success'
-        continue-on-error: true
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
-
-      - name: Deploy the dashboard
-        if: >-
-          inputs.oura_action == ''
-          && (steps.telem.outputs.changed == 'true' || inputs.send_deck == true)
-          && steps.page.outcome == 'success'
-        continue-on-error: true
-        id: deploy
-        uses: actions/deploy-pages@v4
 
       - name: Upload the grade table
         if: >-
@@ -223,17 +197,35 @@ jobs:
           npm install --no-save --silent playwright-core
           node bin/send-deck.mjs ${{ inputs.deck_date }}
 
-      # Hold an open long poll for most of what is left of the interval. Runs
-      # last so a slow or failing poll can never delay a scheduled send, and
-      # continue-on-error so it can never fail the run that already delivered.
-      - name: Listen for replies
-        if: inputs.oura_action == '' && inputs.dry_run != true
+      # THE ENGINE. Stays up for nearly six hours, checking what is due and
+      # holding a Telegram long poll every ~25 seconds. This replaced 288 short
+      # runs a day on a five-minute cron: measured over twenty consecutive
+      # scheduled runs, GitHub delivered a median gap of 103 minutes, so the 9pm
+      # work-shutdown cue went out at 11:14pm and the 10pm bedtime cue arrived in
+      # the same batch. Inside a run the loop is punctual to the slice, so
+      # scheduler drift now costs startup latency rather than every cue's timing.
+      #
+      # 20700s is 5h45m, inside the 6h job ceiling with room for the steps above.
+      # Public repositories have unlimited Actions minutes, so a long run costs
+      # nothing that a short one saves.
+      - name: Serve
+        if: inputs.oura_action == '' && inputs.dry_run != true && inputs.slot == ''
         continue-on-error: true
+        timeout-minutes: 350
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.SLEEPOS_TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.SLEEPOS_TELEGRAM_CHAT_ID }}
           SLEEPOS_DATA_KEY: ${{ secrets.SLEEPOS_DATA_KEY }}
-        run: node bin/sleep-os.js listen 200
+          # serve spawns send-deck when a night lands, which needs both of these:
+          # the Oura credentials for the ingest, and a browser to photograph the
+          # screens with. Without them the deck fails hours into the window and
+          # says so in the chat rather than silently not arriving.
+          OURA_CLIENT_ID: ${{ secrets.SLEEPOS_OURA_CLIENT_ID }}
+          OURA_CLIENT_SECRET: ${{ secrets.SLEEPOS_OURA_CLIENT_SECRET }}
+          CHROMIUM_PATH: /usr/bin/google-chrome
+        run: |
+          npm install --no-save --silent playwright-core
+          node bin/sleep-os.js serve 20700
 
       - name: Persist rotation state
         run: |

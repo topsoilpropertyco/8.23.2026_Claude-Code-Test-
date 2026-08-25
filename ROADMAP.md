@@ -38,7 +38,7 @@ Small, unblocked, and worth doing whenever there's a gap.
 - **Live last-night screen** — the composite renders from real telemetry via `web/build-night.js`, built in CI, delivered as a private workflow artifact
 - **Phase 6 — habit anchors** — two daily cues, 24 rotating rationales each, jitter provably off
 - **Phase 7 — closing the loop** — journal entries now get an immediate reply; no inbound path is silent
-- **L1 — replies in seconds** — long-poll listen window plus a 5-minute cron, no webhook and no new infrastructure
+- **L1 — replies in seconds** — long-poll listen window; originally paired with a 5-minute cron, which GitHub did not honour (see Phase 13). Now inside the long-lived `serve` window, which does deliver it
 - **Phase 8 — the night screen arrives** — rendered to PNG and sent as a Telegram photo once a day, when the ingest writes a new night
 - **S2 — the 8:1 type floor** — decided; it stands, with v11's reference interval carried forward separately
 
@@ -473,6 +473,65 @@ fitted fallback, because no container outside the runner can read the encrypted
 history. The first CI run after a telemetry change replaces it with counted
 nights and uploads `references/08-MY-SCORE-TABLE.md` as the `grade-table`
 artifact. Until then `g2`'s numbers are provisional and say so.
+
+
+---
+
+# Phase 13 — The scheduler was the bug — SHIPPED
+
+The engine ran on `*/5` and assumed GitHub honoured it. Measured over twenty
+consecutive scheduled runs:
+
+| | |
+|---|---|
+| Requested interval | 5 min |
+| **Median actual gap** | **103 min** |
+| Best / worst | 51 min / 206 min |
+
+GitHub deprioritises high-frequency crons on free public repositories. It is a
+request, not a guarantee, and roughly one twentieth of it arrived.
+
+It landed on the cues where timing is the whole point. From the delivery log:
+
+| Slot | Target | Sent | Late |
+|---|---|---|---|
+| afternoon_boundary | 4:00 PM | 5:03 PM | +63 min |
+| evening_winddown | 6:11 PM | 6:58 PM | +48 min |
+| **work_shutdown** | 9:00 PM | **11:14 PM** | **+134 min** |
+| **terminal_bedtime** | 10:00 PM | **11:14 PM** | **+74 min** |
+
+The last two arrived in the same run, so "stop working" and "screens off" landed
+together at 11:14pm. A bedtime cue that late is a notification about the past.
+
+It also made L1 false. The design was a 200-second long poll every 5 minutes, or
+near-continuous coverage; at a 103-minute gap the listen window covered about
+**3% of the day**, so a reply usually waited up to an hour and a half. That was
+written up as shipped and had never been measured.
+
+**The fix: fewer, much longer runs.** An Actions job may run six hours and public
+repositories have unlimited minutes, so `bin/sleep-os.js serve` stays up for
+5h45m, checking what is due and holding a Telegram long poll every ~25 seconds.
+Inside a run the loop is punctual to the slice, so scheduler drift became startup
+latency rather than every cue's timing. The cron is every two hours and
+`concurrency` queues rather than cancels, so a start that slips is still covered
+by the run in flight.
+
+What it had to get right:
+
+- **State is pushed the moment anything is sent**, not at the end. A six-hour run
+  that persisted on exit would lose an evening of delivery records if the job
+  were killed, then re-send all of it.
+- **Nothing ends the window.** A failed dispatch, poll, push or deck delivery is
+  logged and the loop continues; four tests hold that.
+- **The Oura ingest now happens mid-run**, hours after the first step, so the
+  dashboard is published by pushing `gh-pages` from inside the loop
+  (`bin/publish-page.mjs`, via git plumbing so the working tree is never moved
+  under a running supervisor) rather than by an Actions step that can only run
+  before the window opens.
+
+**Open on this phase:** the first long window has not completed yet. Slot
+punctuality inside a run is proven by unit tests against a controlled clock, not
+yet by a night of real deliveries.
 
 
 ## Open questions, not blockers

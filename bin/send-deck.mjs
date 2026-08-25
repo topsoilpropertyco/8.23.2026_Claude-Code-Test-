@@ -83,6 +83,19 @@ console.log('send-deck: rebuilding screens');
 await run('python3', ['bin/build-screens.py'], 'rebuilding the screens');
 await run('python3', ['bin/build-deck.py'], 'building the dashboard');
 
+// Encrypt and publish before announcing it. Sending a link to a page that has
+// not been redeployed yet would point at last night's dashboard, which is the
+// original bug in a new costume. Best-effort: publishing is the least important
+// thing here and must not stop the message going out.
+if (process.env.GITHUB_ACTIONS && process.env.SLEEPOS_DATA_KEY) {
+  try {
+    execFileSync('node', ['bin/build-page.mjs'], { cwd: ROOT, stdio: 'inherit' });
+    execFileSync('node', ['bin/publish-page.mjs'], { cwd: ROOT, stdio: 'inherit' });
+  } catch {
+    console.error('send-deck: publishing the dashboard failed; the message still goes out');
+  }
+}
+
 // Two delivery modes, chosen by config so switching is not a code change.
 // 'link' sends one message pointing at the encrypted dashboard; 'album' renders
 // the screens and sends them as photos. The album stays the default until the

@@ -8,7 +8,7 @@
 //   whoami    verify the bot token and discover your chat id
 //   stats     rotation and delivery history
 
-import { loadLibraries, loadConfig } from '../src/facts.js';
+import { loadLibraries, loadConfig, ROOT } from '../src/facts.js';
 import { buildDaySchedule } from '../src/schedule.js';
 import { selectFact } from '../src/selector.js';
 import { loadHabits, selectRationale } from '../src/habits.js';
@@ -364,6 +364,78 @@ async function cmdListen(seconds) {
   await listen({ config, state, token, chatId, seconds: Number(seconds) || 240 });
 }
 
+/**
+ * Stay up and run the engine continuously.
+ *
+ * The scheduled-cron design assumed GitHub honours a five-minute cron. Measured
+ * over twenty consecutive runs the median gap was 103 minutes, and the 9pm
+ * work-shutdown cue arrived at 11:14pm.
+ * One long run covers its whole window to the second, so this is now the primary
+ * delivery path and `dispatch` is the manual one.
+ */
+async function cmdServe(seconds) {
+  requireEnv('TELEGRAM_BOT_TOKEN');
+  requireEnv('TELEGRAM_CHAT_ID');
+  const { serve } = await import('../src/serve.js');
+  const { execFileSync } = await import('node:child_process');
+
+  const git = (...a) => execFileSync('git', a, { cwd: ROOT, encoding: 'utf8', stdio: 'pipe' });
+  const inCi = Boolean(process.env.GITHUB_ACTIONS);
+  const branch = process.env.GITHUB_REF_NAME || 'main';
+
+  // Called the moment anything is sent. State lives in git, and the gap between
+  // delivering a message and recording it is exactly the gap in which a killed
+  // job causes tomorrow to send it again. Pushing here keeps that gap seconds
+  // wide instead of hours.
+  const persist = async () => {
+    if (!inCi) return;                       // never touch git from a laptop run
+    if (!git('status', '--porcelain', 'state/').trim()) return;
+    git('config', 'user.name', 'sleep-os[bot]');
+    git('config', 'user.email', 'sleep-os@users.noreply.github.com');
+    git('add', 'state/');
+    git('commit', '-m', `chore(state): delivery ${new Date().toISOString().slice(0, 16)}Z`);
+    for (let attempt = 1; attempt <= 4; attempt += 1) {
+      try {
+        // Another push may have landed mid-run. Ours wins on state/: this run is
+        // the one that knows what was just delivered, and losing that record
+        // would re-send it.
+        git('pull', '--rebase', '--autostash', 'origin', branch);
+        git('push', 'origin', `HEAD:${branch}`);
+        return;
+      } catch {
+        try {
+          git('checkout', '--ours', '--', 'state/');
+          git('add', 'state/');
+          try { git('rebase', '--continue'); } catch { git('rebase', '--abort'); }
+        } catch {
+          try { git('rebase', '--abort'); } catch { /* nothing to abort */ }
+        }
+        await new Promise((r) => setTimeout(r, 2 ** attempt * 1000));
+      }
+    }
+    console.log('serve: could not push state after 4 attempts');
+  };
+
+  // A fresh night means the dashboard is worth rebuilding and sending. Spawned
+  // rather than imported: send-deck drives python builders and a headless
+  // browser, and a crash in any of that must not take the supervisor down.
+  const onNewNight = async () => {
+    try {
+      execFileSync('node', ['bin/send-deck.mjs'], { cwd: ROOT, stdio: 'inherit' });
+    } catch {
+      console.log('serve: send-deck exited non-zero; it reports its own reason');
+    }
+  };
+
+  // `|| 20700` would turn an explicit 0 into a five-hour window, which makes the
+  // command impossible to smoke-test and is a surprising thing for a 0 to do.
+  const n = Number(seconds);
+  const window = seconds !== undefined && Number.isFinite(n) ? n : 20700;
+  const result = await serve({ seconds: window, persist, onNewNight });
+  await persist();
+  return result;
+}
+
 /** Build the last-night screen, render it, and send it as a photo. */
 async function cmdNight({ dryRun = false } = {}) {
   const token = requireEnv('TELEGRAM_BOT_TOKEN');
@@ -432,6 +504,9 @@ switch (command) {
     case 'listen':
       await cmdListen(args[0]);
       break;
+    case 'serve':
+      await cmdServe(args[0]);
+      break;
     case 'night':
       await cmdNight({ dryRun: args.includes('--dry-run') });
       break;
@@ -439,7 +514,7 @@ switch (command) {
       await cmdOura(args[0], args.slice(1).join(' '));
       break;
     default:
-      console.error(`Unknown command "${command}". Try: today, preview, dispatch, send, whoami, stats, journal, doctor, listen, night, oura`);
+      console.error(`Unknown command "${command}". Try: today, preview, dispatch, send, whoami, stats, journal, doctor, listen, serve, night, oura`);
       process.exit(1);
   }
 } catch (err) {
