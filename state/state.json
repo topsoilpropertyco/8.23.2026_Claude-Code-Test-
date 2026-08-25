@@ -5,7 +5,6 @@
     "lucid-02",
     "sleep-32",
     "lucid-15",
-    "sleep-40",
     "lucid-11",
     "sleep-05",
     "sleep-11",
@@ -183,11 +182,33 @@
         "kind": "intake",
         "targetLabel": "6:00 AM",
         "at": "2026-08-25T10:03:26.864Z"
+      },
+      "morning_reflection": {
+        "status": "sent",
+        "kind": "fact",
+        "factId": "sleep-40",
+        "library": "sleep",
+        "category": "biometrics",
+        "jackpot": false,
+        "cycle": 0,
+        "promptId": "p13",
+        "mechanism": "mental_contrasting",
+        "targetLabel": "7:54 AM",
+        "at": "2026-08-25T12:03:08.489Z"
       }
     }
   },
   "inboxOffset": 697606361,
   "pending": [
+    {
+      "messageId": 39,
+      "kind": "fact",
+      "factId": "sleep-40",
+      "promptId": "p13",
+      "mechanism": "mental_contrasting",
+      "slot": "morning_reflection",
+      "at": "2026-08-25T12:03:08.489Z"
+    },
     {
       "messageId": 38,
       "kind": "intake",
@@ -288,7 +309,6 @@
   ],
   "promptCycle": 0,
   "promptRemaining": [
-    "p13",
     "p19",
     "p04",
     "p18",
