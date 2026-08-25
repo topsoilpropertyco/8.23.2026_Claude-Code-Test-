@@ -13,3 +13,5 @@
 {"date":"2026-08-24","slot":"afternoon_boundary","status":"sent","kind":"fact","factId":"sleep-18","library":"sleep","category":"longevity","jackpot":false,"cycle":0,"promptId":"p15","mechanism":"anchoring","targetLabel":"4:00 PM","at":"2026-08-24T21:03:28.664Z"}
 {"date":"2026-08-24","slot":"evening_winddown","status":"sent","kind":"fact","factId":"sleep-20","library":"sleep","category":"environment","jackpot":false,"cycle":0,"promptId":"p21","mechanism":"commitment","targetLabel":"6:11 PM","at":"2026-08-24T22:58:33.106Z"}
 {"date":"2026-08-24","slot":"blue_blockers","status":"sent","kind":"habit","habit":"blue_blockers","whyId":"bb04","optional":false,"cycle":1,"targetLabel":"7:30 PM","at":"2026-08-24T23:49:07.957Z"}
+{"date":"2026-08-24","slot":"work_shutdown","status":"missed","at":"2026-08-25T03:14:43.704Z"}
+{"date":"2026-08-24","slot":"terminal_bedtime","status":"missed","at":"2026-08-25T03:14:43.704Z"}

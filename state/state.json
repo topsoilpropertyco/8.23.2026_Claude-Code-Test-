@@ -167,6 +167,14 @@
         "cycle": 1,
         "targetLabel": "7:30 PM",
         "at": "2026-08-24T23:49:07.957Z"
+      },
+      "work_shutdown": {
+        "status": "missed",
+        "at": "2026-08-25T03:14:43.704Z"
+      },
+      "terminal_bedtime": {
+        "status": "missed",
+        "at": "2026-08-25T03:14:43.704Z"
       }
     }
   },
