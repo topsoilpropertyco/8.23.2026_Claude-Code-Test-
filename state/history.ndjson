@@ -17,3 +17,4 @@
 {"date":"2026-08-24","slot":"terminal_bedtime","status":"missed","at":"2026-08-25T03:14:43.704Z"}
 {"date":"2026-08-25","slot":"intake","status":"sent","kind":"intake","targetLabel":"6:00 AM","at":"2026-08-25T10:03:26.864Z"}
 {"date":"2026-08-25","slot":"morning_reflection","status":"sent","kind":"fact","factId":"sleep-40","library":"sleep","category":"biometrics","jackpot":false,"cycle":0,"promptId":"p13","mechanism":"mental_contrasting","targetLabel":"7:54 AM","at":"2026-08-25T12:03:08.489Z"}
+{"date":"2026-08-25","slot":"morning_light","status":"sent","kind":"habit","habit":"morning_light","whyId":"ml04","optional":false,"cycle":1,"targetLabel":null,"trigger":"intake-reply","at":"2026-08-25T14:29:40.212Z"}
