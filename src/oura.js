@@ -33,7 +33,12 @@ const AUTHORIZE_URL = 'https://moi.ouraring.com/oauth/v2/ext/oauth-authorize';
 const TOKEN_URL = 'https://moi.ouraring.com/oauth/v2/ext/oauth-token';
 const API = 'https://api.ouraring.com/v2/usercollection';
 
-const TOKEN_FILE = join(ROOT, 'state/oura.enc');
+// Same override as journal.js, state.js and telemetry.js. This one matters most:
+// Oura's refresh tokens are single-use and rotate, so a test that clobbered the
+// real token file would break the integration until Seth re-authorised in a
+// browser -- not a lost test fixture, a lost connection.
+const STATE_DIR = process.env.SLEEPOS_STATE_DIR || join(ROOT, 'state');
+const TOKEN_FILE = join(STATE_DIR, 'oura.enc');
 const REDIRECT_URI = 'https://example.com/callback';
 
 // Refresh this long before actual expiry, so a slow run never sends a request
@@ -75,7 +80,7 @@ export function readTokens() {
 
 export function writeTokens(tokens) {
   if (!hasKey()) throw new MissingKeyError();
-  mkdirSync(join(ROOT, 'state'), { recursive: true });
+  mkdirSync(STATE_DIR, { recursive: true });
   writeFileSync(TOKEN_FILE, `${encryptLine(JSON.stringify(tokens))}\n`);
   return tokens;
 }

@@ -7,12 +7,18 @@
 // summary fields, and committing the raw arrays to a git repository every day
 // would bloat it for no benefit.
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, appendFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { ROOT } from './facts.js';
 import { encryptLine, decryptLine, hasKey, MissingKeyError } from './crypto.js';
 
-const FILE = join(ROOT, 'state/telemetry.enc');
+// Overridable for the same reason journal.js and state.js are. This is the third
+// file to need it: without it, any test that exercises the append path writes
+// fabricated nights into the REAL 1,043-night history, and a fake night is not
+// cosmetic here -- it shifts the mean, the SD and every percentile on every
+// screen. The two files fixed before this one were each fixed in isolation.
+const STATE_DIR = process.env.SLEEPOS_STATE_DIR || join(ROOT, 'state');
+const FILE = join(STATE_DIR, 'telemetry.enc');
 
 /** Pick the night's main sleep: the long_sleep period, else the longest one. */
 function mainSleep(periods) {
@@ -88,7 +94,7 @@ export function readTelemetry() {
 /** Rewrite the whole file from a record set, one encrypted line per night. */
 export function writeTelemetry(records) {
   if (!hasKey()) throw new MissingKeyError();
-  mkdirSync(join(ROOT, 'state'), { recursive: true });
+  mkdirSync(STATE_DIR, { recursive: true });
   const lines = records.map((r) => encryptLine(JSON.stringify(r)));
   writeFileSync(FILE, lines.length ? `${lines.join('\n')}\n` : '');
   return records.length;
@@ -124,8 +130,12 @@ export function upsertTelemetry(incoming) {
     fresh.push(record);
   }
 
+  // appendFileSync is reached ONLY when there is something new, which is why a
+  // missing import here survived for days: every night with no new data returned
+  // cleanly and the one path that mattered threw a ReferenceError that dispatch
+  // caught and logged as "continuing". The regression test below appends.
   if (fresh.length) {
-    mkdirSync(join(ROOT, 'state'), { recursive: true });
+    mkdirSync(STATE_DIR, { recursive: true });
     appendFileSync(FILE, `${fresh.map((r) => encryptLine(JSON.stringify(r))).join('\n')}\n`);
   }
 

@@ -206,7 +206,10 @@ async function cmdDoctor() {
   ok('slots defined', Array.isArray(cfg.slots) && cfg.slots.length > 0, `${cfg.slots?.length ?? 0} slots`);
   const enabled = (cfg.slots ?? []).filter((x) => x.enabled !== false).length;
   ok('at least one slot enabled', enabled > 0, `${enabled} enabled`);
-  ok('screensUrl set', Boolean(cfg.screensUrl), cfg.screensUrl ? 'link ships in the morning reply' : 'no link in the morning reply');
+  // No screensUrl by design: a pinned link cannot be rebuilt by a scheduled run,
+  // so it could only ever drift. The deck ships as a Telegram album instead.
+  ok('no stale deck link configured', !cfg.screensUrl,
+     cfg.screensUrl ? 'a pinned URL will go out of date — the deck ships as an album' : 'deck ships as photos');
 
   banner('Fact libraries');
   const libs = loadLibraries();
@@ -220,6 +223,29 @@ async function cmdDoctor() {
   const health = logHealth();
   ok('logs readable', health.ok, health.ok ? '' : `${health.unreadable} unreadable`);
   if (!health.ok) warnUnreadable(health);
+
+  // Freshness, not just readability. A missing import in telemetry.js meant the
+  // Oura ingest fetched four nights and then threw while storing them, for days,
+  // behind a catch that logged "continuing". The data was readable the whole
+  // time -- it was just old, and nothing looked at how old.
+  const series = scoreSeries();
+  if (!series.length) {
+    ok('telemetry has nights', false, 'no scored night on record');
+  } else {
+    const newest = series.at(-1).date;
+    const behind = Math.round(
+      (Date.parse(`${new Date().toISOString().slice(0, 10)}T00:00:00Z`)
+        - Date.parse(`${newest}T00:00:00Z`)) / 86400000,
+    );
+    ok('telemetry is current', behind <= 1,
+       `newest night ${newest}${behind > 1 ? ` — ${behind} days behind` : ''}`);
+    if (behind > 1) {
+      console.log('     The ingest is not storing new nights. Check the run log for');
+      console.log('     "oura ingest error" — a failed pull is logged and swallowed so');
+      console.log('     that it cannot stop a reminder going out.');
+    }
+    console.log(`     ${series.length} scored nights, ${series[0].date} → ${newest}`);
+  }
 
   banner('Secrets');
   ok('TELEGRAM_BOT_TOKEN', Boolean(process.env.TELEGRAM_BOT_TOKEN), process.env.TELEGRAM_BOT_TOKEN ? '' : 'unset — cannot send');
