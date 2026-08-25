@@ -28,11 +28,15 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { randomBytes, createCipheriv } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { pageKey, deckUrl } from '../src/deckurl.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const SITE = join(ROOT, 'site');
+// Overridable so a test can encrypt its own fixture without reading or writing
+// the files the real pipeline uses. resolve, not join: an absolute override must
+// stay absolute.
+const IN = resolve(ROOT, process.env.SLEEPOS_PAGE_IN || 'web/deck.html');
+const SITE = resolve(ROOT, process.env.SLEEPOS_PAGE_OUT || 'site');
 
 const secret = process.env.SLEEPOS_DATA_KEY;
 if (!secret) {
@@ -54,7 +58,7 @@ if (process.argv.includes('--url')) {
   process.exit(0);
 }
 
-const plain = Buffer.from(readFileSync(join(ROOT, 'web/deck.html')));
+const plain = Buffer.from(readFileSync(IN));
 const iv = randomBytes(12);
 const cipher = createCipheriv('aes-256-gcm', KEY, iv);
 const body = Buffer.concat([cipher.update(plain), cipher.final()]);

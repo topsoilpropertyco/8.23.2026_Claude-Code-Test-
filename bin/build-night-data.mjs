@@ -163,6 +163,26 @@ const out = {
 
 writeFileSync(join(ROOT, 'data/last-night.json'), JSON.stringify(out, null, 2));
 
+// The whole history, for the interactive dashboard's charts. One night per row,
+// short keys because this is a thousand-plus records embedded in a page: d date,
+// s score, t total sleep minutes, dp/rm/lt/aw stage minutes, ef efficiency,
+// la latency, hv HRV, hr lowest heart rate, br breathing rate.
+//
+// Gitignored like last-night.json -- it is the real record in plaintext, and the
+// only place it is allowed to exist is inside the encrypted page.
+const mn = (sec) => (typeof sec === 'number' ? Math.round(sec / 60) : null);
+writeFileSync(join(ROOT, 'data/series.json'), JSON.stringify({
+  _comment: 'Full night history for the dashboard. Generated; never hand-edited.',
+  generated: out.generated,
+  nights: all.map((r) => ({
+    d: r.date, s: r.sleep_score,
+    t: mn(r.total_sleep_duration), dp: mn(r.deep_sleep_duration),
+    rm: mn(r.rem_sleep_duration), lt: mn(r.light_sleep_duration),
+    aw: mn(r.awake_time), ef: r.efficiency, la: mn(r.latency),
+    hv: r.average_hrv, hr: r.lowest_heart_rate, br: r.average_breath,
+  })),
+}));
+
 // A score-free health record, committed to the repository so the pipeline can be
 // inspected without waiting on a job to finish. That matters now the engine runs
 // for six hours at a stretch: Actions will not serve a step's log until the job

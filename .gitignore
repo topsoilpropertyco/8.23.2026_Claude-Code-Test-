@@ -29,3 +29,7 @@ data/last-night.json
 # artifact rather than through the repository. Ciphertext, but there is no reason
 # to churn 0.12 MB of it into history every five minutes.
 site/
+
+# The full night history in plaintext. Only ever exists inside the encrypted
+# page; never in the repository.
+data/series.json

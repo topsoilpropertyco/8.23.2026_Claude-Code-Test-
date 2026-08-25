@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { createDecipheriv } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -44,27 +45,53 @@ test('the configured base is a real https origin', () => {
   assert.ok(!base.includes('#'), 'the key is added at build time, never stored in config');
 });
 
-test('delivery mode is one of the two implemented paths', () => {
-  const mode = loadConfig().deckDelivery;
-  assert.ok(['album', 'link'].includes(mode), `unknown deckDelivery: ${mode}`);
+test('delivery mode is one of the implemented paths', () => {
+  // 'auto' probes the published page and picks the link when it is live, the
+  // album when it is not, so enabling Pages switches delivery with no code or
+  // config change and a link that would 404 is never sent.
+  const mode = loadConfig().deckDelivery || 'auto';
+  assert.ok(['auto', 'album', 'link'].includes(mode), `unknown deckDelivery: ${mode}`);
 });
 
 /* --------------------------------------------------------------- the payload */
 
+// Its own dashboard fixture and its own output directory, so nothing here reads
+// or writes what the real pipeline uses on the runner. The dashboard and series
+// files are generated from encrypted telemetry and gitignored, so a test that
+// depended on them would fail on a clean checkout.
+const DIR = mkdtempSync(join(tmpdir(), 'sleepos-page-'));
+const nights = [];
+let seed = 11;
+const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+for (let i = 0; i < 300; i++) {
+  nights.push({ d: new Date(Date.UTC(2025, 0, 1) + i * 86400000).toISOString().slice(0, 10),
+    s: Math.max(45, Math.min(96, Math.round(79 + (rnd() - 0.5) * 22))),
+    t: 400, dp: 80, rm: 95, lt: 210, aw: 20, ef: 90, la: 12, hv: 38, hr: 55, br: 14.2 });
+}
+writeFileSync(join(DIR, 'series.json'), JSON.stringify({ generated: 'x', nights }));
+writeFileSync(join(DIR, 'night.json'), JSON.stringify({
+  date: '2025-02-04', score: 74, sample: false, stale: false, daysBehind: 0 }));
+execFileSync('node', ['bin/build-dashboard.mjs'], { cwd: ROOT, stdio: 'pipe',
+  env: { ...process.env, SLEEPOS_SERIES: join(DIR, 'series.json'),
+    SLEEPOS_NIGHT: join(DIR, 'night.json'), SLEEPOS_DASHBOARD_OUT: join(DIR, 'deck.html') } });
+
 const build = (secret) => {
-  execFileSync('node', ['bin/build-page.mjs'],
-    { cwd: ROOT, env: { ...process.env, SLEEPOS_DATA_KEY: secret }, stdio: 'pipe' });
-  return readFileSync(join(ROOT, 'site/index.html'), 'utf8');
+  execFileSync('node', ['bin/build-page.mjs'], {
+    cwd: ROOT, stdio: 'pipe',
+    env: { ...process.env, SLEEPOS_DATA_KEY: secret,
+      SLEEPOS_PAGE_IN: join(DIR, 'deck.html'), SLEEPOS_PAGE_OUT: join(DIR, 'site') },
+  });
+  return readFileSync(join(DIR, 'site/index.html'), 'utf8');
 };
 
 test('the published page carries no plaintext from the dashboard', () => {
   const page = build(KEY_A);
-  const deck = readFileSync(join(ROOT, 'web/deck.html'), 'utf8');
+  const deck = readFileSync(join(DIR, 'deck.html'), 'utf8');
   // Sample every distinctive run of text from the dashboard and assert none of
   // it survives into what gets served. This is the whole point of the exercise:
   // the repository is public.
-  const probes = ['Last night, eight ways', 'Sleep OS —', 'nights, each panel',
-                  'Grade vs members', 'Rebuilt from your own Oura record'];
+  const probes = ['Your sleep, all of it', 'Score over time', 'Every night',
+                  'drag to any score', 'Rebuilt from your own Oura record'];
   for (const p of probes) {
     assert.ok(deck.includes(p), `probe "${p}" is not in the dashboard, so it proves nothing`);
     assert.ok(!page.includes(p), `"${p}" leaked into the published page in plaintext`);
@@ -89,8 +116,9 @@ test('the ciphertext decrypts with the derived key and nothing else', () => {
   };
 
   const plain = open(KEY_A);
-  assert.ok(plain.includes('Last night, eight ways'), 'decrypted to the wrong thing');
-  assert.ok(plain.includes('<iframe'), 'the panels are missing from the payload');
+  assert.ok(plain.includes('Your sleep, all of it'), 'decrypted to the wrong thing');
+  assert.ok(plain.includes('id="payload"'), 'the night data is missing from the payload');
+  assert.ok(plain.includes('lineChart'), 'the charts are missing from the payload');
   // GCM authenticates, so a wrong key throws rather than returning garbage.
   assert.throws(() => open(KEY_B), /unable to authenticate|bad decrypt/i);
 });
@@ -107,6 +135,6 @@ test('a fresh build re-encrypts rather than reusing an IV', () => {
 test('the page refuses to be indexed and does not need Jekyll', () => {
   const page = build(KEY_A);
   assert.match(page, /name="robots" content="noindex/);
-  assert.ok(existsSync(join(ROOT, 'site/.nojekyll')),
+  assert.ok(existsSync(join(DIR, 'site/.nojekyll')),
     'Pages would otherwise run this through Jekyll');
 });

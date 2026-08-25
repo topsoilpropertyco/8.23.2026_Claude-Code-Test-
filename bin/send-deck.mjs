@@ -81,7 +81,7 @@ if (night.sample && !dry) {
 
 console.log('send-deck: rebuilding screens');
 await run('python3', ['bin/build-screens.py'], 'rebuilding the screens');
-await run('python3', ['bin/build-deck.py'], 'building the dashboard');
+await run('node', ['bin/build-dashboard.mjs'], 'building the dashboard');
 
 // Encrypt and publish before announcing it. Sending a link to a page that has
 // not been redeployed yet would point at last night's dashboard, which is the
@@ -101,16 +101,42 @@ if (process.env.GITHUB_ACTIONS && process.env.SLEEPOS_DATA_KEY) {
 // the screens and sends them as photos. The album stays the default until the
 // Pages deploy is confirmed working -- a link that 404s and no photos would mean
 // no morning deck at all.
-const mode = loadConfig().deckDelivery === 'link' ? 'link' : 'album';
+// 'auto' probes the published page and uses the link when it is actually live,
+// falling back to the album when it is not. That removes the manual flip: the
+// day Pages is enabled the delivery switches by itself, and until then a link
+// that would 404 is never sent.
+const configured = loadConfig().deckDelivery || 'auto';
+let mode = configured === 'link' ? 'link' : configured === 'album' ? 'album' : null;
+if (mode === null) {
+  const url = deckUrl();
+  if (!url) {
+    mode = 'album';
+    console.log('send-deck: no dashboard URL configured, sending the album');
+  } else {
+    const base = url.split('#')[0];
+    try {
+      // HEAD would be enough, but some static hosts answer it differently from
+      // the GET a phone will actually make.
+      const res = await fetch(base, { method: 'GET', redirect: 'follow' });
+      mode = res.ok ? 'link' : 'album';
+      console.log(`send-deck: ${base} returned ${res.status}, sending the `
+        + `${mode === 'link' ? 'link' : 'album'}`);
+    } catch (err) {
+      mode = 'album';
+      console.log(`send-deck: could not reach the dashboard (${err.message}), sending the album`);
+    }
+  }
+}
+
 if (mode === 'link') {
   const url = deckUrl();
-  if (!url) await bail('deckDelivery is "link" but no dashboard URL could be built.');
+  if (!url) await bail('delivery is "link" but no dashboard URL could be built.');
   const sl = night.standing;
   const text = (night.stale
       ? `${night.date} — the newest night Oura has (${night.daysBehind} days back)`
       : `Last night — ${night.date}`)
     + `\nScore ${night.score} · ${sl.percentile}th percentile of your ${night.population.n} nights`
-    + `\n\nThe whole night, eight panels → ${url}`;
+    + `\n\nYour whole history, interactive → ${url}`;
   if (dry) {
     console.log('send-deck: --dry, not sending. Would send:');
     console.log(text.split('\n').map((l) => `  ${l}`).join('\n'));
