@@ -946,3 +946,23 @@ test('a failed morning-light cue never breaks the intake reply', async () => {
   assert.equal(ok, false);
   assert.ok(!state.sends['2026-09-16']?.morning_light, 'a failed send must not be recorded as sent');
 });
+
+test('the morning reply carries a link to the screens when one is configured', () => {
+  const history = [72, 80, 75, 84, 78, 81, 79].map((score, i) => ({
+    date: `2026-08-${String(10 + i).padStart(2, '0')}`, score, hours: 7.5, feel: 4,
+  }));
+  const url = 'https://example.test/deck';
+  const withLink = buildCoachResponse({
+    entry: { ok: true, score: 88, hours: 7.75, feel: 4 },
+    history, date: '2026-08-23', useOura: false, screensUrl: url,
+  });
+  assert.ok(withLink.text.includes(url), 'configured URL should appear in the reply');
+  assert.ok(withLink.text.includes('See the whole night'), 'link should be labelled');
+
+  // No URL configured must mean no line at all, never a dangling label.
+  const without = buildCoachResponse({
+    entry: { ok: true, score: 88, hours: 7.75, feel: 4 },
+    history, date: '2026-08-23', useOura: false, screensUrl: '',
+  });
+  assert.ok(!without.text.includes('See the whole night'), 'empty URL should omit the line');
+});

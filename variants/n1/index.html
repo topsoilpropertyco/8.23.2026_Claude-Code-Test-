@@ -1,0 +1,85 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>n1 — Vs Oura members</title>
+<meta name="viewport" content="width=390, initial-scale=1">
+<!-- Compares on the published member average. Percentile deliberately absent: Oura publishes no spread. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#78756F}
+.s{position:relative;width:390px;height:844px;overflow:hidden;background:#F4F0E6;color:#1A1814;
+  font-family:'Newsreader',Georgia,serif;font-variant-numeric:tabular-nums lining-nums;
+  font-feature-settings:'tnum' 1,'lnum' 1;-webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;padding:30px 24px 26px}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.hd{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:9px;
+  border-bottom:1px solid #1A1814;flex:0 0 auto}
+.bd{flex:1;display:flex;flex-direction:column;padding:20px 0 10px;min-height:0}
+.grp{flex:0 0 auto}
+.grp:nth-child(2){flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0}
+.hd .brand{font-size:11px;letter-spacing:.24em;text-transform:uppercase;font-weight:600}
+.hd .num{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#7C7568}
+.q{font-size:23px;line-height:1.25;font-weight:400;letter-spacing:-.01em}
+.ans{margin-top:6px;font-size:11.5px;line-height:1.55;color:#7C7568;max-width:34ch}
+.lab{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:#7C7568;font-weight:500}
+.hair{height:1px;background:#D5CDBC}
+.ft{margin-top:auto;padding-top:12px;border-top:1px solid #D5CDBC;display:flex;
+  justify-content:space-between;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#7C7568}
+.note{font-size:9px;line-height:1.5;color:#7C7568;letter-spacing:.02em}
+.note b{color:#1A1814;font-weight:600}
+.pill{display:inline-block;padding:3px 9px 2px;font-size:9px;letter-spacing:.16em;
+  text-transform:uppercase;font-weight:600;font-family:'IBM Plex Mono',monospace}
+.prov{flex:0 0 auto;margin-top:9px;padding:5px 9px 4px;font-family:'IBM Plex Mono',monospace;
+  font-size:8.5px;letter-spacing:.17em;text-transform:uppercase;font-weight:600;
+  display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.s.nat{background:#E9EEF3}
+.s.nat .hair{background:#C2CDD8}
+.s.nat .ft{border-top-color:#C2CDD8}
+
+.big2{font-size:118px;line-height:.88;letter-spacing:-.04em;font-weight:500;color:#2C5F86}
+.big2 s{text-decoration:none;font-size:52px;vertical-align:.42em;margin-right:2px}
+.nrow{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid #C2CDD8}
+.nk{flex:0 0 78px;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:#5E7183;line-height:1.3}
+.ntrack{flex:0 0 166px;height:10px;background:#DCE4EC;position:relative}
+.nfill{position:absolute;left:0;top:0;bottom:0}
+.nv{flex:0 0 30px;text-align:right;font-size:12.5px;font-weight:500}
+.nd{font-size:10px;font-weight:600}
+.nax{display:flex;margin-top:6px}
+.nax .sp{flex:0 0 86px}
+.nax .e{flex:0 0 166px;display:flex;justify-content:space-between;font-size:8.5px;
+  letter-spacing:.1em;color:#5E7183;font-family:'IBM Plex Mono',monospace}
+.warn{margin-top:14px;border:1px solid #C2CDD8;background:#DCE4EC;padding:10px 12px}
+.warn b{color:#22506F}
+</style>
+<div class="s nat">
+  <div class="hd"><span class="brand mono">Sleep OS</span><span class="num mono">7 of 8 &middot; Vs members</span></div>
+  <div class="prov" style="background:#D6E2EE;color:#2C5F86"><span>Compared with Oura members</span><span>Published averages</span></div>
+  <div class="bd">
+<div class="grp">  <p class="q">How do I compare with everyone else?</p>
+  <p class="ans">Oura publishes one population figure for the Sleep Score: the average
+  across all members. So this compares on the average &mdash; the only axis the
+  published data actually supports.</p></div><div class="grp">
+  <div>
+    <div class="big2 mono"><s>+</s>11</div>
+    <div class="lab mono" style="color:#2C5F86;margin-top:2px">Points above the member average</div>
+    <div style="margin-top:18px"><div class="nrow"><span class="nk mono">Oura member average</span><span class="ntrack"><span class="nfill" style="width:31.12px;background:#8FA6B8"></span></span><span class="nv mono">77</span></div><div class="nrow"><span class="nk mono">Your all-time average</span><span class="ntrack"><span class="nfill" style="width:54.99px;background:#2C5F86"></span></span><span class="nv mono">79.3</span><span class="nd mono" style="color:#2C5F86">+2.3</span></div><div class="nrow"><span class="nk mono">Your last night</span><span class="ntrack"><span class="nfill" style="width:145.25px;background:#2F7A44"></span></span><span class="nv mono">88</span><span class="nd mono" style="color:#2F7A44">+11.0</span></div></div>
+    <div class="nax"><span class="sp"></span><span class="e">
+      <span>74</span><span>77 avg</span><span>90</span></span></div>
+    <div class="warn">
+      <p class="note mono" style="color:#3C6584"><b>No percentile here, and that is deliberate.</b>
+      Turning a score into a percentile needs a spread as well as an average. Oura publishes
+      the average and <b>not</b> the spread &mdash; no SD, no distribution, no quantiles &mdash;
+      so &ldquo;88 is the Nth percentile of all members&rdquo; cannot be computed. Any N would
+      be invented.</p>
+    </div>
+  </div>
+  </div><div class="grp"><div class="hair" style="margin-top:14px"></div>
+  <p class="note mono" style="margin-top:10px">Member average <b>77</b> — Oura 2024
+  Year in Review, de-identified data from millions of members, Dec 2023 to Nov 2024.
+  <b>These are Oura members, not a national population</b> — people who bought a ring to
+  optimise sleep, so the bar sits higher than the public at large.</p>
+</div>  </div>
+  <div class="ft mono"><span>Sun 23 Aug 2026</span><span>avg 77</span></div>
+</div>

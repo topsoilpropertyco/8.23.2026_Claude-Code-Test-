@@ -8,7 +8,7 @@
 // The recommendation is always drawn from a real fact's "Tonight's 1% Move",
 // which keeps the coaching tied to the same evidence base as the nudges.
 
-import { loadLibraries } from './facts.js';
+import { loadLibraries, loadConfig } from './facts.js';
 import { mean, stdev, zScore, percentileRank, trailing, confidence } from './stats.js';
 import { readTelemetry, scoreSeries } from './telemetry.js';
 
@@ -109,7 +109,7 @@ const hhmm = (seconds) => {
  * @param {string}   [opts.date]       the night being logged, for the Oura lookup
  * @param {boolean}  [opts.useOura]    prefer telemetry over the manual log
  */
-export function buildCoachResponse({ entry, history, rotation = 0, morningPrompt = null, date = null, useOura = true }) {
+export function buildCoachResponse({ entry, history, rotation = 0, morningPrompt = null, date = null, useOura = true, screensUrl = undefined }) {
   // Oura, when connected, is the source of truth for the numbers. The manual
   // entry is kept because writing it down by hand is the behavioural point --
   // but the analysis runs on the measurement, not the recollection.
@@ -240,6 +240,15 @@ export function buildCoachResponse({ entry, history, rotation = 0, morningPrompt
     lines.push(fact.move);
     lines.push('');
     lines.push(fact.truth);
+  }
+
+  // The night as eight swipeable screens. Resolved from config unless the caller
+  // passes one explicitly, so tests can drive it without touching config.json.
+  // A missing or empty screensUrl simply omits the line -- never a broken link.
+  const url = screensUrl !== undefined ? screensUrl : loadConfig().screensUrl;
+  if (url) {
+    lines.push('');
+    lines.push(`See the whole night → ${url}`);
   }
 
   if (morningPrompt) {

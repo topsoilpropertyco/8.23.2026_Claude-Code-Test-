@@ -20,6 +20,10 @@ SCREENS = [
   "T7/T30/T90 measured. T180/T365 now wired in code, pending the key."),
  ("s6","What actually happened?","The night in full, with real proportions","the tables you kept picking",
   "Every value measured and unrounded."),
+ ("n1","How do I compare with everyone else?","Against published Oura member data","your ask for a national comparison",
+  "Member average 77.0 is real. Percentile is absent because Oura publishes no spread."),
+ ("n2","Where would I rank as a country?","Your average on the country ladder","your ask for a national comparison",
+  "Country averages as published by Oura for 2024."),
 ]
 RULES = [
  ("Light ground","Five picks, five light grounds. Never near-black."),
@@ -31,6 +35,8 @@ RULES = [
  ("Make it explicit","You should never have to ask what a mark means. The comparison rule is stated on screen."),
  ("One element, one screen, one question","Six screens instead of one crowded one."),
 ]
+
+DECK_URL = "https://claude.ai/code/artifact/5312e387-8baf-4998-90f2-c5bba7987e34"
 
 def b64(k):
     with open(f"shots/s5/{k}.png","rb") as f: return base64.b64encode(f.read()).decode()
@@ -101,6 +107,10 @@ section .lede{{margin-top:10px;max-width:64ch;color:var(--quiet)}}
 .note b{{color:var(--ink);font-weight:600}}
 .note .hr{{height:1px;background:var(--rule);margin:14px 0}}
 code{{font-family:var(--mono);font-size:.82em;background:var(--well);padding:1px 5px;color:var(--ink)}}
+a.deck{{display:inline-block;font-family:var(--mono);font-size:13px;letter-spacing:.06em;
+  background:var(--accent);color:#17202A;text-decoration:none;padding:11px 18px;font-weight:600}}
+a.deck:hover{{background:#B9D4EC}}
+a.deck:focus-visible{{outline:2px solid var(--ink);outline-offset:3px}}
 footer{{margin-top:clamp(40px,5vw,70px);border-top:1px solid var(--rule);padding-top:16px;
   font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
   color:var(--faint);display:flex;flex-wrap:wrap;gap:8px 26px}}
@@ -114,6 +124,9 @@ footer{{margin-top:clamp(40px,5vw,70px);border-top:1px solid var(--rule);padding
   crowded screen — it is <b>six screens that each answer exactly one thing.</b>
   Two questions run underneath all of it: <b>where am I</b>, and <b>am I heading the right
   direction.</b> The second one had never been answered before this.</p>
+  <p class="stand" style="margin-top:12px"><b>Two families now.</b> Warm paper means measured
+  against your own 1,042 nights. Cool blue means measured against published Oura member data.
+  Every screen states which it is, in the ground colour and in words.</p>
   <p class="stand" style="margin-top:12px">Revision 2, from your notes: the score now leads
   and shares the percentile's size; the curve and the grid are banded into thirds of your own
   history; and the direction screen is rebuilt around <b>one stated baseline</b> instead of a
@@ -121,6 +134,14 @@ footer{{margin-top:clamp(40px,5vw,70px);border-top:1px solid var(--rule);padding
 </header>
 
 <div class="grid">{cards}</div>
+
+<section>
+  <h2>Swipe them</h2>
+  <p class="lede">All eight as one deck — swipe on a phone, arrow keys or the numbered
+  dots on a desktop. The dots carry the same provenance colour, so you always know which
+  family you are in. This link now ships at the foot of the morning Telegram reply.</p>
+  <p style="margin-top:16px"><a class="deck" href="{DECK_URL}">Open the deck &rarr;</a></p>
+</section>
 
 <section>
   <h2>What your picks actually said</h2>

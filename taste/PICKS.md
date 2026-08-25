@@ -399,3 +399,65 @@ the numbers exist.
    group's rendered descendants against its neighbour's, with a 2px tolerance —
    and was regression-tested by deliberately re-inflating s6's row padding,
    which it caught at 124px and 112px.
+
+---
+
+# REVISION 5 — the national comparison, and the deck
+
+## The research result is a negative one, and it governs the design
+
+Full findings in `references/OURA-POPULATION.md`. Short version:
+
+**Published and usable:** the global member mean Sleep Score is **77.0** (Oura
+2024 Year in Review, de-identified data from millions of members, Dec 2023 →
+Nov 2024), plus country means — NZ 79.8, AU 78.7, SE 78.5, FI 78.4, AT 78.2.
+
+**Not published anywhere found:** any standard deviation, distribution,
+quantiles or percentile mapping. Also no US country mean.
+
+**So the headline ask — "for each sleep score, what percentile is that in the
+national dataset" — is not computable.** A percentile needs a spread as well as
+an average, and only the average exists. Screen n1 says this on the screen
+rather than quietly producing a number.
+
+Two traps avoided:
+1. Search surfaces SDs like "76 ± 9.1" — that is **one individual's own
+   night-to-night variation**. Within-person spread is not between-person
+   spread. Substituting one for the other yields a confident, sourced-looking,
+   wrong percentile.
+2. "National" is the wrong word regardless. Oura members bought a $300 ring to
+   optimise sleep; the member mean is not a population mean. Screens say
+   **"Oura members"**, never "national".
+
+## What the national screens do instead
+- **n1** compares on the axis the data supports: 88 vs member mean 77.0 =
+  **+11.0**; his all-time 79.3 vs 77.0 = **+2.3**.
+- **n2** drops his all-time average into the published country ladder, where
+  **79.3 places second**, between Australia 78.7 and New Zealand 79.8.
+
+## Provenance is now a visual family, not a footnote
+Warm paper + amber rail = measured against his own 1,042 nights.
+Cool blue paper + blue rail = measured against published Oura member data.
+Every screen carries the rail. The deck's navigation dots inherit the same
+colours, so the family is visible even in the chrome.
+
+## The deck
+`bin/build-deck.py` emits `web/deck.html`: all eight screens in one horizontally
+scroll-snapped page. Each screen sits in an `<iframe srcdoc>` **on purpose** —
+the screens are independently generated documents reusing the same class names,
+so concatenating them would have their styles overwrite each other. The iframe
+gives each a real document scope and keeps every screen byte-identical to the
+file verified at 390×844. Swipe works natively; arrow keys, Home/End and the
+numbered dots also work.
+
+## Telegram
+`config.json` gains `screensUrl`; `src/coach.js` appends `See the whole night →
+<url>` to the morning reply. An absent or empty value omits the line entirely
+rather than shipping a dangling label — covered by a test. **77 tests green.**
+
+## STILL OPEN
+A true population percentile needs a distribution Oura does not publish.
+Options, none of them free: ask Oura for aggregate quantiles; derive a spread
+from a large public Oura cohort if one ever publishes Sleep Score (the Five
+Million Nights dataset reports phenotypes and durations, **not** the score); or
+drop the percentile idea for the population and keep comparing on means.
