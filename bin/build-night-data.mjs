@@ -61,6 +61,7 @@ if (process.argv.includes('--sample')) {
              restingHr: null, breath: null, bedtimeStart: null, bedtimeEnd: null, hypnogram: null },
   };
   writeFileSync(join(ROOT, 'data/last-night.json'), JSON.stringify(out, null, 2));
+
   console.log(`build-night-data: SAMPLE score ${s} · ${out.standing.percentile}th percentile `
     + `· rank ${out.standing.rank}/${R.n} — layout only, never a real night`);
   process.exit(0);
@@ -161,6 +162,36 @@ const out = {
 };
 
 writeFileSync(join(ROOT, 'data/last-night.json'), JSON.stringify(out, null, 2));
+
+// A score-free health record, committed to the repository so the pipeline can be
+// inspected without waiting on a job to finish. That matters now the engine runs
+// for six hours at a stretch: Actions will not serve a step's log until the job
+// ends, so a long window is otherwise a black box until the evening.
+//
+// Deliberately carries no scores and no vital VALUES -- this file is public.
+// Counts and booleans only, which is enough to answer the questions that
+// actually come up: did the ingest run, did the sleep period arrive, how many
+// vitals were readable, how far behind is the ring.
+const vitals = ['deep', 'rem', 'light', 'awake', 'asleepMinutes', 'inBedMinutes',
+                'efficiency', 'latency', 'hrv', 'restingHr', 'breath',
+                'bedtimeStart', 'bedtimeEnd'];
+const present = vitals.filter((k) => out.night[k] !== null && out.night[k] !== undefined).length;
+writeFileSync(join(ROOT, 'state/health.json'), `${JSON.stringify({
+  _comment: 'Score-free pipeline health, written by bin/build-night-data.mjs. Public file: '
+    + 'counts and booleans only, never a score or a vital value.',
+  generated: out.generated,
+  night: out.date,
+  daysBehind: out.daysBehind,
+  stale: out.stale,
+  nightsOnRecord: out.population.n,
+  // The one that has been wrong twice: the score comes from daily_sleep and every
+  // duration, stage and vital comes from the sleep period, which was arriving one
+  // row short.
+  hasSleepPeriod: out.night.asleepMinutes !== null,
+  vitalsPresent: present,
+  vitalsTotal: vitals.length,
+  hypnogram: Boolean(out.night.hypnogram),
+}, null, 2)}\n`);
 console.log(`build-night-data: ${out.date} score ${score} · rank ${out.standing.rank}/${out.population.n} `
   + `· ${out.standing.percentile}th percentile · mean ${out.population.mean} sd ${out.population.sd}`);
 if (out.stale) {

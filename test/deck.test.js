@@ -164,3 +164,34 @@ test('the removed member-average screens stay removed', () => {
   // his whole history against a stranger's.
   assert.ok(SCREENS.includes('g1'));
 });
+
+test('the health file carries no scores and no vital values', () => {
+  // state/health.json is committed to a PUBLIC repository so that a six-hour run
+  // can be inspected without waiting for Actions to release its log. That is only
+  // safe if it stays counts and booleans. A regression here leaks biometrics.
+  const src = readFileSync(join(ROOT, 'bin/build-night-data.mjs'), 'utf8');
+  const block = src.slice(src.indexOf("state/health.json"));
+  const body = block.slice(0, block.indexOf('}, null, 2)}'));
+  for (const banned of ['out.score', 'score,', 'night.hrv', 'night.restingHr',
+                        'night.breath', 'night.efficiency', 'asleepLabel',
+                        'population.mean', 'population.sd', 'percentile']) {
+    assert.ok(!body.includes(banned),
+      `health.json must not carry ${banned} -- the file is public`);
+  }
+  // What it may carry: the emptiness check on a vital is fine, the value is not.
+  assert.ok(body.includes('hasSleepPeriod'));
+  assert.ok(body.includes('vitalsPresent'));
+});
+
+test('a sample night writes no health record', () => {
+  // A sample health file would be committed and read as real. The sample branch
+  // exits before the health write; this holds that, because a copy of the write
+  // once ended up inside the sample branch by a careless global replace.
+  const src = readFileSync(join(ROOT, 'bin/build-night-data.mjs'), 'utf8');
+  const sampleEnd = src.indexOf('process.exit(0);');
+  const firstHealth = src.indexOf("state/health.json");
+  assert.ok(firstHealth > sampleEnd,
+    'the health write must be after the sample branch exits');
+  assert.equal(src.split("state/health.json").length - 1, 1,
+    'there must be exactly one health write');
+});
