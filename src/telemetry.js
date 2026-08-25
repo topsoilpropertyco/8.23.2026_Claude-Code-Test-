@@ -168,6 +168,25 @@ export function hasNight(date) {
   return readTelemetry().some((r) => r.date === date && r.sleep_score != null);
 }
 
+/**
+ * A night is COMPLETE only when its sleep period has arrived too.
+ *
+ * This distinction is the reason thirteen vitals rendered as dashes. The score
+ * comes from daily_sleep and every duration, stage, HRV and heart-rate figure
+ * comes from the sleep period, and Oura publishes the score first. hasNight only
+ * asks about the score, so the moment one landed the ingest declared the night
+ * settled and stopped retrying -- permanently, for that date. The period then
+ * never arrived, and the screen had a real score with nothing behind it.
+ *
+ * I spent two passes on the request parameters looking for this and it was never
+ * there: the pull was correct, it just stopped too early.
+ */
+export function nightComplete(date) {
+  return readTelemetry().some(
+    (r) => r.date === date && r.sleep_score != null && r.total_sleep_duration != null,
+  );
+}
+
 /** Sleep scores oldest-first, for the statistics layer. */
 export function scoreSeries() {
   return readTelemetry()

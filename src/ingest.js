@@ -13,7 +13,7 @@
 //               retries rather than an error.
 
 import { accessToken, dailySleep, dailyReadiness, dailyStress, sleepPeriods } from './oura.js';
-import { normalise, upsertTelemetry, readTelemetry, hasNight } from './telemetry.js';
+import { normalise, upsertTelemetry, readTelemetry, nightComplete } from './telemetry.js';
 
 const DAY_MS = 86400000;
 const CHUNK_DAYS = 120;
@@ -158,5 +158,5 @@ export async function ingestRecent({ days = 5, log = console.log } = {}) {
   return result;
 }
 
-/** True when the given local date already has a scored night on record. */
-export const isSettled = (date) => hasNight(date);
+/** True when the date has a scored night WITH its sleep period on record. */
+export const isSettled = (date) => nightComplete(date);

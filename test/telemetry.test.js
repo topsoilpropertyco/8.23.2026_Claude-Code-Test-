@@ -9,8 +9,8 @@ import { join } from 'node:path';
 process.env.SLEEPOS_STATE_DIR = mkdtempSync(join(tmpdir(), 'sleepos-telem-'));
 process.env.SLEEPOS_DATA_KEY = 'a'.repeat(64);
 
-const { upsertTelemetry, readTelemetry, writeTelemetry, scoreSeries, hasNight, TELEMETRY_PATH } =
-  await import('../src/telemetry.js');
+const { upsertTelemetry, readTelemetry, writeTelemetry, scoreSeries, hasNight,
+        nightComplete, TELEMETRY_PATH } = await import('../src/telemetry.js');
 
 const night = (date, score, extra = {}) => ({
   date, sleep_score: score, total_sleep_duration: 27000, deep_sleep_duration: 5400,
@@ -104,4 +104,43 @@ test('writeTelemetry replaces the file wholesale', () => {
   assert.equal(n, 2);
   assert.equal(readTelemetry().length, 2);
   assert.equal(readTelemetry()[0].date, '2026-01-01');
+});
+
+/* ------------------------------------------------- score without a period */
+
+test('a night with a score but no sleep period is not complete', () => {
+  // THE BUG THIS EXISTS FOR. The score comes from daily_sleep; every duration,
+  // stage, HRV and heart-rate figure comes from the sleep period, and Oura
+  // publishes the score first. shouldIngest asked hasNight, which only checks
+  // the score -- so the instant one landed the ingest declared the night settled
+  // and stopped retrying for good. The period never arrived and the screen
+  // showed a real score with thirteen dashes behind it.
+  writeTelemetry([{ date: '2026-07-01', sleep_score: 74, total_sleep_duration: null }]);
+  assert.equal(hasNight('2026-07-01'), true, 'the score is there');
+  assert.equal(nightComplete('2026-07-01'), false, 'but the night is not finished');
+});
+
+test('a night is complete once its period arrives', () => {
+  writeTelemetry([{ date: '2026-07-02', sleep_score: 74, total_sleep_duration: 27000 }]);
+  assert.equal(nightComplete('2026-07-02'), true);
+});
+
+test('an unscored night is never complete, period or not', () => {
+  writeTelemetry([{ date: '2026-07-03', sleep_score: null, total_sleep_duration: 27000 }]);
+  assert.equal(nightComplete('2026-07-03'), false);
+});
+
+test('the ingest keeps retrying until the period lands, then stops', async () => {
+  const { shouldIngest } = await import('../src/dispatch.js');
+  const cfg = { timezone: 'America/Detroit', ouraPullFromHour: 6 };
+  const noon = new Date('2026-07-04T16:00:00Z');   // 12:00 local
+  const base = { config: cfg, dateString: '2026-07-04', connected: true, now: noon };
+
+  // Score only: keep pulling. This is the case that used to stop.
+  writeTelemetry([{ date: '2026-07-04', sleep_score: 74, total_sleep_duration: null }]);
+  assert.equal(shouldIngest(base), true, 'must keep retrying for the missing period');
+
+  // Score and period: done for the day.
+  writeTelemetry([{ date: '2026-07-04', sleep_score: 74, total_sleep_duration: 27000 }]);
+  assert.equal(shouldIngest(base), false, 'a complete night must stop the pulling');
 });

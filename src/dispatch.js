@@ -19,7 +19,7 @@ import { loadState, saveState, sentSlotsFor, recordSend } from './state.js';
 import { localDateString, localTimeString } from './time.js';
 import { ingestRecent } from './ingest.js';
 import { isAuthorised } from './oura.js';
-import { hasNight } from './telemetry.js';
+import { nightComplete } from './telemetry.js';
 
 /**
  * Whether this run should attempt an Oura pull.
@@ -33,7 +33,9 @@ export function shouldIngest({ config, now, dateString, connected = isAuthorised
   if (!connected) return false;
   const hour = Number(localTimeString(now, config.timezone).slice(0, 2));
   if (hour < (config.ouraPullFromHour ?? 11)) return false;
-  return !(settled ?? hasNight(dateString));
+  // nightComplete, not hasNight: a night with a score but no sleep period is not
+  // finished, and treating it as finished is what left every vital blank.
+  return !(settled ?? nightComplete(dateString));
 }
 
 export async function dispatch({
