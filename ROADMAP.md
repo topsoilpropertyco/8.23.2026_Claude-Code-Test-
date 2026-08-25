@@ -161,7 +161,12 @@ strongest honest version of a claim is "this probably helps and costs nothing,"
 write that. The project has held to unrounded, unembellished numbers
 throughout; the same standard applies to the science.
 
-## Open questions for Seth
+## Open questions for Seth — ALL ANSWERED, see the decisions above
+
+*(M1–M4 below are the original framing, kept for the reasoning. Every one was
+decided and shipped; the decisions are the list immediately above this section.
+This heading was misleading enough that it got repeated back to Seth as open
+work several times in one session — it is not open.)*
 
 - **M1 — What does "upon waking" mean in practice?** Three options:
   - **(a) Fixed 07:15.** Simplest. Your Oura wake is 07:26, so it usually lands

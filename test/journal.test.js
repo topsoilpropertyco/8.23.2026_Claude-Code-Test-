@@ -940,12 +940,25 @@ test('logging a night also cues the morning light, once', async () => {
   assert.equal(sends.length, 3, 'second log should send only the coach reply, not another cue');
 });
 
-test('the anchor is a backstop, later than the usual wake time', () => {
+test('the anchor is a backstop after waking, inside the useful light window', () => {
   const config = loadConfig();
   const light = config.slots.find((s) => s.id === 'morning_light');
-  // Seth wakes around 07:26. An anchor before that always beats the reply, which
-  // would make the intake trigger dead code.
-  assert.ok(light.anchor > '07:26', `anchor ${light.anchor} fires before he wakes`);
+  const wake = config.wakeTime;
+  assert.ok(wake, 'config must state the wake time rather than leaving it to a comment');
+
+  // Read from config, not carried as a literal. The previous version hardcoded
+  // 07:26 in a comment and an assertion; when the real wake time turned out to be
+  // 06:30 the test was still enforcing a backstop built for the wrong morning.
+  //
+  // Two bounds, both of which matter. Before waking, the anchor beats the intake
+  // reply every day and the reply path is dead code. Too long after, the cue
+  // misses the window where morning light does anything -- the slot's own
+  // objective is "outdoor light within an hour of waking".
+  assert.ok(light.anchor > wake, `anchor ${light.anchor} fires before he wakes at ${wake}`);
+  const mins = (t) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5));
+  const after = mins(light.anchor) - mins(wake);
+  assert.ok(after <= 60,
+    `anchor is ${after} min after waking; the light window is about an hour`);
   assert.equal(light.jitter, false);
 });
 
