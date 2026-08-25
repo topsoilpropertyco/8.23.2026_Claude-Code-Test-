@@ -60,14 +60,16 @@ permissions:
 jobs:
   dispatch:
     runs-on: ubuntu-latest
-    # Required by actions/deploy-pages. The dashboard is published as ciphertext
-    # (bin/build-page.mjs) because this repository is public; the key rides in
-    # the URL fragment, which never reaches GitHub's servers.
     permissions:
       # The dashboard is published by pushing gh-pages from inside the run
       # (bin/publish-page.mjs), so no pages/id-token scopes are needed.
       contents: write
-    timeout-minutes: 10
+    # This was 10, set when a run took four minutes, and it is what killed the
+    # first two long windows: the Serve step asks for 350 but a job timeout caps
+    # every step inside it. Both windows died at ~9.5 minutes with the loop
+    # logging a clean heartbeat right up to the cut. 355 leaves the serve window
+    # (345) plus the steps before it inside GitHub's 360-minute job ceiling.
+    timeout-minutes: 355
     steps:
       - uses: actions/checkout@v4
 
