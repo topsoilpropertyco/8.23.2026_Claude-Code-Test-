@@ -38,11 +38,24 @@ test('the URL is never returned without its fragment', () => {
   );
 });
 
-test('the configured base is a real https origin', () => {
+test('the configured base matches the repository exactly, casing included', () => {
   const base = loadConfig().screensUrl;
   assert.ok(base, 'screensUrl is the Pages base and the link cannot be built without it');
   assert.match(base, /^https:\/\//);
   assert.ok(!base.includes('#'), 'the key is added at build time, never stored in config');
+
+  // THE BUG THIS EXISTS FOR. GitHub Pages paths are case-sensitive and this
+  // repository is named 8.23.2026_Claude-Code-Test-. The config held a
+  // lower-cased version, so the URL 404'd while Pages itself was working
+  // perfectly -- and I handed that URL to Seth as his permanent link.
+  // Derived from the actual remote rather than typed, so it cannot drift again.
+  const remote = execFileSync('git', ['remote', 'get-url', 'origin'],
+    { cwd: ROOT, encoding: 'utf8' }).trim();
+  const m = /github\.com[:/]([^/]+)\/(.+?)(?:\.git)?$/.exec(remote);
+  assert.ok(m, `could not parse the remote: ${remote}`);
+  const expected = `https://${m[1]}.github.io/${m[2]}`;
+  assert.equal(base, expected,
+    'the Pages path is case-sensitive and must match the repository name exactly');
 });
 
 test('delivery mode is one of the implemented paths', () => {
