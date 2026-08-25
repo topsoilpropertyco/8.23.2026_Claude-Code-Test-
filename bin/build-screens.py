@@ -54,6 +54,11 @@ TRAIL = {t['window']: t for t in NIGHT['trailing']}
 STALE = NIGHT.get('stale', False)
 DAYS_BEHIND = NIGHT.get('daysBehind', 0)
 
+def article(n):
+    """'a' or 'an' for a spoken number. 8, 11, 18 and the 80s take 'an'."""
+    n = int(n)
+    return 'an' if str(n)[0] == '8' or str(n).startswith('11') or str(n).startswith('18') else 'a'
+
 def ordinal(v):
     """Suffix for a rank or percentile. Decimals always take 'th'."""
     if float(v) != int(v): return 'th'
@@ -1010,7 +1015,7 @@ body = f"""  <p class="q">And against my own nights?</p>
   </div>
   {warn}
   <div class="hair" style="margin-top:12px"></div>
-  <p class="note mono" style="margin-top:11px">Same curves, different population. An {SCORE} sits at
+  <p class="note mono" style="margin-top:11px">Same curves, different population. {article(SCORE).capitalize()} {SCORE} sits at
   <b>{OP:.1f}</b> among your own nights and <b>{MP:.1f}</b> among member nights — a
   <b>{MP - OP:+.1f}</b> point gap, and the gap is the finding. Worth keeping in view: a letter reads
   as a verdict in a way a percentile does not. An F describes where a night sat in a distribution,
