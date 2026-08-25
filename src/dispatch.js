@@ -41,6 +41,7 @@ export async function dispatch({
   dryRun = false,
   force = null,
   skipInbox = false,
+  allowIngest = true,
   log = console.log,
 } = {}) {
   const config = loadConfig();
@@ -77,7 +78,12 @@ export async function dispatch({
   // guessing a single time; once the night is on record the check costs
   // nothing and no request is made.
   let ingest = null;
-  if (live && !dryRun && shouldIngest({ config, now, dateString })) {
+  // allowIngest exists because the supervisor cycles every ~25 seconds rather
+  // than every 5 minutes. shouldIngest is cheap, but the pull behind it is four
+  // API calls, and an unsettled night would mean 576 Oura requests an hour where
+  // the old cron made 48. Rate-limited pulls fail, get retried, and make it
+  // worse. serve.js holds the cooldown; a one-shot dispatch is unaffected.
+  if (allowIngest && live && !dryRun && shouldIngest({ config, now, dateString })) {
     try {
       ingest = await ingestRecent({ days: 3, log });
     } catch (err) {

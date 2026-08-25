@@ -32,6 +32,12 @@ import { scoreSeries } from './telemetry.js';
 // this costs one held connection rather than any spinning.
 const SLICE_SECONDS = 25;
 
+// How often the Oura pull may actually go out to the network. Five minutes keeps
+// the daily total in the same order as the old cron made (about 48 calls an hour
+// while a night is unsettled, not 576) while still noticing a night within
+// minutes of it landing.
+const INGEST_COOLDOWN_SECONDS = 300;
+
 /** Newest scored night on record, or null. Used to notice a fresh ingest. */
 function newestNight() {
   try {
@@ -56,6 +62,7 @@ export async function serve({
   persist = null,
   onNewNight = null,
   sliceSeconds = SLICE_SECONDS,
+  ingestCooldownSeconds = INGEST_COOLDOWN_SECONDS,
   dispatchFn = dispatch,
   listenFn = listen,
 } = {}) {
@@ -69,6 +76,11 @@ export async function serve({
   }
   let lastNight = newestNight();
   let loops = 0;
+  // -Infinity, not 0: a window opening must pull on its first cycle. With 0 and a
+  // clock at 0 the cooldown reads as already-satisfied-never, and a fresh window
+  // would sit blind for five minutes -- exactly when a night is most likely to be
+  // waiting for it.
+  let lastIngestAt = -Infinity;
   let totalSent = 0;
   let totalHandled = 0;
   let nightsSeen = 0;
@@ -87,8 +99,13 @@ export async function serve({
 
     // 1. Anything due goes out. Cheap when nothing is: dispatch reads the
     //    schedule and returns without sending.
+    // The Oura pull is rate-limited to once per cooldown. Slot delivery still
+    // runs every cycle -- only the network pull is throttled, so punctuality is
+    // unaffected and a night is still picked up within a few minutes of landing.
+    const wantIngest = now() - lastIngestAt >= ingestCooldownSeconds * 1000;
+    if (wantIngest) lastIngestAt = now();
     try {
-      const result = await dispatchFn({ log });
+      const result = await dispatchFn({ log, allowIngest: wantIngest });
       sentThisLoop = result?.sent?.length ?? 0;
       totalSent += sentThisLoop;
       totalHandled += result?.inbox?.handled ?? 0;

@@ -308,15 +308,28 @@ test('the Oura pull waits until the configured hour, then retries until the nigh
   const at = (hhmm) => zonedWallTimeToDate('2026-08-24', parseClock(hhmm), config.timezone);
   const base = { config, dateString: '2026-08-24', connected: true, settled: false };
 
-  // Too early: Oura will not have the night yet.
-  for (const t of ['00:30', '06:05', '08:00', '10:59']) {
-    assert.equal(shouldIngest({ ...base, now: at(t) }), false, `should not pull at ${t}`);
+  // Driven by the configured hour rather than a literal, so lowering it is a
+  // config decision and not a test rewrite. It was 11, which cost three hours of
+  // latency: the morning message went out around 08:00 and the deck waited for a
+  // pull that had not been attempted yet.
+  const hour = config.ouraPullFromHour ?? 11;
+  const hh = (h) => `${String(h).padStart(2, '0')}:00`;
+
+  // Before the hour, no pull.
+  for (const h of [0, Math.max(0, hour - 2), hour - 1]) {
+    if (h < 0 || h >= hour) continue;
+    assert.equal(shouldIngest({ ...base, now: at(hh(h)) }), false, `should not pull at ${hh(h)}`);
+  }
+  assert.equal(shouldIngest({ ...base, now: at(`${String(hour - 1).padStart(2, '0')}:59`) }), false);
+
+  // From the hour it tries, and keeps trying every cycle until the night lands.
+  for (const h of [hour, hour + 1, 14, 22].filter((h) => h >= hour && h <= 23)) {
+    assert.equal(shouldIngest({ ...base, now: at(hh(h)) }), true, `should pull at ${hh(h)}`);
   }
 
-  // From the pull hour it tries, and keeps trying on every poll.
-  for (const t of ['11:00', '11:10', '14:00', '22:00']) {
-    assert.equal(shouldIngest({ ...base, now: at(t) }), true, `should pull at ${t}`);
-  }
+  // A settled night stops the retrying, whatever the hour. Without this the pull
+  // would keep going out all day for a night already on record.
+  assert.equal(shouldIngest({ ...base, settled: true, now: at(hh(hour + 1)) }), false);
 });
 
 test('once the night is on record the pull stops making requests', async () => {

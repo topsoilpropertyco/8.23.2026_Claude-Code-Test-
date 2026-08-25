@@ -12,14 +12,16 @@ function clock(startMs = 0) {
 /** dispatch stand-in that reports N sends on the calls listed in `sendOn`. */
 function fakeDispatch({ sendOn = [], throwOn = [] } = {}) {
   let call = 0;
-  const f = async () => {
+  const f = async ({ allowIngest } = {}) => {
     call += 1;
     f.calls = call;
+    if (allowIngest) f.ingestCalls += 1;
     if (throwOn.includes(call)) throw new Error(`dispatch blew up on call ${call}`);
     const n = sendOn.filter((c) => c === call).length;
     return { sent: new Array(n).fill({}), inbox: { handled: 0 } };
   };
   f.calls = 0;
+  f.ingestCalls = 0;
   return f;
 }
 
@@ -161,4 +163,32 @@ test('sends and replies are both counted', async () => {
     listenFn: fakeListen(c, { handledOn: [2, 4] }), now: c.now, log: quiet });
   assert.equal(r.sent, 3);
   assert.equal(r.handled, 2);
+});
+
+test('the Oura pull is throttled even though slots are checked every cycle', () => {
+  // The supervisor cycles every ~25s where the old cron ran every 5 minutes.
+  // shouldIngest is cheap but the pull behind it is four API calls, so an
+  // unsettled night would have meant 576 Oura requests an hour instead of 48 --
+  // and rate-limited pulls fail, retry, and compound. Slot delivery must stay on
+  // every cycle; only the network pull is throttled.
+  const c = clock();
+  const d = fakeDispatch();
+  return serve({
+    seconds: 3600, sliceSeconds: 25, ingestCooldownSeconds: 300,
+    dispatchFn: d, listenFn: fakeListen(c), now: c.now, log: quiet,
+  }).then(() => {
+    assert.equal(d.calls, 144, 'every cycle must still check what is due');
+    // 12 five-minute boundaries in an hour, give or take where the last one
+    // falls relative to the deadline.
+    assert.ok(d.ingestCalls >= 11 && d.ingestCalls <= 13,
+      `expected ~12 pulls in an hour at a 5-minute cooldown, got ${d.ingestCalls}`);
+  });
+});
+
+test('the first cycle is allowed to pull, so a fresh window is not blind', () => {
+  const c = clock();
+  const d = fakeDispatch();
+  return serve({ seconds: 30, sliceSeconds: 25, dispatchFn: d,
+                 listenFn: fakeListen(c), now: c.now, log: quiet })
+    .then(() => assert.equal(d.ingestCalls, 1));
 });
