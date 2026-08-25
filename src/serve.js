@@ -26,6 +26,11 @@ import { listen } from './listen.js';
 import { loadConfig } from './facts.js';
 import { loadState } from './state.js';
 import { scoreSeries, nightComplete } from './telemetry.js';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 // Long enough that the loop is cheap, short enough that a slot fires within
 // half a minute of its target. Telegram's own long poll does the waiting, so
@@ -48,6 +53,22 @@ const INGEST_COOLDOWN_SECONDS = 300;
  * because the date it was keyed on had not moved. The screens kept showing the
  * scoreless-vitals version of a night that was finished.
  */
+/**
+ * The fingerprint of the deck that was last built, read from the health record
+ * the build itself writes. Null when nothing has been built, which correctly
+ * makes the first cycle rebuild.
+ */
+function builtFingerprint() {
+  try {
+    const raw = readFileSync(join(ROOT, 'state/health.json'), 'utf8');
+    const h = JSON.parse(raw);
+    if (!h.night) return null;
+    return `${h.night}:${h.hasSleepPeriod ? 'full' : 'partial'}`;
+  } catch {
+    return null;
+  }
+}
+
 function nightFingerprint() {
   try {
     const s = scoreSeries();
@@ -85,7 +106,14 @@ export async function serve({
     log('serve: window is zero, nothing to do');
     return { loops: 0, sent: 0, handled: 0, minutes: 0 };
   }
-  let lastNight = nightFingerprint();
+  // Seeded from the last deck that was actually BUILT, not from current
+  // telemetry. Seeding from telemetry meant a night that completed before the
+  // window opened was captured as the starting state and never counted as a
+  // change -- so the deck stayed on whatever it was built from, and nothing
+  // would ever correct it until the next night arrived. That is exactly what
+  // happened: the period landed at 18:11 and the screens were still the 17:31
+  // build hours later.
+  let lastNight = builtFingerprint();
   let loops = 0;
   // -Infinity, not 0: a window opening must pull on its first cycle. With 0 and a
   // clock at 0 the cooldown reads as already-satisfied-never, and a fresh window
@@ -97,7 +125,8 @@ export async function serve({
   let nightsSeen = 0;
 
   log(`serve: up for ${Math.round(seconds / 60)} min, checking every ${sliceSeconds}s`);
-  if (lastNight) log(`serve: newest night on record ${lastNight}`);
+  log(`serve: deck was last built from ${lastNight ?? 'nothing'}; `
+    + `telemetry now has ${nightFingerprint() ?? 'nothing'}`);
 
   // A quiet loop prints nothing, which made ten minutes of healthy silence
   // indistinguishable from a hang when the first window was killed. A line every

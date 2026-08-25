@@ -230,3 +230,24 @@ test('the deck rebuilds when a night becomes complete, not only on a new date', 
   assert.ok(!src.includes('function newestNight'),
     'the date-only watcher must be gone, not merely unused');
 });
+
+test('a night that completed before the window opened still rebuilds', () => {
+  // Seeding the watcher from current telemetry made the starting state equal to
+  // the current state, so a night that finished while no window was running was
+  // never counted as a change. The screens sat on an older build with nothing
+  // able to correct them until the next night. Seeding from what was last BUILT
+  // -- state/health.json, written by the build itself -- closes that.
+  const src = readFileSync(join(ROOT, 'src/serve.js'), 'utf8');
+  assert.ok(src.includes('let lastNight = builtFingerprint()'),
+    'the watcher must start from the last build, not from current telemetry');
+  assert.ok(src.includes("state/health.json"),
+    'the last-built state is read from the health record the build writes');
+  // And the two fingerprints must be computed the same way, or they can never
+  // compare equal and every cycle would resend.
+  const built = /function builtFingerprint[\s\S]*?\n}/.exec(src)[0];
+  const live = /function nightFingerprint[\s\S]*?\n}/.exec(src)[0];
+  for (const f of [built, live]) {
+    assert.ok(f.includes("'full'") && f.includes("'partial'"),
+      'both fingerprints must use the same full/partial vocabulary');
+  }
+});
