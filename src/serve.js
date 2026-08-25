@@ -76,6 +76,11 @@ export async function serve({
   log(`serve: up for ${Math.round(seconds / 60)} min, checking every ${sliceSeconds}s`);
   if (lastNight) log(`serve: newest night on record ${lastNight}`);
 
+  // A quiet loop prints nothing, which made ten minutes of healthy silence
+  // indistinguishable from a hang when the first window was killed. A line every
+  // few minutes is the difference between "working, nothing due" and "stuck".
+  const HEARTBEAT_EVERY = Math.max(1, Math.round(300 / sliceSeconds));
+
   while (now() < deadline) {
     loops += 1;
     let sentThisLoop = 0;
@@ -119,6 +124,13 @@ export async function serve({
       } catch (err) {
         log(`serve: state push failed (continuing): ${err.message}`);
       }
+    }
+
+    if (loops % HEARTBEAT_EVERY === 0) {
+      const upMin = Math.round((now() - started) / 60000);
+      const leftMin = Math.round((deadline - now()) / 60000);
+      log(`serve: alive — ${loops} cycles, ${upMin} min up, ${leftMin} min left, `
+        + `${totalSent} sent, ${totalHandled} answered`);
     }
 
     // 4. Hold a long poll for the rest of the slice, so a reply is answered in

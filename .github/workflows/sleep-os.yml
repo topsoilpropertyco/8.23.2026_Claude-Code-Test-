@@ -9,13 +9,16 @@ name: Sleep OS Dispatch
 # deterministically from the date, so extra polls never move the target times.
 on:
   schedule:
-    # Every two hours, for a run that stays up for nearly six. The overlap is
-    # deliberate: GitHub delivers this cron at a measured median of 103 minutes
-    # rather than the interval asked for, so a start that slips by an hour is
-    # still covered by the run already in flight. concurrency queues rather than
-    # cancels, so a run that arrives while one is live simply waits and then
-    # extends the coverage instead of doubling it.
-    - cron: '0 */2 * * *'
+    # Half-hourly, for a run that stays up for nearly six hours. That looks
+    # redundant and is not: `concurrency` queues rather than cancels, so a run
+    # arriving while one is live becomes a hot spare that starts the moment the
+    # live one ends. That matters because long jobs do get killed -- the first
+    # real window was cancelled after ten minutes with no newer run to displace
+    # it, most likely the free public runner being reclaimed. A frequent cron
+    # means a dead window is replaced in minutes rather than hours, and the
+    # scheduler's own unreliability stops mattering: any one of these firing is
+    # enough to keep a window open.
+    - cron: '*/30 * * * *'
   workflow_dispatch:
     inputs:
       slot:
