@@ -434,8 +434,46 @@ answered. Full record in `taste/PICKS.md`.
 | | Blocker | What's needed |
 |---|---|---|
 | **S1** | Exposed Telegram bot token | Two minutes at a computer with @BotFather, then update `SLEEPOS_TELEGRAM_BOT_TOKEN`. Only open security item. |
-| **Oura population percentile** | Oura publishes a mean Sleep Score (77.0) and **no spread**, so a score cannot be placed on a population curve | A distribution, or a second parameter. **Seth is sourcing percentile data from a large public cohort and will supply it** (2026-08-25). `SUPERPROMPT-OURA-DISTRIBUTION.md` stays as the fallback path if that data does not carry a spread. When the numbers land: check whether the SD is within-person or between-person before using it — that distinction is the whole problem, and a within-person SD will produce percentiles that are badly, confidently wrong. |
+| ~~**Oura population percentile**~~ — **RESOLVED 2026-08-25** | Seth supplied a member-night percentile table (scores 40–99, three grading curves, 90% intervals). Saved as `references/07-SCORE-REFERENCE-TABLE.md` + `04-percentile-table.csv`, verified in `07-VERIFICATION.md`, shipped as screens g1/g2. | Still member nights, not national, and the SD behind it is inferred rather than published — so 26 of 60 rows stay unprintable and no row is high confidence. |
 | **T180 / T365 values** | `coach.js` now asks for them and `trailing()` computes them, but this build has no `SLEEPOS_DATA_KEY` | Nothing. They populate automatically on the runner, which holds the key. Screen s5 shows them as "pending" until then. |
+
+---
+
+# Phase 12 — Letter grades — SHIPPED
+
+Two screens, `g1` and `g2`, answering "what is last night worth?" on three
+grading curves at once — standard, bell and curved, harshest to most generous.
+`g1` grades against Oura member nights; `g2` against his own 1,042.
+
+The curves are held identical across both screens on purpose. That is what makes
+the comparison mean anything: an 88 is an **A** among member nights and an **A−**
+among his own, because he outsleeps the member average and his own history is
+the tougher field. The gap is the finding, and it only reads as a gap if the
+curves do not move.
+
+All three curves grade a **percentile**, never a raw score, so one marker cuts
+through all three bars and the reason the letters differ is visible rather than
+asserted. Standard's enormous F block is the argument against using it.
+
+What is enforced in code rather than left to good intentions:
+
+- Curve definitions live in `data/grade-curves.json`, read by both the app and
+  the screen builder. A test asserts they reproduce all 180 published grade
+  cells — if the files drift, every grade goes silently wrong while still
+  looking plausible.
+- Nothing is labelled "national". A test fails if the population label says
+  national or ever acquires a member count.
+- The 26 low-confidence rows grade but never print a percentile.
+- `bin/build-grades.mjs` counts real nights where the key exists and stamps
+  `modelled: true` where it does not; `g2` carries a provisional banner in that
+  case.
+
+**Open on this phase:** `data/my-score-table.json` in the repo is still the
+fitted fallback, because no container outside the runner can read the encrypted
+history. The first CI run after a telemetry change replaces it with counted
+nights and uploads `references/08-MY-SCORE-TABLE.md` as the `grade-table`
+artifact. Until then `g2`'s numbers are provisional and say so.
+
 
 ## Open questions, not blockers
 
