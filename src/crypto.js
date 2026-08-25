@@ -32,6 +32,27 @@ export function hasKey() {
   return Boolean(process.env[ENV]);
 }
 
+/**
+ * Does this line look like one of our ciphertext records?
+ *
+ * Needed to tell three situations apart that all used to look identical from
+ * the outside: a genuinely empty log, a log we cannot read because the key is
+ * absent, and a log we cannot read because the key is WRONG. The last one is
+ * the dangerous case -- writes keep succeeding under the new key while every
+ * older record silently vanishes from every read.
+ */
+export function looksEncrypted(line) {
+  const trimmed = String(line).trim();
+  if (!trimmed || trimmed.startsWith('{')) return false;
+  let buf;
+  try {
+    buf = Buffer.from(trimmed, 'base64');
+  } catch {
+    return false;
+  }
+  return buf.length > IV_BYTES + TAG_BYTES;
+}
+
 function key() {
   const raw = process.env[ENV];
   if (!raw) throw new MissingKeyError();

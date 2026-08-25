@@ -77,11 +77,15 @@ else to deploy.
 
 ```bash
 npm run today                       # today's jittered schedule + what has fired
+npm run doctor                      # health check: config, libraries, data, secrets
 npm run journal                     # journal entries and the manual sleep log
-npm run preview                     # render all six of today's cards, send nothing
+npm run preview                     # render every one of today's cards, send nothing
 npm run send -- terminal_bedtime    # force one slot immediately
 npm run send -- work_shutdown --dry-run
 npm run dispatch                    # send whatever is due (this is what cron runs)
+npm run listen                      # drain the Telegram reply queue once
+npm run night                       # build and send the last-night screen
+npm run oura -- url                 # start the Oura authorisation flow
 npm run stats                       # library, rotation position, delivery history
 npm run whoami                      # verify bot token, discover chat id
 npm test

@@ -7,7 +7,7 @@
 
 import { getUpdates, sendMessage } from './telegram.js';
 import { parseEntry, buildCoachResponse } from './coach.js';
-import { addJournalEntry, addSleepEntry, sleepSeries, readJournal, journalStreak } from './journal.js';
+import { addJournalEntry, addSleepEntry, sleepSeries, readJournal, journalStreak, logHealth } from './journal.js';
 import { buildAffirmation } from './affirm.js';
 import { prepareHabit } from './habits.js';
 import { renderHabit } from './render.js';
@@ -191,11 +191,43 @@ export async function cueMorningLight({ token, chatId, state, dateString, log = 
   }
 }
 
+/** What to say when the personal logs will not decode. */
+export function blindLogMessage(health) {
+  const lines = [
+    'SLEEP OS  //  CANNOT READ YOUR LOG',
+    '',
+    `${health.unreadable} record(s) on disk did not decode, so nothing was written.`,
+    '',
+  ];
+  if (!health.keyPresent) {
+    lines.push('SLEEPOS_DATA_KEY is not set on the runner. Your history is encrypted, not lost.');
+  } else if (health.totallyBlind) {
+    lines.push('SLEEPOS_DATA_KEY is set but decodes nothing, so it is the wrong key.');
+    lines.push('Writing now would split your log across two keys. Restore the original key.');
+  } else {
+    lines.push('Some records failed to authenticate — likely a partial key change.');
+  }
+  lines.push('');
+  lines.push('Run: npm run doctor');
+  return lines.join('\n');
+}
+
 async function handleSleepEntry({ token, chatId, text, state, dateString, log, send = sendMessage }) {
   const parsed = parseEntry(text);
   if (!parsed.ok) {
     await send(token, chatId, `Could not read that — ${parsed.reason}.\n\nTry: 84   or   84 7.5   or   84 7.5 4`);
     return { type: 'parse-error' };
+  }
+
+  // Refuse to write into a log we cannot read. If the key is wrong, appending
+  // would succeed under the new key and quietly split the history in two, and
+  // the coach would compare tonight against an empty past as if that were true.
+  // Better to lose one entry loudly than the whole record silently.
+  const health = logHealth();
+  if (!health.ok) {
+    await send(token, chatId, blindLogMessage(health));
+    log?.({ type: 'sleep-entry-refused', unreadable: health.unreadable });
+    return { type: 'log-unreadable', unreadable: health.unreadable };
   }
 
   const history = sleepSeries().filter((e) => e.date !== dateString);

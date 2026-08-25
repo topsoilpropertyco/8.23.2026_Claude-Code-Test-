@@ -14,7 +14,7 @@ import { selectFact } from '../src/selector.js';
 import { loadHabits, selectRationale } from '../src/habits.js';
 import { selectPrompt, intakeRequest } from '../src/prompts.js';
 import { renderMessage, renderIntake, renderHabit } from '../src/render.js';
-import { readJournal, sleepSeries } from '../src/journal.js';
+import { readJournal, sleepSeries, logHealth } from '../src/journal.js';
 import { authorizeUrl, exchangeCode, isAuthorised, readTokens, SCOPES, REDIRECT_URI } from '../src/oura.js';
 import { backfill, ingestRecent } from '../src/ingest.js';
 import { readTelemetry, scoreSeries, compactTelemetry } from '../src/telemetry.js';
@@ -147,12 +147,33 @@ async function cmdWhoami() {
   console.log('\n  Use the id above as TELEGRAM_CHAT_ID.');
 }
 
+/**
+ * An unreadable log is not an empty log. Saying "none yet" over 1,042 encrypted
+ * nights is the single most misleading thing this CLI could do, so it says what
+ * is actually wrong and how to fix it.
+ */
+function warnUnreadable(health) {
+  const j = health.files.journal, s = health.files.sleeplog;
+  console.log(`  ⚠  ${health.unreadable} record(s) on disk could not be read`);
+  console.log(`     journal ${j.lines - j.unreadable}/${j.lines} readable · sleep log ${s.lines - s.unreadable}/${s.lines} readable`);
+  if (!health.keyPresent) {
+    console.log('     SLEEPOS_DATA_KEY is not set. These are encrypted, not missing.');
+  } else if (health.totallyBlind) {
+    console.log('     SLEEPOS_DATA_KEY is set but decodes nothing — it is the WRONG key.');
+    console.log('     Do not append: writing now would split the log across two keys.');
+  } else {
+    console.log('     Some records failed to authenticate. Likely a partial key change.');
+  }
+}
+
 async function cmdJournal() {
   const entries = readJournal().slice(-15).reverse();
   const nights = sleepSeries();
 
+  const health = logHealth();
   banner(`Journal · ${readJournal().length} entries`);
-  if (entries.length === 0) {
+  if (!health.ok) warnUnreadable(health);
+  if (entries.length === 0 && health.ok) {
     console.log('  none yet — reply to any card in Telegram and it lands here');
   }
   for (const e of entries) {
@@ -164,6 +185,49 @@ async function cmdJournal() {
   for (const n of nights.slice(-10)) {
     console.log(`  ${n.date}  score ${String(n.score ?? '—').padStart(3)}  ${n.hours ? n.hours + 'h' : '   '}  ${n.feel ? 'feel ' + n.feel : ''}`);
   }
+}
+
+/**
+ * One command that answers "is this thing actually working". Checks the things
+ * that fail silently rather than the things that fail loudly, because the loud
+ * ones announce themselves.
+ */
+async function cmdDoctor() {
+  let problems = 0;
+  const ok = (label, good, detail = '') => {
+    if (!good) problems += 1;
+    console.log(`  ${good ? '✓' : '✗'}  ${label}${detail ? `  ${detail}` : ''}`);
+  };
+
+  banner('Configuration');
+  const cfg = loadConfig();
+  ok('config.json parses', true);
+  ok('timezone set', Boolean(cfg.timezone), cfg.timezone ?? '');
+  ok('slots defined', Array.isArray(cfg.slots) && cfg.slots.length > 0, `${cfg.slots?.length ?? 0} slots`);
+  const enabled = (cfg.slots ?? []).filter((x) => x.enabled !== false).length;
+  ok('at least one slot enabled', enabled > 0, `${enabled} enabled`);
+  ok('screensUrl set', Boolean(cfg.screensUrl), cfg.screensUrl ? 'link ships in the morning reply' : 'no link in the morning reply');
+
+  banner('Fact libraries');
+  const libs = loadLibraries();
+  ok('libraries load', libs.facts.length > 0, `${libs.facts.length} facts`);
+  const dupes = libs.facts.length - new Set(libs.facts.map((f) => f.id)).size;
+  ok('no duplicate fact ids', dupes === 0, dupes ? `${dupes} duplicated` : '');
+  const noMove = libs.facts.filter((f) => !f.move).length;
+  ok('every fact has a move', noMove === 0, noMove ? `${noMove} missing` : '');
+
+  banner('Personal data');
+  const health = logHealth();
+  ok('logs readable', health.ok, health.ok ? '' : `${health.unreadable} unreadable`);
+  if (!health.ok) warnUnreadable(health);
+
+  banner('Secrets');
+  ok('TELEGRAM_BOT_TOKEN', Boolean(process.env.TELEGRAM_BOT_TOKEN), process.env.TELEGRAM_BOT_TOKEN ? '' : 'unset — cannot send');
+  ok('SLEEPOS_DATA_KEY', Boolean(process.env.SLEEPOS_DATA_KEY), process.env.SLEEPOS_DATA_KEY ? '' : 'unset — cannot read or write personal data');
+  ok('Oura connected', isAuthorised(), isAuthorised() ? '' : 'run: npm run oura -- url');
+
+  banner(problems === 0 ? 'All green' : `${problems} problem(s)`);
+  if (problems > 0) process.exitCode = 1;
 }
 
 async function cmdOura(action, code) {
@@ -336,6 +400,9 @@ switch (command) {
     case 'journal':
       await cmdJournal();
       break;
+    case 'doctor':
+      await cmdDoctor();
+      break;
     case 'listen':
       await cmdListen(args[0]);
       break;
@@ -346,7 +413,7 @@ switch (command) {
       await cmdOura(args[0], args.slice(1).join(' '));
       break;
     default:
-      console.error(`Unknown command "${command}". Try: today, preview, dispatch, send, whoami, stats, journal, oura`);
+      console.error(`Unknown command "${command}". Try: today, preview, dispatch, send, whoami, stats, journal, doctor, listen, night, oura`);
       process.exit(1);
   }
 } catch (err) {

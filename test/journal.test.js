@@ -966,3 +966,106 @@ test('the morning reply carries a link to the screens when one is configured', (
   });
   assert.ok(!without.text.includes('See the whole night'), 'empty URL should omit the line');
 });
+
+/* ------------------------------------- unreadable logs must not read as empty */
+
+// The failure this guards against: SLEEPOS_DATA_KEY missing or rotated made
+// read() return [] , which is indistinguishable from "you have never logged
+// anything". The coach would then compare tonight against an empty past, and
+// appends would keep succeeding under the new key, splitting the log in two.
+
+test('looksEncrypted tells ciphertext apart from plaintext and junk', async () => {
+  const { looksEncrypted, encryptLine } = await import('../src/crypto.js');
+  const saved = process.env.SLEEPOS_DATA_KEY;
+  process.env.SLEEPOS_DATA_KEY = 'dGVzdGtleXRlc3RrZXl0ZXN0a2V5dGVzdGtleTEyMzQ=';
+  const cipher = encryptLine(JSON.stringify({ date: '2026-08-23', score: 88 }));
+  process.env.SLEEPOS_DATA_KEY = saved;
+
+  assert.equal(looksEncrypted(cipher), true, 'real ciphertext');
+  assert.equal(looksEncrypted('{"date":"2026-08-23"}'), false, 'legacy plaintext record');
+  assert.equal(looksEncrypted(''), false, 'blank line');
+  assert.equal(looksEncrypted('   '), false, 'whitespace');
+  assert.equal(looksEncrypted('short'), false, 'too short to be a record');
+});
+
+test('a log that will not decode reports unreadable rather than empty', async () => {
+  const { mkdtempSync: mk, writeFileSync: wf } = await import('node:fs');
+  const dir = mk(join(tmpdir(), 'sleep-os-blind-'));
+  const savedDir = process.env.SLEEPOS_STATE_DIR;
+  const savedKey = process.env.SLEEPOS_DATA_KEY;
+
+  // Write three real records under one key.
+  process.env.SLEEPOS_STATE_DIR = dir;
+  process.env.SLEEPOS_DATA_KEY = 'dGVzdGtleXRlc3RrZXl0ZXN0a2V5dGVzdGtleTEyMzQ=';
+  const { encryptLine } = await import('../src/crypto.js');
+  const rows = [1, 2, 3].map((i) =>
+    encryptLine(JSON.stringify({ date: `2026-08-0${i}`, score: 80 + i })));
+  wf(join(dir, 'sleeplog.ndjson'), rows.join('\n') + '\n');
+
+  // journal.js caches its directory at import time, so load a fresh copy.
+  const fresh = await import(`../src/journal.js?blind=${Date.now()}`);
+
+  const good = fresh.logHealth();
+  assert.equal(good.ok, true, 'correct key: log is healthy');
+  assert.equal(good.unreadable, 0);
+  assert.equal(fresh.readSleepLog().length, 3, 'correct key: all three readable');
+
+  // Now the wrong key. Records still exist; none of them decode.
+  process.env.SLEEPOS_DATA_KEY = 'd3Jvbmdrd3Jvbmdrd3Jvbmdrd3Jvbmdrd3JvbmdrMTI=';
+  const wrong = fresh.logHealth();
+  assert.equal(wrong.ok, false, 'wrong key must not report healthy');
+  assert.equal(wrong.unreadable, 3, 'all three counted as unreadable');
+  assert.equal(wrong.totallyBlind, true, 'records exist and none decoded');
+  assert.equal(wrong.keyPresent, true, 'a key IS set, it is just the wrong one');
+
+  // And with no key at all.
+  delete process.env.SLEEPOS_DATA_KEY;
+  const none = fresh.logHealth();
+  assert.equal(none.ok, false, 'no key must not report healthy');
+  assert.equal(none.unreadable, 3);
+  assert.equal(none.keyPresent, false);
+
+  process.env.SLEEPOS_STATE_DIR = savedDir;
+  process.env.SLEEPOS_DATA_KEY = savedKey;
+});
+
+test('the blind-log message names the actual fault', async () => {
+  const { blindLogMessage } = await import('../src/inbox.js');
+
+  const wrongKey = blindLogMessage({ unreadable: 3, keyPresent: true, totallyBlind: true });
+  assert.match(wrongKey, /wrong key/i, 'a set-but-wrong key is called out as wrong');
+  assert.match(wrongKey, /split your log/i, 'warns that writing would split the log');
+
+  const noKey = blindLogMessage({ unreadable: 3, keyPresent: false, totallyBlind: true });
+  assert.match(noKey, /not set/i, 'an absent key is called out as absent');
+  assert.match(noKey, /encrypted, not lost/i, 'reassures the data still exists');
+
+  const partial = blindLogMessage({ unreadable: 1, keyPresent: true, totallyBlind: false });
+  assert.match(partial, /partial key change/i, 'a partial failure is described as partial');
+});
+
+/* ------------------------------------------------ telegram message chunking */
+
+test('long messages are split on natural boundaries, not mid-sentence', async () => {
+  const { chunkText, TELEGRAM_TEXT_LIMIT } = await import('../src/telegram.js');
+
+  assert.deepEqual(chunkText('short'), ['short'], 'short text passes through untouched');
+  assert.equal(TELEGRAM_TEXT_LIMIT, 4096);
+
+  const para = 'Sentence one about the night.\n\nSentence two about the night.\n\n';
+  const long = para.repeat(200);
+  const parts = chunkText(long);
+  assert.ok(parts.length > 1, 'oversized text is split');
+  for (const p of parts) {
+    assert.ok(p.length <= TELEGRAM_TEXT_LIMIT, `each chunk within the limit, got ${p.length}`);
+  }
+  // Nothing may be lost: rejoining recovers every word.
+  assert.equal(parts.join(' ').split(/\s+/).filter(Boolean).length,
+               long.split(/\s+/).filter(Boolean).length, 'no words dropped');
+
+  // A single unbroken run has no boundary to break on and must still be chunked.
+  const unbroken = 'x'.repeat(10000);
+  const hard = chunkText(unbroken);
+  assert.ok(hard.every((p) => p.length <= TELEGRAM_TEXT_LIMIT), 'hard split respects the limit');
+  assert.equal(hard.join('').length, unbroken.length, 'hard split loses nothing');
+});

@@ -16,6 +16,9 @@
     "stats": "node bin/sleep-os.js stats",
     "test": "node --test test/*.test.js",
     "journal": "node bin/sleep-os.js journal",
-    "oura": "node bin/sleep-os.js oura"
+    "oura": "node bin/sleep-os.js oura",
+    "doctor": "node bin/sleep-os.js doctor",
+    "listen": "node bin/sleep-os.js listen",
+    "night": "node bin/sleep-os.js night"
   }
 }

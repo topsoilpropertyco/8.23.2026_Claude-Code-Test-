@@ -62,13 +62,46 @@ async function call(token, method, payload, { log = () => {} } = {}) {
   throw lastError;
 }
 
+/** Telegram rejects any sendMessage body over this. It is a hard API limit. */
+export const TELEGRAM_TEXT_LIMIT = 4096;
+
+/**
+ * Split text into chunks Telegram will accept, breaking on paragraph then line
+ * boundaries so a card never tears mid-sentence. Nothing the engine composes is
+ * anywhere near the limit today (the longest coach reply measures ~730 chars),
+ * but a journal echo or a future block could cross it, and the failure mode
+ * without this is the whole send being rejected rather than arriving in two.
+ */
+export function chunkText(text, limit = TELEGRAM_TEXT_LIMIT) {
+  const body = String(text ?? '');
+  if (body.length <= limit) return [body];
+  const chunks = [];
+  let rest = body;
+  while (rest.length > limit) {
+    const window = rest.slice(0, limit);
+    let cut = window.lastIndexOf('\n\n');
+    if (cut < limit * 0.5) cut = window.lastIndexOf('\n');
+    if (cut < limit * 0.5) cut = window.lastIndexOf(' ');
+    if (cut <= 0) cut = limit;              // one unbroken run: hard split
+    chunks.push(rest.slice(0, cut).trimEnd());
+    rest = rest.slice(cut).replace(/^\s+/, '');
+  }
+  if (rest) chunks.push(rest);
+  return chunks;
+}
+
 export async function sendMessage(token, chatId, text) {
   // parse_mode is intentionally omitted: the card must render as plain text.
-  return call(token, 'sendMessage', {
-    chat_id: chatId,
-    text,
-    disable_web_page_preview: true,
-  });
+  const parts = chunkText(text);
+  let last;
+  for (const part of parts) {
+    last = await call(token, 'sendMessage', {
+      chat_id: chatId,
+      text: part,
+      disable_web_page_preview: true,
+    });
+  }
+  return last;
 }
 
 export async function getMe(token) {
