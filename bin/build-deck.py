@@ -18,7 +18,6 @@ ORDER = [
     ('s1', 'Where am I',        'own'), ('s2', 'The curve',      'own'),
     ('s3', 'The scale',         'own'), ('s4', 'Nights beaten',  'own'),
     ('s5', 'The direction',     'own'), ('s6', 'Last night',     'own'),
-    ('n1', 'Vs members',        'nat'), ('n2', 'Country ladder', 'nat'),
     ('g1', 'Grade vs members',  'nat'), ('g2', 'Grade vs my own', 'own'),
 ]
 panes, dots = '', ''

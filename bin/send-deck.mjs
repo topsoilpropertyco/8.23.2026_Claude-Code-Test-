@@ -25,7 +25,7 @@ import { sendMediaGroup, sendMessage, MEDIA_GROUP_MAX } from '../src/telegram.js
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'web/deck-shots');
-const SCREENS = ['s1', 's2', 's3', 's4', 's5', 's6', 'n1', 'n2', 'g1', 'g2'];
+const SCREENS = ['s1', 's2', 's3', 's4', 's5', 's6', 'g1', 'g2'];
 
 const dry = process.argv.includes('--dry');
 const date = process.argv.slice(2).find((a) => /^\d{4}-\d{2}-\d{2}$/.test(a));

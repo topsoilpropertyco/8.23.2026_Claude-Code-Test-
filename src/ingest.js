@@ -40,11 +40,25 @@ function periodsByDay(rows) {
 
 /** Fetch and merge one date range. Returns normalised records. */
 async function fetchRange(token, start, end, log) {
+  // The sleep-period endpoint is asked for one extra day on the end.
+  //
+  // Evidence: every pull came back with one fewer period than daily_sleep row,
+  // and the missing one was always the newest day -- "4 days (4 sleep, 3
+  // periods)". The effect on the screens was a night with a real score and
+  // thirteen blank vitals, because the score comes from daily_sleep and every
+  // duration, stage and vital comes from the period.
+  //
+  // The most likely reason is that end_date is exclusive on this collection
+  // where it is inclusive on the daily ones. That is inferred from the row
+  // counts rather than confirmed against Oura's docs, so the fix is chosen to be
+  // right either way: if end_date is inclusive, the extra day is simply a date
+  // with no data and nothing changes.
+  const periodEnd = shift(end, 1);
   const [sleep, readiness, stress, periods] = await Promise.all([
     dailySleep(token, { start, end }),
     dailyReadiness(token, { start, end }).catch(() => []),
     dailyStress(token, { start, end }).catch(() => []),
-    sleepPeriods(token, { start, end }).catch(() => []),
+    sleepPeriods(token, { start, end: periodEnd }).catch(() => []),
   ]);
 
   const s = byDay(sleep);
@@ -55,6 +69,10 @@ async function fetchRange(token, start, end, log) {
   // Union of every day any collection knows about.
   const days = [...new Set([...s.keys(), ...r.keys(), ...t.keys(), ...p.keys()])].sort();
   log(`  ${start} → ${end}: ${days.length} days (${sleep.length} sleep, ${periods.length} periods)`);
+  // A score with no period renders as a screen full of dashes, so name the days
+  // it happens to rather than leaving it to be spotted on the screen itself.
+  const scoreless = [...s.keys()].filter((d) => !p.has(d));
+  if (scoreless.length) log(`  no sleep period yet for: ${scoreless.join(', ')}`);
 
   return days.map((day) =>
     normalise({ day, sleep: s.get(day), readiness: r.get(day), stress: t.get(day), periods: p.get(day) }),

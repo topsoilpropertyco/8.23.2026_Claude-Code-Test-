@@ -10,7 +10,7 @@ import { loadConfig } from '../src/facts.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const NIGHT_FILE = join(ROOT, 'data/last-night.json');
-const SCREENS = ['s1', 's2', 's3', 's4', 's5', 's6', 'n1', 'n2', 'g1', 'g2'];
+const SCREENS = ['s1', 's2', 's3', 's4', 's5', 's6', 'g1', 'g2'];
 
 const build = (score) => {
   execFileSync('node', ['bin/build-night-data.mjs', '--sample', String(score)], { cwd: ROOT });
@@ -34,9 +34,9 @@ const text = (k) =>
 // the whole deck a photograph of one morning: rebuilding it changed nothing
 // because there was no input to change. Seth found it by getting a message about
 // a 74 whose link still showed an 88. These two tests are the guard.
-// s4 (counts), s5 (trailing averages), s6 (the night's vitals) and n2 (country
-// averages) legitimately never print the score. The rest state it.
-const SHOWS_SCORE = ['s1', 's2', 's3', 'n1', 'g1', 'g2'];
+// s4 (counts), s5 (trailing averages) and s6 (the night's vitals) legitimately
+// never print the score. The rest state it.
+const SHOWS_SCORE = ['s1', 's2', 's3', 'g1', 'g2'];
 
 test('no screen carries a score from a previous night', () => {
   for (const score of [74, 91]) {
@@ -108,9 +108,9 @@ test('the counts on the grid always account for every night', () => {
 
 /* --------------------------------------------------------------- the delivery */
 
-test('the deck fits one Telegram album exactly', () => {
+test('the deck fits one Telegram album', () => {
   assert.equal(MEDIA_GROUP_MAX, 10);
-  assert.equal(SCREENS.length, MEDIA_GROUP_MAX, 'the deck must fit in a single album');
+  assert.ok(SCREENS.length <= MEDIA_GROUP_MAX, 'the deck must fit in a single album');
   const sender = readFileSync(join(ROOT, 'bin/send-deck.mjs'), 'utf8');
   for (const k of SCREENS) assert.ok(sender.includes(`'${k}'`), `send-deck omits ${k}`);
 });
@@ -130,4 +130,31 @@ test('no pinned deck URL is configured', () => {
   // only ever drift out of date -- which is the bug this all came from. The deck
   // ships as photographs instead.
   assert.equal(loadConfig().screensUrl, undefined);
+});
+
+test('no screen ever renders a doubled sign', () => {
+  // s3 printed "+-0.56 SD" and the removed n1 printed a hero reading "+-3":
+  // a literal + written into the template in front of a value already formatted
+  // with its own sign. Correct for the night it was authored against, wrong for
+  // every night on the other side of the mean.
+  for (const score of [60, 74, 88, 95]) {
+    build(score);
+    for (const k of SCREENS) {
+      const t = text(k).replace(/&[a-z]+;/g, ' ');
+      for (const bad of ['+-', '-+', '+\u2212', '\u2212+']) {
+        assert.ok(!t.includes(bad), `${k} renders "${bad}" at score ${score}`);
+      }
+    }
+  }
+});
+
+test('the removed member-average screens stay removed', () => {
+  // Seth asked for both to go: "I'm not trying to compare myself to the average".
+  for (const gone of ['n1', 'n2']) {
+    assert.ok(!SCREENS.includes(gone));
+    assert.ok(!existsSync(join(ROOT, `variants/${gone}/index.html`)), `${gone} was rebuilt`);
+  }
+  // g1 stays -- it grades one night against member nights rather than averaging
+  // his whole history against a stranger's.
+  assert.ok(SCREENS.includes('g1'));
 });

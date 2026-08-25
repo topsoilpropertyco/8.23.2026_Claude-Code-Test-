@@ -244,7 +244,7 @@ body = f"""  <p class="q">Where am I?</p>
   {N:,} recorded nights scored lower and <b>{ABOVE}</b> scored higher — the
   <b>{PCT}{ordinal(PCT)}</b> percentile exactly. Rank <b>{RANK}</b> of {N:,}.</p>
 """
-write('s1', page('1 of 10', 'Where am I', 's1 — Where am I',
+write('s1', page('1 of 8', 'Where am I', 's1 — Where am I',
     'Score first at the same size as the percentile, per revision 2.', extra, body, f'{N:,} nights'))
 
 # ---------------------------------------------------------------- s2  the curve
@@ -324,7 +324,7 @@ body = f"""  <p class="q">How rare is a night like this?</p>
   normal curve fitted to your real mean <b>{MEAN}</b> and SD <b>{SD}</b>. Last night's
   <b>{PCT}{ordinal(PCT)}</b> is the measured rank.</p>
 """
-write('s2', page('2 of 10', 'The curve', 's2 — The curve',
+write('s2', page('2 of 8', 'The curve', 's2 — The curve',
     'Curve banded into thirds of his own history; percentile set under the score.',
     extra, body, f'mean {MEAN} · SD {SD}'))
 print('s1, s2 written')
@@ -399,7 +399,7 @@ body = f"""  <p class="q">How far from ordinary?</p>
   percentile row is a normal fit, so those tick figures are approximate. The
   <b>{PCT}{ordinal(PCT)}</b> in the band is your real rank.</p>
 """
-write('s3', page('3 of 10', 'The scale', 's3 — The scale',
+write('s3', page('3 of 8', 'The scale', 's3 — The scale',
     'SD strip, each tick spelled out as a score and a percentile.', extra, body, f'z {Z:+.2f}'))
 
 # ---------------------------------------------------------------- s4  how many have I beaten
@@ -502,7 +502,7 @@ body = f"""  <p class="q">How many nights have I beaten?</p>
   document.getElementById('marks').appendChild(f);
   </script>
 """
-write('s4', page('4 of 10', 'Nights beaten', 's4 — How many nights have I beaten',
+write('s4', page('4 of 8', 'Nights beaten', 's4 — How many nights have I beaten',
     'Waffle banded into exact rank thirds; question renamed to something answerable.',
     extra, body, 'one square = one night'))
 print('s3, s4 written')
@@ -591,7 +591,7 @@ body = f"""  <p class="q">Am I heading the right direction?</p>
   <code>coach.js</code> now asks for them, but this build cannot open the encrypted log to
   fill them in.</p>
 """
-write('s5', page('5 of 10', 'The direction', 's5 — The direction',
+write('s5', page('5 of 8', 'The direction', 's5 — The direction',
     'Rebuilt: last night first, one stated baseline, 180/365 wired and pending.',
     extra, body, f'baseline {MEAN}'))
 
@@ -715,133 +715,22 @@ body = f"""  <p class="q">What actually happened?</p>
   baseline, which <code>coach.js</code> derives from your telemetry.
   {_pending_note}</p>
 """
-write('s6', page('6 of 10', 'Last night', 's6 — Last night',
+write('s6', page('6 of 8', 'Last night', 's6 — Last night',
     'Each row coloured by the basis it can honestly be judged against, with that basis shown.',
     extra, body, (f"bars = share of {NG['asleepLabel']} asleep" if NG['asleepLabel']
                   else 'no reading for this night')))
 print('s5, s6 written')
 
-# ================================================================= national
-# Everything below compares against PUBLISHED Oura member data. See
-# references/OURA-POPULATION.md for what exists and what does not.
-# The hard constraint: Oura publishes a MEAN and no spread, so a population
-# percentile is not computable and is never shown. These screens compare on
-# the mean, which is the axis the published data actually supports.
-GLOBAL_MEAN = 77.0                      # Oura 2024 Year in Review, all members
-MY_ALLTIME  = MEAN                      # 79.3
-COUNTRIES = [('New Zealand', 79.8), ('Australia', 78.7), ('Sweden', 78.5),
-             ('Finland', 78.4), ('Austria', 78.2)]
-
-# ---------------------------------------------------------------- n1
-d_night, d_mine = SCORE - GLOBAL_MEAN, MY_ALLTIME - GLOBAL_MEAN
-# The axis has to contain every bar it draws. Fixed at 74..90 it silently
-# clipped any night above 90 -- the bar ran past the end of its own track.
-_nbvals = [float(SCORE), MY_ALLTIME, GLOBAL_MEAN] + [v for _, v in COUNTRIES]
-NB_LO, NB_HI = float(math.floor(min(_nbvals) - 2)), float(math.ceil(max(_nbvals) + 2))
-NBW = 166.0
-def nx(v): return (v - NB_LO) / (NB_HI - NB_LO) * NBW
-bars = [('Oura member average', GLOBAL_MEAN, None,   '#8FA6B8'),
-        ('Your all-time average', MY_ALLTIME, d_mine, NAT_RAIL),
-        ('Your last night',      float(SCORE), d_night, GOOD)]
-brows = ''
-for lab, v, d, col in bars:
-    dd = ('' if d is None else
-          f'<span class="nd mono" style="color:{col}">+{d:.1f}</span>')
-    brows += (f'<div class="nrow"><span class="nk mono">{lab}</span>'
-              f'<span class="ntrack"><span class="nfill" style="width:{nx(v):.2f}px;background:{col}"></span></span>'
-              f'<span class="nv mono">{v:g}</span>{dd}</div>')
-extra = """
-.big2{font-size:118px;line-height:.88;letter-spacing:-.04em;font-weight:500;color:NATRAIL}
-.big2 s{text-decoration:none;font-size:52px;vertical-align:.42em;margin-right:2px}
-.nrow{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid #C2CDD8}
-.nk{flex:0 0 78px;font-size:8.5px;letter-spacing:.08em;text-transform:uppercase;color:#5E7183;line-height:1.3}
-.ntrack{flex:0 0 166px;height:10px;background:#DCE4EC;position:relative}
-.nfill{position:absolute;left:0;top:0;bottom:0}
-.nv{flex:0 0 30px;text-align:right;font-size:12.5px;font-weight:500}
-.nd{font-size:10px;font-weight:600}
-.nax{display:flex;margin-top:6px}
-.nax .sp{flex:0 0 86px}
-.nax .e{flex:0 0 166px;display:flex;justify-content:space-between;font-size:8.5px;
-  letter-spacing:.1em;color:#5E7183;font-family:'IBM Plex Mono',monospace}
-.warn{margin-top:14px;border:1px solid #C2CDD8;background:#DCE4EC;padding:10px 12px}
-.warn b{color:#22506F}
-""".replace('NATRAIL', NAT_RAIL)
-body = f"""  <p class="q">How do I compare with everyone else?</p>
-  <p class="ans">Oura publishes one population figure for the Sleep Score: the average
-  across all members. So this compares on the average &mdash; the only axis the
-  published data actually supports.</p>
-  <div>
-    <div class="big2 mono"><s>+</s>{d_night:.0f}</div>
-    <div class="lab mono" style="color:{NAT_RAIL};margin-top:2px">Points above the member average</div>
-    <div style="margin-top:18px">{brows}</div>
-    <div class="nax"><span class="sp"></span><span class="e">
-      <span>{NB_LO:.0f}</span><span>{GLOBAL_MEAN:g} avg</span><span>{NB_HI:.0f}</span></span></div>
-    <div class="warn">
-      <p class="note mono" style="color:#3C6584"><b>Averages only here, deliberately.</b>
-      A percentile needs a spread as well as an average, and Oura publishes the average and
-      <b>not</b> the spread. Screen 9 does give one for {SCORE}, but only by <b>inferring</b>
-      a spread from outside cohorts &mdash; hence its wide interval.</p>
-    </div>
-  </div>
-  <div class="hair" style="margin-top:14px"></div>
-  <p class="note mono" style="margin-top:10px">Member average <b>{GLOBAL_MEAN:g}</b> — Oura 2024
-  Year in Review, de-identified data from millions of members, Dec 2023 to Nov 2024.
-  <b>These are Oura members, not a national population</b> — people who bought a ring to
-  optimise sleep, so the bar sits higher than the public at large.</p>
-"""
-write('n1', page('7 of 10', 'Vs members', 'n1 — Vs Oura members',
-    'Compares on the published member average. Percentile deliberately absent: Oura publishes no spread.',
-    extra, body, f'avg {GLOBAL_MEAN:g}', kind='nat'))
-
-# ---------------------------------------------------------------- n2
-ladder = sorted(COUNTRIES + [('You', MY_ALLTIME)] + [('Global member average', GLOBAL_MEAN)],
-                key=lambda kv: -kv[1])
-LB_LO, LB_HI, LBW = 76.5, 80.5, 168.0
-lrows = ''
-for name, v in ladder:
-    me = name == 'You'
-    glob = name.startswith('Global')
-    col = NAT_RAIL if me else ('#8FA6B8' if glob else '#A8B7C4')
-    x = (v - LB_LO) / (LB_HI - LB_LO) * LBW
-    lrows += (f'<div class="lrow{" me" if me else ""}{" gl" if glob else ""}">'
-              f'<span class="lk mono">{name}</span>'
-              f'<span class="ltrack"><span class="ldot" style="left:{x:.2f}px;background:{col}"></span></span>'
-              f'<span class="lv mono">{v:g}</span></div>')
-extra = """
-.lrow{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid #C2CDD8}
-.lrow.me{background:#DCE4EC;border-bottom:1px solid NATRAIL;border-top:1px solid NATRAIL;
-  margin:2px 0;padding:9px 6px}
-.lrow.me .lk,.lrow.me .lv{color:#22506F;font-weight:700}
-.lrow.me .ltrack{background:#C3D2E0}
-.lrow.gl .lk,.lrow.gl .lv{color:#6B7F90}
-.lk{flex:0 0 112px;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:#5E7183}
-.ltrack{flex:0 0 168px;height:9px;background:#DCE4EC;position:relative}
-.ldot{position:absolute;top:-2px;width:3px;height:13px;transform:translateX(-1.5px)}
-.lv{flex:1;text-align:right;font-size:12.5px;font-weight:500}
-""".replace('NATRAIL', NAT_RAIL)
-body = f"""  <p class="q">Where would I rank as a country?</p>
-  <p class="ans">Oura publishes an average Sleep Score per country. Dropping your own
-  all-time average into that table is a fair comparison &mdash; average against average.</p>
-  <div>
-    <div style="margin-top:4px">{lrows}</div>
-    <div class="nax" style="display:flex;margin-top:6px">
-      <span class="sp" style="flex:0 0 121px"></span>
-      <span class="e" style="flex:0 0 168px;display:flex;justify-content:space-between;
-        font-size:8.5px;letter-spacing:.1em;color:#5E7183;font-family:'IBM Plex Mono',monospace">
-        <span>{LB_LO:g}</span><span>{LB_HI:g}</span></span></div>
-  </div>
-  <div class="hair" style="margin-top:16px"></div>
-  <p class="note mono" style="margin-top:10px">Your <b>{MY_ALLTIME:g}</b> would place
-  <b>second</b>, between Australia&rsquo;s {COUNTRIES[1][1]:g} and New Zealand&rsquo;s
-  {COUNTRIES[0][1]:g}, and <b>{d_mine:+.1f}</b> above the global member average.
-  Country figures are Oura 2024 Year in Review means for members in each country; only the
-  leading countries are published, so this is the top of the table, not all of it. The United
-  States average is <b>not published</b>.</p>
-"""
-write('n2', page('8 of 10', 'Country ladder', 'n2 — The country ladder',
-    'His all-time average dropped into the published country-average table.',
-    extra, body, 'Oura 2024', kind='nat'))
-print('n1, n2 written')
+# The two member-average screens (n1 'vs members', n2 'country ladder') were
+# removed at Seth's request. Neither answered a question he had: one showed a
+# single delta from the Oura member average, the other ranked his all-time mean
+# against published country means. His words -- "I'm not trying to compare
+# myself to the average". The member comparison that survives is g1, which
+# grades a specific night rather than averaging his history against a stranger's.
+#
+# Both also carried a literal '+' glued to an already-signed number, so last
+# night's -3 rendered as '+-3'. That bug is gone with them, and a test now
+# fails on any screen containing a doubled sign.
 
 # =====================================================================  GRADES
 # Two screens, one question: what letter is last night worth? The answer depends
@@ -980,7 +869,7 @@ body = f"""  <p class="q">What is last night worth?</p>
   {POP['sd']} is inferred, so this sits at {ROW['ci'][0]}–{ROW['ci'][1]}. <b>No member count is
   published</b>, so none is shown.</p>
 """
-write('g1', page('9 of 10', 'Grades vs members', 'g1 — Letter grades vs Oura members',
+write('g1', page('7 of 8', 'Grades vs members', 'g1 — Letter grades vs Oura members',
     'Three curves on one percentile axis; the marker is last night.',
     GRADE_EXTRA, body, f'Percentile {MP:.1f}', kind='nat'))
 
@@ -1021,6 +910,6 @@ body = f"""  <p class="q">And against my own nights?</p>
   as a verdict in a way a percentile does not. An F describes where a night sat in a distribution,
   not a judgement about you.</p>
 """
-write('g2', page('10 of 10', 'Grades vs my own', 'g2 — Letter grades vs my own nights',
+write('g2', page('8 of 8', 'Grades vs my own', 'g2 — Letter grades vs my own nights',
     'The identical curves on his own empirical distribution.',
     GRADE_EXTRA, body, f'Percentile {OP:.1f}', kind='own'))

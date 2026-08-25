@@ -46,7 +46,7 @@ html,body{background:#78756F}
 .marks i.bad{background:#EFD3CC}
 .marks i.ok{background:#EFE3C4}
 .marks i.good{background:#D2E3CC}
-.marks i.you{background:#B23A2F;outline:2px solid #1A1814;position:relative;z-index:2}
+.marks i.you{background:#2F7A44;outline:2px solid #1A1814;position:relative;z-index:2}
 .key{display:flex;gap:14px;margin-top:14px;flex-wrap:wrap;font-size:9px;letter-spacing:.05em;color:#7C7568;
   font-family:'IBM Plex Mono',monospace}
 .key i{display:inline-block;width:8px;height:8px;vertical-align:-1px;margin-right:5px}
@@ -56,7 +56,7 @@ html,body{background:#78756F}
 .split .v{font-size:34px;line-height:1;font-weight:500;margin-top:4px}
 </style>
 <div class="s  samp">
-  <div class="hd"><span class="brand mono">Sleep OS</span><span class="num mono">4 of 10 &middot; Nights beaten</span></div>
+  <div class="hd"><span class="brand mono">Sleep OS</span><span class="num mono">4 of 8 &middot; Nights beaten</span></div>
   <div class="prov" style="background:#EFE6D2;color:#8A6D3B"><span>SAMPLE DATA &mdash; not a real night</span><span>layout only</span></div>
   <div class="bd">
 <div class="grp">  <p class="q">How many nights have I beaten?</p>
@@ -65,14 +65,14 @@ html,body{background:#78756F}
   <div class="mwrap">
     <div class="marks" id="marks"></div>
     <svg class="rings" width="341" height="113" aria-hidden="true">
-      <polygon points="-0.5,-0.5 341.5,-0.5 341.5,29.5 23.5,29.5 23.5,35.5 -0.5,35.5 -0.5,5.5" fill="none" stroke="#4F4A40" stroke-width="1"/>
-      <polygon points="29.5,29.5 341.5,29.5 341.5,107.5 95.5,107.5 95.5,113.5 -0.5,113.5 -0.5,35.5 29.5,35.5" fill="none" stroke="#1F4B8F" stroke-width="1"/>
+      <polygon points="-0.5,-0.5 341.5,-0.5 341.5,101.5 293.5,101.5 293.5,107.5 -0.5,107.5 -0.5,5.5" fill="none" stroke="#4F4A40" stroke-width="1"/>
+      <polygon points="299.5,101.5 341.5,101.5 341.5,107.5 95.5,107.5 95.5,113.5 -0.5,113.5 -0.5,107.5 299.5,107.5" fill="none" stroke="#1F4B8F" stroke-width="1"/>
     </svg>
   </div>
   <div class="key">
-    <span><u style="border-color:#4F4A40"></u>289 worse</span>
-    <span><u style="border-color:#1F4B8F"></u>752 better</span>
-    <span><i style="background:#B23A2F"></i>Last night</span>
+    <span><u style="border-color:#4F4A40"></u>1018 worse</span>
+    <span><u style="border-color:#1F4B8F"></u>23 better</span>
+    <span><i style="background:#2F7A44"></i>Last night</span>
   </div>
   <div class="key" style="margin-top:8px">
     <span><i style="background:#EFD3CC"></i>Worst third</span>
@@ -80,16 +80,16 @@ html,body{background:#78756F}
     <span><i style="background:#D2E3CC"></i>Best third</span>
   </div>
   <div class="split">
-    <div><div class="lab mono">Nights you beat</div><div class="v mono">289</div></div>
-    <div><div class="lab mono">Nights that beat you</div><div class="v mono">752</div></div>
+    <div><div class="lab mono">Nights you beat</div><div class="v mono">1018</div></div>
+    <div><div class="lab mono">Nights that beat you</div><div class="v mono">23</div></div>
   </div>
   </div><div class="grp"><div class="hair" style="margin-top:18px"></div>
-  <p class="note mono" style="margin-top:12px">Fully measured — 289 + 1 + 752 =
+  <p class="note mono" style="margin-top:12px">Fully measured — 1018 + 1 + 23 =
   <b>1,042</b>, every night drawn once at its true position. The thirds are exact here too:
   the grid is sorted by rank, so the cuts fall at nights <b>347</b> and <b>695</b>.
-  Last night sits in the <b>worst third</b>.</p>
+  Last night sits in the <b>best third</b>.</p>
   <script>
-  var N=1042,BELOW=289,T1=347,T2=695,f=document.createDocumentFragment();
+  var N=1042,BELOW=1018,T1=347,T2=695,f=document.createDocumentFragment();
   for(var i=0;i<N;i++){
     var e=document.createElement('i');
     if(i===BELOW){e.className='you';}
