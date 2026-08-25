@@ -176,10 +176,27 @@
         "status": "missed",
         "at": "2026-08-25T03:14:43.704Z"
       }
+    },
+    "2026-08-25": {
+      "intake": {
+        "status": "sent",
+        "kind": "intake",
+        "targetLabel": "6:00 AM",
+        "at": "2026-08-25T10:03:26.864Z"
+      }
     }
   },
   "inboxOffset": 697606361,
   "pending": [
+    {
+      "messageId": 38,
+      "kind": "intake",
+      "factId": null,
+      "promptId": null,
+      "mechanism": null,
+      "slot": "intake",
+      "at": "2026-08-25T10:03:26.864Z"
+    },
     {
       "messageId": 37,
       "kind": "habit",

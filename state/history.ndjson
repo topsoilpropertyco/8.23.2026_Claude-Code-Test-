@@ -15,3 +15,4 @@
 {"date":"2026-08-24","slot":"blue_blockers","status":"sent","kind":"habit","habit":"blue_blockers","whyId":"bb04","optional":false,"cycle":1,"targetLabel":"7:30 PM","at":"2026-08-24T23:49:07.957Z"}
 {"date":"2026-08-24","slot":"work_shutdown","status":"missed","at":"2026-08-25T03:14:43.704Z"}
 {"date":"2026-08-24","slot":"terminal_bedtime","status":"missed","at":"2026-08-25T03:14:43.704Z"}
+{"date":"2026-08-25","slot":"intake","status":"sent","kind":"intake","targetLabel":"6:00 AM","at":"2026-08-25T10:03:26.864Z"}
