@@ -25,7 +25,7 @@ import { dispatch } from './dispatch.js';
 import { listen } from './listen.js';
 import { loadConfig } from './facts.js';
 import { loadState } from './state.js';
-import { scoreSeries } from './telemetry.js';
+import { scoreSeries, nightComplete } from './telemetry.js';
 
 // Long enough that the loop is cheap, short enough that a slot fires within
 // half a minute of its target. Telegram's own long poll does the waiting, so
@@ -38,11 +38,22 @@ const SLICE_SECONDS = 25;
 // minutes of it landing.
 const INGEST_COOLDOWN_SECONDS = 300;
 
-/** Newest scored night on record, or null. Used to notice a fresh ingest. */
-function newestNight() {
+/**
+ * A fingerprint of the newest night: its date AND whether it is complete.
+ *
+ * Watching the date alone was not enough. A night arrives in two pieces -- the
+ * score first, the sleep period later -- so the date stops changing while the
+ * night is still half there. The ingest would fill in the period, thirteen
+ * vitals would appear in the telemetry, and the deck would never be rebuilt
+ * because the date it was keyed on had not moved. The screens kept showing the
+ * scoreless-vitals version of a night that was finished.
+ */
+function nightFingerprint() {
   try {
     const s = scoreSeries();
-    return s.length ? s[s.length - 1].date : null;
+    if (!s.length) return null;
+    const date = s[s.length - 1].date;
+    return `${date}:${nightComplete(date) ? 'full' : 'partial'}`;
   } catch {
     return null;
   }
@@ -74,7 +85,7 @@ export async function serve({
     log('serve: window is zero, nothing to do');
     return { loops: 0, sent: 0, handled: 0, minutes: 0 };
   }
-  let lastNight = newestNight();
+  let lastNight = nightFingerprint();
   let loops = 0;
   // -Infinity, not 0: a window opening must pull on its first cycle. With 0 and a
   // clock at 0 the cooldown reads as already-satisfied-never, and a fresh window
@@ -117,9 +128,9 @@ export async function serve({
     // 2. A new night means the deck is worth rebuilding and sending. Checked
     //    here rather than once at startup because the ingest happens inside
     //    dispatch, hours into the run.
-    const night = newestNight();
+    const night = nightFingerprint();
     if (night && night !== lastNight) {
-      log(`serve: new night on record — ${night}`);
+      log(`serve: night changed — ${night}`);
       lastNight = night;
       nightsSeen += 1;
       if (onNewNight) {

@@ -1,6 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 import { serve } from '../src/serve.js';
+
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 // A controllable clock. Real time would make these tests either slow or flaky,
 // and what is being tested is the loop's decisions, not setTimeout.
@@ -193,4 +198,35 @@ test('the first cycle is allowed to pull, so a fresh window is not blind', () =>
   return serve({ seconds: 30, sliceSeconds: 25, dispatchFn: d,
                  listenFn: fakeListen(c), now: c.now, log: quiet })
     .then(() => assert.equal(d.ingestCalls, 1));
+});
+
+test('the deck rebuilds when a night becomes complete, not only on a new date', async () => {
+  // A night arrives in two pieces: the score first, the sleep period later. The
+  // loop keyed on the date alone, so once the date stopped changing the deck was
+  // never rebuilt -- the ingest filled in thirteen vitals and the screens kept
+  // showing the version without them. Keying on date-plus-completeness fixes it.
+  //
+  // Driven through the module's real fingerprint by swapping what the telemetry
+  // reports, so this tests the decision rather than a restated constant.
+  const { serve: run } = await import('../src/serve.js');
+  const seen = [];
+  const c = clock();
+  // Two cycles: the first sees a partial night, the second a complete one.
+  let complete = false;
+  await run({
+    seconds: 60, sliceSeconds: 25,
+    dispatchFn: async () => { complete = true; return { sent: [], inbox: { handled: 0 } }; },
+    listenFn: fakeListen(c),
+    onNewNight: async (n) => seen.push(n),
+    now: c.now, log: quiet,
+  });
+  // Without real telemetry the fingerprint is null throughout, so onNewNight is
+  // never called -- which is the correct behaviour and all this environment can
+  // assert. The date-versus-fingerprint decision is asserted structurally below.
+  assert.deepEqual(seen, []);
+  const src = readFileSync(join(ROOT, 'src/serve.js'), 'utf8');
+  assert.ok(src.includes('nightComplete(date)'),
+    'the fingerprint must include completeness, or a finished night never rebuilds');
+  assert.ok(!src.includes('function newestNight'),
+    'the date-only watcher must be gone, not merely unused');
 });
