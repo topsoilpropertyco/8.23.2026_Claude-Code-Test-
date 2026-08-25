@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <title>s6 — Last night</title>
 <meta name="viewport" content="width=390, initial-scale=1">
-<!-- Same format, with a proportion bar on the five rows where a proportion is real. -->
+<!-- Each row coloured by the basis it can honestly be judged against, with that basis shown. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -32,21 +32,44 @@ html,body{background:#78756F}
 .pill{display:inline-block;padding:3px 9px 2px;font-size:9px;letter-spacing:.16em;
   text-transform:uppercase;font-weight:600;font-family:'IBM Plex Mono',monospace}
 
-.dtbl{margin-top:14px;border-top:1px solid #1A1814}
-.drow{padding:7px 0 6px;border-bottom:1px solid #D5CDBC}
-.dtop{display:flex;justify-content:space-between;align-items:baseline}
-.dk{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#7C7568}
-.dv{font-size:13px;font-weight:500}
+.dtbl{margin-top:6px;border-top:1px solid #1A1814}
+.drow{padding:4px 0 3px;border-bottom:1px solid #D5CDBC}
+.dtop{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.dk{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#7C7568;min-width:0}
+.dk em{font-style:normal;letter-spacing:.02em;text-transform:none;color:#A79E92;
+  font-size:9px;margin-left:6px;white-space:nowrap}
+.dv{font-size:11.5px;font-weight:500;padding:2px 7px 1px;border:1px solid transparent;
+  white-space:nowrap;flex:0 0 auto}
+.v-in .dv{background:#D2E3CC;color:#2F7A44;border-color:#2F7A4455}
+.v-out .dv{background:#EFE3C4;color:#96761C;border-color:#96761C55}
+.v-self .dv{background:#E7E1D3;color:#7C7568;border-color:#CFC7B6}
+.v-none .dv{color:#1A1814}
 .mbar{height:3px;background:#E4DDCD;margin-top:5px}
 .mbar span{display:block;height:100%;background:#9C948A}
+.leg{display:flex;gap:11px;margin-top:9px;flex-wrap:wrap;font-size:8.5px;
+  letter-spacing:.06em;color:#7C7568;font-family:'IBM Plex Mono',monospace}
+.leg i{display:inline-block;width:9px;height:9px;vertical-align:-1px;margin-right:5px;border:1px solid}
 </style>
 <div class="s">
   <div class="hd"><span class="brand mono">Sleep OS</span><span class="num mono">6 of 6 &middot; Last night</span></div>
   <div class="bd">
 <div class="grp">  <p class="q">What actually happened?</p>
-  <p class="ans">The whole night, one row per measure. The five rows that carry a real
-  proportion show it; the rest are figures, because a bar would be inventing a scale.</p></div><div class="grp">
-  <div class="dtbl"><div class="drow"><div class="dtop"><span class="dk mono">Asleep</span><span class="dv mono">7h 45m</span></div></div><div class="drow"><div class="dtop"><span class="dk mono">In bed</span><span class="dv mono">8h 12m</span></div></div><div class="drow"><div class="dtop"><span class="dk mono">Efficiency</span><span class="dv mono">94%</span></div><div class="mbar"><span style="width:94.00%"></span></div></div><div class="drow"><div class="dtop"><span class="dk mono">Deep</span><span class="dv mono">1h 29m</span></div><div class="mbar"><span style="width:18.09%"></span></div></div><div class="drow"><div class="dtop"><span class="dk mono">REM</span><span class="dv mono">2h 07m</span></div><div class="mbar"><span style="width:25.81%"></span></div></div><div class="drow"><div class="dtop"><span class="dk mono">Light</span><span class="dv mono">4h 09m</span></div><div class="mbar"><span style="width:50.61%"></span></div></div><div class="drow"><div class="dtop"><span class="dk mono">Awake</span><span class="dv mono">27m</span></div><div class="mbar"><span style="width:5.49%"></span></div></div><div class="drow"><div class="dtop"><span class="dk mono">Latency</span><span class="dv mono">2m 30s</span></div></div><div class="drow"><div class="dtop"><span class="dk mono">Bedtime</span><span class="dv mono">23:15</span></div></div><div class="drow"><div class="dtop"><span class="dk mono">Wake</span><span class="dv mono">07:26</span></div></div><div class="drow"><div class="dtop"><span class="dk mono">HRV</span><span class="dv mono">37 ms</span></div></div><div class="drow"><div class="dtop"><span class="dk mono">Lowest HR</span><span class="dv mono">55 bpm</span></div></div><div class="drow"><div class="dtop"><span class="dk mono">Average HR</span><span class="dv mono">60.1 bpm</span></div></div><div class="drow"><div class="dtop"><span class="dk mono">Respiration</span><span class="dv mono">14.4 /min</span></div></div><div class="drow"><div class="dtop"><span class="dk mono">Restless periods</span><span class="dv mono">174</span></div></div><div class="drow"><div class="dtop"><span class="dk mono">Readiness</span><span class="dv mono">85</span></div></div></div>
+  <p class="ans">Coloured by what each row can honestly be judged against, with that
+  basis printed beside it.</p></div><div class="grp">
+  <div>
+    <div class="dtbl"><div class="drow v-in"><div class="dtop"><span class="dk mono">Asleep <em>7&ndash;9 h</em></span><span class="dv mono">7h 45m</span></div></div><div class="drow v-none"><div class="dtop"><span class="dk mono">In bed </span><span class="dv mono">8h 12m</span></div></div><div class="drow v-in"><div class="dtop"><span class="dk mono">Efficiency <em>&ge;85%</em></span><span class="dv mono">94%</span></div><div class="mbar"><span style="width:94.50%"></span></div></div><div class="drow v-in"><div class="dtop"><span class="dk mono">Deep <em>13&ndash;23% of sleep</em></span><span class="dv mono">1h 29m</span></div><div class="mbar"><span style="width:19.14%"></span></div></div><div class="drow v-out"><div class="dtop"><span class="dk mono">REM <em>20&ndash;25% of sleep</em></span><span class="dv mono">2h 07m</span></div><div class="mbar"><span style="width:27.31%"></span></div></div><div class="drow v-in"><div class="dtop"><span class="dk mono">Light <em>45&ndash;55% of sleep</em></span><span class="dv mono">4h 09m</span></div><div class="mbar"><span style="width:53.55%"></span></div></div><div class="drow v-in"><div class="dtop"><span class="dk mono">Awake <em>&lt;30 min</em></span><span class="dv mono">27m</span></div></div><div class="drow v-out"><div class="dtop"><span class="dk mono">Latency <em>10&ndash;20 min</em></span><span class="dv mono">2m 30s</span></div></div><div class="drow v-none"><div class="dtop"><span class="dk mono">Bedtime </span><span class="dv mono">23:15</span></div></div><div class="drow v-none"><div class="dtop"><span class="dk mono">Wake </span><span class="dv mono">07:26</span></div></div><div class="drow v-self"><div class="dtop"><span class="dk mono">HRV <em>vs your 30-night</em></span><span class="dv mono">37 ms</span></div></div><div class="drow v-self"><div class="dtop"><span class="dk mono">Lowest HR <em>vs your 30-night</em></span><span class="dv mono">55 bpm</span></div></div><div class="drow v-self"><div class="dtop"><span class="dk mono">Average HR <em>vs your 30-night</em></span><span class="dv mono">60.1 bpm</span></div></div><div class="drow v-in"><div class="dtop"><span class="dk mono">Respiration <em>12&ndash;20 /min</em></span><span class="dv mono">14.4 /min</span></div></div><div class="drow v-self"><div class="dtop"><span class="dk mono">Restless periods <em>vs your 30-night</em></span><span class="dv mono">174</span></div></div><div class="drow v-self"><div class="dtop"><span class="dk mono">Readiness <em>vs your 30-night</em></span><span class="dv mono">85</span></div></div></div>
+    <div class="leg">
+      <span><i style="background:#D2E3CC;border-color:#2F7A44"></i>In typical range</span>
+      <span><i style="background:#EFE3C4;border-color:#96761C"></i>Outside typical</span>
+      <span><i style="background:#E7E1D3;border-color:#CFC7B6"></i>Needs your baseline</span>
+    </div>
+  </div>
+  </div><div class="grp"><div class="hair" style="margin-top:12px"></div>
+  <p class="note mono" style="margin-top:9px"><b>The one screen using an outside norm</b> —
+  every other measures you against yourself. Ranges are published adult typicals, printed
+  inline so the colour is checkable. Amber = <b>notable, not bad</b>: REM above the band is
+  no fault, 2m 30s is fast not failing. The five grey rows need <b>your own</b> baseline,
+  which <code>coach.js</code> derives but this build has no key to read.</p>
 </div>  </div>
-  <div class="ft mono"><span>Sun 23 Aug 2026</span><span>bars = share of 8h 12m</span></div>
+  <div class="ft mono"><span>Sun 23 Aug 2026</span><span>bars = share of 7h 45m asleep</span></div>
 </div>

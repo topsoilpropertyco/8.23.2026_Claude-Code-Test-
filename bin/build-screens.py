@@ -414,9 +414,9 @@ AX_LO, AX_HI, TW = 70.0, 90.0, 142.0
 ROWS = [('Last night', float(SCORE), True), ('Last 7', 79.4, False), ('Last 30', 79.2, False),
         ('Last 90', 73.9, False), ('Last 180', None, False), ('Last 365', None, False)]
 def mark(d):
-    if d > 0.5:  return ('&#9650;', GOOD)
-    if d < -0.5: return ('&#9660;', BAD)
-    return ('&#9644;', OK)
+    if d > 0.5:  return ('&#9650;', GOOD, GOOD_L)
+    if d < -0.5: return ('&#9660;', BAD, BAD_L)
+    return ('&#9644;', OK, OK_L)
 rows = ''
 for k, v, is_night in ROWS:
     if v is None:
@@ -425,13 +425,14 @@ for k, v, is_night in ROWS:
                  f'<span class="td mono">pending</span></div>')
         continue
     d = v - MEAN
-    g, col = mark(d)
+    g, col, tint = mark(d)
     x = (v - AX_LO) / (AX_HI - AX_LO) * TW
     rows += (f'<div class="trow{" night" if is_night else ""}">'
              f'<span class="tk mono">{k}</span>'
              f'<span class="track"><span class="dot" style="left:{x:.2f}px;background:{col}"></span></span>'
              f'<span class="tv mono">{v:g}</span>'
-             f'<span class="td mono" style="color:{col}">{g}<i>{d:+.1f}</i></span></div>')
+             f'<span class="td"><span class="qbox mono" style="color:{col};background:{tint};'
+             f'border-color:{col}33">{g}<i>{d:+.1f}</i></span></span></div>')
 base_x = (MEAN - AX_LO) / (AX_HI - AX_LO) * TW
 extra = """
 .verdict{font-size:42px;line-height:1;font-weight:600;letter-spacing:-.02em;color:GOOD}
@@ -452,8 +453,10 @@ extra = """
 .trow.empty .track{background:repeating-linear-gradient(90deg,#E4DDCD 0 4px,transparent 4px 8px)}
 .dot{position:absolute;top:-2px;width:3px;height:13px;transform:translateX(-1.5px)}
 .tv{width:34px;flex:0 0 34px;text-align:right;font-size:12.5px;font-weight:500}
-.td{flex:1;min-width:0;font-size:10.5px;display:flex;align-items:baseline;gap:4px;white-space:nowrap}
-.td i{font-style:normal;font-size:9.5px}
+.td{flex:1;min-width:0;display:flex;align-items:center}
+.qbox{display:inline-flex;align-items:baseline;gap:4px;white-space:nowrap;font-size:10px;
+  padding:3px 7px 2px;border:1px solid}
+.qbox i{font-style:normal;font-size:9.5px;font-weight:600}
 .axline{display:flex;margin-top:6px}
 .axline .sp{width:71px;flex:0 0 71px}
 .axline .e{flex:0 0 142px;display:flex;justify-content:space-between;font-size:8.5px;
@@ -488,35 +491,89 @@ write('s5', page(5, 'The direction', 's5 — The direction',
     extra, body, f'baseline {MEAN}'))
 
 # ---------------------------------------------------------------- s6  last night
-BEDMIN = 492
-DETAIL = [('Asleep', '7h 45m', None), ('In bed', '8h 12m', None), ('Efficiency', '94%', 0.94),
-          ('Deep', '1h 29m', 89/BEDMIN), ('REM', '2h 07m', 127/BEDMIN),
-          ('Light', '4h 09m', 249/BEDMIN), ('Awake', '27m', 27/BEDMIN),
-          ('Latency', '2m 30s', None), ('Bedtime', '23:15', None), ('Wake', '07:26', None),
-          ('HRV', '37 ms', None), ('Lowest HR', '55 bpm', None), ('Average HR', '60.1 bpm', None),
-          ('Respiration', '14.4 /min', None), ('Restless periods', '174', None),
-          ('Readiness', '85', None)]
+# Each row is coloured by what it can HONESTLY be judged against, and the basis
+# is printed beside the value so the colour is checkable rather than asserted:
+#
+#   ref   a published typical adult range, shown inline. This is the ONLY place
+#         in the six screens that uses an outside norm, and the screen says so.
+#         Green = inside the range, amber = outside it. Amber means NOTABLE, not
+#         bad -- REM above the typical band is not a fault, and short latency is
+#         a flag, not a failing. Nothing here is asserted without its range next
+#         to it.
+#   self  needs Seth's own baseline. src/coach.js already derives 30-night means
+#         for HRV and lowest heart rate from his telemetry (inverting the arrow
+#         for HR, since lower is better) -- so this is a real mechanism, not a
+#         hypothetical, and it is pending only because this build has no key.
+#   none  not a good/bad measure at all. Bedtime and wake are facts, not scores.
+ASLEEP_MIN = 465
+ROWS6 = [
+ ('Asleep',           '7h 45m',    None,          'ref',  '7&ndash;9 h',            'in'),
+ ('In bed',           '8h 12m',    None,          'none', '',                       ''),
+ ('Efficiency',       '94%',       0.945,         'ref',  '&ge;85%',                'in'),
+ ('Deep',             '1h 29m',    89/ASLEEP_MIN, 'ref',  '13&ndash;23% of sleep',  'in'),
+ ('REM',              '2h 07m',    127/ASLEEP_MIN,'ref',  '20&ndash;25% of sleep',  'out'),
+ ('Light',            '4h 09m',    249/ASLEEP_MIN,'ref',  '45&ndash;55% of sleep',  'in'),
+ ('Awake',            '27m',       None,          'ref',  '&lt;30 min',             'in'),
+ ('Latency',          '2m 30s',    None,          'ref',  '10&ndash;20 min',        'out'),
+ ('Bedtime',          '23:15',     None,          'none', '',                       ''),
+ ('Wake',             '07:26',     None,          'none', '',                       ''),
+ ('HRV',              '37 ms',     None,          'self', 'vs your 30-night',       ''),
+ ('Lowest HR',        '55 bpm',    None,          'self', 'vs your 30-night',       ''),
+ ('Average HR',       '60.1 bpm',  None,          'self', 'vs your 30-night',       ''),
+ ('Respiration',      '14.4 /min', None,          'ref',  '12&ndash;20 /min',       'in'),
+ ('Restless periods', '174',       None,          'self', 'vs your 30-night',       ''),
+ ('Readiness',        '85',        None,          'self', 'vs your 30-night',       ''),
+]
+CLS = {'in': 'v-in', 'out': 'v-out', '': ''}
 rows = ''
-for k, v, frac in DETAIL:
+for k, v, frac, basis, rng, verdict in ROWS6:
+    cls = CLS[verdict] if basis == 'ref' else ('v-self' if basis == 'self' else 'v-none')
+    hint = f'<em>{rng}</em>' if rng else ''
     bar = (f'<div class="mbar"><span style="width:{frac*100:.2f}%"></span></div>'
            if frac is not None else '')
-    rows += (f'<div class="drow"><div class="dtop"><span class="dk mono">{k}</span>'
+    rows += (f'<div class="drow {cls}"><div class="dtop">'
+             f'<span class="dk mono">{k} {hint}</span>'
              f'<span class="dv mono">{v}</span></div>{bar}</div>')
 extra = """
-.dtbl{margin-top:14px;border-top:1px solid INK}
-.drow{padding:7px 0 6px;border-bottom:1px solid RULE}
-.dtop{display:flex;justify-content:space-between;align-items:baseline}
-.dk{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:QUIET}
-.dv{font-size:13px;font-weight:500}
+.dtbl{margin-top:6px;border-top:1px solid INK}
+.drow{padding:4px 0 3px;border-bottom:1px solid RULE}
+.dtop{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.dk{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:QUIET;min-width:0}
+.dk em{font-style:normal;letter-spacing:.02em;text-transform:none;color:#A79E92;
+  font-size:9px;margin-left:6px;white-space:nowrap}
+.dv{font-size:11.5px;font-weight:500;padding:2px 7px 1px;border:1px solid transparent;
+  white-space:nowrap;flex:0 0 auto}
+.v-in .dv{background:GOODL;color:GOOD;border-color:GOOD33}
+.v-out .dv{background:OKL;color:OK;border-color:OK33}
+.v-self .dv{background:#E7E1D3;color:#7C7568;border-color:#CFC7B6}
+.v-none .dv{color:INK}
 .mbar{height:3px;background:#E4DDCD;margin-top:5px}
 .mbar span{display:block;height:100%;background:#9C948A}
-""".replace('INK', INK).replace('QUIET', QUIET).replace('RULE', RULE)
+.leg{display:flex;gap:11px;margin-top:9px;flex-wrap:wrap;font-size:8.5px;
+  letter-spacing:.06em;color:QUIET;font-family:'IBM Plex Mono',monospace}
+.leg i{display:inline-block;width:9px;height:9px;vertical-align:-1px;margin-right:5px;border:1px solid}
+""".replace('GOODL', GOOD_L).replace('GOOD33', GOOD + '55').replace('GOOD', GOOD)\
+   .replace('OKL', OK_L).replace('OK33', OK + '55').replace('OK', OK)\
+   .replace('INK', INK).replace('QUIET', QUIET).replace('RULE', RULE)
 body = f"""  <p class="q">What actually happened?</p>
-  <p class="ans">The whole night, one row per measure. The five rows that carry a real
-  proportion show it; the rest are figures, because a bar would be inventing a scale.</p>
-  <div class="dtbl">{rows}</div>
+  <p class="ans">Coloured by what each row can honestly be judged against, with that
+  basis printed beside it.</p>
+  <div>
+    <div class="dtbl">{rows}</div>
+    <div class="leg">
+      <span><i style="background:{GOOD_L};border-color:{GOOD}"></i>In typical range</span>
+      <span><i style="background:{OK_L};border-color:{OK}"></i>Outside typical</span>
+      <span><i style="background:#E7E1D3;border-color:#CFC7B6"></i>Needs your baseline</span>
+    </div>
+  </div>
+  <div class="hair" style="margin-top:12px"></div>
+  <p class="note mono" style="margin-top:9px"><b>The one screen using an outside norm</b> —
+  every other measures you against yourself. Ranges are published adult typicals, printed
+  inline so the colour is checkable. Amber = <b>notable, not bad</b>: REM above the band is
+  no fault, 2m 30s is fast not failing. The five grey rows need <b>your own</b> baseline,
+  which <code>coach.js</code> derives but this build has no key to read.</p>
 """
 write('s6', page(6, 'Last night', 's6 — Last night',
-    'Same format, with a proportion bar on the five rows where a proportion is real.',
-    extra, body, 'bars = share of 8h 12m'))
+    'Each row coloured by the basis it can honestly be judged against, with that basis shown.',
+    extra, body, 'bars = share of 7h 45m asleep'))
 print('s5, s6 written')

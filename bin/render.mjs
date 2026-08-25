@@ -128,6 +128,29 @@ for (const spec of specs) {
       }
       const fontLoaded = {};
       for (const n of famsWanted) fontLoaded[n] = document.fonts.check(`24px "${n}"`);
+      // The failure this catches: a flex group with justify-content:center and
+      // min-height:0 shrinks below its content and spills in BOTH directions,
+      // visually overlapping its neighbours -- while the group BOXES still do not
+      // intersect, so a container-level check sees nothing wrong. So compare the
+      // union of each group's rendered descendants against its neighbour's.
+      // Tolerance of 2px, because tight leading legitimately lets a large glyph
+      // overhang its line box and that is a type choice, not a spill.
+      const groups = [...document.querySelectorAll('.grp')];
+      const bounds = groups.map((g) => {
+        let top = Infinity, bottom = -Infinity;
+        for (const el of g.querySelectorAll('*')) {
+          const r = el.getBoundingClientRect();
+          if (r.width === 0 && r.height === 0) continue;
+          if (r.top < top) top = r.top;
+          if (r.bottom > bottom) bottom = r.bottom;
+        }
+        return { top, bottom };
+      });
+      const spill = [];
+      for (let i = 1; i < bounds.length; i++) {
+        const gap = bounds[i].top - bounds[i - 1].bottom;
+        if (gap < -2) spill.push({ between: [i - 1, i], overlapPx: +(-gap).toFixed(1) });
+      }
       const fonts = new Set();
       for (const el of document.querySelectorAll('*')) fonts.add(getComputedStyle(el).fontFamily.split(',')[0].replace(/["']/g, '').trim());
       return {
@@ -139,7 +162,7 @@ for (const spec of specs) {
         screenScrollH: screenEl ? screenEl.scrollHeight : null,
         overflow: over.slice(0, 8), overflowCount: over.length,
         sizes: [...sizes.entries()].sort((a, b) => b[0] - a[0]),
-        greek, collapse, fonts: [...fonts].filter(Boolean), fontLoaded,
+        greek, collapse, spill: spill.slice(0, 6), fonts: [...fonts].filter(Boolean), fontLoaded,
         text: (screenEl || b).innerText.replace(/\n{2,}/g, '\n'),
       };
     });

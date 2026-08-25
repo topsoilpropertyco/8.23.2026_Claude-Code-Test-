@@ -366,3 +366,36 @@ anything in this project. Oura does not expose a population distribution through
 the user API, so a comparison screen would need a source the project does not
 have. Data acquisition question before a design one — do not mock it up as if
 the numbers exist.
+
+---
+
+# REVISION 4
+
+- **s5** each delta now sits in a gentle light box tinted to its verdict —
+  green +8.7, amber +0.1 and −0.1, red −5.4.
+- **s6** every row coloured, but by **three different bases**, because the rows
+  are not all judgeable the same way. The basis is printed beside each value so
+  the colour is checkable rather than asserted:
+  - **ref** (8 rows) — a published typical adult range, shown inline.
+    Green = inside it, amber = outside. **Amber means notable, not bad.**
+  - **self** (5 rows) — HRV, lowest HR, average HR, restless, readiness. These
+    need his own baseline. `coach.js` already derives 30-night means for HRV and
+    lowest HR from his telemetry, inverting the arrow for HR since lower is
+    better — so this is a real mechanism, pending only the key.
+  - **none** (3 rows) — in bed, bedtime, wake. Facts, not scores.
+  s6 is the **only** screen in the six that uses an outside norm, and it says so.
+
+## Two harness lessons from this round
+
+1. **Container rects are not content rects.** The first overlap check compared
+   `.grp` boxes, which did not intersect, and passed — while the table inside
+   was 529px in a 505px slot and `justify-content:center` spilled it 44px up and
+   31px down, straight over its neighbours. Checking boxes missed a bug that was
+   obvious in the pixels.
+2. **The first replacement check was too naive.** Comparing `scrollHeight` to
+   `clientHeight` flagged every large numeral, because tight leading
+   (`line-height:.86` on a 146px figure) legitimately overhangs its line box.
+   That is a type choice, not a spill. The check now compares the union of each
+   group's rendered descendants against its neighbour's, with a 2px tolerance —
+   and was regression-tested by deliberately re-inflating s6's row padding,
+   which it caught at 124px and 112px.
