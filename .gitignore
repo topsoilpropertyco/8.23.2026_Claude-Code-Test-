@@ -24,3 +24,8 @@ web/deck.html
 
 # Generated per-run from real telemetry; a sample must never be committed as a night.
 data/last-night.json
+
+# The encrypted dashboard, rebuilt every run and delivered to Pages as an
+# artifact rather than through the repository. Ciphertext, but there is no reason
+# to churn 0.12 MB of it into history every five minutes.
+site/

@@ -125,11 +125,17 @@ test('an album larger than the cap is refused, not silently truncated', async ()
   await assert.rejects(() => sendMediaGroup('t', '1', []), /no files/);
 });
 
-test('no pinned deck URL is configured', () => {
-  // A scheduled run cannot republish a claude.ai artifact, so any URL here can
-  // only ever drift out of date -- which is the bug this all came from. The deck
-  // ships as photographs instead.
-  assert.equal(loadConfig().screensUrl, undefined);
+test('the configured deck URL is one a scheduled run can actually redeploy', () => {
+  // The original bug was a claude.ai artifact URL: nothing in a cron run can
+  // republish one, so it froze on the night it was built. A Pages URL is fine --
+  // CI rebuilds and redeploys the same address every morning. What must never
+  // come back is a link to a one-shot published snapshot.
+  const url = loadConfig().screensUrl;
+  assert.ok(url, 'the dashboard needs a base URL');
+  assert.ok(!/claude\.ai|\/artifact\//.test(url),
+    'a published-artifact link cannot be rebuilt by CI and will go stale');
+  assert.match(url, /^https:\/\/[a-z0-9.-]+\.github\.io\//,
+    'expected the GitHub Pages origin this workflow deploys to');
 });
 
 test('no screen ever renders a doubled sign', () => {

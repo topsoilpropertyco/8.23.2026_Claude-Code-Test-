@@ -22,6 +22,8 @@ import { existsSync, readFileSync, mkdirSync, rmSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { sendMediaGroup, sendMessage, MEDIA_GROUP_MAX } from '../src/telegram.js';
+import { loadConfig } from '../src/facts.js';
+import { deckUrl } from '../src/deckurl.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'web/deck-shots');
@@ -79,6 +81,40 @@ if (night.sample && !dry) {
 
 console.log('send-deck: rebuilding screens');
 await run('python3', ['bin/build-screens.py'], 'rebuilding the screens');
+await run('python3', ['bin/build-deck.py'], 'building the dashboard');
+
+// Two delivery modes, chosen by config so switching is not a code change.
+// 'link' sends one message pointing at the encrypted dashboard; 'album' renders
+// the screens and sends them as photos. The album stays the default until the
+// Pages deploy is confirmed working -- a link that 404s and no photos would mean
+// no morning deck at all.
+const mode = loadConfig().deckDelivery === 'link' ? 'link' : 'album';
+if (mode === 'link') {
+  const url = deckUrl();
+  if (!url) await bail('deckDelivery is "link" but no dashboard URL could be built.');
+  const sl = night.standing;
+  const text = (night.stale
+      ? `${night.date} — the newest night Oura has (${night.daysBehind} days back)`
+      : `Last night — ${night.date}`)
+    + `\nScore ${night.score} · ${sl.percentile}th percentile of your ${night.population.n} nights`
+    + `\n\nThe whole night, eight panels → ${url}`;
+  if (dry) {
+    console.log('send-deck: --dry, not sending. Would send:');
+    console.log(text.split('\n').map((l) => `  ${l}`).join('\n'));
+    process.exit(0);
+  }
+  if (!token || !chatId) {
+    console.error('send-deck: TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID are required.');
+    process.exit(1);
+  }
+  try {
+    await sendMessage(token, chatId, text);
+  } catch (err) {
+    await bail(`Telegram rejected the link message -- ${err.message}`);
+  }
+  console.log(`send-deck: sent the dashboard link for ${night.date} (score ${night.score})`);
+  process.exit(0);
+}
 
 console.log('send-deck: rendering');
 rmSync(OUT, { recursive: true, force: true });

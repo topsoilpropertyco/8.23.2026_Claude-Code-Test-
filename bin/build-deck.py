@@ -1,118 +1,169 @@
 #!/usr/bin/env python3
-"""Build web/deck.html -- the eight screens as one swipeable, clickable deck.
+"""Build web/deck.html -- the eight screens as one scrolling dashboard.
 
-Each screen is embedded in its own <iframe srcdoc>. That is deliberate: the
-screens are independently generated documents that reuse the same class names
-(.q, .big, .hair, .track ...), so concatenating them into one document would
-have them overwrite each other's styles. An iframe gives each one a real
-document scope, costs nothing at this size, and keeps every screen byte-identical
-to the standalone file that was verified at 390x844.
+Was a horizontal swipe-snap deck. Seth asked for a dashboard he scrolls rather
+than cards he swipes, so the panes now stack vertically, each under its own
+heading, with a sticky summary bar carrying last night's score, percentile and
+grade so the headline is readable from anywhere in the page. On a wide screen the
+panes lay out two-up; on a phone it is one column of full-width cards.
 
-Navigation: native horizontal scroll-snap (so a phone swipe just works), plus
-arrow keys, plus clickable dots. No framework, no external requests beyond the
-Google Fonts the screens already use.
+Each screen stays inside its own <iframe srcdoc>. That is not laziness: the
+screens are independently generated documents reusing the same class names
+(.q, .big, .hair, .track ...), so concatenating them into one document would have
+them overwrite each other's styles. An iframe gives each a real document scope
+and keeps every pane byte-identical to the standalone file verified at 390x844.
 """
-import html, os, json
+import html, json, os
 
 ORDER = [
-    ('s1', 'Where am I',        'own'), ('s2', 'The curve',      'own'),
-    ('s3', 'The scale',         'own'), ('s4', 'Nights beaten',  'own'),
-    ('s5', 'The direction',     'own'), ('s6', 'Last night',     'own'),
-    ('g1', 'Grade vs members',  'nat'), ('g2', 'Grade vs my own', 'own'),
+    ('s1', 'Where am I',       'Score, percentile, and what it is worth',        'own'),
+    ('s2', 'The curve',        'Last night on the distribution of your nights',  'own'),
+    ('s3', 'The scale',        'How far from ordinary, in standard deviations',   'own'),
+    ('s4', 'Nights beaten',    'One square per night, worst to best',            'own'),
+    ('s5', 'The direction',    'Last night against every trailing average',      'own'),
+    ('s6', 'Last night',       'What actually happened, row by row',             'own'),
+    ('g1', 'Grade vs members', 'Three curves against Oura member nights',        'nat'),
+    ('g2', 'Grade vs my own',  'The same three curves against your own history', 'own'),
 ]
-panes, dots = '', ''
-for i, (key, label, kind) in enumerate(ORDER):
-    doc = open(f'variants/{key}/index.html').read()
-    panes += (f'<section class="pane" id="p{i}" data-kind="{kind}">'
-              f'<div class="stage"><iframe title="{label}" loading="lazy" '
-              f'srcdoc="{html.escape(doc, quote=True)}"></iframe></div></section>')
-    dots += (f'<button class="dot {kind}" data-i="{i}" aria-label="{label}">'
-             f'<span>{i+1}</span></button>')
 
-html_out = f'''<!doctype html>
+NIGHT = json.load(open('data/last-night.json'))
+SAMPLE = NIGHT.get('sample', False)
+STALE = NIGHT.get('stale', False)
+CURVES = json.load(open('data/grade-curves.json'))['curves']
+MY = json.load(open('data/my-score-table.json'))
+
+
+def grade(pct):
+    curved = next(c for c in CURVES if c['id'] == 'curved')
+    for b in curved['bands']:
+        if pct >= b['min']:
+            return b['grade']
+    return '—'
+
+
+PCT = NIGHT['standing']['percentile']
+ROW = next((r for r in MY['table'] if r['score'] == NIGHT['score']), None)
+GRADE = ROW['grades']['curved'] if ROW else grade(PCT)
+
+def date_label(iso):
+    if SAMPLE or not iso or len(iso) != 10:
+        return 'Sample night'
+    y, m, d = int(iso[:4]), int(iso[5:7]), int(iso[8:10])
+    mm, yy = (m, y) if m > 2 else (m + 12, y - 1)
+    kk, jj = yy % 100, yy // 100
+    h = (d + (13 * (mm + 1)) // 5 + kk + kk // 4 + jj // 4 + 5 * jj) % 7
+    wd = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'][h]
+    mon = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m - 1]
+    return f'{wd} {d} {mon} {y}'
+
+panes, nav = '', ''
+for i, (key, label, blurb, kind) in enumerate(ORDER):
+    doc = open(f'variants/{key}/index.html').read()
+    panes += (
+        f'<section class="card" id="p{i}" data-kind="{kind}">'
+        f'<header class="ch"><span class="cn mono">{i+1:02d}</span>'
+        f'<div><h2>{label}</h2><p class="mono">{blurb}</p></div></header>'
+        f'<div class="stage"><iframe title="{label}" loading="lazy" '
+        f'srcdoc="{html.escape(doc, quote=True)}"></iframe></div></section>'
+    )
+    nav += f'<a href="#p{i}" class="nl mono {kind}"><b>{i+1:02d}</b>{label}</a>'
+
+banner = ''
+if SAMPLE:
+    banner = ('<div class="warn mono">Sample data — layout only, not a real night.</div>')
+elif STALE:
+    banner = (f'<div class="warn mono">Showing {date_label(NIGHT["date"])} — the newest night '
+              f'Oura has, {NIGHT["daysBehind"]} days back. Open the Oura app to sync.</div>')
+
+out = f'''<!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Sleep OS — last night</title>
+<title>Sleep OS — {date_label(NIGHT['date'])}</title>
 <meta name="theme-color" content="#1A1814">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
 *{{box-sizing:border-box;margin:0;padding:0}}
-html,body{{height:100%;overflow:hidden;background:#26241F;
-  font-family:'IBM Plex Mono',ui-monospace,monospace;-webkit-font-smoothing:antialiased}}
-#rail{{display:flex;height:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;
-  -webkit-overflow-scrolling:touch;scrollbar-width:none}}
-#rail::-webkit-scrollbar{{display:none}}
-.pane{{flex:0 0 100%;height:100%;scroll-snap-align:center;scroll-snap-stop:always;
-  display:flex;align-items:center;justify-content:center}}
-.stage{{width:390px;height:844px;transform:scale(var(--k,1));transform-origin:center center;
-  box-shadow:0 18px 50px -18px rgba(0,0,0,.65)}}
-iframe{{width:390px;height:844px;border:0;display:block;background:#F4F0E6}}
-#bar{{position:fixed;left:0;right:0;bottom:0;padding:10px 12px calc(10px + env(safe-area-inset-bottom));
-  display:flex;gap:7px;justify-content:center;align-items:center;
-  background:linear-gradient(to top,rgba(38,36,31,.96),rgba(38,36,31,0))}}
-.dot{{width:26px;height:26px;border-radius:50%;border:1px solid #6E6862;background:transparent;
-  color:#9A938B;font:600 10px/1 'IBM Plex Mono',monospace;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;padding:0;
-  transition:background .16s,color .16s,border-color .16s}}
-.dot.nat{{border-color:#5B7C97;color:#8FAEC7}}
-.dot[aria-current="true"]{{background:#EFE6D2;color:#1A1814;border-color:#EFE6D2}}
-.dot.nat[aria-current="true"]{{background:#D6E2EE;color:#22506F;border-color:#D6E2EE}}
-.dot:focus-visible{{outline:2px solid #fff;outline-offset:2px}}
-#cap{{position:fixed;top:0;left:0;right:0;padding:calc(9px + env(safe-area-inset-top)) 14px 9px;
-  display:flex;justify-content:space-between;align-items:baseline;gap:10px;
-  font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:#B7AFA5;
-  background:linear-gradient(to bottom,rgba(38,36,31,.96),rgba(38,36,31,0));pointer-events:none}}
-#cap b{{color:#F4F0E6;font-weight:600}}
-@media (prefers-reduced-motion:reduce){{#rail{{scroll-behavior:auto}}}}
+:root{{--ink:#F4F0E6;--dim:#9A9488;--ground:#1A1814;--raised:#221F1A;--rule:#332F28}}
+html{{scroll-behavior:smooth}}
+body{{background:var(--ground);color:var(--ink);
+  font-family:'Newsreader',Georgia,serif;-webkit-font-smoothing:antialiased;
+  padding-bottom:56px}}
+.mono{{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}}
+.bar{{position:sticky;top:0;z-index:20;background:rgba(26,24,20,.96);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--rule);
+  padding:11px 18px;display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}}
+.bar .brand{{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.24em;
+  text-transform:uppercase;font-weight:600}}
+.bar .stat{{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;
+  color:var(--dim)}}
+.bar .stat b{{color:var(--ink);font-weight:600}}
+.bar .when{{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}}
+.warn{{background:#5A2A22;color:#F6DED8;padding:9px 18px;font-size:11px;
+  letter-spacing:.04em;line-height:1.5}}
+.hero{{padding:34px 18px 8px;max-width:1180px;margin:0 auto}}
+.hero h1{{font-size:clamp(26px,6vw,40px);font-weight:400;letter-spacing:-.02em;line-height:1.15}}
+.hero p{{margin-top:9px;color:var(--dim);font-size:14px;line-height:1.6;max-width:56ch}}
+.nav{{display:flex;flex-wrap:wrap;gap:7px;padding:18px 18px 4px;max-width:1180px;margin:0 auto}}
+.nl{{display:inline-flex;align-items:baseline;gap:7px;padding:6px 11px;
+  border:1px solid var(--rule);border-radius:2px;color:var(--dim);text-decoration:none;
+  font-size:10.5px;letter-spacing:.1em;text-transform:uppercase}}
+.nl b{{color:var(--ink)}}
+.nl:hover{{border-color:var(--ink);color:var(--ink)}}
+.nl.nat b{{color:#8FBEE0}}
+.grid{{display:grid;grid-template-columns:1fr;gap:22px;
+  padding:22px 18px;max-width:1180px;margin:0 auto}}
+@media(min-width:900px){{.grid{{grid-template-columns:repeat(2,1fr);gap:26px}}}}
+.card{{background:var(--raised);border:1px solid var(--rule);border-radius:3px;
+  overflow:hidden;scroll-margin-top:64px}}
+.ch{{display:flex;gap:13px;align-items:flex-start;padding:16px 18px 14px;
+  border-bottom:1px solid var(--rule)}}
+.ch .cn{{font-size:10px;letter-spacing:.14em;color:var(--dim);font-weight:600;
+  padding-top:3px;flex:0 0 auto}}
+.ch h2{{font-size:17px;font-weight:500;letter-spacing:-.01em}}
+.ch p{{margin-top:3px;font-size:10.5px;letter-spacing:.03em;color:var(--dim);line-height:1.5}}
+.card[data-kind=nat] .ch{{border-bottom-color:#2C5F86}}
+.stage{{display:flex;justify-content:center;padding:18px 12px 22px;background:var(--ground)}}
+iframe{{width:390px;height:844px;border:0;display:block;
+  box-shadow:0 1px 0 var(--rule),0 18px 40px rgba(0,0,0,.4);border-radius:2px}}
+@media(max-width:430px){{
+  .stage{{padding:12px 0 16px}}
+  iframe{{width:390px;transform-origin:top center}}
+}}
+.foot{{max-width:1180px;margin:0 auto;padding:8px 18px 34px;color:var(--dim);
+  font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.7;letter-spacing:.04em}}
+.top{{position:fixed;right:16px;bottom:16px;z-index:30;padding:9px 13px;
+  background:var(--raised);border:1px solid var(--rule);border-radius:2px;
+  color:var(--dim);text-decoration:none;font-family:'IBM Plex Mono',monospace;
+  font-size:10px;letter-spacing:.14em;text-transform:uppercase}}
+.top:hover{{color:var(--ink);border-color:var(--ink)}}
 </style></head>
 <body>
-<div id="cap"><span><b>Sleep OS</b> &middot; Sun 23 Aug 2026</span><span id="ctr">1 / {len(ORDER)}</span></div>
-<div id="rail">{panes}</div>
-<nav id="bar" aria-label="Screens">{dots}</nav>
-<script>
-(function(){{
-  var rail=document.getElementById('rail'), panes=[].slice.call(rail.children),
-      dots=[].slice.call(document.querySelectorAll('.dot')), ctr=document.getElementById('ctr'),
-      N={len(ORDER)}, cur=0;
-
-  // Scale the fixed 390x844 screen to whatever viewport we are actually on,
-  // leaving room for the caption and the dot bar. Never upscale past 1.
-  function fit(){{
-    var k=Math.min(1, (window.innerWidth-24)/390, (window.innerHeight-104)/844);
-    document.documentElement.style.setProperty('--k', k.toFixed(4));
-  }}
-  function mark(i){{
-    if(i===cur) return; cur=i;
-    dots.forEach(function(d,j){{ d.setAttribute('aria-current', j===i?'true':'false'); }});
-    ctr.textContent=(i+1)+' / '+N;
-  }}
-  function go(i){{
-    i=Math.max(0,Math.min(N-1,i));
-    panes[i].scrollIntoView({{behavior:'smooth',inline:'center',block:'nearest'}});
-    mark(i);
-  }}
-  dots.forEach(function(d){{ d.addEventListener('click',function(){{ go(+d.dataset.i); }}); }});
-  addEventListener('keydown',function(e){{
-    if(e.key==='ArrowRight'||e.key===' ') {{ e.preventDefault(); go(cur+1); }}
-    if(e.key==='ArrowLeft') {{ e.preventDefault(); go(cur-1); }}
-    if(e.key==='Home') go(0); if(e.key==='End') go(N-1);
-  }});
-  // Track the pane actually in view, so swiping updates the dots too.
-  if('IntersectionObserver' in window){{
-    var io=new IntersectionObserver(function(es){{
-      es.forEach(function(en){{ if(en.isIntersecting && en.intersectionRatio>0.55)
-        mark(panes.indexOf(en.target)); }});
-    }},{{root:rail,threshold:[0.55]}});
-    panes.forEach(function(p){{ io.observe(p); }});
-  }}
-  addEventListener('resize',fit); fit(); mark(0);
-  dots[0].setAttribute('aria-current','true');
-}})();
-</script>
-</body></html>'''
+<div class="bar">
+  <span class="brand">Sleep OS</span>
+  <span class="stat">Score <b>{NIGHT['score']}</b></span>
+  <span class="stat">Percentile <b>{PCT:g}</b></span>
+  <span class="stat">Curved <b>{GRADE}</b></span>
+  <span class="when">{date_label(NIGHT['date'])}</span>
+</div>
+{banner}
+<div class="hero">
+  <h1>Last night, eight ways.</h1>
+  <p>The same night measured against your own {NIGHT['population']['n']:,} nights, each panel
+  answering one question. Scroll, or jump straight to one.</p>
+</div>
+<nav class="nav">{nav}</nav>
+<main class="grid">{panes}</main>
+<p class="foot">Rebuilt from your own Oura record every morning — nothing here is cached from a
+previous night. Measured against your own history unless a panel says otherwise; the only
+outside numbers are the published adult ranges on panel 06 and the Oura member figures on
+panel 07, both labelled where they appear.</p>
+<a href="#" class="top mono">Top</a>
+</body></html>
+'''
 os.makedirs('web', exist_ok=True)
-open('web/deck.html', 'w').write(html_out)
-print('wrote web/deck.html  %.2f MB  (%d screens)' % (os.path.getsize('web/deck.html')/1e6, len(ORDER)))
+open('web/deck.html', 'w').write(out)
+print(f'wrote web/deck.html  {len(out)/1e6:.2f} MB  ({len(ORDER)} panels, dashboard layout)')

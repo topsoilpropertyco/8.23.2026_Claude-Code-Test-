@@ -51,6 +51,15 @@ permissions:
 jobs:
   dispatch:
     runs-on: ubuntu-latest
+    # Required by actions/deploy-pages. The dashboard is published as ciphertext
+    # (bin/build-page.mjs) because this repository is public; the key rides in
+    # the URL fragment, which never reaches GitHub's servers.
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -113,6 +122,40 @@ jobs:
           node bin/build-grades.mjs --check
           python3 bin/build-screens.py
           python3 bin/build-deck.py
+
+      # Encrypt and publish the dashboard. continue-on-error throughout: this is
+      # the least important thing the run does and must never stop a reminder or
+      # a delivery. Until Pages is enabled for the repository these steps fail
+      # and the deck still goes out as an album, which is why deckDelivery
+      # stays on "album" until the link is confirmed working.
+      - name: Encrypt the dashboard
+        if: >-
+          inputs.oura_action == ''
+          && (steps.telem.outputs.changed == 'true' || inputs.send_deck == true)
+        continue-on-error: true
+        id: page
+        env:
+          SLEEPOS_DATA_KEY: ${{ secrets.SLEEPOS_DATA_KEY }}
+        run: node bin/build-page.mjs
+
+      - name: Upload the dashboard to Pages
+        if: >-
+          inputs.oura_action == ''
+          && (steps.telem.outputs.changed == 'true' || inputs.send_deck == true)
+          && steps.page.outcome == 'success'
+        continue-on-error: true
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Deploy the dashboard
+        if: >-
+          inputs.oura_action == ''
+          && (steps.telem.outputs.changed == 'true' || inputs.send_deck == true)
+          && steps.page.outcome == 'success'
+        continue-on-error: true
+        id: deploy
+        uses: actions/deploy-pages@v4
 
       - name: Upload the grade table
         if: >-

@@ -11,6 +11,7 @@
 import { loadLibraries, loadConfig } from './facts.js';
 import { mean, stdev, zScore, percentileRank, trailing, confidence } from './stats.js';
 import { readTelemetry, scoreSeries } from './telemetry.js';
+import { deckUrl } from './deckurl.js';
 
 const NUM = /-?\d+(?:\.\d+)?/g;
 
@@ -242,10 +243,12 @@ export function buildCoachResponse({ entry, history, rotation = 0, morningPrompt
     lines.push(fact.truth);
   }
 
-  // The night as eight swipeable screens. Resolved from config unless the caller
-  // passes one explicitly, so tests can drive it without touching config.json.
-  // A missing or empty screensUrl simply omits the line -- never a broken link.
-  const url = screensUrl !== undefined ? screensUrl : loadConfig().screensUrl;
+  // The dashboard link, key and all. deckUrl() returns null when there is no
+  // configured base or no data key to derive from, and null omits the line --
+  // never a bare base, which would load and then report itself undecryptable.
+  // An explicit screensUrl from the caller is used verbatim so tests can drive
+  // this without touching config.json or needing a key.
+  const url = screensUrl !== undefined ? screensUrl : deckUrl();
   if (url) {
     lines.push('');
     lines.push(`See the whole night → ${url}`);
