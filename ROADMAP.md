@@ -24,7 +24,7 @@ Small, unblocked, and worth doing whenever there's a gap.
 
 | | Item | Why it matters |
 |---|---|---|
-| S1 | **Revoke the exposed Telegram bot token** via @BotFather, then update `SLEEPOS_TELEGRAM_BOT_TOKEN` | The token was pasted into chat early on. The repo is public. Rotating it costs two minutes and closes the only known credential exposure. **Needs Seth** — BotFather is a human conversation. |
+| S1 | ~~**Revoke the exposed Telegram bot token**~~ — **DONE 2026-08-25** | Seth rotated it via @BotFather and updated `SLEEPOS_TELEGRAM_BOT_TOKEN`. The old token pasted into chat early on is dead. No known credential exposure remains. |
 | S2 | ~~Decide the **8:1 type floor**~~ — **DECIDED, floor stands** | Delegated to Claude 2026-08-24; reasoning in `RUBRIC.md`. v11's reference-interval mechanism is kept and portable; the flat emphasis model is not. The note names the condition to reopen. |
 
 ---
@@ -434,7 +434,7 @@ answered. Full record in `taste/PICKS.md`.
 | | Blocker | What's needed |
 |---|---|---|
 | **S1** | Exposed Telegram bot token | Two minutes at a computer with @BotFather, then update `SLEEPOS_TELEGRAM_BOT_TOKEN`. Only open security item. |
-| **Oura population percentile** | Oura publishes a mean Sleep Score (77.0) and **no spread**, so a score cannot be placed on a population curve | A distribution, or a second parameter. `SUPERPROMPT-OURA-DISTRIBUTION.md` is written and ready to paste into Cowork; it searches first, then constructs from the score's documented inputs against a public sleep cohort. |
+| **Oura population percentile** | Oura publishes a mean Sleep Score (77.0) and **no spread**, so a score cannot be placed on a population curve | A distribution, or a second parameter. **Seth is sourcing percentile data from a large public cohort and will supply it** (2026-08-25). `SUPERPROMPT-OURA-DISTRIBUTION.md` stays as the fallback path if that data does not carry a spread. When the numbers land: check whether the SD is within-person or between-person before using it — that distinction is the whole problem, and a within-person SD will produce percentiles that are badly, confidently wrong. |
 | **T180 / T365 values** | `coach.js` now asks for them and `trailing()` computes them, but this build has no `SLEEPOS_DATA_KEY` | Nothing. They populate automatically on the runner, which holds the key. Screen s5 shows them as "pending" until then. |
 
 ## Open questions, not blockers
