@@ -197,3 +197,81 @@ since 25 Aug 2023, marker bar in teal, dotted mean line.
 - Comparison: **percentile in words, count in pictures, percentile under every axis.**
 - Repeated/comparable data: **tables and aligned rows, never prose.**
 - **Label the unit, not the occasion.**
+
+---
+
+## Pick 5 — mp2 THE PERCENTILE + v4 again (final pick)
+
+mp2: warm paper, Bodoni Moda, violet accent, "81" + "st" as the hero with
+PERCENTILE / 198 of 1042 / RANK OF ALL NIGHTS beside it.
+
+### What Seth said
+- LIKES the distribution again — "nothing too specific, I just like seeing it."
+- **"I like it explained to me. I like to not even look at it and be like,
+  what does this mean. I like it being made explicit."**
+- **"This concludes everything I like."**
+
+### THE BRIEF, verbatim in substance
+- Do not jam everything onto one screen. Multiple screens are fine.
+- The feeling wanted: *"I just wanna look at it and understand quickly —
+  where am I at? Am I heading the right direction?"*
+- **"Take the elements across every screenshot I put, and for each element make
+  it into its own screen telling me one thing, so I can visualise the data in
+  different ways."**
+
+### What I observe
+- **"Am I heading the right direction" is a trend question, and effectively
+  nothing in the twenty-seven answers it.** All of them render one night's
+  position against a static baseline. The trailing-arrows request from Pick 1
+  is the only thing reaching for direction of travel. **This is the real gap in
+  the whole project**, and it deserves its own screen rather than a row.
+- Percentile-as-hero (mp2) is the direct answer to "where am I at" in one
+  number — and it is the treatment he asked for back in Pick 1 when he said
+  the percentile should be made clearer.
+- Light ground now **five for five**.
+
+---
+
+# COMPILED TASTE PROFILE
+
+### Rules extracted
+1. **Light ground.** Five picks, five light grounds. Never near-black.
+2. **Percentile in words, count in pictures.** Headline speaks percentile;
+   the raw ratio is drawn, never narrated.
+3. **Percentile leads, rank supports.** Rank is marginalia, not headline.
+4. **Every axis is dual-labelled** — raw unit on top, percentile aligned beneath.
+5. **Comparable series are tabular.** Aligned rows and columns, never prose.
+   Narrative context may be prose.
+6. **Name the unit, not the occasion.** "Sleep score 88", not "Last night, 88".
+7. **Make it explicit.** He should never have to ask what a mark means.
+   Say the comparison rule on screen.
+8. **One element, one screen, one question.**
+
+### Consistent formal traits across the five picks
+- Letterspaced uppercase micro-labels for every field name.
+- High-contrast serif for figures at display size; mono or sans for labels.
+- Hard rules and hairlines as structure; no rounded cards, no shadows.
+- Tabular figures throughout.
+
+### THE DATA CONSTRAINT — checked, and it binds
+`state/sleeplog.ndjson` and `state/oura.enc` are AES-256-GCM ciphertext and the
+key is a repository secret absent from source (PRIVACY.md). The per-night
+series cannot be read in this session. Consequences:
+- **T180 and T365 do not exist** and cannot be derived. They are built as a
+  designed empty state, never fabricated. This is mp6's exact failure mode.
+- **Only one real percentile anchor exists** (score 88 -> 81st, from the true
+  844/197 split). Every other tick percentile is a normal fit and is labelled
+  as such on screen. Measured and modelled differ by ~1.1 points at +0.92 SD
+  and that difference is disclosed rather than hidden.
+- **The waffle grid and the SD strip are fully real** — they need only counts
+  and mean/SD/z. The histogram *shape* is the only modelled element.
+
+### Trend, resolved from the real numbers
+Chain each window against the next longer one; the longest available against
+the lifetime mean.
+- T7 79.4 vs T30 79.2 -> +0.2, flat
+- T30 79.2 vs T90 73.9 -> **+5.3, up**
+- T90 73.9 vs lifetime 79.3 -> -5.4, down
+Read: a bad ninety-day stretch that the last thirty days have recovered from,
+with the last seven holding. **Direction of travel: improving.** That is a real
+answer to his second question, and it comes out of the real data.

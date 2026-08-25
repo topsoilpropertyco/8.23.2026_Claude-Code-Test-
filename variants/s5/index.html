@@ -1,0 +1,78 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>s5 — The direction</title>
+<meta name="viewport" content="width=390, initial-scale=1">
+<!-- Trailing windows chained against each other. T180/T365 are a designed empty state, never fabricated. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#78756F}
+.s{position:relative;width:390px;height:844px;overflow:hidden;background:#F4F0E6;color:#1A1814;
+  font-family:'Newsreader',Georgia,serif;font-variant-numeric:tabular-nums lining-nums;
+  font-feature-settings:'tnum' 1,'lnum' 1;-webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;padding:30px 24px 26px}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.hd{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:9px;
+  border-bottom:1px solid #1A1814;flex:0 0 auto}
+.bd{flex:1;display:flex;flex-direction:column;padding:22px 0 10px;min-height:0}
+.grp{flex:0 0 auto}
+.grp:nth-child(2){flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0}
+.hd .brand{font-size:11px;letter-spacing:.24em;text-transform:uppercase;font-weight:600}
+.hd .num{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#7C7568}
+.q{font-size:23px;line-height:1.25;font-weight:400;letter-spacing:-.01em}
+.q b{font-weight:600}
+.ans{margin-top:6px;font-size:11.5px;line-height:1.55;color:#7C7568;max-width:33ch}
+.lab{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:#7C7568;font-weight:500}
+.hair{height:1px;background:#D5CDBC}
+.rule{height:1px;background:#1A1814}
+.ft{margin-top:auto;padding-top:12px;border-top:1px solid #D5CDBC;display:flex;
+  justify-content:space-between;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#7C7568}
+.note{font-size:9px;line-height:1.5;color:#7C7568;letter-spacing:.02em}
+.note b{color:#1A1814;font-weight:600}
+
+.verdict{margin-top:16px;font-size:44px;line-height:1;font-weight:600;letter-spacing:-.02em;color:#2F7A44}
+.tbl{position:relative;margin-top:20px}
+.meanline{position:absolute;top:16px;bottom:26px;width:1px;background:#7C7568;z-index:0}
+.trow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #D5CDBC;position:relative;z-index:1}
+.trow.base{border-bottom:0;border-top:1px solid #1A1814;margin-top:2px}
+.trow.empty .tk,.trow.empty .tv{color:#B3AB9A}
+.tk{width:58px;flex:0 0 58px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+  color:#7C7568;white-space:nowrap}
+.track{flex:0 0 182px;height:9px;position:relative;background:#E4DDCD}
+.trow.empty .track{background:repeating-linear-gradient(90deg,#E4DDCD 0 4px,transparent 4px 8px)}
+.dot{position:absolute;top:-2px;width:3px;height:13px;transform:translateX(-1.5px)}
+.tv{width:36px;flex:0 0 36px;text-align:right;font-size:12.5px;font-weight:500}
+.ta{flex:1;min-width:0;font-size:10.5px;display:flex;align-items:baseline;gap:4px;white-space:nowrap}
+.ta i{font-style:normal;font-size:9.5px}
+.axline{display:flex;margin-top:7px}
+.axline .sp{width:66px;flex:0 0 66px}
+.axline .e{flex:0 0 182px;display:flex;justify-content:space-between;font-size:8.5px;
+  letter-spacing:.1em;color:#7C7568;font-family:'IBM Plex Mono',monospace}
+</style>
+<div class="s">
+  <div class="hd"><span class="brand mono">Sleep OS</span><span class="num mono">5 of 6 &middot; The direction</span></div>
+  <div class="bd">
+<div class="grp">  <p class="q">Am I heading the right direction?</p>
+  <div class="verdict">Improving.</div>
+  <p class="ans" style="margin-top:8px">Your last 30 nights sit <b style="color:#2F7A44">5.3
+  points</b> above your last 90 — a bad stretch you have already climbed out of.
+  The last 7 are holding steady.</p></div><div class="grp">
+  <div class="tbl">
+    <div class="meanline" style="left:178.84px"></div>
+    <div class="trow"><span class="tk mono">Last 7</span><span class="track"><span class="dot" style="left:114.05px;background:#1F4B8F"></span></span><span class="tv mono">79.4</span><span class="ta mono" style="color:#B07D1A">&#9644;<i>+0.2</i></span></div><div class="trow"><span class="tk mono">Last 30</span><span class="track"><span class="dot" style="left:111.63px;background:#1F4B8F"></span></span><span class="tv mono">79.2</span><span class="ta mono" style="color:#2F7A44">&#9650;<i>+5.3</i></span></div><div class="trow"><span class="tk mono">Last 90</span><span class="track"><span class="dot" style="left:47.32px;background:#1F4B8F"></span></span><span class="tv mono">73.9</span><span class="ta mono" style="color:#B23A2F">&#9660;<i>-5.4</i></span></div><div class="trow empty"><span class="tk mono">Last 180</span><span class="track"></span><span class="tv mono">&mdash;</span><span class="ta mono">no data</span></div><div class="trow empty"><span class="tk mono">Last 365</span><span class="track"></span><span class="tv mono">&mdash;</span><span class="ta mono">no data</span></div><div class="trow base"><span class="tk mono">All time</span><span class="track"><span class="dot" style="left:112.84px;background:#7C7568"></span></span><span class="tv mono">79.3</span><span class="ta mono" style="color:#7C7568"><i></i></span></div>
+  </div>
+  <div class="axline"><span class="sp"></span><span class="e"><span>70</span>
+    <span>mean 79.3</span><span>85</span></span></div>
+  </div><div class="grp"><div class="hair" style="margin-top:16px"></div>
+  <p class="note mono" style="margin-top:12px">Each arrow compares that window with the next
+  longer one; the longest compares with the all-time mean.
+  <b style="color:#2F7A44">&#9650;</b> better than the window below it &middot;
+  <b style="color:#B07D1A">&#9644;</b> within 0.5 &middot;
+  <b style="color:#B23A2F">&#9660;</b> worse.
+  <b>Last 180 and last 365 are not in the log</b> — the rows are built and stay empty
+  rather than carry a number that was never measured.</p>
+</div>  </div>
+  <div class="ft mono"><span>Sun 23 Aug 2026</span><span>trailing means</span></div>
+</div>

@@ -1,0 +1,78 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>s2 — The curve</title>
+<meta name="viewport" content="width=390, initial-scale=1">
+<!-- Histogram with a dual-labelled axis: score on top, percentile beneath. Shape is a normal fit and says so. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#78756F}
+.s{position:relative;width:390px;height:844px;overflow:hidden;background:#F4F0E6;color:#1A1814;
+  font-family:'Newsreader',Georgia,serif;font-variant-numeric:tabular-nums lining-nums;
+  font-feature-settings:'tnum' 1,'lnum' 1;-webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;padding:30px 24px 26px}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.hd{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:9px;
+  border-bottom:1px solid #1A1814;flex:0 0 auto}
+.bd{flex:1;display:flex;flex-direction:column;padding:22px 0 10px;min-height:0}
+.grp{flex:0 0 auto}
+.grp:nth-child(2){flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0}
+.hd .brand{font-size:11px;letter-spacing:.24em;text-transform:uppercase;font-weight:600}
+.hd .num{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#7C7568}
+.q{font-size:23px;line-height:1.25;font-weight:400;letter-spacing:-.01em}
+.q b{font-weight:600}
+.ans{margin-top:6px;font-size:11.5px;line-height:1.55;color:#7C7568;max-width:33ch}
+.lab{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:#7C7568;font-weight:500}
+.hair{height:1px;background:#D5CDBC}
+.rule{height:1px;background:#1A1814}
+.ft{margin-top:auto;padding-top:12px;border-top:1px solid #D5CDBC;display:flex;
+  justify-content:space-between;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#7C7568}
+.note{font-size:9px;line-height:1.5;color:#7C7568;letter-spacing:.02em}
+.note b{color:#1A1814;font-weight:600}
+
+.plot{position:relative;width:342px}
+.pin{margin-left:68px;position:relative}
+.axrow{position:relative;height:15px;margin-top:5px;margin-left:68px}
+.ax{position:absolute;transform:translateX(-50%);font-size:10px;
+  font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;color:#1A1814}
+.ax.p{color:#1F4B8F}
+.axlab{position:absolute;left:-68px;top:3px;font-size:8px;letter-spacing:.16em;
+  text-transform:uppercase;color:#7C7568}
+.callout{position:absolute;transform:translateX(-50%);text-align:center;line-height:1.25}
+.callout .a{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#1F4B8F;font-weight:600}
+.callout .b{font-size:19px;font-weight:600;color:#1F4B8F}
+</style>
+<div class="s">
+  <div class="hd"><span class="brand mono">Sleep OS</span><span class="num mono">2 of 6 &middot; The curve</span></div>
+  <div class="bd">
+<div class="grp">  <p class="q">How rare is a night like this?</p>
+  <p class="ans">Every night on record, binned by score. Taller means more common.
+  The row under the axis converts each score straight into a percentile, so you
+  never have to.</p></div><div class="grp">
+  <div class="plot">
+    <div class="callout" style="left:268.93px;top:-6px">
+      <div class="a mono">Sleep score</div><div class="b mono">88</div>
+    </div>
+    <div class="pin">
+    <svg width="274" height="163" viewBox="0 0 274 163" style="display:block;margin-top:34px" aria-hidden="true">
+      <rect x="1.00" y="157.00" width="7.13" height="1.00" fill="#C9C1AE" stroke="none" stroke-width=".8"/><rect x="10.13" y="157.00" width="7.13" height="1.00" fill="#C9C1AE" stroke="none" stroke-width=".8"/><rect x="19.27" y="157.00" width="7.13" height="1.00" fill="#C9C1AE" stroke="none" stroke-width=".8"/><rect x="28.40" y="156.21" width="7.13" height="1.79" fill="#C9C1AE" stroke="none" stroke-width=".8"/><rect x="37.53" y="154.73" width="7.13" height="3.27" fill="#C9C1AE" stroke="none" stroke-width=".8"/><rect x="46.67" y="152.30" width="7.13" height="5.70" fill="#C9C1AE" stroke="none" stroke-width=".8"/><rect x="55.80" y="148.49" width="7.13" height="9.51" fill="#C9C1AE" stroke="none" stroke-width=".8"/><rect x="64.93" y="142.82" width="7.13" height="15.18" fill="#C9C1AE" stroke="none" stroke-width=".8"/><rect x="74.07" y="134.80" width="7.13" height="23.20" fill="#C9C1AE" stroke="none" stroke-width=".8"/><rect x="83.20" y="124.06" width="7.13" height="33.94" fill="#C9C1AE" stroke="none" stroke-width=".8"/><rect x="92.33" y="110.50" width="7.13" height="47.50" fill="#C9C1AE" stroke="none" stroke-width=".8"/><rect x="101.47" y="94.38" width="7.13" height="63.62" fill="#C9C1AE" stroke="none" stroke-width=".8"/><rect x="110.60" y="76.45" width="7.13" height="81.55" fill="#C9C1AE" stroke="none" stroke-width=".8"/><rect x="119.73" y="57.95" width="7.13" height="100.05" fill="#C9C1AE" stroke="none" stroke-width=".8"/><rect x="128.87" y="40.55" width="7.13" height="117.45" fill="#C9C1AE" stroke="none" stroke-width=".8"/><rect x="138.00" y="26.04" width="7.13" height="131.96" fill="#C9C1AE" stroke="none" stroke-width=".8"/><rect x="147.13" y="16.11" width="7.13" height="141.89" fill="#C9C1AE" stroke="none" stroke-width=".8"/><rect x="156.27" y="12.00" width="7.13" height="146.00" fill="#C9C1AE" stroke="none" stroke-width=".8"/><rect x="165.40" y="14.23" width="7.13" height="143.77" fill="#C9C1AE" stroke="none" stroke-width=".8"/><rect x="174.53" y="22.51" width="7.13" height="135.49" fill="#C9C1AE" stroke="none" stroke-width=".8"/><rect x="183.67" y="35.81" width="7.13" height="122.19" fill="#C9C1AE" stroke="none" stroke-width=".8"/><rect x="192.80" y="52.54" width="7.13" height="105.46" fill="#C9C1AE" stroke="none" stroke-width=".8"/><rect x="201.93" y="70.89" width="7.13" height="87.11" fill="none" stroke="#C9C1AE" stroke-width=".8"/><rect x="211.07" y="89.14" width="7.13" height="68.86" fill="none" stroke="#C9C1AE" stroke-width=".8"/><rect x="220.20" y="105.91" width="7.13" height="52.09" fill="none" stroke="#C9C1AE" stroke-width=".8"/><rect x="229.33" y="120.29" width="7.13" height="37.71" fill="none" stroke="#C9C1AE" stroke-width=".8"/><rect x="238.47" y="131.87" width="7.13" height="26.13" fill="none" stroke="#C9C1AE" stroke-width=".8"/><rect x="247.60" y="140.68" width="7.13" height="17.32" fill="none" stroke="#C9C1AE" stroke-width=".8"/><rect x="256.73" y="147.01" width="7.13" height="10.99" fill="none" stroke="#C9C1AE" stroke-width=".8"/><rect x="265.87" y="151.33" width="7.13" height="6.67" fill="none" stroke="#C9C1AE" stroke-width=".8"/>
+      <line x1="161.20" x2="161.20" y1="16" y2="158" stroke="#7C7568" stroke-width="1" stroke-dasharray="1 3"/>
+      <line x1="200.93" x2="200.93" y1="0" y2="158" stroke="#1F4B8F" stroke-width="1.6"/>
+      <circle cx="200.93" cy="3" r="3.2" fill="#1F4B8F"/>
+      <line x1="0" x2="274" y1="158" y2="158" stroke="#1A1814" stroke-width="1"/>
+      <line x1="50.23" x2="50.23" y1="158" y2="162" stroke="#7C7568" stroke-width=".8"/><line x1="95.90" x2="95.90" y1="158" y2="162" stroke="#7C7568" stroke-width=".8"/><line x1="141.57" x2="141.57" y1="158" y2="162" stroke="#7C7568" stroke-width=".8"/><line x1="187.23" x2="187.23" y1="158" y2="162" stroke="#7C7568" stroke-width=".8"/><line x1="232.90" x2="232.90" y1="158" y2="162" stroke="#7C7568" stroke-width=".8"/>
+    </svg></div>
+    <div class="axrow"><span class="axlab mono">Sleep score</span><span class="ax " style="left:50.23px">55</span><span class="ax " style="left:95.90px">65</span><span class="ax " style="left:141.57px">75</span><span class="ax " style="left:187.23px">85</span><span class="ax " style="left:232.90px">95</span></div>
+    <div class="axrow"><span class="axlab mono">Percentile</span><span class="ax p" style="left:50.23px">1</span><span class="ax p" style="left:95.90px">7</span><span class="ax p" style="left:141.57px">33</span><span class="ax p" style="left:187.23px">72</span><span class="ax p" style="left:232.90px">95</span></div>
+  </div>
+  </div><div class="grp"><div class="hair" style="margin-top:16px"></div>
+  <p class="note mono" style="margin-top:12px">The bars are a normal curve fitted to your real
+  mean <b>79.3</b> and SD <b>9.54</b>; the percentile row is read off that same fit.
+  Last night's <b>81st</b> is the measured rank and is the number to trust — the fitted
+  curve puts it at 82nd, about a point out, because 1,042 real nights are
+  not perfectly normal.</p>
+</div>  </div>
+  <div class="ft mono"><span>Sun 23 Aug 2026</span><span>mean 79.3 · SD 9.54</span></div>
+</div>

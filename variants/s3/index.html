@@ -1,0 +1,84 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>s3 — The scale</title>
+<meta name="viewport" content="width=390, initial-scale=1">
+<!-- SD calibration strip, each tick spelled out as a score and a percentile. Positions measured, tick percentiles modelled. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#78756F}
+.s{position:relative;width:390px;height:844px;overflow:hidden;background:#F4F0E6;color:#1A1814;
+  font-family:'Newsreader',Georgia,serif;font-variant-numeric:tabular-nums lining-nums;
+  font-feature-settings:'tnum' 1,'lnum' 1;-webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;padding:30px 24px 26px}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.hd{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:9px;
+  border-bottom:1px solid #1A1814;flex:0 0 auto}
+.bd{flex:1;display:flex;flex-direction:column;padding:22px 0 10px;min-height:0}
+.grp{flex:0 0 auto}
+.grp:nth-child(2){flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0}
+.hd .brand{font-size:11px;letter-spacing:.24em;text-transform:uppercase;font-weight:600}
+.hd .num{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#7C7568}
+.q{font-size:23px;line-height:1.25;font-weight:400;letter-spacing:-.01em}
+.q b{font-weight:600}
+.ans{margin-top:6px;font-size:11.5px;line-height:1.55;color:#7C7568;max-width:33ch}
+.lab{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:#7C7568;font-weight:500}
+.hair{height:1px;background:#D5CDBC}
+.rule{height:1px;background:#1A1814}
+.ft{margin-top:auto;padding-top:12px;border-top:1px solid #D5CDBC;display:flex;
+  justify-content:space-between;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#7C7568}
+.note{font-size:9px;line-height:1.5;color:#7C7568;letter-spacing:.02em}
+.note b{color:#1A1814;font-weight:600}
+
+.strip{display:flex;height:30px;margin-top:8px;border:1px solid #1A1814}
+.chip{flex:1 1 0;background:#DDD6C6;border-right:1px solid #1A1814}
+.chip:last-child{border-right:0}
+.chip.me{background:#C7D2E4}
+.zwrap{position:relative;margin-top:22px;width:342px}
+.zrow{display:flex;align-items:baseline;margin-top:6px}
+.zlab{width:74px;flex:0 0 74px;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:#7C7568}
+.zcells{flex:1;display:flex}
+.zc{flex:1 1 0;text-align:center;font-size:10.5px;
+  font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
+.zc.p{color:#1F4B8F}
+.you{position:absolute;top:-20px;transform:translateX(-50%);text-align:center;white-space:nowrap}
+.you .t{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#1F4B8F;font-weight:600}
+.youline{position:absolute;top:-4px;width:1.6px;height:38px;background:#1F4B8F;transform:translateX(-50%)}
+.inband{margin-top:16px;border:1px solid #1F4B8F;padding:12px 14px;display:flex;
+  justify-content:space-between;align-items:baseline}
+.inband .k{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#1F4B8F;font-weight:600}
+.inband .v{font-size:27px;font-weight:600;color:#1F4B8F}
+</style>
+<div class="s">
+  <div class="hd"><span class="brand mono">Sleep OS</span><span class="num mono">3 of 6 &middot; The scale</span></div>
+  <div class="bd">
+<div class="grp">  <p class="q">How far from ordinary?</p>
+  <p class="ans">The same night measured in standard deviations. Each step is
+  spelled out in both a sleep score and a percentile, so the scale reads without
+  any statistics.</p></div><div class="grp">
+  <div class="zwrap">
+    <div class="you" style="left:257.31px">
+      <div class="t mono">You &middot; +0.92 SD</div>
+    </div>
+    <div style="margin-left:74px;position:relative">
+      <div class="strip"><div class="chip"></div><div class="chip"></div><div class="chip"></div><div class="chip me"></div><div class="chip"></div></div>
+      <div class="youline" style="left:183.31px"></div>
+    </div>
+    <div class="zrow"><span class="zlab mono">Deviation</span><div class="zcells"><span class="zc ">-2</span><span class="zc ">-1</span><span class="zc ">&nbsp;0</span><span class="zc ">+1</span><span class="zc ">+2</span></div></div>
+    <div class="zrow"><span class="zlab mono">Sleep score</span><div class="zcells"><span class="zc ">60</span><span class="zc ">70</span><span class="zc ">79</span><span class="zc ">89</span><span class="zc ">98</span></div></div>
+    <div class="zrow"><span class="zlab mono">Percentile</span><div class="zcells"><span class="zc p">2</span><span class="zc p">16</span><span class="zc p">50</span><span class="zc p">84</span><span class="zc p">98</span></div></div>
+  </div>
+  <div class="inband">
+    <div><div class="k mono">You are in this band</div>
+      <div class="note mono" style="margin-top:4px">+1 SD &middot; score 89</div></div>
+    <div class="v mono">81st</div>
+  </div>
+  </div><div class="grp"><div class="hair" style="margin-top:18px"></div>
+  <p class="note mono" style="margin-top:12px">The strip's positions are measured — mean
+  <b>79.3</b>, SD <b>9.54</b>, last night <b>+0.92 SD</b>. The percentile row is a normal
+  fit, so the tick figures are approximate. The <b>81st</b> in the band is your real rank.</p>
+</div>  </div>
+  <div class="ft mono"><span>Sun 23 Aug 2026</span><span>z +0.92</span></div>
+</div>
