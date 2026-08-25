@@ -53,3 +53,50 @@ Viewed on phone, scrolled inside the published bake-off sheet.
 3. Three semantic colours (green/yellow/red) against DESIGN.md §4's "exactly
    one accent". Semantic status colour is legitimately separate from an accent
    — but it is a real departure from the house rule and should be recorded.
+
+---
+
+## Pick 2 — mp4 THE DYED SWATCH (Magic Patterns, colour-as-data, scored 21, ranked 6= of 27)
+
+Deep green dyed ground, Bodoni Moda figures, Spectral letterspaced micro-labels,
+five-chip SD calibration strip. Same screenshot source: the published sheet on phone.
+
+### What Seth said
+- The thing he wants is **the calibration bar** — the −2 / −1 / 0 / +1 / +2
+  standard-deviation strip. Named it explicitly as the keeper.
+- WANTS ADDED: **a percentile under each SD tick**. What percentile is −1? +1?
+- WANTS ADDED: **in the band he actually falls in, print the real percentile.**
+- REJECTS: **the trailing means set as a sentence.** *"The trailing is too hard
+  to compare."* Prefers the trailing treatment from Pick 1.
+
+### What I observe
+- **This is the first explicit rejection, and it is the most useful signal so far.**
+  Same three numbers (79.4 / 79.2 / 73.9), two treatments. v4 sets them as
+  labelled rows and he called them "clear". mp4 runs them into prose —
+  *"Trailing means: 7-night 79.4, 30-night 79.2, 90-night 73.9"* — and he called
+  them too hard to compare. **Verdict: trailing data is tabular, never prose.**
+  Rows, aligned figures, one per line. This now overrides mp4's own treatment.
+- Both picks so far are **distribution-forward** and both **reject near-black**.
+  v4 is warm paper; mp4 is deep green over bone. Neither is the category default.
+- Both picks use **letterspaced uppercase micro-labels** for every field name.
+  v4 does it in mono (IBM Plex Mono), mp4 in serif (Spectral) — different faces,
+  same optical treatment. He may be responding to the treatment, not the face.
+- Both picks set the figures in a **high-contrast serif at display size**
+  (Instrument Serif / Bodoni Moda). No sans in either pick yet.
+- He is picking **elements, not screens**. Track per-element from here.
+
+### Open questions raised
+4. **Which percentile goes under the ticks — theoretical or empirical?**
+   Under a normal fit: −2 = 2.3rd, −1 = 15.9th, 0 = 50th, +1 = 84.1th,
+   +2 = 97.7th. But his own night is +0.92 SD, which the normal fit puts at
+   **82.1st** while the empirical rank says **81st** — a 1.1 point gap, because
+   1,042 real nights are not perfectly normal. Ship both numbers on one screen
+   and it contradicts itself.
+   **Resolution: compute every tick's percentile empirically from the real log**,
+   so the strip and the rank agree. Same class of error as mp6's invented date —
+   do not let a modelled number pose as a measured one.
+5. **Tick percentile, or band percentile?** The five chips are bands, but the
+   labels sit under chip centres. A band spans a percentile *range*
+   (the +1 chip is roughly the 69th–93rd). A point value at the tick is cleaner
+   and is what he asked for. Confirm the strip reads as a scale with ticks,
+   not five buckets.
