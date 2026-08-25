@@ -15,7 +15,6 @@
     "sleep-24",
     "lucid-08",
     "sleep-06",
-    "sleep-01",
     "lucid-03",
     "sleep-34",
     "sleep-39",
@@ -206,11 +205,33 @@
         "targetLabel": null,
         "trigger": "intake-reply",
         "at": "2026-08-25T14:29:40.212Z"
+      },
+      "midday_essentialism": {
+        "status": "sent",
+        "kind": "fact",
+        "factId": "sleep-01",
+        "library": "sleep",
+        "category": "stress",
+        "jackpot": true,
+        "cycle": 0,
+        "promptId": "p25",
+        "mechanism": "subtraction",
+        "targetLabel": "12:14 PM",
+        "at": "2026-08-25T16:19:25.235Z"
       }
     }
   },
   "inboxOffset": 697606362,
   "pending": [
+    {
+      "messageId": 54,
+      "kind": "fact",
+      "factId": "sleep-01",
+      "promptId": "p25",
+      "mechanism": "subtraction",
+      "slot": "midday_essentialism",
+      "at": "2026-08-25T16:19:25.235Z"
+    },
     {
       "messageId": 41,
       "kind": "morning-prompt",
@@ -306,15 +327,6 @@
       "mechanism": "attribution",
       "slot": "intake",
       "at": "2026-08-23T15:56:04.486Z"
-    },
-    {
-      "messageId": 9,
-      "kind": "fact",
-      "factId": "sleep-31",
-      "promptId": "p01",
-      "mechanism": "implementation_intention",
-      "slot": "terminal_bedtime",
-      "at": "2026-08-23T15:47:24.013Z"
     }
   ],
   "promptCycle": 0,
@@ -329,7 +341,6 @@
     "p16",
     "p10",
     "p22",
-    "p25",
     "p23",
     "p06",
     "p08",
