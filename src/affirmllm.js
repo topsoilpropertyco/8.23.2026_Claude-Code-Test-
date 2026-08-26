@@ -68,6 +68,9 @@ const SHAPE = {
   deep: 'Three to five sentences, at most 110 words. This is the occasional larger reply, so earn it: name the mechanism, or what has been true across several entries, or what the streak means. Something the one-line version could not say.',
 };
 
+// Added to the prompt only when the entry lands on a streak the system marks.
+const MILESTONE_NOTE = `This entry lands on a milestone. FACTS carries the line the system would have used, under whatTheSystemWouldHaveSaid — treat it as a note on what this occasion means, not as text to reproduce. Do not quote it, do not paraphrase it closely, and do not open the way it opens. Mark the occasion in your own words and say what is actually true about having done this that many times in a row.`;
+
 /**
  * What the writer is allowed to know, and therefore allowed to say.
  *
@@ -76,7 +79,7 @@ const SHAPE = {
  */
 export function buildFacts({
   text, mechanism = null, promptText = null, slot = null,
-  streak = 0, journalTotal = 0, recent = [], dateString = null,
+  streak = 0, journalTotal = 0, recent = [], dateString = null, milestone = null,
 }) {
   const facts = { date: dateString, entry: String(text ?? '').slice(0, 2000) };
 
@@ -93,6 +96,13 @@ export function buildFacts({
     } catch { /* the reply is fine without it */ }
   }
 
+  if (milestone) {
+    // An occasion, not a script. Naming it as "what the system would have said"
+    // rather than "say this" is the difference between a reply that marks the
+    // moment and one that recites.
+    facts.thisEntryLandsOnAMilestone = true;
+    facts.whatTheSystemWouldHaveSaid = milestone;
+  }
   if (streak > 0) facts.consecutiveNightsWritten = streak;
   if (journalTotal > 0) facts.entriesWrittenInTotal = journalTotal;
   if (recent.length) facts.previousEntries = recent;
@@ -109,6 +119,7 @@ export function buildPrompt({ facts, level }) {
     '```',
     '',
     `LENGTH. ${SHAPE[level] ?? SHAPE.standard}`,
+    ...(facts.thisEntryLandsOnAMilestone ? ['', `OCCASION. ${MILESTONE_NOTE}`] : []),
     '',
     'Write the reply now.',
   ].join('\n');
@@ -121,7 +132,7 @@ export function buildPrompt({ facts, level }) {
  * sends and the one it sends most often; it is not worth a failure anywhere.
  */
 export async function writeAffirmation({
-  text = '', mechanism = null, promptText = null, slot = null,
+  text = '', mechanism = null, promptText = null, slot = null, milestone = null,
   streak = 0, journalTotal = 0, recent = [], dateString = '',
   intensity = null, env = process.env, config = null,
   fetchImpl = globalThis.fetch, log = () => {},
@@ -129,9 +140,11 @@ export async function writeAffirmation({
   if (config?.coach?.writtenAffirmations === false) return null;
   if (!resolveProvider(env, config)) return null;
 
-  const facts = buildFacts({ text, mechanism, promptText, slot, streak, journalTotal, recent, dateString });
+  const facts = buildFacts({ text, mechanism, promptText, slot, streak, journalTotal, recent, dateString, milestone });
   const picked = intensity ?? pickIntensity({
     seed: `affirm:${dateString}:${streak}`,
+    // A milestone is earned, not rolled. It gets the room to say something.
+    milestone: Boolean(milestone),
     effort: effortOf(text),
   });
   const budget = picked.budget ?? BUDGETS[picked.level] ?? BUDGETS.standard;

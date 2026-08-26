@@ -293,3 +293,69 @@ test('a message from someone else is not answered at all', async () => {
   assert.equal(sends.length, 0, 'nothing is owed to a stranger');
   assert.equal(state.inboxOffset, 9101);
 });
+
+/* ------------------------------------------------ milestones are written too */
+
+test('a milestone reaches the writer instead of bypassing it', async () => {
+  // This was carved out, on the reasoning that a reward should read the same
+  // every time it is earned. The effect was that the single most significant
+  // entry — the one landing on a streak — was the only one guaranteed not to be
+  // written for, and the stored line it shipped was the exact sentence Seth had
+  // already named as sounding canned.
+  const facts = buildFacts({ ...ENTRY, streak: 3, milestone: "Three in a row. That's the point where it stops being a decision each time." });
+  assert.equal(facts.thisEntryLandsOnAMilestone, true);
+  assert.match(facts.whatTheSystemWouldHaveSaid, /Three in a row/);
+
+  const prompt = buildPrompt({ facts, level: 'deep' });
+  assert.match(prompt, /OCCASION\./);
+  assert.match(prompt, /not as text to reproduce/);
+  assert.match(prompt, /whatTheSystemWouldHaveSaid/,
+    'the note must name the field it refers to, or it points at nothing');
+});
+
+test('a milestone gets the room to say something', async () => {
+  // Earned, not rolled. It should never come back as one line.
+  for (let d = 1; d <= 20; d++) {
+    const r = await write({ dateString: `2026-07-${d}`, streak: 3, milestone: 'A stored milestone line.',
+      fetchImpl: replies('You have now done this three nights running, which is the point it stops being a decision.') });
+    assert.equal(r.level, 'deep', 'a milestone must not be answered in one line');
+  }
+});
+
+test('the milestone path still falls back to the stored line', async () => {
+  const r = await write({ streak: 3, milestone: 'A stored milestone line.',
+    fetchImpl: async () => { throw new Error('ECONNRESET'); } });
+  assert.equal(r, null, 'null hands control back to the library reply already built');
+});
+
+test('/status says plainly whether the model is answering', async () => {
+  // A silent fallback is right for the reader and useless for the operator.
+  // /status is the one command whose entire job is answering "is this working",
+  // so it is where the answer belongs.
+  const ask = async (extra) => {
+    const sends = [];
+    await processInbox({
+      config: CONFIG, state: { inboxOffset: 0, pending: [], ...extra },
+      token: 'x', chatId: '42', now: new Date('2026-08-26T21:30:00Z'), log: () => {},
+      send: async (_t, _c, b) => { sends.push(b); return { message_id: 1 }; },
+      fetchUpdates: async () => [{ update_id: 9200, message: { message_id: 9200, chat: { id: 42 }, text: '/status' } }],
+    });
+    return sends[0];
+  };
+
+  const idle = await ask({});
+  assert.match(idle, /Coach: /, 'status must carry a coach line at all times');
+  assert.match(idle, /no model reply yet today/);
+
+  const working = await ask({ writtenReplies: { date: '2026-08-26', count: 3 } });
+  assert.match(working, /Coach: writing · 3 replies today/);
+
+  const broken = await ask({
+    coach: { written: false, reason: 'coach-llm unavailable: HTTP 403: Generative Language API has not been used in project 12345' },
+  });
+  assert.match(broken, /Coach: NOT writing/);
+  assert.match(broken, /403/, 'the reason must survive to where he can read it');
+
+  const morningOnly = await ask({ coach: { written: true, provider: 'gemini', model: 'gemini-2.5-flash' } });
+  assert.match(morningOnly, /Coach: writing · last morning report by gemini \(gemini-2\.5-flash\)/);
+});

@@ -169,7 +169,34 @@ function statusText({ config, state, now }) {
   lines.push(`Rotation: cycle ${state.cycle ?? 0} · ${state.remaining?.length ?? facts.length}/${facts.length} facts left`);
   lines.push(`Journal: ${readJournal().length} entries · ${sleepSeries().length} nights logged`);
 
+  // Whether the written coach is actually running. Without this the only way to
+  // tell a working key from a dead one is to notice that the replies feel
+  // slightly duller than they should, which is not a diagnostic.
+  lines.push('');
+  lines.push(`Coach: ${coachStatusLine({ state, dateString })}`);
+
   return lines.join('\n');
+}
+
+/**
+ * One line saying whether the model is answering, and if not, why not.
+ *
+ * Reads only what the run already recorded -- no key needed, no call made.
+ */
+function coachStatusLine({ state, dateString }) {
+  const written = state.writtenReplies?.date === dateString ? state.writtenReplies.count : 0;
+  const last = state.coach;
+
+  if (written > 0) {
+    return `writing · ${written} ${written === 1 ? 'reply' : 'replies'} today`;
+  }
+  if (last?.written) {
+    return `writing · last morning report by ${last.provider}${last.model ? ` (${last.model})` : ''}`;
+  }
+  if (last?.reason) {
+    return `NOT writing · ${last.reason.slice(0, 120)}`;
+  }
+  return 'no model reply yet today — send a line and check back';
 }
 
 function todayText({ config, state, now }) {
@@ -458,17 +485,29 @@ export async function processInbox({
         // above is already built and already good, so this is pure upside: if
         // the model is slow, broken, unfunded or says something with a number
         // in it that he did not, the library line ships instead and he sees no
-        // difference. A milestone is the exception -- that line is the reward
-        // and it should read the same every time it is earned.
+        // difference.
+        //
+        // Milestones used to be carved out of this, on the reasoning that the
+        // milestone line is the reward and a reward should read the same every
+        // time it is earned. That was wrong twice over. It meant the single
+        // most significant entry -- the one that lands on a streak -- was the
+        // only one guaranteed NOT to be written for. And the line it shipped
+        // instead was the exact sentence Seth had already quoted back as an
+        // example of the system sounding canned. A milestone is now the
+        // strongest thing the writer is handed, not a reason to bypass it.
         let replyText = affirmation.text;
         let source = 'library';
-        if (affirmation.shape !== 'milestone' && allowModelReply(state, dateString, config)) {
+        if (allowModelReply(state, dateString, config)) {
           const written = await writeAffirmation({
             text,
             mechanism: context?.mechanism ?? null,
             promptText: promptTextFor(context?.promptId),
             slot: context?.slot ?? null,
             streak,
+            // What the system would have said, handed over as material rather
+            // than shipped verbatim: the occasion is real and worth naming, the
+            // wording does not have to be frozen.
+            milestone: affirmation.shape === 'milestone' ? affirmation.text : null,
             journalTotal: entries.length,
             // The two entries before this one, for continuity -- so a reply can
             // notice that this is the third night he has said the same thing.
