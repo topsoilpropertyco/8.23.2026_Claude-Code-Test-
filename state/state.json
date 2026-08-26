@@ -297,8 +297,16 @@
       }
     }
   },
-  "inboxOffset": 697606370,
+  "inboxOffset": 697606371,
   "pending": [
+    {
+      "messageId": 114,
+      "kind": "morning-prompt",
+      "promptId": "m04",
+      "mechanism": "self_efficacy",
+      "slot": "intake",
+      "at": "2026-08-26T11:42:34.356Z"
+    },
     {
       "messageId": 111,
       "kind": "habit",
@@ -396,15 +404,6 @@
       "mechanism": null,
       "slot": "intake",
       "at": "2026-08-25T10:03:26.864Z"
-    },
-    {
-      "messageId": 37,
-      "kind": "habit",
-      "factId": null,
-      "promptId": null,
-      "mechanism": null,
-      "slot": "blue_blockers",
-      "at": "2026-08-24T23:49:07.957Z"
     }
   ],
   "promptCycle": 0,
@@ -427,7 +426,7 @@
     "p24",
     "p07"
   ],
-  "coachRotation": 3,
+  "coachRotation": 4,
   "affirmRotation": {
     "mechanism:identity": [
       1
@@ -504,5 +503,13 @@
   "writtenReplies": {
     "date": "2026-08-25",
     "count": 1
+  },
+  "coach": {
+    "at": "2026-08-26T11:42:34.356Z",
+    "written": false,
+    "provider": null,
+    "model": null,
+    "intensity": "brief",
+    "reason": "coach-llm unavailable, using the rule-based coach: timed out after 45s"
   }
 }
