@@ -3,7 +3,6 @@
   "cycle": 0,
   "remaining": [
     "lucid-02",
-    "sleep-32",
     "lucid-15",
     "sleep-05",
     "sleep-11",
@@ -252,11 +251,33 @@
         "cycle": 1,
         "targetLabel": "7:30 PM",
         "at": "2026-08-25T23:30:20.499Z"
+      },
+      "work_shutdown": {
+        "status": "sent",
+        "kind": "fact",
+        "factId": "sleep-32",
+        "library": "sleep",
+        "category": "circadian",
+        "jackpot": false,
+        "cycle": 0,
+        "promptId": "p26",
+        "mechanism": "subtraction",
+        "targetLabel": "9:07 PM",
+        "at": "2026-08-26T01:07:18.136Z"
       }
     }
   },
   "inboxOffset": 697606365,
   "pending": [
+    {
+      "messageId": 98,
+      "kind": "fact",
+      "factId": "sleep-32",
+      "promptId": "p26",
+      "mechanism": "subtraction",
+      "slot": "work_shutdown",
+      "at": "2026-08-26T01:07:18.136Z"
+    },
     {
       "messageId": 95,
       "kind": "habit",
@@ -354,14 +375,6 @@
       "mechanism": "prospective_regret",
       "slot": "midday_essentialism",
       "at": "2026-08-24T16:07:38.287Z"
-    },
-    {
-      "messageId": 25,
-      "kind": "morning-prompt",
-      "promptId": "m02",
-      "mechanism": "identity",
-      "slot": "intake",
-      "at": "2026-08-24T14:24:49.145Z"
     }
   ],
   "promptCycle": 0,
@@ -369,7 +382,6 @@
     "p19",
     "p04",
     "p18",
-    "p26",
     "p02",
     "p27",
     "p16",
