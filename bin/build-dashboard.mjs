@@ -49,7 +49,16 @@ const payload = {
   sample: Boolean(night.sample),
   stale: Boolean(night.stale),
   daysBehind: night.daysBehind ?? 0,
-  last: { date: night.date, score: night.score },
+  // Only {date, score} used to cross this line, which is why a page opening on
+  // "your sleep, all of it" was the only thing it could honestly be: it had no
+  // last night to lead with. The measured night comes over now.
+  last: {
+    date: night.date,
+    score: night.score,
+    vitals: night.night ?? {},
+    standing: night.standing ?? {},
+    trailing: night.trailing ?? [],
+  },
   nights,
   curves: curves.map((c) => ({ id: c.id, name: c.name, blurb: c.blurb, bands: c.bands })),
   member: {
@@ -178,11 +187,21 @@ input[type=range]{width:100%;margin-top:14px;accent-color:var(--series);min-heig
 </div>
 <div id="banner"></div>
 <div class="wrap">
-  <h1>Your sleep, all of it.</h1>
-  <p class="sub">Every night on record, not a picture of one morning. Change the range,
-  hover any night, sort by anything, and drag the score to see how the grades move.</p>
+  <h1 id="pageTitle">Last night.</h1>
+  <p class="sub" id="pageSub">What the ring measured, then every night behind it.
+  Change the range, hover any night, sort by anything, and drag the score to see how
+  the grades move.</p>
 
-  <div class="tiles" id="tiles"></div>
+  <section>
+    <h2>Last night <span id="lnWhen"></span></h2>
+    <div class="tiles" id="lastNight"></div>
+    <p class="note" id="lnNote"></p>
+  </section>
+
+  <section>
+    <h2>Where it sits <span>against your own record</span></h2>
+    <div class="tiles" id="tiles"></div>
+  </section>
 
   <section>
     <h2>Score over time <span id="trLabel"></span></h2>
@@ -287,7 +306,7 @@ const hideTip = () => { tip.style.opacity = '0'; };
 const nightTip = (n) => {
   const p = pctOf(n.s, ALL);
   return '<div class="h">' + n.d + '</div>'
-    + row('Score', n.s) + row('Percentile', fmt(p) + 'th')
+    + row('Score', n.s) + row('Percentile', Math.round(p) + 'th')
     + row('Asleep', hm(n.t)) + row('Efficiency', n.ef == null ? '—' : n.ef + '%')
     + row('HRV', n.hv == null ? '—' : n.hv + ' ms')
     + row('Lowest HR', n.hr == null ? '—' : n.hr + ' bpm');
@@ -462,6 +481,49 @@ function drawGrades(score) {
   $('sliderVal').textContent = 'score ' + score + ' · ' + fmt(pct) + 'th percentile';
 }
 
+/* ------------------------------------------------------------------ last night */
+
+// The measured night, in the order it is actually asked about: how long, how
+// well, what the stages did, what the body did. Anything Oura did not report is
+// left out rather than shown as a dash, because a grid of dashes reads as a
+// broken page rather than as a quiet night.
+function drawLastNight() {
+  const v = D.last.vitals ?? {};
+  const t = [];
+
+  t.push(['Score', D.last.score, 'out of 100']);
+  if (v.asleepLabel) t.push(['Asleep', v.asleepLabel, v.inBedMinutes
+    ? Math.floor(v.inBedMinutes / 60) + 'h ' + String(v.inBedMinutes % 60).padStart(2, '0') + 'm in bed'
+    : 'total sleep']);
+  if (v.efficiency != null) t.push(['Efficiency', v.efficiency + '%', 'asleep while in bed']);
+  if (v.deep?.label) t.push(['Deep', v.deep.label, pctOfNight(v.deep.minutes, v.asleepMinutes)]);
+  if (v.rem?.label) t.push(['REM', v.rem.label, pctOfNight(v.rem.minutes, v.asleepMinutes)]);
+  if (v.light?.label) t.push(['Light', v.light.label, pctOfNight(v.light.minutes, v.asleepMinutes)]);
+  if (v.awake?.label) t.push(['Awake', v.awake.label, 'after falling asleep']);
+  if (v.latency != null) t.push(['Latency', v.latency + 'm', 'to fall asleep']);
+  if (v.hrv != null) t.push(['HRV', v.hrv, 'ms average']);
+  if (v.restingHr != null) t.push(['Low HR', v.restingHr, 'bpm overnight']);
+  if (v.breath != null) t.push(['Breath', v.breath, 'per minute']);
+
+  $('lastNight').innerHTML = t.map(([k, val, d]) =>
+    '<div class="tile"><div class="k">' + k + '</div><div class="v">' + val
+    + '</div><div class="d">' + d + '</div></div>').join('');
+
+  const clock = [];
+  if (v.bedtimeStart) clock.push('In bed ' + v.bedtimeStart.slice(11, 16));
+  if (v.bedtimeEnd) clock.push('up ' + v.bedtimeEnd.slice(11, 16));
+  $('lnWhen').textContent = D.last.date + (clock.length ? ' · ' + clock.join(', ') : '');
+
+  const t7 = (D.last.trailing ?? []).find((x) => x.window === 7);
+  $('lnNote').textContent = t7 && t7.avg != null
+    ? 'Against your last seven nights (' + fmt(t7.avg) + '), this night ran '
+      + (D.last.score >= t7.avg ? '+' : '−') + fmt(Math.abs(D.last.score - t7.avg)) + '.'
+    : 'Everything above is measured, not modelled.';
+}
+
+const pctOfNight = (part, whole) =>
+  (part == null || !whole) ? 'of the night' : Math.round((part / whole) * 100) + '% of sleep';
+
 /* ---------------------------------------------------------------------- tiles */
 function drawTiles() {
   const data = inRange();
@@ -469,19 +531,19 @@ function drawTiles() {
   const curved = D.curves.find((c) => c.id === 'curved');
   const memberRow = D.member.table.find((r) => r.score === D.last.score);
   const tw = [
-    ['Last night', D.last.score, D.last.date],
-    ['Percentile', fmt(p) + 'th', 'of your ' + ALL.length + ' nights'],
+    ['Percentile', Math.round(p) + 'th', 'of your ' + ALL.length + ' nights'],
+    ['Rank', (D.last.standing?.rank ?? '—') + '', 'of ' + ALL.length + ' · 1 is best'],
     ['Curved grade', gradeAt(p, curved), 'against yourself'],
     ['Range mean', fmt(mean(data.map((n) => n.s))), data.length + ' nights'],
     ['All-time mean', fmt(MEAN), 'SD ' + fmt(SD)],
-    ['vs members', memberRow ? fmt(memberRow.pct) + 'th' : 'not shown',
+    ['vs members', memberRow ? Math.round(memberRow.pct) + 'th' : 'not shown',
       memberRow ? 'member mean ' + D.member.mean : 'no published figure'],
   ];
   $('tiles').innerHTML = tw.map(([k, v, d]) =>
     '<div class="tile"><div class="k">' + k + '</div><div class="v">' + v
     + '</div><div class="d">' + d + '</div></div>').join('');
   $('hScore').textContent = D.last.score;
-  $('hPct').textContent = fmt(p);
+  $('hPct').textContent = Math.round(p) + 'th';
   $('hGrade').textContent = gradeAt(p, curved);
   $('hWhen').textContent = D.sample ? 'Sample night' : D.last.date;
 }
@@ -547,6 +609,7 @@ $('foot').innerHTML = 'Rebuilt from your own Oura record every morning — nothi
   + 'than printed. Built ' + D.generated.slice(0, 16).replace('T', ' ') + 'Z.';
 
 function redraw() { drawTiles(); drawLine(); drawHist(); drawTable(); }
+drawLastNight();
 redraw();
 drawGrades(D.last.score);
 addEventListener('resize', () => { drawLine(); drawHist(); });

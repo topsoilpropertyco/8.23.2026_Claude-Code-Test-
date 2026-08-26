@@ -128,15 +128,87 @@ if (mode === null) {
   }
 }
 
+/**
+ * Last night, as a message worth reading on its own.
+ *
+ * This used to be two lines -- the score and a percentile -- followed by "your
+ * whole history, interactive". Which described the link accurately and buried
+ * the thing actually being reported. Every figure below was already sitting in
+ * data/last-night.json; none of it was being used. A morning message about last
+ * night should say what happened last night, and the link should be the way to
+ * go deeper rather than the only place the detail exists.
+ */
+function lastNightText(n, url) {
+  const v = n.night ?? {};
+  const sl = n.standing ?? {};
+  const lines = [];
+
+  lines.push(n.stale
+    ? `${n.date} — the newest night Oura has (${n.daysBehind} days back)`
+    : `LAST NIGHT — ${n.date}`);
+  lines.push('');
+
+  // A percentile is a rank, so it is a whole number. Printing one decimal turned
+  // "13th" into "13.1th", which reads as a typo because it is one.
+  const pct = sl.percentile == null ? null : Math.round(sl.percentile);
+  const ord = (i) => {
+    const r = i % 100;
+    if (r >= 11 && r <= 13) return `${i}th`;
+    return `${i}${['th', 'st', 'nd', 'rd'][i % 10] ?? 'th'}`;
+  };
+  lines.push(`Score ${n.score}`
+    + (pct === null ? '' : `   ${ord(pct)} percentile of your ${n.population.n} nights`));
+  if (sl.rank) lines.push(`Rank ${sl.rank} of ${n.population.n}`);
+
+  // How it sat against the recent run, which is the comparison that answers
+  // "was that bad or does it just feel bad".
+  const t7 = (n.trailing ?? []).find((t) => t.window === 7);
+  const t30 = (n.trailing ?? []).find((t) => t.window === 30);
+  const vs = [];
+  const delta = (label, avg) => {
+    if (avg == null) return;
+    const d = n.score - avg;
+    vs.push(`${label} ${avg.toFixed(1)} ${d >= 0 ? '▲ +' : '▼ −'}${Math.abs(d).toFixed(1)}`);
+  };
+  delta('7-night', t7?.avg);
+  delta('30-night', t30?.avg);
+  if (vs.length) { lines.push(''); lines.push(vs.join('   ')); }
+
+  // The night itself. Everything here is measured, and anything Oura did not
+  // report is simply left out rather than printed as a zero.
+  const sleep = [];
+  if (v.asleepLabel) sleep.push(`${v.asleepLabel} asleep`);
+  if (v.efficiency != null) sleep.push(`${v.efficiency}% efficient`);
+  if (v.latency != null) sleep.push(`${v.latency}m to fall asleep`);
+  if (sleep.length) { lines.push(''); lines.push(sleep.join('  ·  ')); }
+
+  const stages = [];
+  if (v.deep?.label) stages.push(`Deep ${v.deep.label}`);
+  if (v.rem?.label) stages.push(`REM ${v.rem.label}`);
+  if (v.light?.label) stages.push(`Light ${v.light.label}`);
+  if (v.awake?.label) stages.push(`Awake ${v.awake.label}`);
+  if (stages.length) lines.push(stages.join('  ·  '));
+
+  const body = [];
+  if (v.hrv != null) body.push(`HRV ${v.hrv}ms`);
+  if (v.restingHr != null) body.push(`Low HR ${v.restingHr}`);
+  if (v.breath != null) body.push(`Breath ${v.breath}/min`);
+  if (body.length) lines.push(body.join('  ·  '));
+
+  const clock = [];
+  if (v.bedtimeStart) clock.push(`In bed ${v.bedtimeStart.slice(11, 16)}`);
+  if (v.bedtimeEnd) clock.push(`up ${v.bedtimeEnd.slice(11, 16)}`);
+  if (clock.length) lines.push(clock.join(' · '));
+
+  lines.push('');
+  lines.push(`Open last night → ${url}`);
+  return lines.join('\n');
+}
+
 if (mode === 'link') {
   const url = deckUrl();
   if (!url) await bail('delivery is "link" but no dashboard URL could be built.');
-  const sl = night.standing;
-  const text = (night.stale
-      ? `${night.date} — the newest night Oura has (${night.daysBehind} days back)`
-      : `Last night — ${night.date}`)
-    + `\nScore ${night.score} · ${sl.percentile}th percentile of your ${night.population.n} nights`
-    + `\n\nYour whole history, interactive → ${url}`;
+  const text = lastNightText(night, url);
   if (dry) {
     console.log('send-deck: --dry, not sending. Would send:');
     console.log(text.split('\n').map((l) => `  ${l}`).join('\n'));

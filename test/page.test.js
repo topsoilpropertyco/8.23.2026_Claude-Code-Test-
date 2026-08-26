@@ -103,7 +103,7 @@ test('the published page carries no plaintext from the dashboard', () => {
   // Sample every distinctive run of text from the dashboard and assert none of
   // it survives into what gets served. This is the whole point of the exercise:
   // the repository is public.
-  const probes = ['Your sleep, all of it', 'Score over time', 'Every night',
+  const probes = ['What the ring measured', 'Score over time', 'Every night',
                   'drag to any score', 'Rebuilt from your own Oura record'];
   for (const p of probes) {
     assert.ok(deck.includes(p), `probe "${p}" is not in the dashboard, so it proves nothing`);
@@ -129,7 +129,7 @@ test('the ciphertext decrypts with the derived key and nothing else', () => {
   };
 
   const plain = open(KEY_A);
-  assert.ok(plain.includes('Your sleep, all of it'), 'decrypted to the wrong thing');
+  assert.ok(plain.includes('What the ring measured'), 'decrypted to the wrong thing');
   assert.ok(plain.includes('id="payload"'), 'the night data is missing from the payload');
   assert.ok(plain.includes('lineChart'), 'the charts are missing from the payload');
   // GCM authenticates, so a wrong key throws rather than returning garbage.
