@@ -25,7 +25,7 @@
 //   node bin/build-page.mjs           # writes site/index.html, prints the URL
 //   node bin/build-page.mjs --url     # print the URL only
 
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, copyFileSync, statSync, existsSync } from 'node:fs';
 import { randomBytes, createCipheriv } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
@@ -158,6 +158,19 @@ body{background:#1A1814;color:#F4F0E6;min-height:100vh;display:grid;place-items:
 
 mkdirSync(SITE, { recursive: true });
 writeFileSync(join(SITE, 'index.html'), loader);
+
+// The vendored typefaces ride alongside, unencrypted and deliberately so. They
+// are open-licensed font data with nothing personal in them, and keeping them
+// out of the ciphertext means one cached same-origin request serves all eight
+// screens instead of the same 220 KB being embedded once per iframe.
+const fonts = resolve(ROOT, 'web/fonts.css');
+if (existsSync(fonts)) {
+  copyFileSync(fonts, join(SITE, 'fonts.css'));
+  console.log(`build-page: fonts.css ${(statSync(fonts).size / 1024).toFixed(0)} KB (public, uncached faces)`);
+} else {
+  console.error('build-page: web/fonts.css is missing — the screens will fall back to system fonts.'
+    + ' Run bin/vendor-fonts.mjs.');
+}
 // Pages would otherwise run the output through Jekyll, which strips files and
 // directories beginning with an underscore and can rewrite what it thinks is
 // template syntax. There is no Jekyll here; the file is already the site.

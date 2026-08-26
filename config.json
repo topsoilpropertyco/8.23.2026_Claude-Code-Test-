@@ -101,5 +101,6 @@
     "writtenAffirmations": true,
     "maxWrittenRepliesPerDay": 40,
     "thinkingBudget": null
-  }
+  },
+  "pageStyle": "screens"
 }

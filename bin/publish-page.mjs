@@ -31,6 +31,9 @@ const git = (...args) =>
 const files = [
   ['index.html', 'site/index.html'],
   ['.nojekyll', 'site/.nojekyll'],
+  // Public font data, served same-origin so the eight screens share one cached
+  // request instead of each reaching out to a third party.
+  ['fonts.css', 'site/fonts.css'],
 ];
 
 for (const [, path] of files) {

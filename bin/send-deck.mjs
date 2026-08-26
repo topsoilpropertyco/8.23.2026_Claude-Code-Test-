@@ -200,7 +200,15 @@ function lastNightText(n, { url = null, footer = null } = {}) {
 // album mode a broken dashboard build took the screens down with it, and the
 // screens were the thing being delivered. Nothing that only serves the link may
 // be able to stop the album.
-if (mode === 'album') {
+// Which page gets published behind the link. "screens" wraps the very documents
+// the album photographs, so the link and the album are the same eight screens --
+// which is what Seth asked for, and what should have been built first instead of
+// a separate dashboard. "dashboard" keeps the interactive build available.
+const pageStyle = loadConfig().pageStyle || 'screens';
+
+// The screens are the input to both the album and the screens-style page, so
+// they are rebuilt whenever either one needs them.
+if (mode === 'album' || pageStyle === 'screens') {
   console.log('send-deck: rebuilding screens');
   await run('python3', ['bin/build-screens.py'], 'rebuilding the screens');
 }
@@ -209,10 +217,11 @@ if (mode === 'album') {
 // coach message carries its own link line -- stop republishing and that link
 // quietly rots while everything else looks fine.
 const publishPage = async () => {
+  const builder = pageStyle === 'dashboard' ? 'bin/build-dashboard.mjs' : 'bin/build-deckpage.mjs';
   try {
-    execFileSync('node', ['bin/build-dashboard.mjs'], { cwd: ROOT, stdio: 'inherit' });
+    execFileSync('node', [builder], { cwd: ROOT, stdio: 'inherit' });
   } catch {
-    console.error('send-deck: building the dashboard failed'
+    console.error(`send-deck: building the page (${builder}) failed`
       + (mode === 'link' ? '' : '; the screens still go out'));
     return false;
   }
@@ -255,7 +264,9 @@ if (mode === 'link') {
   process.exit(0);
 }
 
-await publishPage();
+// Published before the album is sent, so the link in the caption points at the
+// page for the night the photographs show rather than the one before it.
+const published = await publishPage();
 
 console.log('send-deck: rendering');
 rmSync(OUT, { recursive: true, force: true });
@@ -279,10 +290,15 @@ if (shots.length > MEDIA_GROUP_MAX) {
 //
 // Telegram allows 1024 characters on an album caption and this runs to about
 // 450, so the whole summary fits alongside the screens.
+// The link rides along with the photographs, pointing at the same eight screens
+// as a page that can be swiped and linked to. Omitted rather than guessed at if
+// the publish did not happen -- a link to a page that was not rebuilt is the
+// stale-deck bug again.
 const caption = lastNightText(night, {
+  url: published ? deckUrl() : null,
   footer: night.stale
     ? 'Open the Oura app to sync, and I will resend with the current night.'
-    : `Swipe for all ${shots.length} screens. Rebuilt from your data every morning.`,
+    : `Swipe the ${shots.length} screens here, or open the same ${shots.length} in the link above.`,
 });
 
 if (dry) {

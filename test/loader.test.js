@@ -119,3 +119,70 @@ test('the published page renders its content through the loader', async (t) => {
     await browser.close();
   }
 });
+
+/* --------------------------------------------- the screens, as a linked page */
+
+test('the linked page wraps the very screens the album photographs', async () => {
+  // The screens were always web pages: variants/s1/index.html through g2 are
+  // self-contained documents at 390x844, and the album is those same documents
+  // opened in a browser and photographed. So the link can look exactly like the
+  // album by wrapping them rather than re-implementing them, which is what this
+  // asserts: same files, same order, no second source of truth.
+  const { execFileSync } = await import('node:child_process');
+  const dir = mkdtempSync(join(tmpdir(), 'sleep-os-deckpage-'));
+  const out = join(dir, 'deck.html');
+  execFileSync(process.execPath, ['bin/build-deckpage.mjs'],
+    { env: { ...process.env, SLEEPOS_DECKPAGE_OUT: out }, stdio: 'pipe' });
+
+  const page = readFileSync(out, 'utf8');
+  const order = ['s1', 's2', 's3', 's4', 's5', 's6', 'g1', 'g2'];
+
+  // One iframe per screen, in the album's order.
+  const ids = [...page.matchAll(/<section class="screen" id="([^"]+)"/g)].map((m) => m[1]);
+  assert.deepEqual(ids, order, 'the page must carry the same screens in the same order');
+  assert.equal((page.match(/<iframe/g) ?? []).length, order.length);
+
+  // srcdoc, so each screen is its own document: rendering is identical to the
+  // photograph because it IS the photograph's document, and eight sets of global
+  // CSS cannot collide when each has its own browsing context.
+  assert.equal((page.match(/srcdoc="/g) ?? []).length, order.length);
+
+  // Every screen's own markup is really in there, not a re-drawn approximation.
+  const s1 = readFileSync(join('variants', 's1', 'index.html'), 'utf8');
+  const marker = (s1.match(/<title>([^<]*)<\/title>/) ?? [, ''])[1];
+  assert.ok(marker && page.includes(marker.replace(/&/g, '&amp;')),
+    'the screen\'s own document should be embedded verbatim');
+
+  // No third-party request. Eight iframes each waiting on fonts.googleapis.com
+  // is the difference between the screens and Times New Roman on a slow morning.
+  assert.ok(!/fonts\.googleapis\.com|fonts\.gstatic\.com/.test(page),
+    'the page must not reach out to Google Fonts — the faces are vendored');
+  assert.match(page, /href="fonts\.css"/);
+
+  // Navigation without script, because the loader once injected script as inert
+  // markup and the page rendered as headings over nothing.
+  for (const key of order) assert.match(page, new RegExp(`href="#${key}"`));
+  assert.match(page, /scroll-snap-type:x mandatory/,
+    'swiping should be a real scroll container, not a gesture handler');
+});
+
+test('the vendored faces are complete, deduplicated, and self-contained', () => {
+  const css = readFileSync('web/fonts.css', 'utf8');
+
+  // Both families the screens actually use.
+  for (const family of ['IBM Plex Mono', 'Newsreader']) {
+    assert.ok(css.includes(`font-family: '${family}'`), `${family} is missing`);
+  }
+  // Embedded, not linked: the point is that no request leaves the page.
+  assert.ok(!/https?:\/\//.test(css.replace(/^\/\*[\s\S]*?\*\//, '')),
+    'a remote URL survived in the vendored stylesheet');
+  assert.match(css, /src:\s*url\(data:font\/woff2;base64,/);
+
+  // Newsreader is one variable font that Google declares once per weight. Left
+  // naive, the same 131 KB was inlined four times and the stylesheet came to
+  // 811 KB for 220 KB of fonts.
+  const faces = (css.match(/@font-face/g) ?? []).length;
+  assert.ok(faces > 0 && faces <= 6, `expected the faces to be collapsed, found ${faces}`);
+  assert.match(css, /font-weight:\s*300 600/, 'the variable face should carry a weight range');
+  assert.ok(css.length < 400 * 1024, `fonts.css is ${(css.length / 1024).toFixed(0)} KB — deduplication regressed`);
+});
