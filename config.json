@@ -97,6 +97,8 @@
     "writtenByModel": true,
     "sendJournalToModel": true,
     "provider": "auto",
-    "model": null
+    "model": null,
+    "writtenAffirmations": true,
+    "maxWrittenRepliesPerDay": 40
   }
 }

@@ -307,6 +307,39 @@ never buys an essay, because a reward attached to typing anything makes typing
 anything the optimal move. And the roll is seeded by date, so a re-run cannot
 fish for a bigger reply.
 
+## Written journal replies — built
+
+Every inbound message now gets a reply written for it, not drawn from a pool.
+`src/affirmllm.js`, sharing the transport and the intensity roll with the
+morning coach and using `data/affirmations.json` as its fallback.
+
+The library was never bad — the shapes in it encode the identity-over-praise and
+evidence-over-adjectives design argued out above. What a library cannot do is
+prove the entry was read. It can say "that separates people who track from
+people who intend to" about any entry ever written, and eventually that is
+exactly what it sounds like.
+
+The writer is given his entry, the card he was answering, the research note
+behind that card's mechanism, his streak, his total, and the two entries before
+this one — so a reply can notice that this is the third night he has said the
+same thing. It is given nothing about his body: a warm line about last night's
+HRV would be a claim this path cannot support, and a test asserts no sleep field
+can reach it.
+
+The number guard is narrower here than in the coach and works the same way.
+There is no computed sheet, because the reply is answering prose, so the allowed
+set is just the numerals he used himself, the ones in the card, the ones in the
+vetted mechanism note, and his own two counts. Anything else is invention and
+the library line ships instead.
+
+Two limits worth naming. A milestone still comes from the library verbatim —
+that line is the reward and it should read the same every time it is earned. And
+`coach.maxWrittenRepliesPerDay` caps model-written replies at 40 a day: not
+about money, which is fractions of a cent, but about blast radius. Every inbound
+message now triggers an outbound call, and the thing that must not be possible
+is a loop discovering itself at three in the morning. Past the cap the library
+answers, so nothing goes silent.
+
 ## The written coach — built
 
 The closing section of the morning message is generated per night rather than

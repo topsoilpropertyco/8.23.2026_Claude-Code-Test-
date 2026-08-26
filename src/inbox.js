@@ -9,15 +9,56 @@ import { getUpdates, sendMessage } from './telegram.js';
 import { parseEntry, buildCoachResponse, buildCoachResponseAsync } from './coach.js';
 import { addJournalEntry, addSleepEntry, sleepSeries, readJournal, journalStreak, logHealth } from './journal.js';
 import { buildAffirmation } from './affirm.js';
+import { writeAffirmation } from './affirmllm.js';
 import { prepareHabit } from './habits.js';
 import { renderHabit } from './render.js';
 import { recordSend } from './state.js';
-import { morningPrompt } from './prompts.js';
+import { morningPrompt, loadPrompts } from './prompts.js';
 import { localDateString, localTimeString, formatClock12 } from './time.js';
 import { buildDaySchedule } from './schedule.js';
 import { loadLibraries, loadConfig } from './facts.js';
 
 const PENDING_KEEP = 12;
+
+// A ceiling on model-written journal replies per day. Not about money -- these
+// cost a fraction of a cent each -- but about blast radius. Every inbound
+// message now triggers an outbound API call, and the one thing that must not be
+// possible is a loop that discovers itself at three in the morning. Past the
+// cap the library still answers, so nothing goes silent.
+const MODEL_REPLIES_PER_DAY = 40;
+
+function replyBudget(config) {
+  const n = config?.coach?.maxWrittenRepliesPerDay;
+  return Number.isFinite(n) && n >= 0 ? n : MODEL_REPLIES_PER_DAY;
+}
+
+/**
+ * The text of the card he was answering, looked up rather than stored.
+ *
+ * The pending record keeps the prompt id, not the prose. Resolving it here
+ * means old pending records written before this feature existed still produce a
+ * card-aware reply, and there is one copy of the text rather than two that can
+ * drift.
+ */
+function promptTextFor(promptId) {
+  if (!promptId) return null;
+  try {
+    return loadPrompts().prompts.find((p) => p.id === promptId)?.text ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function allowModelReply(state, dateString, config) {
+  const used = state.writtenReplies?.date === dateString ? state.writtenReplies.count : 0;
+  return used < replyBudget(config);
+}
+
+function countModelReply(state, dateString) {
+  const current = state.writtenReplies?.date === dateString ? state.writtenReplies : { date: dateString, count: 0 };
+  current.count += 1;
+  state.writtenReplies = current;
+}
 
 /** Record a sent card so a later reply can be matched back to it. */
 export function trackPending(state, record) {
@@ -359,26 +400,56 @@ export async function processInbox({
 
         // Close the loop. This branch used to write the entry and say nothing,
         // which made the one path carrying the most effort the only silent one.
-        // The reply is computed locally -- no model, no extra network call --
-        // so it costs nothing and cannot fail the send it rides with.
-        const streak = journalStreak(readJournal(), dateString);
+        const entries = readJournal();
+        const streak = journalStreak(entries, dateString);
         const affirmation = buildAffirmation({
           text,
           mechanism: context?.mechanism ?? null,
           streak,
           state,
           dateString,
-          journalTotal: readJournal().length,
+          journalTotal: entries.length,
         });
+
+        // Then try to write one for this entry specifically. The library reply
+        // above is already built and already good, so this is pure upside: if
+        // the model is slow, broken, unfunded or says something with a number
+        // in it that he did not, the library line ships instead and he sees no
+        // difference. A milestone is the exception -- that line is the reward
+        // and it should read the same every time it is earned.
+        let replyText = affirmation.text;
+        let source = 'library';
+        if (affirmation.shape !== 'milestone' && allowModelReply(state, dateString, config)) {
+          const written = await writeAffirmation({
+            text,
+            mechanism: context?.mechanism ?? null,
+            promptText: promptTextFor(context?.promptId),
+            slot: context?.slot ?? null,
+            streak,
+            journalTotal: entries.length,
+            // The two entries before this one, for continuity -- so a reply can
+            // notice that this is the third night he has said the same thing.
+            recent: entries.slice(-3, -1).reverse()
+              .map((e) => ({ date: e.date, wrote: String(e.text ?? '').slice(0, 300) }))
+              .filter((e) => e.wrote.trim()),
+            dateString,
+            log,
+          }).catch(() => null);
+          if (written) {
+            replyText = written.text;
+            source = `${written.provider}:${written.level}`;
+            countModelReply(state, dateString);
+          }
+        }
         // Best-effort, and deliberately so. The entry is already on disk; the
         // update is acknowledged below. If this send were allowed to throw, the
         // update would go unacknowledged and the next poll would write the same
         // entry again -- and on a persistent failure (a 400, say) it would keep
         // doing that every ten minutes forever. A missing affirmation is a far
         // smaller problem than a duplicated journal.
-        let affirmed = affirmation.shape;
+        let affirmed = `${affirmation.shape}/${source}`;
         try {
-          await send(token, chatId, affirmation.text);
+          await send(token, chatId, replyText);
         } catch (err) {
           affirmed = `FAILED (${err.message})`;
         }

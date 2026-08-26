@@ -33,12 +33,19 @@ model provider, to write the coaching paragraph in the morning message.
 The model provider is whichever API key is configured -- Google (Gemini) via
 `GEMINI_API_KEY`, or Anthropic via `ANTHROPIC_API_KEY`. It is the only place
 where personal content leaves this machine as plaintext, so it is worth being
-precise about what goes and what does not. Once a day, following a logged
-night, the coach sends a finished sheet of already-computed figures -- last
-night's score, the trailing averages, the autonomic deltas -- together with the
-text of the operator's three most recent journal entries. It never sends the
-encrypted logs, the raw Oura response, the history beyond those figures, or any
-identifier: no name, no email, no account number, no device ID.
+precise about what goes and what does not.
+
+Two things are sent. Once a day, following a logged night, the coach sends a
+finished sheet of already-computed figures -- last night's score, the trailing
+averages, the autonomic deltas -- together with the text of the operator's three
+most recent journal entries. And each time the operator writes a journal entry,
+that entry is sent along with the card it answered, the two entries before it,
+and two counts: the current streak and the number of entries on record. That
+second request carries no sleep data at all.
+
+Neither ever sends the encrypted logs, the raw Oura response, the history beyond
+those figures, or any identifier: no name, no email, no account number, no
+device ID.
 
 Each provider's own terms govern what it does with a request, and they are not
 the same. Free-tier Google AI Studio keys in particular may allow the content
@@ -51,8 +58,10 @@ Both halves are switchable in `config.json` without touching any secret.
 `coach.writtenByModel: false` stops the call entirely and restores the previous
 rule-based text. `coach.sendJournalToModel: false` keeps the call but sends only
 the numbers, so nothing the operator has written leaves the machine.
-`coach.provider` pins which one is used. Removing the API key secret has the
-same effect as the first switch.
+`coach.writtenAffirmations: false` stops the per-entry replies while leaving the
+morning one, so journal text stops leaving the machine entirely.
+`coach.provider` pins which provider is used. Removing the API key secret has
+the same effect as turning everything off.
 
 ## What does not happen
 
