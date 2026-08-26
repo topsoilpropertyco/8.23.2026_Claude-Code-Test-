@@ -83,6 +83,28 @@ function intakeOpen(state, dateString) {
   return !sleepSeries().some((e) => e.date === dateString);
 }
 
+/**
+ * The reply to something that arrived with no words in it.
+ *
+ * Warm, brief, and honest about the limit rather than pretending there isn't
+ * one. Naming the caption route matters: it is the difference between "this is
+ * broken" and "there is a way to do what you just tried".
+ */
+function unreadableMessage(kind) {
+  if (kind === 'voice') {
+    return [
+      'Got the voice note — but I can only read text right now, so I have not logged it.',
+      '',
+      'Type it, even roughly, and it goes in the journal and comes back answered.',
+    ].join('\n');
+  }
+  return [
+    `Got the ${kind}. There were no words with it, so there is nothing to log yet.`,
+    '',
+    'Add a caption next time, or send a line of text — either one becomes a journal entry.',
+  ].join('\n');
+}
+
 function helpText() {
   return [
     'SLEEP OS  //  COMMANDS',
@@ -345,13 +367,34 @@ export async function processInbox({
 
   for (const update of updates) {
     const message = update.message ?? update.edited_message;
-    const text = message?.text?.trim();
+    // A caption is text he wrote. A photo of the bedroom thermostat with
+    // "finally got it to 65" attached is a journal entry, and reading only
+    // `.text` threw the sentence away along with the picture.
+    const text = (message?.text ?? message?.caption)?.trim();
     const ack = () => {
       state.inboxOffset = update.update_id + 1;
     };
 
-    // Nothing actionable: acknowledge so it never comes back.
-    if (!text || String(message.chat?.id) !== String(chatId)) {
+    // Not his chat: acknowledge and move on. Nothing is owed to a stranger.
+    if (String(message?.chat?.id) !== String(chatId)) {
+      ack();
+      continue;
+    }
+
+    // His message, but nothing readable in it -- a voice note, a photo with no
+    // caption, a sticker. This used to acknowledge and say nothing, which is
+    // the one outcome this whole layer exists to prevent. Silence after you
+    // deliberately sent something reads as broken, and it is indistinguishable
+    // from broken. So it answers, and it says what it can and cannot do.
+    if (!text) {
+      const kind = message.voice || message.audio ? 'voice'
+        : message.photo ? 'photo'
+        : message.video || message.video_note ? 'video'
+        : message.document ? 'file'
+        : 'that';
+      await send(token, chatId, unreadableMessage(kind)).catch(() => {});
+      log(`non-text message (${kind}) acknowledged`);
+      handled.push({ type: 'unreadable', kind });
       ack();
       continue;
     }

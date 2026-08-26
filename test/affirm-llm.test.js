@@ -236,3 +236,60 @@ test('the daily cap holds, and the library covers everything past it', async () 
     else process.env.GEMINI_API_KEY = saved;
   }
 });
+
+/* -------------------------------------------------- nothing is ever silent */
+
+const inboxRaw = async (message) => {
+  const sends = [];
+  const state = { inboxOffset: 0, pending: [] };
+  await processInbox({
+    config: CONFIG, state, token: 'x', chatId: '42', now: new Date('2026-08-26T21:30:00Z'), log: () => {},
+    send: async (_t, _c, body) => { sends.push(body); return { message_id: 1 }; },
+    fetchUpdates: async () => [{ update_id: 9001, message: { message_id: 9001, chat: { id: 42 }, ...message } }],
+  });
+  return { sends, state };
+};
+
+test('a voice note is answered, not swallowed', async () => {
+  // This path used to acknowledge and say nothing. Silence after deliberately
+  // sending something is indistinguishable from the system being broken.
+  const { sends, state } = await inboxRaw({ voice: { file_id: 'abc', duration: 12 } });
+  assert.equal(sends.length, 1, 'a voice note must not be met with silence');
+  assert.match(sends[0], /voice note/i);
+  assert.match(sends[0], /type it/i, 'it must say what to do instead');
+  assert.equal(state.inboxOffset, 9002, 'and it must still be acknowledged, or it repeats forever');
+});
+
+test('a photo caption is a journal entry, not something to throw away', async () => {
+  const saved = process.env.GEMINI_API_KEY;
+  delete process.env.GEMINI_API_KEY;   // library path, so this tests the routing only
+  try {
+    const { sends } = await inboxRaw({
+      photo: [{ file_id: 'p1' }],
+      caption: 'Finally got the bedroom down to 65 and slept through for once.',
+    });
+    assert.equal(sends.length, 1);
+    assert.ok(!/no words with it/.test(sends[0]),
+      'a captioned photo carries a sentence and must be treated as one');
+  } finally {
+    if (saved !== undefined) process.env.GEMINI_API_KEY = saved;
+  }
+});
+
+test('a photo with nothing written on it still gets an answer', async () => {
+  const { sends } = await inboxRaw({ photo: [{ file_id: 'p1' }] });
+  assert.equal(sends.length, 1);
+  assert.match(sends[0], /caption/i);
+});
+
+test('a message from someone else is not answered at all', async () => {
+  const sends = [];
+  const state = { inboxOffset: 0, pending: [] };
+  await processInbox({
+    config: CONFIG, state, token: 'x', chatId: '42', now: new Date('2026-08-26T21:30:00Z'), log: () => {},
+    send: async (_t, _c, b) => { sends.push(b); return { message_id: 1 }; },
+    fetchUpdates: async () => [{ update_id: 9100, message: { message_id: 9100, chat: { id: 999 }, text: 'hello' } }],
+  });
+  assert.equal(sends.length, 0, 'nothing is owed to a stranger');
+  assert.equal(state.inboxOffset, 9101);
+});
