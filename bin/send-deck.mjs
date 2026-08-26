@@ -79,23 +79,6 @@ if (night.sample && !dry) {
   await bail('the night file holds SAMPLE data, so there is no real night to send.');
 }
 
-console.log('send-deck: rebuilding screens');
-await run('python3', ['bin/build-screens.py'], 'rebuilding the screens');
-await run('node', ['bin/build-dashboard.mjs'], 'building the dashboard');
-
-// Encrypt and publish before announcing it. Sending a link to a page that has
-// not been redeployed yet would point at last night's dashboard, which is the
-// original bug in a new costume. Best-effort: publishing is the least important
-// thing here and must not stop the message going out.
-if (process.env.GITHUB_ACTIONS && process.env.SLEEPOS_DATA_KEY) {
-  try {
-    execFileSync('node', ['bin/build-page.mjs'], { cwd: ROOT, stdio: 'inherit' });
-    execFileSync('node', ['bin/publish-page.mjs'], { cwd: ROOT, stdio: 'inherit' });
-  } catch {
-    console.error('send-deck: publishing the dashboard failed; the message still goes out');
-  }
-}
-
 // Two delivery modes, chosen by config so switching is not a code change.
 // 'link' sends one message pointing at the encrypted dashboard; 'album' renders
 // the screens and sends them as photos. The album stays the default until the
@@ -138,7 +121,7 @@ if (mode === null) {
  * night should say what happened last night, and the link should be the way to
  * go deeper rather than the only place the detail exists.
  */
-function lastNightText(n, url) {
+function lastNightText(n, { url = null, footer = null } = {}) {
   const v = n.night ?? {};
   const sl = n.standing ?? {};
   const lines = [];
@@ -200,15 +183,60 @@ function lastNightText(n, url) {
   if (v.bedtimeEnd) clock.push(`up ${v.bedtimeEnd.slice(11, 16)}`);
   if (clock.length) lines.push(clock.join(' · '));
 
-  lines.push('');
-  lines.push(`Open last night → ${url}`);
+  if (url) {
+    lines.push('');
+    lines.push(`Open last night → ${url}`);
+  }
+  if (footer) {
+    lines.push('');
+    lines.push(footer);
+  }
   return lines.join('\n');
 }
 
+// Build only what the chosen delivery actually needs, and let the rest fail
+// harmlessly. The order used to be the other way round: the dashboard was built
+// before the mode was decided, with `run()` -- which bails on failure. So in
+// album mode a broken dashboard build took the screens down with it, and the
+// screens were the thing being delivered. Nothing that only serves the link may
+// be able to stop the album.
+if (mode === 'album') {
+  console.log('send-deck: rebuilding screens');
+  await run('python3', ['bin/build-screens.py'], 'rebuilding the screens');
+}
+
+// The page is still published in album mode, best-effort, because the morning
+// coach message carries its own link line -- stop republishing and that link
+// quietly rots while everything else looks fine.
+const publishPage = async () => {
+  try {
+    execFileSync('node', ['bin/build-dashboard.mjs'], { cwd: ROOT, stdio: 'inherit' });
+  } catch {
+    console.error('send-deck: building the dashboard failed'
+      + (mode === 'link' ? '' : '; the screens still go out'));
+    return false;
+  }
+  if (!process.env.GITHUB_ACTIONS || !process.env.SLEEPOS_DATA_KEY) return false;
+  try {
+    execFileSync('node', ['bin/build-page.mjs'], { cwd: ROOT, stdio: 'inherit' });
+    execFileSync('node', ['bin/publish-page.mjs'], { cwd: ROOT, stdio: 'inherit' });
+    return true;
+  } catch {
+    console.error('send-deck: publishing the dashboard failed; the message still goes out');
+    return false;
+  }
+};
+
 if (mode === 'link') {
+  // Here the page IS the delivery, so a failure to build it is fatal: a link to
+  // a page that was never rebuilt points at an older night, which is the
+  // original stale-deck bug wearing a different hat.
+  if (!(await publishPage())) {
+    await bail('delivery is "link" but the dashboard could not be built and published.');
+  }
   const url = deckUrl();
   if (!url) await bail('delivery is "link" but no dashboard URL could be built.');
-  const text = lastNightText(night, url);
+  const text = lastNightText(night, { url });
   if (dry) {
     console.log('send-deck: --dry, not sending. Would send:');
     console.log(text.split('\n').map((l) => `  ${l}`).join('\n'));
@@ -227,6 +255,8 @@ if (mode === 'link') {
   process.exit(0);
 }
 
+await publishPage();
+
 console.log('send-deck: rendering');
 rmSync(OUT, { recursive: true, force: true });
 mkdirSync(OUT, { recursive: true });
@@ -242,19 +272,18 @@ if (shots.length > MEDIA_GROUP_MAX) {
   await bail(`${shots.length} screens exceeds Telegram's album cap of ${MEDIA_GROUP_MAX}.`);
 }
 
-const s = night.standing;
-// Name the night rather than calling it "last night". When the ring has not
-// synced, the newest record is not last night, and saying so is the difference
-// between a screen that is behind and a screen that is lying.
-const heading = night.stale
-  ? `${night.date} — the newest night Oura has (${night.daysBehind} days back)`
-  : `Last night — ${night.date}`;
-const caption = `${heading}\n`
-  + `Score ${night.score} · ${s.percentile}th percentile of your ${night.population.n} nights `
-  + `· rank ${s.rank}\n`
-  + (night.stale
+// The same summary the link message carries, from the same function. These were
+// two separate builders and they had drifted: the album's still printed the
+// un-rounded "13.1th" ordinal and stopped at score-and-rank, while the link
+// message had grown the full night. One caption, one place to fix.
+//
+// Telegram allows 1024 characters on an album caption and this runs to about
+// 450, so the whole summary fits alongside the screens.
+const caption = lastNightText(night, {
+  footer: night.stale
     ? 'Open the Oura app to sync, and I will resend with the current night.'
-    : `Swipe for all ${shots.length} screens. Rebuilt from your data, every morning.`);
+    : `Swipe for all ${shots.length} screens. Rebuilt from your data every morning.`,
+});
 
 if (dry) {
   console.log('send-deck: --dry, not sending. Caption would be:');
