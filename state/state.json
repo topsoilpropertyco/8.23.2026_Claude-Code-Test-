@@ -333,7 +333,7 @@
       }
     }
   },
-  "inboxOffset": 697606373,
+  "inboxOffset": 697606374,
   "pending": [
     {
       "messageId": 140,
@@ -481,15 +481,16 @@
       0
     ],
     "streak": [
-      3,
       2
     ],
     "stat": [
-      0,
       2,
       3
     ],
     "mechanism:implementation_intention": [
+      1
+    ],
+    "mechanism:commitment": [
       1
     ]
   },
@@ -550,7 +551,7 @@
     }
   },
   "writtenReplies": {
-    "date": "2026-08-25",
+    "date": "2026-08-26",
     "count": 1
   },
   "coach": {
