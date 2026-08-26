@@ -279,7 +279,7 @@
       }
     }
   },
-  "inboxOffset": 697606368,
+  "inboxOffset": 697606369,
   "pending": [
     {
       "messageId": 101,
@@ -483,5 +483,9 @@
         "ml16"
       ]
     }
+  },
+  "writtenReplies": {
+    "date": "2026-08-25",
+    "count": 1
   }
 }
