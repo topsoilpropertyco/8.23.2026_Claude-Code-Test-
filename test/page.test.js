@@ -28,14 +28,37 @@ test('the page key is derived, stable, and reveals nothing about the data key', 
 test('the URL is never returned without its fragment', () => {
   // A bare base is worse than no link: it loads, then reports itself broken.
   const url = deckUrl({ base: 'https://example.com/x', secret: KEY_A });
-  assert.match(url, /^https:\/\/example\.com\/x\/#[A-Za-z0-9_-]{43}$/);
+  assert.match(url, /^https:\/\/example\.com\/x\/\?v=\d{12}#[A-Za-z0-9_-]{43}$/);
   assert.equal(deckUrl({ base: '', secret: KEY_A }), null);
   assert.equal(deckUrl({ base: 'https://example.com', secret: undefined }), null);
   // A trailing slash on the configured base must not produce a double slash.
   assert.equal(
-    deckUrl({ base: 'https://example.com/x///', secret: KEY_A }),
-    deckUrl({ base: 'https://example.com/x', secret: KEY_A }),
+    deckUrl({ base: 'https://example.com/x///', secret: KEY_A, version: 'v1' }),
+    deckUrl({ base: 'https://example.com/x', secret: KEY_A, version: 'v1' }),
   );
+});
+
+test('the link changes when the page does, and the key does not', () => {
+  // THE BUG THIS EXISTS FOR. The page is republished to the same address every
+  // time a night lands, so for a reader the URL was a constant -- and a browser
+  // cache serves a constant URL without asking. Seth clicked the same link
+  // three mornings running and got a stale page each time while the live one
+  // had been correct for hours. The page was never broken; the cache was
+  // working as designed and the URL gave it no reason to refetch.
+  const a = deckUrl({ base: 'https://example.com', secret: KEY_A, version: '202608261100' });
+  const b = deckUrl({ base: 'https://example.com', secret: KEY_A, version: '202608261200' });
+  assert.notEqual(a, b, 'two republishes must not share a URL');
+
+  // ...but the credential is unchanged, so a link saved last week still opens
+  // the current page. The fragment is not part of the request, so the query
+  // string cannot affect decryption.
+  assert.equal(a.split('#')[1], b.split('#')[1], 'the key must be stable across republishes');
+  assert.equal(new URL(a).hash, '#' + pageKey(KEY_A));
+  assert.equal(new URL(a).search, '?v=202608261100');
+
+  // An explicit empty version opts out, for a caller that wants the bare link.
+  assert.equal(deckUrl({ base: 'https://example.com', secret: KEY_A, version: '' }),
+    `https://example.com/#${pageKey(KEY_A)}`);
 });
 
 test('the configured base matches the repository exactly, casing included', () => {

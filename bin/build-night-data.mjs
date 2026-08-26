@@ -155,7 +155,8 @@ const out = {
     awake: stage(night.awake_time),
     efficiency: night.efficiency, latency: mins(night.latency),
     hrv: night.average_hrv, restingHr: night.lowest_heart_rate,
-    breath: night.average_breath,
+    breath: typeof night.average_breath === 'number'
+      ? Math.round(night.average_breath * 10) / 10 : night.average_breath,
     bedtimeStart: night.bedtime_start, bedtimeEnd: night.bedtime_end,
     hypnogram: night.sleep_phase_5_min,
   },

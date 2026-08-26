@@ -36,8 +36,20 @@ export function pageKey(secret = process.env.SLEEPOS_DATA_KEY) {
  * omits the line. Never return a bare base without the fragment -- that is a
  * page that loads and then reports itself broken, which is worse than no link.
  */
-export function deckUrl({ base = loadConfig().screensUrl, secret } = {}) {
+export function deckUrl({ base = loadConfig().screensUrl, secret, version } = {}) {
   const key = pageKey(secret);
   if (!base || !key) return null;
-  return `${String(base).replace(/\/+$/, '')}/#${key}`;
+
+  // A cache-busting query parameter, and it is not decoration. The page is
+  // republished at the same address every time a night lands, so for a reader
+  // the URL is a constant -- and a constant URL is exactly what a browser cache
+  // is designed to serve without asking. Seth clicked the same link three
+  // mornings running and got the same stale page each time while the live one
+  // had been correct for hours; the page was fine, the cache was doing its job.
+  // GitHub Pages gives no control over cache headers, so the URL has to change
+  // when the content does. The key stays in the fragment, which is not part of
+  // the request, so a bookmarked older link still decrypts the newer page.
+  const v = version ?? new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '');
+  const q = v ? `?v=${encodeURIComponent(v)}` : '';
+  return `${String(base).replace(/\/+$/, '')}/${q}#${key}`;
 }
