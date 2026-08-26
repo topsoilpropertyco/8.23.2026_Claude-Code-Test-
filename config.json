@@ -99,6 +99,7 @@
     "provider": "auto",
     "model": null,
     "writtenAffirmations": true,
-    "maxWrittenRepliesPerDay": 40
+    "maxWrittenRepliesPerDay": 40,
+    "thinkingBudget": null
   }
 }

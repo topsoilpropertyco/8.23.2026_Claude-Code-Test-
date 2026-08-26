@@ -147,7 +147,8 @@ export async function writeAffirmation({
     milestone: Boolean(milestone),
     effort: effortOf(text),
   });
-  const budget = picked.budget ?? BUDGETS[picked.level] ?? BUDGETS.standard;
+  const budget = { ...(picked.budget ?? BUDGETS[picked.level] ?? BUDGETS.standard),
+    thinkingBudget: config?.coach?.thinkingBudget };
 
   let result;
   try {

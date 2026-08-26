@@ -10,8 +10,16 @@
 // journal reply each supply their own system prompt, their own context, and
 // their own definition of an acceptable answer.
 
-const TIMEOUT_MS = 45_000;
+// 45s was too generous in the wrong direction. A morning message is something
+// a person is actively waiting on, and three attempts at 45s meant a hung call
+// blocked it for over two minutes before the fallback fired. 30s with a single
+// retry on a timeout bounds the worst case near a minute, and a call that has
+// not answered in 30s was not going to make a good morning message anyway.
+const TIMEOUT_MS = 30_000;
 const MAX_ATTEMPTS = 3;
+// Timeouts are not like 429s and 5xx. A rate limit is worth waiting out; a hang
+// usually is not, and each attempt costs the full ceiling.
+const MAX_TIMEOUTS = 2;
 
 export class LLMError extends Error {}
 
@@ -76,12 +84,23 @@ const PROVIDERS = {
             system_instruction: { parts: [{ text: system }] },
             contents: [{ role: 'user', parts: [{ text: prompt }] }],
             generationConfig: {
-              // Generous, and not a length control -- the length is set by the
-              // instruction in the prompt. These models spend part of this
-              // allowance thinking before they write, and a ceiling sized to
-              // the visible answer gets consumed by the thinking, returning
-              // MAX_TOKENS with nothing in it.
-              maxOutputTokens: Math.max(budget.maxTokens * 4, 4096),
+              maxOutputTokens: Math.max(budget.maxTokens, 1024),
+              // Thinking off by default, and this is a latency decision rather
+              // than a quality one. The first real morning report timed out
+              // three times at 45s and shipped the rule-based fallback: these
+              // models deliberate before writing, and a system prompt saying
+              // "a single invented figure means the whole response is thrown
+              // away" is an invitation to deliberate at length over which
+              // numbers are permitted. That care is already provided by
+              // machine -- the facts arrive pre-computed and every numeral in
+              // the answer is checked afterwards -- so paying for it twice buys
+              // nothing and costs the message. coach.thinkingBudget turns it
+              // back on; -1 omits the field entirely.
+              ...(budget.thinkingBudget == null
+                ? { thinkingConfig: { thinkingBudget: 0 } }
+                : budget.thinkingBudget > 0
+                  ? { thinkingConfig: { thinkingBudget: budget.thinkingBudget } }
+                  : {}),
             },
           }),
         },
@@ -163,9 +182,13 @@ export { PROVIDERS };
 export async function callModel({ provider, apiKey, model, system, prompt, budget, fetchImpl, log }) {
   let lastError;
   let discovered = false;
+  let timeouts = 0;
+  let droppedThinkingConfig = false;
+  let effective = budget;
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-    const { url, init } = provider.request({ apiKey, model, system, prompt, budget });
+    const startedAt = Date.now();
+    const { url, init } = provider.request({ apiKey, model, system, prompt, budget: effective });
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
     let res;
@@ -178,9 +201,14 @@ export async function callModel({ provider, apiKey, model, system, prompt, budge
       // for six hours is not a slow morning message, it is a stopped engine.
       if (res.ok) body = await res.json();
     } catch (err) {
-      lastError = new LLMError(
-        err?.name === 'AbortError' ? `timed out after ${TIMEOUT_MS / 1000}s` : `network error: ${err.message}`,
-      );
+      const timedOut = err?.name === 'AbortError';
+      // The elapsed figure separates "slow" from "hung", which the old message
+      // could not: both read as "timed out after 45s".
+      const elapsed = Math.round((Date.now() - startedAt) / 1000);
+      lastError = new LLMError(timedOut
+        ? `timed out after ${elapsed}s (ceiling ${TIMEOUT_MS / 1000}s, attempt ${attempt})`
+        : `network error after ${elapsed}s: ${err.message}`);
+      if (timedOut && ++timeouts >= MAX_TIMEOUTS) throw lastError;
       if (attempt < MAX_ATTEMPTS) { await sleep(2 ** attempt * 500); continue; }
       throw lastError;
     } finally {
@@ -210,6 +238,17 @@ export async function callModel({ provider, apiKey, model, system, prompt, budge
     // fail identically forever, so they fall straight through to the rule-based
     // coach rather than costing the morning message forty-five seconds.
     const detail = await res.text().catch(() => '');
+
+    // Some models reject thinkingConfig outright rather than ignoring it. Drop
+    // it once and retry, rather than losing the message to a field that was an
+    // optimisation in the first place.
+    if (res.status === 400 && !droppedThinkingConfig && /thinking/i.test(detail)) {
+      droppedThinkingConfig = true;
+      effective = { ...effective, thinkingBudget: -1 };
+      log?.('coach-llm this model rejects thinkingConfig, retrying without it');
+      continue;
+    }
+
     lastError = new LLMError(`HTTP ${res.status}${detail ? `: ${detail.slice(0, 300)}` : ''}`);
     if (res.status !== 429 && res.status < 500) throw lastError;
     if (attempt === MAX_ATTEMPTS) throw lastError;

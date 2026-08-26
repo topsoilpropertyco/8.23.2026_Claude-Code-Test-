@@ -195,7 +195,8 @@ export async function writeLeverage({
   if (!resolveProvider(env, config)) return null;
 
   const picked = intensity ?? pickIntensity({ seed: facts?.date ?? '' });
-  const budget = picked.budget ?? BUDGETS[picked.level] ?? BUDGETS.standard;
+  const base = picked.budget ?? BUDGETS[picked.level] ?? BUDGETS.standard;
+  const budget = { ...base, thinkingBudget: config?.coach?.thinkingBudget };
   const prompt = buildPrompt({ facts, level: picked.level });
 
   let result;

@@ -470,10 +470,73 @@ test('the Gemini request is shaped for Gemini', async () => {
   assert.equal(sent.body.contents[0].role, 'user');
   assert.match(sent.body.contents[0].parts[0].text, /Every number you write must come from here/);
 
-  // These models spend part of the allowance thinking before they write, so a
-  // ceiling sized to the visible answer returns MAX_TOKENS with nothing in it.
-  assert.ok(sent.body.generationConfig.maxOutputTokens >= 4096,
-    'the ceiling must leave room for the thinking that precedes the answer');
+  // Thinking is off by default. The first real morning report timed out three
+  // times at 45s and shipped the fallback: the model was deliberating over which
+  // numbers it was allowed to use, which is work the verifier already does after
+  // the fact. So the ceiling only has to clear the answer.
+  assert.deepEqual(sent.body.generationConfig.thinkingConfig, { thinkingBudget: 0 });
+  assert.ok(sent.body.generationConfig.maxOutputTokens >= 1024);
+});
+
+test('thinking can be turned back on, and -1 omits the field', async () => {
+  const shot = async (thinkingBudget) => {
+    let sent = null;
+    await writeLeverage({
+      facts: { date: '2026-08-26', sleepScore: 74 },
+      env: { GEMINI_API_KEY: 'g' }, config: { coach: { thinkingBudget } }, log: () => {},
+      fetchImpl: async (_u, o) => { sent = JSON.parse(o.body); return geminiReply('Sleep earlier.')(); },
+    });
+    return sent.generationConfig;
+  };
+  assert.deepEqual((await shot(2048)).thinkingConfig, { thinkingBudget: 2048 });
+  assert.equal('thinkingConfig' in (await shot(-1)), false,
+    '-1 must omit the field for models that reject it outright');
+  assert.deepEqual((await shot(undefined)).thinkingConfig, { thinkingBudget: 0 });
+});
+
+test('a model that rejects thinkingConfig is retried without it, once', async () => {
+  const bodies = [];
+  const logged = [];
+  const r = await ASYNC({
+    env: { GEMINI_API_KEY: 'g' },
+    log: (m) => logged.push(m),
+    fetchImpl: async (_u, o) => {
+      const body = JSON.parse(o.body);
+      bodies.push(body);
+      if (body.generationConfig?.thinkingConfig) {
+        return { ok: false, status: 400, text: async () => 'thinkingConfig is not supported for this model' };
+      }
+      return geminiReply('Get to bed at the hour you said.')();
+    },
+  });
+  assert.equal(r.written, true, 'a rejected optimisation must not cost the message');
+  assert.equal(bodies.length, 2, 'one rejection, one retry — not a loop');
+  assert.equal('thinkingConfig' in bodies[1].generationConfig, false);
+  assert.ok(logged.some((l) => /rejects thinkingConfig/.test(l)));
+});
+
+test('a hang is not retried three times', async () => {
+  // Three attempts at the full ceiling meant a hung call blocked the morning
+  // message for over two minutes before the fallback fired.
+  let calls = 0;
+  const r = await ASYNC({
+    env: { GEMINI_API_KEY: 'g' },
+    fetchImpl: async () => { calls += 1; const e = new Error('x'); e.name = 'AbortError'; throw e; },
+  });
+  assert.equal(r.written, false);
+  assert.equal(calls, 2, `a timeout should be retried once, not twice — got ${calls} calls`);
+  assert.match(r.reason, /timed out after \d+s \(ceiling 30s/,
+    'the reason must carry the elapsed time, to tell slow from hung');
+});
+
+test('a rate limit is still worth waiting out', async () => {
+  // Unlike a hang: a 429 clears, so it keeps the full retry budget.
+  let calls = 0;
+  await ASYNC({
+    env: { GEMINI_API_KEY: 'g' },
+    fetchImpl: async () => { calls += 1; return { ok: false, status: 429, text: async () => 'quota' }; },
+  });
+  assert.equal(calls, 3);
 });
 
 test('a Gemini answer is held to exactly the same number check', async () => {
