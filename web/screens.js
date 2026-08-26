@@ -96,6 +96,14 @@ var SleepOSScreens = (function () {
     return (neg ? '-' : '') + out;
   }
   function g(v) { return String(Number(v)); }                        // {v:g}
+
+  // Python's built-in round() is ALSO half-to-even: round(72.5) is 72 where
+  // Math.round(72.5) is 73. The hero percentile on screen 1 goes through it, so
+  // a night at the 72.5th printed as "73rd" against Python's "72nd" -- a visibly
+  // different number and a different ordinal suffix with it. fx(v, 0) already
+  // rounds the true decimal expansion to even, so it is reused rather than a
+  // second rule being invented.
+  function pyRound(v) { return Number(fx(v, 0)); }
   function signed(v, n) {                                            // {v:+.1f}
     var s = fx(v, n === undefined ? 1 : n);
     return s[0] !== '-' && s[0] !== '+' ? '+' + s : s;
@@ -155,6 +163,7 @@ var SleepOSScreens = (function () {
   /* --------------------------------------------------------- the shared shell */
 
   var CSS = [
+    '',
     '*{box-sizing:border-box;margin:0;padding:0}',
     'html,body{background:#78756F}',
     '.s{position:relative;width:390px;height:844px;overflow:hidden;background:GROUND;color:INK;',
@@ -209,9 +218,162 @@ var SleepOSScreens = (function () {
       + '</div><div class="grp">' + body.slice(k) + '</div>';
   }
 
+  /* ------------------------------------------------------- the derived context
+
+     Everything the Python computes at module scope from the night file. Kept in
+     one object so each screen reads like the original, where these were globals.
+  */
+  function context(N_) {
+    var C = {};
+    C.SAMPLE = Boolean(N_.sample);
+    C.SCORE = N_.score;
+    C.MEAN = N_.population.mean;
+    C.SD = N_.population.sd;
+    C.N = N_.population.n;
+    C.BELOW = N_.standing.below;
+    C.ABOVE = N_.standing.above;
+    C.TIES = N_.standing.ties;
+    C.RANK = N_.standing.rank;
+    C.PCT = N_.standing.percentile;
+    // z is null when the record has no spread. With no spread the night IS the
+    // mean, so 0 is honest; the Python does the same.
+    C.Z = N_.standing.z === null || N_.standing.z === undefined ? 0 : Number(N_.standing.z);
+    C.NIGHT_DATE = N_.date;
+    C.TRAIL = {};
+    (N_.trailing || []).forEach(function (t) { C.TRAIL[t.window] = t; });
+    C.STALE = Boolean(N_.stale);
+    C.DAYS_BEHIND = N_.daysBehind || 0;
+    C.DATE_LABEL = C.SAMPLE ? 'Sample night' : dateLabel(C.NIGHT_DATE);
+    C.V = N_.night || {};
+
+    // A one-night history has no spread and SD is 0; two screens divide by it.
+    C.SAFE_SD = C.SD && C.SD > 0 ? C.SD : 1.0;
+    C.THIN = C.N < 7 || !C.SD || C.SD <= 0;
+
+    C.CUT_LO_S = C.MEAN + invPhi(CUT_LO_P) * C.SAFE_SD;
+    C.CUT_HI_S = C.MEAN + invPhi(CUT_HI_P) * C.SAFE_SD;
+
+    C.pctAt = function (score) { return phi((score - C.MEAN) / C.SAFE_SD) * 100; };
+    C.scoreAt = function (z) { return C.MEAN + z * C.SAFE_SD; };
+    C.bandOfPct = function (p) {
+      if (p >= CUT_HI_P * 100) return ['good', GOOD, GOOD_L, 'a good night'];
+      if (p >= CUT_LO_P * 100) return ['decent', OK, OK_L, 'a decent night'];
+      return ['bad', BAD, BAD_L, 'a bad night'];
+    };
+    var b = C.bandOfPct(C.PCT);
+    C.BAND = b[0]; C.BAND_C = b[1]; C.BAND_L = b[2]; C.BAND_WORD = b[3];
+    return C;
+  }
+
+  var HEAD = '<!doctype html>\n'
+    + '<meta charset="utf-8">\n'
+    + '<title>{title}</title>\n'
+    + '<meta name="viewport" content="width=390, initial-scale=1">\n'
+    + '<!-- {note} -->\n'
+    + '<link rel="preconnect" href="https://fonts.googleapis.com">\n'
+    + '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
+    + '<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">\n'
+    + '<style>{css}{extra}</style>\n'
+    + '<div class="s {cls}">\n'
+    + '  <div class="hd"><span class="brand mono">Sleep OS</span><span class="num mono">{idx} &middot; {kicker}</span></div>\n'
+    + '  <div class="prov" style="background:{railbg};color:{rail}"><span>{provl}</span><span>{provr}</span></div>\n'
+    + '  <div class="bd">\n';
+
+  var FOOT = '  </div>\n'
+    + '  <div class="ft mono"><span>{daten}</span><span>{right}</span></div>\n'
+    + '</div>\n';
+
+  function fill(tpl, vals) {
+    return tpl.replace(/\{(\w+)\}/g, function (m, k) {
+      return Object.prototype.hasOwnProperty.call(vals, k) ? String(vals[k]) : m;
+    });
+  }
+
+  function page(C, idx, kicker, title, note, extra, body, right, kind) {
+    kind = kind || 'own';
+    var prov = kind === 'nat'
+      ? { cls: 'nat', rail: NAT_RAIL, railbg: NAT_RAIL_BG,
+          provl: 'Compared with Oura members', provr: 'Published averages' }
+      : { cls: '', rail: OWN_RAIL, railbg: OWN_RAIL_BG,
+          provl: 'Compared with your own data', provr: comma(C.N) + ' nights' };
+    if (C.SAMPLE) {
+      prov = { cls: prov.cls + ' samp', rail: prov.rail, railbg: prov.railbg,
+        provl: 'SAMPLE DATA &mdash; not a real night', provr: 'layout only' };
+    } else if (C.STALE) {
+      prov = { cls: prov.cls + ' samp', rail: prov.rail, railbg: prov.railbg,
+        provl: 'Showing ' + C.DATE_LABEL + ' &mdash; newest night Oura has',
+        provr: C.DAYS_BEHIND + 'd behind' };
+    }
+    return fill(HEAD, { idx: idx, kicker: kicker, title: title, note: note,
+      css: paint(CSS), extra: extra, cls: prov.cls, rail: prov.rail,
+      railbg: prov.railbg, provl: prov.provl, provr: prov.provr })
+      + group(body) + fill(FOOT, { right: right, daten: C.DATE_LABEL });
+  }
+
+  /* ------------------------------------------------------------ s1  where am I */
+
+  function s1(C) {
+    var PCT_HERO = pyRound(C.PCT);
+    var PCT_STR = g(PCT_HERO);
+    var sizes = { 1: 146, 2: 146, 3: 122, 4: 100 };
+    var _PCTSIZE = sizes[PCT_STR.length] || 88;
+    var extra = [
+      '',
+      ".line{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:QUIET;font-weight:500}",
+      '.big{font-size:146px;line-height:.86;letter-spacing:-.045em;font-weight:500;margin-top:2px}',
+      '/* The percentile can be 4 glyphs wide ("27.7") where the score is always 2, and',
+      '   at 146px that pushed its ordinal off the right edge -- it rendered as "27.7t".',
+      '   Sized from the string so the suffix always has room. */',
+      '.big.pct{font-size:PCTSIZEpx}',
+      '.ord{font-size:44px;line-height:1;vertical-align:.9em;font-weight:400;margin-left:11px;',
+      '  letter-spacing:.06em;font-variant-ligatures:none}',
+      '.big.pct .ord{font-size:ORDSIZEpx;margin-left:8px}',
+      '.pctlab{font-size:13px;letter-spacing:.26em;text-transform:uppercase;color:ACCENT;',
+      '  font-weight:600;margin-top:2px}',
+      '.rowline{display:flex;align-items:baseline;gap:12px}',
+      '',
+    ].join('\n')
+      .split('ACCENT').join(ACCENT).split('QUIET').join(QUIET)
+      .split('PCTSIZE').join(String(_PCTSIZE))
+      .split('ORDSIZE').join(String(pyRound(_PCTSIZE * 0.30)));
+
+    var body = '  <p class="q">Where am I?</p>\n'
+      + '  <p class="ans">The score first, then what it is worth. Same size, because\n'
+      + '  neither one means much without the other.</p>\n'
+      + '  <div>\n'
+      + '    <div class="line mono">Last night your sleep score was</div>\n'
+      + '    <div class="rowline">\n'
+      + '      <div class="big mono">' + C.SCORE + '</div>\n'
+      + '      <span class="pill" style="background:' + C.BAND_L + ';color:' + C.BAND_C + '">' + C.BAND_WORD + '</span>\n'
+      + '    </div>\n'
+      + '    <div class="hair" style="margin:20px 0 18px"></div>\n'
+      + '    <div class="line mono">Which puts it at the</div>\n'
+      + '    <div class="big pct mono">' + PCT_STR + '<span class="ord">' + ordinal(PCT_HERO) + '</span></div>\n'
+      + '    <div class="pctlab mono">Percentile</div>\n'
+      + '  </div>\n'
+      + '  <div class="hair" style="margin-top:20px"></div>\n'
+      + '  <p class="note mono" style="margin-top:12px">Measured, not modelled: <b>' + C.BELOW + '</b> of your\n'
+      + '  ' + comma(C.N) + ' recorded nights scored lower and <b>' + C.ABOVE + '</b> scored higher — the\n'
+      + '  <b>' + g(C.PCT) + ordinal(C.PCT) + '</b> percentile exactly. Rank <b>' + C.RANK + '</b> of ' + comma(C.N) + '.</p>\n';
+
+    return page(C, '1 of 8', 'Where am I', 's1 — Where am I',
+      'Score first at the same size as the percentile, per revision 2.',
+      extra, body, comma(C.N) + ' nights');
+  }
+
+  var RENDERERS = { s1: s1 };
+  var KEYS = ['s1'];
+
+  function render(key, nightObj) {
+    var fn = RENDERERS[key];
+    if (!fn) throw new Error('unknown screen: ' + key);
+    return fn(context(nightObj));
+  }
+
   return { W: W, H: H, fx: fx, g: g, signed: signed, comma: comma, ordinal: ordinal,
     article: article, dateLabel: dateLabel, phi: phi, invPhi: invPhi, erf: erf,
-    CSS: CSS, paint: paint, group: group,
+    CSS: CSS, paint: paint, group: group, pyRound: pyRound,
+    context: context, page: page, render: render, KEYS: KEYS, RENDERERS: RENDERERS,
     colors: { GROUND: GROUND, RAISED: RAISED, INK: INK, QUIET: QUIET, RULE: RULE,
       NAT_GROUND: NAT_GROUND, NAT_RULE: NAT_RULE, OWN_RAIL: OWN_RAIL, NAT_RAIL: NAT_RAIL,
       OWN_RAIL_BG: OWN_RAIL_BG, NAT_RAIL_BG: NAT_RAIL_BG, ACCENT: ACCENT,
