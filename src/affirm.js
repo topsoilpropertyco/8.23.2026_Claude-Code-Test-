@@ -28,11 +28,11 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { ROOT } from './facts.js';
 import { rngFrom, shuffle } from './rng.js';
+import { pickIntensity, effortOf } from './intensity.js';
 
 const FILE = join(ROOT, 'data/affirmations.json');
 
 const SHORT_CHARS = 30;
-const STREAK_ODDS = 0.25;   // how often a streak line rides along
 const STREAK_FLOOR = 3;     // below this a streak is not worth naming
 
 export function loadAffirmations() {
@@ -71,12 +71,25 @@ export function buildAffirmation({
   state = {},
   dateString = '',
   library = null,
+  journalTotal = 0,
 } = {}) {
   const lib = library ?? loadAffirmations();
   const lines = [];
   let shape;
 
   const milestone = lib.milestone?.[String(streak)];
+
+  // How big this one gets. The roll used to live here as a local STREAK_ODDS
+  // constant; it moved to src/intensity.js so the morning coach varies on the
+  // same rhythm. One system with a pulse, rather than two components each
+  // rolling their own dice. Still deterministic from the date, so a re-run on
+  // the same day cannot fish for a bigger reply, and a two-word entry is
+  // capped before the roll rather than after it.
+  const intensity = pickIntensity({
+    seed: `affirm:${dateString}:${streak}`,
+    milestone: Boolean(milestone),
+    effort: effortOf(text),
+  });
 
   if (milestone) {
     // Rare and large by design. A milestone outranks everything else.
@@ -93,16 +106,29 @@ export function buildAffirmation({
     lines.push(draw(lib.identity, 'identity', state, dateString));
   }
 
-  // The streak line rides along sometimes, not always. Deterministic from the
-  // date so a re-run on the same day does not re-roll it.
+  // A milestone line is already the large reply -- reaching one is the whole
+  // reason the level went deep. Hanging a streak count and a running total off
+  // it would bury the single sentence actually worth reading.
   let streakShown = false;
-  if (shape !== 'milestone' && streak >= STREAK_FLOOR) {
-    const roll = rngFrom(`sleep-os:affirm-streak:${dateString}:${streak}`)();
-    if (roll < STREAK_ODDS) {
+  let statShown = false;
+
+  if (shape !== 'milestone' && intensity.level !== 'brief') {
+    // The streak is the strongest line available, so it rides along whenever
+    // there is room for it -- which is now what "not brief" means.
+    if (streak >= STREAK_FLOOR) {
       lines.push(draw(lib.streak, 'streak', state, dateString).replace('{n}', String(streak)));
       streakShown = true;
     }
+    // Deep goes one further and says something about the record as a whole.
+    // Only ever a count of entries: a number true by construction, because it
+    // is the length of the file the line is being written into. Nothing here
+    // needs the number verifier that guards the generated coach, because
+    // nothing here is generated.
+    if (intensity.level === 'deep' && journalTotal > 0 && lib.stat?.length) {
+      lines.push(draw(lib.stat, 'stat', state, dateString).replace('{total}', String(journalTotal)));
+      statShown = true;
+    }
   }
 
-  return { text: lines.join(' '), shape, streakShown };
+  return { text: lines.join(' '), shape, streakShown, statShown, intensity: intensity.level };
 }

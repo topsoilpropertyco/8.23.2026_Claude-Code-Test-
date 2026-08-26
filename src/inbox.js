@@ -6,7 +6,7 @@
 // entry against the card that prompted it, or a command.
 
 import { getUpdates, sendMessage } from './telegram.js';
-import { parseEntry, buildCoachResponse } from './coach.js';
+import { parseEntry, buildCoachResponse, buildCoachResponseAsync } from './coach.js';
 import { addJournalEntry, addSleepEntry, sleepSeries, readJournal, journalStreak, logHealth } from './journal.js';
 import { buildAffirmation } from './affirm.js';
 import { prepareHabit } from './habits.js';
@@ -240,7 +240,12 @@ async function handleSleepEntry({ token, chatId, text, state, dateString, log, s
 
   const rotation = state.coachRotation ?? 0;
   const prompt = morningPrompt(rotation);
-  const response = buildCoachResponse({ entry: parsed, history, rotation, morningPrompt: prompt, date: dateString });
+  // The written coach, which falls back to the rule-based one on any failure --
+  // no key, no network, or a number it could not account for. Awaiting it costs
+  // a few seconds on the one message of the day worth waiting a few seconds for.
+  const response = await buildCoachResponseAsync({
+    entry: parsed, history, rotation, morningPrompt: prompt, date: dateString, log,
+  });
 
   const sent = await send(token, chatId, response.text);
   state.coachRotation = rotation + 1;
@@ -259,7 +264,8 @@ async function handleSleepEntry({ token, chatId, text, state, dateString, log, s
   // as a backstop for mornings you do not log.
   const cued = await cueMorningLight({ token, chatId, state, dateString, log, send });
 
-  log(`logged night ${dateString}: score=${parsed.score} hours=${parsed.hours} feel=${parsed.feel} → lever ${response.lever}`);
+  log(`logged night ${dateString}: score=${parsed.score} hours=${parsed.hours} feel=${parsed.feel}` +
+      ` → lever ${response.lever} · ${response.written ? `written (${response.intensity})` : 'rule-based'}`);
   return { type: 'sleep-entry', morningLightCued: cued, ...response };
 }
 
@@ -347,6 +353,7 @@ export async function processInbox({
           streak,
           state,
           dateString,
+          journalTotal: readJournal().length,
         });
         // Best-effort, and deliberately so. The entry is already on disk; the
         // update is acknowledged below. If this send were allowed to throw, the
@@ -362,7 +369,7 @@ export async function processInbox({
         }
 
         log(`journal entry logged${context?.promptId ? ` against ${context.promptId}` : ''}` +
-            ` → ${affirmed}${affirmation.streakShown ? ` +streak ${streak}` : ''}`);
+            ` → ${affirmed} @${affirmation.intensity}${affirmation.streakShown ? ` +streak ${streak}` : ''}`);
         handled.push({
           type: 'journal',
           promptId: context?.promptId ?? null,

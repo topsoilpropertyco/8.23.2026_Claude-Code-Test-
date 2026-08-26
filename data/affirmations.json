@@ -85,5 +85,12 @@
     "30": "Thirty nights unbroken. That's a month of evidence about who you are.",
     "50": "Fifty in a row. This isn't a streak any more, it's just what you do.",
     "100": "One hundred consecutive nights. Sit with that one for a second."
-  }
+  },
+  "stat": [
+    "That is {total} entries on the record now.",
+    "{total} of these written down. The file is getting hard to argue with.",
+    "Entry number {total}. Most people stop before ten.",
+    "{total} nights of evidence about who you are.",
+    "That makes {total}. The record is the argument."
+  ]
 }

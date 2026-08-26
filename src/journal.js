@@ -12,9 +12,19 @@ import { encryptLine, decryptLine, hasKey, looksEncrypted, MissingKeyError } fro
 // Overridable so tests can exercise the real write paths without touching the
 // real journal. A test that appends to state/journal.ndjson corrupts the streak
 // and would commit fabricated entries -- which is exactly what happened once.
-const DIR = process.env.SLEEPOS_STATE_DIR || join(ROOT, 'state');
-const JOURNAL = join(DIR, 'journal.ndjson');
-const SLEEPLOG = join(DIR, 'sleeplog.ndjson');
+//
+// Read on every access rather than once at module load, and that is not
+// fastidiousness. As a load-time constant the override worked only if the env
+// var was set before this module was first imported -- a condition no caller
+// can see and nothing enforces. It held until src/coach.js grew an import of
+// this file, which pulled journal.js into the static graph ahead of the line
+// that sets the variable; the suite silently began appending fabricated nights
+// to the real encrypted log, on a public repository, and the only symptom was
+// an unrelated test failing on the *second* run. A path that can be wrong
+// depending on import order is a path that will eventually be wrong.
+const DIR = () => process.env.SLEEPOS_STATE_DIR || join(ROOT, 'state');
+const JOURNAL = () => join(DIR(), 'journal.ndjson');
+const SLEEPLOG = () => join(DIR(), 'sleeplog.ndjson');
 
 /**
  * Read a log, and account for what could NOT be read.
@@ -57,9 +67,9 @@ function read(path) {
  * "unreadable" for "empty". `unreadable > 0` always means something is wrong.
  */
 export function logHealth() {
-  const j = readAccounted(JOURNAL);
-  const s = readAccounted(SLEEPLOG);
-  const files = { journal: { path: JOURNAL, ...j }, sleeplog: { path: SLEEPLOG, ...s } };
+  const j = readAccounted(JOURNAL());
+  const s = readAccounted(SLEEPLOG());
+  const files = { journal: { path: JOURNAL(), ...j }, sleeplog: { path: SLEEPLOG(), ...s } };
   for (const f of Object.values(files)) delete f.entries;
   const unreadable = j.unreadable + s.unreadable;
   return {
@@ -74,7 +84,7 @@ export function logHealth() {
 
 function append(path, record) {
   if (!hasKey()) throw new MissingKeyError();
-  mkdirSync(DIR, { recursive: true });
+  mkdirSync(DIR(), { recursive: true });
   appendFileSync(path, `${encryptLine(JSON.stringify(record))}\n`);
   return record;
 }
@@ -88,19 +98,21 @@ export function encryptFileInPlace(path) {
   return out.length;
 }
 
-export const JOURNAL_PATH = JOURNAL;
-export const SLEEPLOG_PATH = SLEEPLOG;
+// Getters, for the same reason. A consumer that captured these at import time
+// would reintroduce exactly the bug described above.
+export const journalPath = JOURNAL;
+export const sleeplogPath = SLEEPLOG;
 
-export const readJournal = () => read(JOURNAL);
-export const readSleepLog = () => read(SLEEPLOG);
+export const readJournal = () => read(JOURNAL());
+export const readSleepLog = () => read(SLEEPLOG());
 
 export function addJournalEntry(entry) {
-  return append(JOURNAL, { at: new Date().toISOString(), ...entry });
+  return append(JOURNAL(), { at: new Date().toISOString(), ...entry });
 }
 
 /** One entry per calendar date; a re-send for the same date supersedes the old one. */
 export function addSleepEntry(entry) {
-  return append(SLEEPLOG, { at: new Date().toISOString(), ...entry });
+  return append(SLEEPLOG(), { at: new Date().toISOString(), ...entry });
 }
 
 /** Latest entry per date, oldest first. */

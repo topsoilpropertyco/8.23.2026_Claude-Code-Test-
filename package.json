@@ -19,6 +19,7 @@
     "oura": "node bin/sleep-os.js oura",
     "doctor": "node bin/sleep-os.js doctor",
     "listen": "node bin/sleep-os.js listen",
-    "night": "node bin/sleep-os.js night"
+    "night": "node bin/sleep-os.js night",
+    "coach": "node bin/sleep-os.js coach"
   }
 }

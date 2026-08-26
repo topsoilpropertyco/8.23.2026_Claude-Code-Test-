@@ -1,17 +1,31 @@
 // The morning coach.
 //
 // Parses a manually logged night, positions it against the user's own history,
-// and returns one specific lever for tonight. Deliberately rule-based rather
-// than generated: the advice is traceable to the logged numbers and to a fact
-// already in the library, so it can never invent a statistic.
+// and returns one specific lever for tonight.
 //
-// The recommendation is always drawn from a real fact's "Tonight's 1% Move",
-// which keeps the coaching tied to the same evidence base as the nudges.
+// This file used to say the coaching was "deliberately rule-based rather than
+// generated", and the reason given was a good one: advice assembled from vetted
+// library lines is traceable to the logged numbers, so it can never invent a
+// statistic. What that argument missed is that a rotation of six levers across
+// forty facts is a larger deck of the same cards. It does not repeat, but it
+// also never responds -- to this night, to what he wrote about it, to the run
+// of nights it sits in.
+//
+// So the closing section is now written per night by a model, and the guarantee
+// is bought back by machine rather than by construction: everything below is
+// computed here, handed over as a finished sheet, and every numeral in what
+// comes back is checked against that sheet before it is allowed near the
+// message. See src/coachllm.js. When the check fails -- or the key is missing,
+// or the network is down -- the library block below is what ships, which is why
+// it is still here and still maintained.
 
 import { loadLibraries, loadConfig } from './facts.js';
 import { mean, stdev, zScore, percentileRank, trailing, confidence } from './stats.js';
 import { readTelemetry, scoreSeries } from './telemetry.js';
+import { readJournal } from './journal.js';
 import { deckUrl } from './deckurl.js';
+import { writeLeverage } from './coachllm.js';
+import { pickIntensity, rarityOf } from './intensity.js';
 
 const NUM = /-?\d+(?:\.\d+)?/g;
 
@@ -110,7 +124,7 @@ const hhmm = (seconds) => {
  * @param {string}   [opts.date]       the night being logged, for the Oura lookup
  * @param {boolean}  [opts.useOura]    prefer telemetry over the manual log
  */
-export function buildCoachResponse({ entry, history, rotation = 0, morningPrompt = null, date = null, useOura = true, screensUrl = undefined }) {
+export function buildCoachResponse({ entry, history, rotation = 0, morningPrompt = null, date = null, useOura = true, screensUrl = undefined, includeJournal = undefined }) {
   // Oura, when connected, is the source of truth for the numbers. The manual
   // entry is kept because writing it down by hand is the behavioural point --
   // but the analysis runs on the measurement, not the recollection.
@@ -132,6 +146,12 @@ export function buildCoachResponse({ entry, history, rotation = 0, morningPrompt
   const n = scores.length;
   const tier = confidence(n);
   const lines = ['SLEEP OS  //  MORNING COACH', ''];
+
+  // Every derived figure is collected here as it is computed. The generated
+  // half of the reply is allowed to use these and nothing else -- see
+  // src/coachllm.js. Anything left out of this sheet is a number the writer
+  // would have to invent, and inventing is what the verifier rejects.
+  const g = {};
 
   const score = night?.sleep_score ?? entry.score;
 
@@ -175,15 +195,17 @@ export function buildCoachResponse({ entry, history, rotation = 0, morningPrompt
   } else if (score !== null) {
     const base = mean(scores);
     const delta = score - base;
+    g.baseline = Number(fmt1(base));
+    g.deltaVsBaseline = Number(delta.toFixed(1));
     lines.push(`Your ${n}-night average is ${fmt1(base)}. Last night ran ${arrow(delta)} ${signed(delta)} against it.`);
 
     if (tier === 'monthly' || tier === 'full') {
       const z = zScore(score, scores);
-      if (z !== null) lines.push(`That is ${signed(z, 2)} SD from your own mean.`);
+      if (z !== null) { g.sdFromOwnMean = Number(z.toFixed(2)); lines.push(`That is ${signed(z, 2)} SD from your own mean.`); }
     }
     if (tier === 'full') {
       const p = percentileRank(score, scores);
-      if (p !== null) lines.push(`It sits at the ${ordinal(p)} percentile of every night you have logged.`);
+      if (p !== null) { g.percentileOfOwnNights = Math.round(p); lines.push(`It sits at the ${ordinal(p)} percentile of every night you have logged.`); }
     }
 
     // 180 and 365 were being discarded here: trailing() already defaults to
@@ -192,6 +214,12 @@ export function buildCoachResponse({ entry, history, rotation = 0, morningPrompt
     // the identical slice collapse to one). Narrowing the call threw away two
     // real baselines the log can already support.
     const tw = trailing(scores);
+    g.trailingAverages = tw.map((t) => ({
+      window: t.window,
+      average: Number(fmt1(t.avg)),
+      lastNightVsWindow: Number((score - t.avg).toFixed(1)),
+      windowIncomplete: Boolean(t.partial),
+    }));
     if (tw.length) {
       lines.push('');
       for (const t of tw) {
@@ -217,10 +245,14 @@ export function buildCoachResponse({ entry, history, rotation = 0, morningPrompt
     const vs = [];
     if (baselines.hrv && night.average_hrv != null) {
       const d = night.average_hrv - baselines.hrv;
+      g.hrvVs30Night = Number(d.toFixed(1));
+      g.hrv30NightAverage = Number(baselines.hrv.toFixed(1));
       vs.push(`HRV ${arrow(d)} ${signed(d)}ms vs 30-night`);
     }
     if (baselines.rhr && night.lowest_heart_rate != null) {
       const d = night.lowest_heart_rate - baselines.rhr;
+      g.restingHrVs30Night = Number(d.toFixed(1));
+      g.restingHr30NightAverage = Number(baselines.rhr.toFixed(1));
       // A lower resting heart rate is the good direction, so the arrow inverts.
       vs.push(`low HR ${arrow(-d)} ${signed(d)} vs 30-night`);
     }
@@ -233,15 +265,37 @@ export function buildCoachResponse({ entry, history, rotation = 0, morningPrompt
   const lever = chooseLever({
     score, hours: entry.hours, feel: entry.feel, baseline, recentSpread: spread, night, baselines,
   });
+
+  // The last few things he wrote, newest first. Read here rather than in the
+  // writer so that a journal that will not decrypt costs the tailoring and
+  // nothing else -- the numbers above are already on the page by this point.
+  // Whether his own words leave this machine is a decision that belongs to him,
+  // so it lives in config rather than in code. Off, the tailoring loses its
+  // best material and everything else works unchanged.
+  const shareJournal = includeJournal ?? (() => {
+    try { return loadConfig().coach?.sendJournalToModel !== false; } catch { return false; }
+  })();
+
+  let journalContext = [];
+  if (shareJournal) {
+    try {
+      journalContext = readJournal().slice(-3).reverse()
+        .map((e) => ({ date: e.date, wrote: String(e.text ?? '').slice(0, 400) }))
+        .filter((e) => e.wrote.trim());
+    } catch { journalContext = []; }
+  }
   const fact = moveFor(lever, rotation);
 
+  const headLines = [...lines];
+  const leverageLines = [];
   if (fact) {
-    lines.push('');
-    lines.push(`Tonight's leverage — ${lever.when}:`);
-    lines.push(fact.move);
-    lines.push('');
-    lines.push(fact.truth);
+    leverageLines.push('');
+    leverageLines.push(`Tonight's leverage — ${lever.when}:`);
+    leverageLines.push(fact.move);
+    leverageLines.push('');
+    leverageLines.push(fact.truth);
   }
+  lines.push(...leverageLines);
 
   // The dashboard link, key and all. deckUrl() returns null when there is no
   // configured base or no data key to derive from, and null omits the line --
@@ -260,5 +314,130 @@ export function buildCoachResponse({ entry, history, rotation = 0, morningPrompt
     lines.push(morningPrompt.text);
   }
 
-  return { text: lines.join('\n'), lever: lever.id, factId: fact?.id ?? null, tier };
+  /* --- the grounding sheet ----------------------------------------------
+   *
+   * Handed to the writer in src/coachllm.js as the complete and only source of
+   * numbers. Two properties matter. It is FINISHED -- every figure already
+   * computed and rounded to the form it would be printed in, so there is no
+   * arithmetic left to get wrong. And it is CLOSED -- a numeral in the returned
+   * text that cannot be derived from something in here is, by definition, made
+   * up, and the response is discarded.
+   */
+  g.date = date ?? null;
+  g.nightsOnRecord = n;
+  g.confidenceTier = tier;
+  if (score !== null) g.sleepScore = score;
+  if (entry.score !== null) g.youLoggedScore = entry.score;
+  if (entry.hours !== null) g.youLoggedHours = entry.hours;
+  if (entry.feel !== null) g.youLoggedFeel = `${entry.feel} out of 5`;
+  if (entry.score !== null && night?.sleep_score != null && entry.score !== night.sleep_score) {
+    g.ouraMinusYourGuess = night.sleep_score - entry.score;
+  }
+
+  if (night) {
+    const hrs = night.total_sleep_duration ? night.total_sleep_duration / 3600 : null;
+    if (hrs !== null) { g.hoursAsleep = Number(hrs.toFixed(1)); g.timeAsleep = hhmm(night.total_sleep_duration); }
+    if (night.time_in_bed) g.timeInBed = hhmm(night.time_in_bed);
+    if (night.efficiency != null) g.efficiencyPercent = night.efficiency;
+    if (night.deep_sleep_duration) g.deepSleep = hhmm(night.deep_sleep_duration);
+    if (night.rem_sleep_duration) g.remSleep = hhmm(night.rem_sleep_duration);
+    if (night.latency != null) g.minutesToFallAsleep = Math.round(night.latency / 60);
+    if (night.average_hrv != null) g.hrvMs = night.average_hrv;
+    if (night.lowest_heart_rate != null) g.lowestHeartRate = night.lowest_heart_rate;
+    if (night.readiness_score != null) g.readinessScore = night.readiness_score;
+    if (night.bedtime_start) g.wentToBed = night.bedtime_start.slice(11, 16);
+    if (night.bedtime_end) g.gotUp = night.bedtime_end.slice(11, 16);
+  }
+
+  if (spread !== null) g.spreadOfLast14Nights = Number(spread.toFixed(1));
+  const lastSeven = scores.slice(-7);
+  if (lastSeven.length) g.lastSevenScores = lastSeven;
+
+  g.leverChosen = lever.id;
+  g.whyThisLever = lever.when;
+  if (fact) {
+    // The library line is vetted copy. Naming it in the sheet both licenses its
+    // numbers and lets the writer build on the claim instead of restating it.
+    g.libraryMove = fact.move;
+    g.libraryEvidence = fact.truth;
+  }
+
+  // Targets, so a sentence about timing has real clock numbers to reach for.
+  try {
+    const cfg = loadConfig();
+    if (cfg.targetBedtime) g.targetBedtime = cfg.targetBedtime;
+    if (cfg.wakeTime) g.usualWakeTime = cfg.wakeTime;
+  } catch { /* config is optional to the sheet */ }
+
+  // His own words. Reflecting the substance of what he actually wrote is worth
+  // more than any statistic, and it is the part a fixed library can never do.
+  if (journalContext.length) g.recentJournalEntries = journalContext;
+
+  return {
+    text: lines.join('\n'),
+    lever: lever.id,
+    factId: fact?.id ?? null,
+    tier,
+    grounding: g,
+    // The reply in three pieces, so the generated writer can replace the middle
+    // one without disturbing the arithmetic above it or the link below it.
+    blocks: {
+      head: headLines,
+      leverage: leverageLines,
+      tail: lines.slice(headLines.length + leverageLines.length),
+    },
+  };
+}
+
+/* ------------------------------------------------------- the written coach */
+
+/**
+ * The same reply, with the leverage section written for this night rather than
+ * drawn from the library.
+ *
+ * Async because it may make a network call. Everything else about it is the
+ * synchronous function above: same numbers, same order, same link. On any
+ * failure -- no key, no network, a rejected number -- this returns exactly what
+ * buildCoachResponse would have returned, which is why it is safe to make the
+ * default path.
+ */
+export async function buildCoachResponseAsync(opts = {}) {
+  const base = buildCoachResponse(opts);
+  const { env, fetchImpl, log = () => {}, intensity: forced = null } = opts;
+
+  // A switch that does not require deleting the API secret, for the mornings
+  // where the canned version is wanted back.
+  let enabled = true;
+  try { enabled = loadConfig().coach?.writtenByModel !== false; } catch { /* default on */ }
+  if (!enabled) return { ...base, written: false, intensity: null };
+
+  const g = base.grounding;
+  const intensity = forced ?? pickIntensity({
+    seed: `coach:${g.date ?? ''}:${g.sleepScore ?? ''}`,
+    rarity: rarityOf(g.sleepScore ?? null, g.lastSevenScores?.length ? scoresForRarity(opts) : []),
+    // A logged night is always worth a real answer, however little was typed --
+    // the effort that counts here is the sleeping, not the message.
+    effort: 1,
+  });
+
+  const written = await writeLeverage({ facts: g, intensity, env, fetchImpl, log });
+  if (!written) return { ...base, written: false, intensity: intensity.level };
+
+  const leverage = ['', written.text];
+  return {
+    ...base,
+    text: [...base.blocks.head, ...leverage, ...base.blocks.tail].join('\n'),
+    blocks: { ...base.blocks, leverage },
+    written: true,
+    intensity: written.level,
+  };
+}
+
+/** The score history rarity is measured against: his own nights, not anyone else's. */
+function scoresForRarity(opts) {
+  try {
+    const own = scoreSeries().filter((s) => !opts.date || s.date < opts.date).map((s) => s.score);
+    if (own.length >= 14) return own;
+  } catch { /* fall through to the manual log */ }
+  return (opts.history ?? []).map((h) => h.score).filter((s) => typeof s === 'number');
 }

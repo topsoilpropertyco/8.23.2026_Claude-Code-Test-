@@ -288,7 +288,7 @@ something better, in increasing order of strength:
 11pm" beats "well done." The former is evidence for a self-concept; the latter
 is a gold star.
 
-## Variable intensity
+## Variable intensity — built
 
 The config already carries a `jackpot` at odds `0.142857` — roughly one in
 seven — used to make the fact rotation feel alive. The same precedent applies
@@ -296,6 +296,37 @@ here: **always reply, but vary the size.** Most acknowledgements are one line.
 Occasionally the reply is bigger: a streak milestone, a rarer line, a statistic
 about the journal. Constant-magnitude reward flattens into noise; varied
 magnitude stays live.
+
+Shipped as `src/intensity.js`, and deliberately shared rather than local to the
+affirmations: the morning coach draws from the same roll, so the system has one
+rhythm instead of two components each rolling their own dice. Roughly 60% of
+replies are one line, 30% ordinary, 10% large. Three rules override the roll.
+Earned beats random — a milestone or a night unlike any other on record goes
+large because there is genuinely more to say. Effort caps size — two words in
+never buys an essay, because a reward attached to typing anything makes typing
+anything the optimal move. And the roll is seeded by date, so a re-run cannot
+fish for a bigger reply.
+
+## The written coach — built
+
+The closing section of the morning message is generated per night rather than
+drawn from the library. `src/coachllm.js` holds it, and the whole design is
+about keeping the old guarantee — *it can never invent a statistic* — after
+giving up the construction that used to provide it for free:
+
+- **Grounded.** The model is handed a finished sheet of already-computed
+  figures, not the telemetry. There is no arithmetic left for it to get wrong.
+- **Verified.** Every numeral in the returned text is checked against that
+  sheet. One number that is not derivable and the whole response is discarded.
+  This is a machine check after the fact, not a line in a prompt — the
+  difference between a guarantee and a request.
+- **Falls back.** No key, no network, a timeout, a 400, a failed check: all land
+  on the rule-based coach that was already here. The feature can fail totally
+  and the morning message still arrives, correct and slightly less interesting.
+
+Needs an `ANTHROPIC_API_KEY` repository secret. Without it the system behaves
+exactly as it did before. `npm run coach` prints what would go out, and
+`npm run coach -- --facts` prints the sheet the writer was allowed to use.
 
 ## One design guardrail
 

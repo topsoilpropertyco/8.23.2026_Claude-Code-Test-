@@ -473,7 +473,57 @@ async function cmdNight({ dryRun = false } = {}) {
 }
 
 
+/**
+ * Print the morning coach for a night without sending anything.
+ *
+ * The written section only exists on the one message a day that follows a log,
+ * which makes it the hardest part of the system to see working. This runs the
+ * whole path -- grounding sheet, model call, number verification -- against a
+ * night already on the record, and prints what would have gone out. Nothing is
+ * written to the journal and nothing is sent to Telegram.
+ */
+async function cmdCoach(args) {
+  const { buildCoachResponseAsync, parseEntry } = await import('../src/coach.js');
+  const { sleepSeries } = await import('../src/journal.js');
+  const { scoreSeries } = await import('../src/telemetry.js');
+  const { llmEnabled } = await import('../src/coachllm.js');
+
+  const asked = args.find((a) => /^\d{4}-\d{2}-\d{2}$/.test(a));
+  let nights = [];
+  try { nights = scoreSeries(); } catch { nights = []; }
+  const logged = sleepSeries();
+  const date = asked ?? nights.at(-1)?.date ?? logged.at(-1)?.date;
+  if (!date) throw new Error('No night on record to coach. Log one first, or pass a date.');
+
+  const mine = logged.find((e) => e.date === date);
+  const score = mine?.score ?? nights.find((n) => n.date === date)?.score;
+  if (score == null) throw new Error(`No score on record for ${date}.`);
+
+  if (!llmEnabled()) {
+    console.log('ANTHROPIC_API_KEY is not set, so this is the rule-based coach.');
+    console.log('Set it to see the written one. Nothing else changes.\n');
+  }
+
+  const entry = parseEntry([score, mine?.hours, mine?.feel].filter((v) => v != null).join(' '));
+  const r = await buildCoachResponseAsync({
+    entry, history: logged.filter((e) => e.date !== date), date,
+    log: (m) => console.error(`  · ${m}`),
+  });
+
+  console.log(`\n${r.text}\n`);
+  console.log('─────');
+  console.log(`${date} · lever ${r.lever} · ${r.written ? `written at ${r.intensity}` : 'rule-based'}`);
+  if (args.includes('--facts')) {
+    console.log('\nGrounding sheet — the only numbers the writer may use:');
+    console.log(JSON.stringify(r.grounding, null, 2));
+  }
+}
+
+
 switch (command) {
+    case 'coach':
+      await cmdCoach(args);
+      break;
     case 'today':
       await cmdToday();
       break;
@@ -514,7 +564,7 @@ switch (command) {
       await cmdOura(args[0], args.slice(1).join(' '));
       break;
     default:
-      console.error(`Unknown command "${command}". Try: today, preview, dispatch, send, whoami, stats, journal, doctor, listen, serve, night, oura`);
+      console.error(`Unknown command "${command}". Try: today, preview, coach, dispatch, send, whoami, stats, journal, doctor, listen, serve, night, oura`);
       process.exit(1);
   }
 } catch (err) {
