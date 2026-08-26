@@ -116,9 +116,7 @@ body{background:#1A1814;color:#F4F0E6;min-height:100vh;display:grid;place-items:
     const doc = new TextDecoder().decode(out);
     // document.write() after the parser has closed APPENDS rather than replaces,
     // so the loader's own markup survived underneath the dashboard. Swapping the
-    // documentElement's contents replaces head and body in one step. It also does
-    // not execute scripts, which is fine -- the dashboard is HTML and CSS only --
-    // and is the safer default for injected markup.
+    // documentElement's contents replaces head and body in one step.
     //
     // Sliced with indexOf rather than a regex on purpose: this string passes
     // through a template literal on the way out, and an escaped slash in a regex
@@ -127,6 +125,28 @@ body{background:#1A1814;color:#F4F0E6;min-height:100vh;display:grid;place-items:
     const closeAt = doc.lastIndexOf('</html');
     document.documentElement.innerHTML =
       doc.slice(openEnd + 1, closeAt > openEnd ? closeAt : doc.length);
+
+    // And now run the scripts, because innerHTML does not.
+    //
+    // This line is the whole reason the page rendered as a column of headings
+    // with nothing under them. The note that used to sit here said scripts not
+    // executing was "fine -- the dashboard is HTML and CSS only", and that was
+    // true of the static screens this loader was written for. The dashboard that
+    // replaced them draws every tile, chart, and table from the embedded payload
+    // at runtime, so an injected document whose scripts never run is exactly a
+    // stylesheet with no content: the headings appear, the placeholder dashes
+    // stay dashes, and it looks for all the world like missing data.
+    //
+    // A script element inserted as markup is inert by specification. Cloning it
+    // into a fresh element created by the DOM is the standard way to get it to
+    // run; document order is preserved, so the JSON payload above is in place
+    // before the script that reads it executes.
+    for (const old of Array.from(document.querySelectorAll('script'))) {
+      const fresh = document.createElement('script');
+      for (const a of Array.from(old.attributes)) fresh.setAttribute(a.name, a.value);
+      fresh.textContent = old.textContent;
+      old.parentNode.replaceChild(fresh, old);
+    }
   } catch (e) {
     fail('That key did not decrypt this page. It may be an older link &mdash; '
       + 'the newest one is in your morning message.');
