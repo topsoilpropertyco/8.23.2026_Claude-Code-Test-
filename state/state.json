@@ -4,7 +4,6 @@
   "remaining": [
     "lucid-02",
     "lucid-15",
-    "sleep-11",
     "lucid-09",
     "sleep-29",
     "sleep-02",
@@ -330,11 +329,33 @@
         "mechanism": "commitment",
         "targetLabel": "4:10 PM",
         "at": "2026-08-26T20:10:09.730Z"
+      },
+      "evening_winddown": {
+        "status": "sent",
+        "kind": "fact",
+        "factId": "sleep-11",
+        "library": "sleep",
+        "category": "cardiometabolic",
+        "jackpot": false,
+        "cycle": 0,
+        "promptId": "p27",
+        "mechanism": "minimum_viable",
+        "targetLabel": "6:11 PM",
+        "at": "2026-08-26T22:11:03.167Z"
       }
     }
   },
   "inboxOffset": 697606374,
   "pending": [
+    {
+      "messageId": 143,
+      "kind": "fact",
+      "factId": "sleep-11",
+      "promptId": "p27",
+      "mechanism": "minimum_viable",
+      "slot": "evening_winddown",
+      "at": "2026-08-26T22:11:03.167Z"
+    },
     {
       "messageId": 140,
       "kind": "fact",
@@ -432,21 +453,11 @@
       "mechanism": "minimum_viable",
       "slot": "afternoon_boundary",
       "at": "2026-08-25T19:58:16.872Z"
-    },
-    {
-      "messageId": 54,
-      "kind": "fact",
-      "factId": "sleep-01",
-      "promptId": "p25",
-      "mechanism": "subtraction",
-      "slot": "midday_essentialism",
-      "at": "2026-08-25T16:19:25.235Z"
     }
   ],
   "promptCycle": 0,
   "promptRemaining": [
     "p18",
-    "p27",
     "p16",
     "p10",
     "p23",
