@@ -26,24 +26,33 @@ log are encrypted with AES-256-GCM before being written; the key is held as a
 repository secret and is not present in the source. Operational data is stored
 unencrypted because it contains no personal content.
 
-Data is transmitted to exactly three places: Telegram, to deliver notifications
-to the operator's own chat; the Oura API, to read the operator's own data; and
-the Anthropic API, to write the coaching paragraph in the morning message.
+Data is transmitted to three places: Telegram, to deliver notifications to the
+operator's own chat; the Oura API, to read the operator's own data; and one
+model provider, to write the coaching paragraph in the morning message.
 
-The third one is new, and it is the only place where personal content leaves
-this machine as plaintext, so it is worth being precise about what goes and
-what does not. Once a day, following a logged night, the coach sends a finished
-sheet of already-computed figures -- last night's score, the trailing averages,
-the autonomic deltas -- together with the text of the operator's three most
-recent journal entries. It never sends the encrypted logs, the raw Oura
-response, the history beyond those figures, or any identifier: no name, no
-email, no account number, no device ID. Requests are not used for training.
+The model provider is whichever API key is configured -- Google (Gemini) via
+`GEMINI_API_KEY`, or Anthropic via `ANTHROPIC_API_KEY`. It is the only place
+where personal content leaves this machine as plaintext, so it is worth being
+precise about what goes and what does not. Once a day, following a logged
+night, the coach sends a finished sheet of already-computed figures -- last
+night's score, the trailing averages, the autonomic deltas -- together with the
+text of the operator's three most recent journal entries. It never sends the
+encrypted logs, the raw Oura response, the history beyond those figures, or any
+identifier: no name, no email, no account number, no device ID.
+
+Each provider's own terms govern what it does with a request, and they are not
+the same. Free-tier Google AI Studio keys in particular may allow the content
+of requests to be reviewed and used to improve their products; paid Google
+Cloud and Anthropic API usage generally does not. An operator sending journal
+text should read the terms for the key they are actually using, or turn that
+half off.
 
 Both halves are switchable in `config.json` without touching any secret.
 `coach.writtenByModel: false` stops the call entirely and restores the previous
 rule-based text. `coach.sendJournalToModel: false` keeps the call but sends only
-the numbers, so nothing the operator has written leaves the machine. Removing
-the `ANTHROPIC_API_KEY` secret has the same effect as the first switch.
+the numbers, so nothing the operator has written leaves the machine.
+`coach.provider` pins which one is used. Removing the API key secret has the
+same effect as the first switch.
 
 ## What does not happen
 

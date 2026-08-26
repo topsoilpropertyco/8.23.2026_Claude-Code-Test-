@@ -324,9 +324,27 @@ giving up the construction that used to provide it for free:
   on the rule-based coach that was already here. The feature can fail totally
   and the morning message still arrives, correct and slightly less interesting.
 
-Needs an `ANTHROPIC_API_KEY` repository secret. Without it the system behaves
-exactly as it did before. `npm run coach` prints what would go out, and
-`npm run coach -- --facts` prints the sheet the writer was allowed to use.
+Needs a model API key as a repository secret: `GEMINI_API_KEY` or
+`ANTHROPIC_API_KEY`. Whichever exists is used, Anthropic first when both are
+present, and `coach.provider` in config pins it. Without either, the system
+behaves exactly as it did before.
+
+The provider split is not vendor-hedging for its own sake. The number verifier
+does not care which model wrote the sentence -- it checks the text against the
+sheet either way -- so the guarantee was never staked on a particular vendor,
+and making that explicit costs one request shape each.
+
+A retired Gemini model name returns a 404 that looks exactly like a broken
+integration. Rather than carry a list of model names that goes stale, a 404
+triggers one call to the provider's own model list and a single retry with the
+best model the key can actually see.
+
+`npm run coach` prints what would go out and names the provider and model;
+`npm run coach -- --facts` also prints the sheet the writer was allowed to use.
+`state.coach` in `state/state.json` records whether the last morning message was
+written or fell back, and why -- because a silent fallback is right for the
+reader and wrong for the operator: a key that has never once worked produces
+exactly the message a working one produces on an ordinary day.
 
 ## One design guardrail
 

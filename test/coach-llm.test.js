@@ -411,3 +411,175 @@ test('the grounding sheet never carries a raw telemetry dump', () => {
     assert.ok(!json.includes(raw), `raw telemetry field ${raw} leaked into the sheet`);
   }
 });
+
+/* ------------------------------------------------------------- two providers */
+
+test('whichever key exists is the one that gets used', async () => {
+  const { resolveProvider } = await import('../src/coachllm.js');
+
+  assert.equal(resolveProvider({}), null, 'no key means the rule-based coach');
+  assert.equal(resolveProvider({ ANTHROPIC_API_KEY: 'a' }).name, 'anthropic');
+  assert.equal(resolveProvider({ GEMINI_API_KEY: 'g' }).name, 'gemini');
+
+  // Anthropic wins a tie because that is what this was designed against.
+  assert.equal(resolveProvider({ ANTHROPIC_API_KEY: 'a', GEMINI_API_KEY: 'g' }).name, 'anthropic');
+
+  // Config pins it either way, and can name a model.
+  const pinned = resolveProvider({ ANTHROPIC_API_KEY: 'a', GEMINI_API_KEY: 'g' },
+    { coach: { provider: 'gemini', model: 'gemini-3-pro' } });
+  assert.equal(pinned.name, 'gemini');
+  assert.equal(pinned.model, 'gemini-3-pro');
+
+  // A pinned provider with no key falls back to the rule-based coach rather
+  // than quietly using the other one.
+  assert.equal(resolveProvider({ GEMINI_API_KEY: 'g' }, { coach: { provider: 'anthropic' } }), null);
+  assert.equal(resolveProvider({ GEMINI_API_KEY: 'g' }, { coach: { provider: 'auto' } }).name, 'gemini');
+  assert.equal(resolveProvider({ GEMINI_API_KEY: 'g', SLEEPOS_COACH_LLM: 'off' }), null);
+});
+
+const geminiReply = (text, extra = {}) => async () => ({
+  ok: true, status: 200,
+  json: async () => ({
+    candidates: [{ content: { role: 'model', parts: [{ text }] }, finishReason: 'STOP' }],
+    usageMetadata: { promptTokenCount: 900, candidatesTokenCount: 40 },
+    ...extra,
+  }),
+});
+
+test('the Gemini request is shaped for Gemini', async () => {
+  let sent = null;
+  const r = await ASYNC({
+    env: { GEMINI_API_KEY: 'AIza-secret' },
+    fetchImpl: async (url, opts) => {
+      sent = { url, opts, body: JSON.parse(opts.body) };
+      return geminiReply('Get outside before 7:15. That is the whole move tonight.')();
+    },
+  });
+
+  assert.equal(r.written, true, 'a well-formed Gemini reply must be used');
+  assert.equal(r.provider, 'gemini');
+  assert.match(sent.url, /generativelanguage\.googleapis\.com\/v1beta\/models\/.+:generateContent$/);
+  assert.equal(sent.opts.headers['x-goog-api-key'], 'AIza-secret');
+
+  // The key must never ride in the URL. A URL reaches proxy logs, error
+  // messages and stack traces; a header does not.
+  assert.ok(!sent.url.includes('AIza-secret'), 'the API key leaked into the URL');
+  assert.ok(!sent.url.includes('key='), 'no ?key= query parameter');
+
+  assert.equal(sent.body.system_instruction.parts[0].text.length > 100, true);
+  assert.equal(sent.body.contents[0].role, 'user');
+  assert.match(sent.body.contents[0].parts[0].text, /Every number you write must come from here/);
+
+  // These models spend part of the allowance thinking before they write, so a
+  // ceiling sized to the visible answer returns MAX_TOKENS with nothing in it.
+  assert.ok(sent.body.generationConfig.maxOutputTokens >= 4096,
+    'the ceiling must leave room for the thinking that precedes the answer');
+});
+
+test('a Gemini answer is held to exactly the same number check', async () => {
+  const expected = RULE_BASED().text;
+  const r = await ASYNC({
+    env: { GEMINI_API_KEY: 'g' },
+    fetchImpl: geminiReply('A trial of 4,000 adults found a 31% improvement.'),
+  });
+  assert.equal(r.written, false, 'an invented statistic must be rejected whoever wrote it');
+  assert.equal(r.text, expected);
+});
+
+test('Gemini failures fall back as quietly as Anthropic ones', async () => {
+  const expected = RULE_BASED().text;
+  const failures = {
+    'thinking ate the whole budget': async () => ({
+      ok: true, status: 200,
+      json: async () => ({ candidates: [{ content: { parts: [] }, finishReason: 'MAX_TOKENS' }] }),
+    }),
+    'safety block': async () => ({
+      ok: true, status: 200,
+      json: async () => ({ candidates: [{ finishReason: 'SAFETY' }], promptFeedback: {} }),
+    }),
+    'no candidates at all': async () => ({ ok: true, status: 200, json: async () => ({}) }),
+    'bad key': async () => ({ ok: false, status: 403, text: async () => 'API key not valid' }),
+  };
+  for (const [name, fetchImpl] of Object.entries(failures)) {
+    const r = await ASYNC({ env: { GEMINI_API_KEY: 'g' }, fetchImpl });
+    assert.equal(r.written, false, `${name} was treated as a success`);
+    assert.equal(r.text, expected, `${name} did not fall back cleanly`);
+  }
+});
+
+test('a retired model name is recovered from, not surrendered to', async () => {
+  // Model names move faster than any list written into a source file, and a
+  // retired one 404s in a way that looks exactly like a broken integration.
+  const calls = [];
+  const logged = [];
+  const r = await ASYNC({
+    env: { GEMINI_API_KEY: 'g' },
+    log: (m) => logged.push(m),
+    fetchImpl: async (url, opts) => {
+      calls.push(url);
+      if (url.endsWith('/v1beta/models')) {
+        assert.equal(opts.headers['x-goog-api-key'], 'g', 'discovery must authenticate too');
+        return {
+          ok: true, status: 200,
+          json: async () => ({ models: [
+            { name: 'models/embedding-001', supportedGenerationMethods: ['embedContent'] },
+            { name: 'models/gemini-2.5-flash-lite', supportedGenerationMethods: ['generateContent'] },
+            { name: 'models/gemini-9.1-flash', supportedGenerationMethods: ['generateContent'] },
+            { name: 'models/gemini-9.1-flash-preview-01', supportedGenerationMethods: ['generateContent'] },
+          ] }),
+        };
+      }
+      if (url.includes('gemini-9.1-flash:')) return geminiReply('Go to bed on time tonight.')();
+      return { ok: false, status: 404, text: async () => 'model not found' };
+    },
+  });
+
+  assert.equal(r.written, true, 'discovery should have rescued the call');
+  assert.equal(r.model, 'gemini-9.1-flash', 'newest stable general model, not the preview or the lite');
+  assert.equal(calls.length, 3, 'one failed call, one discovery, one retry');
+  assert.ok(logged.some((l) => /discovered/.test(l)), 'the swap must be visible in the run log');
+
+  // Embedding models are not writers and must never be selected.
+  assert.ok(!calls.some((c) => c.includes('embedding')));
+});
+
+test('discovery is attempted once, not on every retry', async () => {
+  let discoveries = 0;
+  const r = await ASYNC({
+    env: { GEMINI_API_KEY: 'g' },
+    fetchImpl: async (url) => {
+      if (url.endsWith('/v1beta/models')) {
+        discoveries += 1;
+        return { ok: true, status: 200, json: async () => ({ models: [
+          { name: 'models/gemini-4.0-flash', supportedGenerationMethods: ['generateContent'] },
+        ] }) };
+      }
+      return { ok: false, status: 404, text: async () => 'model not found' };
+    },
+  });
+  assert.equal(r.written, false, 'a persistent 404 still falls back');
+  assert.equal(discoveries, 1, 'discovery must not loop');
+});
+
+test('a silent fallback still leaves a trace an operator can read', async () => {
+  const r = await ASYNC({
+    env: { GEMINI_API_KEY: 'g' },
+    fetchImpl: async () => ({ ok: false, status: 403, text: async () => 'Generative Language API has not been used in project 12345' }),
+  });
+  assert.equal(r.written, false);
+  assert.ok(r.reason && /403/.test(r.reason),
+    `the reason must survive the fallback, got ${JSON.stringify(r.reason)}`);
+  // The whole point: without this, a key that has never once worked produces
+  // exactly the message a working one produces on an ordinary day.
+  assert.notEqual(r.reason, null);
+});
+
+test('the recorded reason carries no personal data', async () => {
+  const r = await ASYNC({
+    env: { GEMINI_API_KEY: 'super-secret-key' },
+    fetchImpl: geminiReply('Your HRV of 61 was the story.'),
+  });
+  assert.equal(r.written, false);
+  assert.ok(!r.reason.includes('super-secret-key'), 'the API key must never reach the state file');
+  assert.ok(!/journal|wrote/i.test(r.reason), 'nothing he wrote may reach the state file');
+});

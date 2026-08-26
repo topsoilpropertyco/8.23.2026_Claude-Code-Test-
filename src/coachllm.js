@@ -35,11 +35,149 @@
 
 import { pickIntensity, BUDGETS } from './intensity.js';
 
-const ENDPOINT = 'https://api.anthropic.com/v1/messages';
-const MODEL = 'claude-opus-5';
-const API_VERSION = '2023-06-01';
 const TIMEOUT_MS = 45_000;
 const MAX_ATTEMPTS = 3;
+
+/* ----------------------------------------------------------------- providers
+ *
+ * Two, because the key that turned up was a Gemini one. The verifier below does
+ * not care which model wrote the sentence -- it checks the numbers in the text
+ * against the sheet either way -- so supporting both costs one request shape
+ * and one response shape each, and means the guarantee is not staked on a
+ * particular vendor. Whichever key exists is the one that gets used.
+ */
+
+const PROVIDERS = {
+  anthropic: {
+    envKey: 'ANTHROPIC_API_KEY',
+    defaultModel: 'claude-opus-5',
+    request({ apiKey, model, system, prompt, budget }) {
+      return {
+        url: 'https://api.anthropic.com/v1/messages',
+        init: {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+            'x-api-key': apiKey,
+            'anthropic-version': '2023-06-01',
+          },
+          body: JSON.stringify({
+            model,
+            max_tokens: budget.maxTokens,
+            // Adaptive thinking: budget_tokens is rejected outright on this model.
+            thinking: { type: 'adaptive' },
+            output_config: { effort: budget.effort },
+            system,
+            messages: [{ role: 'user', content: prompt }],
+          }),
+        },
+      };
+    },
+    // Adaptive thinking is on by default, so the content array can carry
+    // thinking blocks ahead of the answer. Only text blocks are the answer.
+    text: (body) => (Array.isArray(body?.content) ? body.content : [])
+      .filter((b) => b?.type === 'text').map((b) => b.text ?? '').join('').trim(),
+    usage: (body) => body?.usage ?? null,
+    stopReason: (body) => body?.stop_reason ?? null,
+  },
+
+  gemini: {
+    envKey: 'GEMINI_API_KEY',
+    defaultModel: 'gemini-2.5-flash',
+    request({ apiKey, model, system, prompt, budget }) {
+      return {
+        // The key goes in a header, not the `?key=` query parameter the docs
+        // reach for first. A URL ends up in proxy logs, error messages and
+        // stack traces; a header does not.
+        url: `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+        init: {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', 'x-goog-api-key': apiKey },
+          body: JSON.stringify({
+            system_instruction: { parts: [{ text: system }] },
+            contents: [{ role: 'user', parts: [{ text: prompt }] }],
+            generationConfig: {
+              // Generous, and not a length control -- the length is set by the
+              // instruction in the prompt. These models spend part of this
+              // allowance thinking before they write, and a ceiling sized to
+              // the visible answer gets consumed by the thinking, returning
+              // MAX_TOKENS with nothing in it.
+              maxOutputTokens: Math.max(budget.maxTokens * 4, 4096),
+            },
+          }),
+        },
+      };
+    },
+    text: (body) => (body?.candidates?.[0]?.content?.parts ?? [])
+      .map((p) => p?.text ?? '').join('').trim(),
+    usage: (body) => (body?.usageMetadata ? {
+      input_tokens: body.usageMetadata.promptTokenCount,
+      output_tokens: body.usageMetadata.candidatesTokenCount,
+    } : null),
+    stopReason: (body) => body?.candidates?.[0]?.finishReason ?? null,
+  },
+};
+
+/**
+ * Which provider, which key, which model.
+ *
+ * Anthropic wins when both keys are present, because it is the one this was
+ * designed against; `coach.provider` in config overrides that. Returns null
+ * when there is no key at all, which is the signal to use the rule-based coach.
+ */
+export function resolveProvider(env = process.env, config = null) {
+  if (env.SLEEPOS_COACH_LLM === 'off') return null;
+
+  const want = config?.coach?.provider ?? 'auto';
+  const order = want === 'auto' ? ['anthropic', 'gemini'] : [want];
+
+  for (const name of order) {
+    const provider = PROVIDERS[name];
+    if (!provider) continue;
+    const apiKey = env[provider.envKey];
+    if (!apiKey) continue;
+    return { name, provider, apiKey, model: config?.coach?.model ?? provider.defaultModel };
+  }
+  return null;
+}
+
+/**
+ * Ask the key what it can actually run.
+ *
+ * Model names move faster than any list written into a source file, and a name
+ * that has been retired returns a 404 that looks exactly like a broken
+ * integration. Rather than guess, ask -- and only when a guess has already
+ * failed, so the ordinary path stays one request.
+ */
+async function discoverModel({ apiKey, fetchImpl, log }) {
+  const res = await fetchImpl('https://generativelanguage.googleapis.com/v1beta/models', {
+    headers: { 'x-goog-api-key': apiKey },
+  });
+  if (!res.ok) throw new CoachLLMError(`model discovery failed: HTTP ${res.status}`);
+  const body = await res.json();
+
+  const candidates = (body?.models ?? [])
+    .filter((m) => (m.supportedGenerationMethods ?? []).includes('generateContent'))
+    .map((m) => String(m.name ?? '').replace(/^models\//, ''))
+    .filter((n) => /^gemini/.test(n))
+    .filter((n) => !/embedding|aqa|tts|image|audio|live|vision|thinking-exp/.test(n));
+
+  // Newest first, and a general-purpose model ahead of a cut-down one. The
+  // paragraph this writes is short; the judgement in it is the expensive part.
+  const score = (n) => {
+    const version = parseFloat(n.match(/gemini-(\d+(?:\.\d+)?)/)?.[1] ?? '0');
+    const tier = /flash-lite/.test(n) ? 0 : /flash/.test(n) ? 2 : /pro/.test(n) ? 3 : 1;
+    const stable = /preview|exp|latest/.test(n) ? 0 : 1;
+    return version * 100 + tier * 10 + stable;
+  };
+  candidates.sort((a, b) => score(b) - score(a));
+
+  if (!candidates.length) throw new CoachLLMError('the key can see no usable Gemini model');
+  log?.(`coach-llm discovered ${candidates.length} models, choosing ${candidates[0]}`);
+  return candidates[0];
+}
+
+export { PROVIDERS };
 
 export class CoachLLMError extends Error {}
 
@@ -174,40 +312,18 @@ export function buildPrompt({ facts, level }) {
 
 /* ------------------------------------------------------------- the request */
 
-function textFrom(body) {
-  // Adaptive thinking is on by default for this model, so the content array can
-  // carry thinking blocks ahead of the answer. Only text blocks are the answer.
-  const blocks = Array.isArray(body?.content) ? body.content : [];
-  return blocks.filter((b) => b?.type === 'text').map((b) => b.text ?? '').join('').trim();
-}
-
-async function callClaude({ apiKey, prompt, budget, fetchImpl, log }) {
+async function callModel({ provider, apiKey, model, prompt, budget, fetchImpl, log }) {
   let lastError;
+  let discovered = false;
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    const { url, init } = provider.request({ apiKey, model, system: SYSTEM, prompt, budget });
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
     let res;
     let body = null;
     try {
-      res = await fetchImpl(ENDPOINT, {
-        method: 'POST',
-        signal: controller.signal,
-        headers: {
-          'content-type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': API_VERSION,
-        },
-        body: JSON.stringify({
-          model: MODEL,
-          max_tokens: budget.maxTokens,
-          // Adaptive thinking: budget_tokens is rejected outright on this model.
-          thinking: { type: 'adaptive' },
-          output_config: { effort: budget.effort },
-          system: SYSTEM,
-          messages: [{ role: 'user', content: prompt }],
-        }),
-      });
+      res = await fetchImpl(url, { ...init, signal: controller.signal });
       // Read the body inside the timeout, not after it. Clearing the timer on
       // the headers and then awaiting the body would leave a stalled response
       // with nothing to interrupt it -- which in a process designed to stay up
@@ -224,9 +340,22 @@ async function callClaude({ apiKey, prompt, budget, fetchImpl, log }) {
     }
 
     if (res.ok) {
-      const text = textFrom(body);
-      if (!text) throw new CoachLLMError(`empty response (stop_reason ${body?.stop_reason ?? 'unknown'})`);
-      return { text, usage: body?.usage ?? null, stopReason: body?.stop_reason ?? null };
+      const text = provider.text(body);
+      if (!text) throw new CoachLLMError(`empty response (finished: ${provider.stopReason(body) ?? 'unknown'})`);
+      return { text, usage: provider.usage(body), model };
+    }
+
+    // A 404 means the model name is wrong or retired, not that the key is bad.
+    // Ask the key what it can run and try once more, rather than falling back
+    // and leaving a permanently silent feature behind a working secret.
+    if (res.status === 404 && !discovered && provider.envKey === 'GEMINI_API_KEY') {
+      discovered = true;
+      try {
+        model = await discoverModel({ apiKey, fetchImpl, log });
+        continue;
+      } catch (err) {
+        throw new CoachLLMError(`${model} not found, and ${err.message}`);
+      }
     }
 
     // 429 and 5xx are worth another go; 400 and 401 are configuration and will
@@ -245,9 +374,8 @@ async function callClaude({ apiKey, prompt, budget, fetchImpl, log }) {
 
 /* -------------------------------------------------------------- the writer */
 
-export function llmEnabled(env = process.env) {
-  if (env.SLEEPOS_COACH_LLM === 'off') return false;
-  return Boolean(env.ANTHROPIC_API_KEY);
+export function llmEnabled(env = process.env, config = null) {
+  return resolveProvider(env, config) !== null;
 }
 
 /**
@@ -264,9 +392,11 @@ export function llmEnabled(env = process.env) {
  * @returns {Promise<{text: string, level: string, usage: object|null}|null>}
  */
 export async function writeLeverage({
-  facts, intensity = null, env = process.env, fetchImpl = globalThis.fetch, log = () => {},
+  facts, intensity = null, env = process.env, config = null,
+  fetchImpl = globalThis.fetch, log = () => {},
 } = {}) {
-  if (!llmEnabled(env)) return null;
+  const resolved = resolveProvider(env, config);
+  if (!resolved) return null;
 
   const picked = intensity ?? pickIntensity({ seed: facts?.date ?? '' });
   const budget = picked.budget ?? BUDGETS[picked.level] ?? BUDGETS.standard;
@@ -274,7 +404,7 @@ export async function writeLeverage({
 
   let result;
   try {
-    result = await callClaude({ apiKey: env.ANTHROPIC_API_KEY, prompt, budget, fetchImpl, log });
+    result = await callModel({ ...resolved, prompt, budget, fetchImpl, log });
   } catch (err) {
     log(`coach-llm unavailable, using the rule-based coach: ${err.message}`);
     return null;
@@ -292,8 +422,8 @@ export async function writeLeverage({
   const text = result.text.replace(/\n{3,}/g, '\n\n').trim();
   if (!text) return null;
 
-  log(`coach-llm wrote ${text.split(/\s+/).length} words at ${picked.level} (${picked.reason})` +
+  log(`coach-llm ${result.model} wrote ${text.split(/\s+/).length} words at ${picked.level} (${picked.reason})` +
       (result.usage ? ` · ${result.usage.input_tokens ?? '?'} in / ${result.usage.output_tokens ?? '?'} out` : ''));
 
-  return { text, level: picked.level, reason: picked.reason, usage: result.usage };
+  return { text, level: picked.level, reason: picked.reason, usage: result.usage, model: result.model, provider: resolved.name };
 }

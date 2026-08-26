@@ -486,7 +486,6 @@ async function cmdCoach(args) {
   const { buildCoachResponseAsync, parseEntry } = await import('../src/coach.js');
   const { sleepSeries } = await import('../src/journal.js');
   const { scoreSeries } = await import('../src/telemetry.js');
-  const { llmEnabled } = await import('../src/coachllm.js');
 
   const asked = args.find((a) => /^\d{4}-\d{2}-\d{2}$/.test(a));
   let nights = [];
@@ -499,9 +498,15 @@ async function cmdCoach(args) {
   const score = mine?.score ?? nights.find((n) => n.date === date)?.score;
   if (score == null) throw new Error(`No score on record for ${date}.`);
 
-  if (!llmEnabled()) {
-    console.log('ANTHROPIC_API_KEY is not set, so this is the rule-based coach.');
-    console.log('Set it to see the written one. Nothing else changes.\n');
+  const { loadConfig } = await import('../src/facts.js');
+  const { resolveProvider } = await import('../src/coachllm.js');
+  const chosen = resolveProvider(process.env, loadConfig());
+  if (!chosen) {
+    console.log('No model key is set, so this is the rule-based coach.');
+    console.log('Set ANTHROPIC_API_KEY or GEMINI_API_KEY to see the written one.');
+    console.log('Nothing else changes either way.\n');
+  } else {
+    console.log(`Writing with ${chosen.name} · ${chosen.model}\n`);
   }
 
   const entry = parseEntry([score, mine?.hours, mine?.feel].filter((v) => v != null).join(' '));

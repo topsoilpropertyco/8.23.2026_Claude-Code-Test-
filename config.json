@@ -95,6 +95,8 @@
   "wakeTime": "06:30",
   "coach": {
     "writtenByModel": true,
-    "sendJournalToModel": true
+    "sendJournalToModel": true,
+    "provider": "auto",
+    "model": null
   }
 }

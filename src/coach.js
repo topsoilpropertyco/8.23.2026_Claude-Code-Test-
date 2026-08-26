@@ -406,10 +406,11 @@ export async function buildCoachResponseAsync(opts = {}) {
   const { env, fetchImpl, log = () => {}, intensity: forced = null } = opts;
 
   // A switch that does not require deleting the API secret, for the mornings
-  // where the canned version is wanted back.
-  let enabled = true;
-  try { enabled = loadConfig().coach?.writtenByModel !== false; } catch { /* default on */ }
-  if (!enabled) return { ...base, written: false, intensity: null };
+  // where the canned version is wanted back. The same config also names which
+  // provider and model to use, so it is read once and passed down.
+  let config = null;
+  try { config = loadConfig(); } catch { /* the sheet and the fallback both survive this */ }
+  if (config?.coach?.writtenByModel === false) return { ...base, written: false, intensity: null };
 
   const g = base.grounding;
   const intensity = forced ?? pickIntensity({
@@ -420,8 +421,19 @@ export async function buildCoachResponseAsync(opts = {}) {
     effort: 1,
   });
 
-  const written = await writeLeverage({ facts: g, intensity, env, fetchImpl, log });
-  if (!written) return { ...base, written: false, intensity: intensity.level };
+  // A fallback is silent by design -- the reader gets a good message either way.
+  // That is also the danger: a key that has never once worked produces exactly
+  // the message a working one produces on a quiet day. So the reason is
+  // captured and handed back for the caller to record.
+  let reason = null;
+  const written = await writeLeverage({
+    facts: g, intensity, env, config, fetchImpl,
+    log: (m) => { if (/unavailable|REJECTED/.test(m)) reason = m; log(m); },
+  });
+  if (!written) {
+    return { ...base, written: false, intensity: intensity.level, reason };
+  }
+
 
   const leverage = ['', written.text];
   return {
@@ -430,6 +442,8 @@ export async function buildCoachResponseAsync(opts = {}) {
     blocks: { ...base.blocks, leverage },
     written: true,
     intensity: written.level,
+    model: written.model,
+    provider: written.provider,
   };
 }
 

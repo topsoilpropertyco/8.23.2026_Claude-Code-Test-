@@ -93,9 +93,11 @@ jobs:
         if: inputs.oura_action == '' && (inputs.slot != '' || inputs.dry_run == true)
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.SLEEPOS_TELEGRAM_BOT_TOKEN }}
-          # Absent, the coach falls back to the rule-based text. The feature
-          # degrades; the morning message does not.
+          # Whichever of these exists is what writes the coaching paragraph.
+          # With neither, it falls back to the rule-based text: the feature
+          # degrades, the morning message does not.
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           TELEGRAM_CHAT_ID: ${{ secrets.SLEEPOS_TELEGRAM_CHAT_ID }}
           SLEEPOS_DATA_KEY: ${{ secrets.SLEEPOS_DATA_KEY }}
           OURA_CLIENT_ID: ${{ secrets.SLEEPOS_OURA_CLIENT_ID }}
@@ -178,9 +180,11 @@ jobs:
         continue-on-error: true
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.SLEEPOS_TELEGRAM_BOT_TOKEN }}
-          # Absent, the coach falls back to the rule-based text. The feature
-          # degrades; the morning message does not.
+          # Whichever of these exists is what writes the coaching paragraph.
+          # With neither, it falls back to the rule-based text: the feature
+          # degrades, the morning message does not.
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           TELEGRAM_CHAT_ID: ${{ secrets.SLEEPOS_TELEGRAM_CHAT_ID }}
           SLEEPOS_DATA_KEY: ${{ secrets.SLEEPOS_DATA_KEY }}
           CHROMIUM_PATH: /usr/bin/google-chrome
@@ -201,9 +205,11 @@ jobs:
         continue-on-error: true
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.SLEEPOS_TELEGRAM_BOT_TOKEN }}
-          # Absent, the coach falls back to the rule-based text. The feature
-          # degrades; the morning message does not.
+          # Whichever of these exists is what writes the coaching paragraph.
+          # With neither, it falls back to the rule-based text: the feature
+          # degrades, the morning message does not.
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           TELEGRAM_CHAT_ID: ${{ secrets.SLEEPOS_TELEGRAM_CHAT_ID }}
           SLEEPOS_DATA_KEY: ${{ secrets.SLEEPOS_DATA_KEY }}
           CHROMIUM_PATH: /usr/bin/google-chrome
@@ -228,9 +234,11 @@ jobs:
         timeout-minutes: 350
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.SLEEPOS_TELEGRAM_BOT_TOKEN }}
-          # Absent, the coach falls back to the rule-based text. The feature
-          # degrades; the morning message does not.
+          # Whichever of these exists is what writes the coaching paragraph.
+          # With neither, it falls back to the rule-based text: the feature
+          # degrades, the morning message does not.
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           TELEGRAM_CHAT_ID: ${{ secrets.SLEEPOS_TELEGRAM_CHAT_ID }}
           SLEEPOS_DATA_KEY: ${{ secrets.SLEEPOS_DATA_KEY }}
           # serve spawns send-deck when a night lands, which needs both of these:

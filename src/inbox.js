@@ -249,6 +249,21 @@ async function handleSleepEntry({ token, chatId, text, state, dateString, log, s
 
   const sent = await send(token, chatId, response.text);
   state.coachRotation = rotation + 1;
+
+  // Whether the written coach actually ran, recorded where it can be read
+  // without a key. A silent fallback is the right behaviour for the reader and
+  // the wrong behaviour for the operator: a secret that has never once worked
+  // produces exactly the message a working one produces on an ordinary day.
+  // Operational only -- provider, outcome, and a truncated reason. No score, no
+  // vital, nothing he wrote.
+  state.coach = {
+    at: new Date().toISOString(),
+    written: Boolean(response.written),
+    provider: response.provider ?? null,
+    model: response.model ?? null,
+    intensity: response.intensity ?? null,
+    reason: response.written ? null : (response.reason ?? 'no key configured').slice(0, 200),
+  };
   trackPending(state, {
     messageId: sent.message_id,
     kind: 'morning-prompt',
