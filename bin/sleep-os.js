@@ -8,6 +8,8 @@
 //   whoami    verify the bot token and discover your chat id
 //   stats     rotation and delivery history
 
+import { existsSync, statSync } from 'node:fs';
+import { join } from 'node:path';
 import { loadLibraries, loadConfig, ROOT } from '../src/facts.js';
 import { buildDaySchedule } from '../src/schedule.js';
 import { selectFact } from '../src/selector.js';
@@ -206,10 +208,24 @@ async function cmdDoctor() {
   ok('slots defined', Array.isArray(cfg.slots) && cfg.slots.length > 0, `${cfg.slots?.length ?? 0} slots`);
   const enabled = (cfg.slots ?? []).filter((x) => x.enabled !== false).length;
   ok('at least one slot enabled', enabled > 0, `${enabled} enabled`);
-  // No screensUrl by design: a pinned link cannot be rebuilt by a scheduled run,
-  // so it could only ever drift. The deck ships as a Telegram album instead.
-  ok('no stale deck link configured', !cfg.screensUrl,
-     cfg.screensUrl ? 'a pinned URL will go out of date — the deck ships as an album' : 'deck ships as photos');
+  // This check used to assert the OPPOSITE -- that no screensUrl was configured --
+  // on the reasoning that a pinned link could not be rebuilt by a scheduled run
+  // and could only drift. That was true before Pages was enabled. Since then the
+  // run publishes the page itself on every new night, the link carries a cache-
+  // busting version, and the album's caption points at it. So the check was
+  // reporting a healthy configuration as a fault, which is worse than not
+  // checking: a diagnostic that cries wolf teaches you to skip the whole report.
+  const delivery = cfg.deckDelivery || 'auto';
+  ok('deck delivery configured', ['album', 'link', 'auto'].includes(delivery), delivery);
+  const needsUrl = delivery !== 'album' || Boolean(cfg.screensUrl);
+  ok('deck link available', needsUrl,
+     cfg.screensUrl
+       ? `${cfg.screensUrl} · page style "${cfg.pageStyle || 'screens'}"`
+       : 'no screensUrl — the album still sends, but its caption carries no link');
+  ok('vendored fonts present', existsSync(join(ROOT, 'web/fonts.css')),
+     existsSync(join(ROOT, 'web/fonts.css'))
+       ? `${(statSync(join(ROOT, 'web/fonts.css')).size / 1024).toFixed(0)} KB`
+       : 'run bin/vendor-fonts.mjs — the linked screens would fall back to system fonts');
 
   banner('Fact libraries');
   const libs = loadLibraries();

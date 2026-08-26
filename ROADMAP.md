@@ -632,5 +632,8 @@ yet by a night of real deliveries.
   ingest writes the new night, which is around 11:00. The alternative is
   holding it and attaching it to the morning coaching reply. Currently: as soon
   as the data exists.
-- **The cron is now every 5 minutes.** Unlimited Actions minutes on a public
-  repo, so there is no cost, but it is twice the previous run rate.
+- ~~**The cron is now every 5 minutes.**~~ Superseded. The engine is one
+  long-running supervisor per run — `*/30` cron, 5h45m windows, `concurrency`
+  queueing rather than cancelling so a late arrival becomes a hot spare. The
+  scheduler's unreliability now costs startup latency instead of every cue's
+  timing.
