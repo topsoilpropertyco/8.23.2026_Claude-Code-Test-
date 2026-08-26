@@ -20,6 +20,7 @@ import { writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { readTelemetry } from '../src/telemetry.js';
+import { analyseNight, fromTelemetry } from '../src/night.js';
 import { mean as avg, stdev, percentileRank, trailing } from '../src/stats.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -67,6 +68,14 @@ if (process.argv.includes('--sample')) {
   process.exit(0);
 }
 
+// Mapped into the canonical shape src/night.js works in, so the analysis that
+// runs here is the identical function the browser runs against the embedded
+// series. One implementation, so the file the screens are generated from and the
+// object the date picker feeds those same templates cannot disagree.
+const canonical = readTelemetry()
+  .filter((r) => typeof r.sleep_score === 'number')
+  .map(fromTelemetry);
+
 const all = readTelemetry()
   .filter((r) => typeof r.sleep_score === 'number')
   .sort((a, b) => a.date.localeCompare(b.date));
@@ -88,78 +97,23 @@ const scores = all.map((r) => r.sleep_score);
 const m = avg(scores), sd = stdev(scores);
 const score = night.sleep_score;
 
-// Rank among every recorded night. `below`/`above` exclude ties so the three
-// counts always sum to n -- s4 draws one outline box per group and a gap would
-// show as a missing cell.
-const below = scores.filter((s) => s < score).length;
-const above = scores.filter((s) => s > score).length;
-const ties = scores.length - below - above;
 
-const mins = (sec) => (typeof sec === 'number' ? Math.round(sec / 60) : null);
-const asleep = mins(night.total_sleep_duration);
-const stage = (sec) => {
-  const t = mins(sec);
-  return t === null ? null : { minutes: t, label: `${Math.floor(t / 60)}h ${String(t % 60).padStart(2, '0')}m` };
-};
-
-// Trailing windows end at the chosen night, so asking for an older date gives
-// that night's context rather than today's.
-const upto = all.slice(0, all.indexOf(night) + 1).map((r) => r.sleep_score);
-
-// How far behind the ring is. Oura only has a night once the phone app has
-// synced, so the newest record is routinely a day old and can be older. The
-// screens must never present that as "last night" -- which is half of what Seth
-// saw: his coach message read 74 from the intake he typed, while every
-// Oura-derived number was still the newest night the ring had delivered.
-const today = new Date().toISOString().slice(0, 10);
-const daysBehind = Math.round(
-  (Date.parse(`${today}T00:00:00Z`) - Date.parse(`${night.date}T00:00:00Z`)) / 86400000,
-);
+// The analysis itself now comes from src/night.js. What used to be seventy lines
+// of arithmetic here was the only copy of it, which is exactly why the screens
+// could describe one night and no other: the maths lived on the server, beside
+// the key. It is a pure function of (nights, date) now, so the browser runs it
+// too.
+const analysed = analyseNight({ nights: canonical, date: wanted || null });
+if (!analysed) {
+  console.error(`build-night-data: no night on ${wanted || 'record'}.`);
+  process.exit(1);
+}
 
 const out = {
   _comment: 'One night, extracted from real telemetry by bin/build-night-data.mjs. '
     + 'Never hand-edit: build-screens.py renders whatever is here as fact.',
+  ...analysed,
   generated: new Date().toISOString(),
-  date: night.date,
-  requested: wanted || 'latest',
-  daysBehind,
-  // 0 or 1 is normal: Oura labels a night by its wake date and syncs in the
-  // morning. 2 or more means the ring has not synced and the deck is showing
-  // an older night than the one being asked about.
-  stale: !wanted && daysBehind >= 2,
-  score,
-  population: {
-    n: scores.length,
-    mean: +m.toFixed(2),
-    sd: +sd.toFixed(2),
-    median: [...scores].sort((a, b) => a - b)[Math.floor(scores.length / 2)],
-    first: all[0].date,
-    last: all[all.length - 1].date,
-  },
-  standing: {
-    below, above, ties,
-    rank: above + 1,                       // 1 = best night on record
-    percentile: +percentileRank(score, scores).toFixed(1),
-    z: sd ? +((score - m) / sd).toFixed(2) : null,
-  },
-  trailing: trailing(upto).map((t) => ({
-    window: t.window, days: t.days, avg: t.avg === null ? null : +t.avg.toFixed(1), partial: t.partial,
-  })),
-  night: {
-    asleepMinutes: asleep,
-    asleepLabel: asleep === null ? null : `${Math.floor(asleep / 60)}h ${String(asleep % 60).padStart(2, '0')}m`,
-    inBedMinutes: mins(night.time_in_bed),
-    deep: stage(night.deep_sleep_duration),
-    rem: stage(night.rem_sleep_duration),
-    light: stage(night.light_sleep_duration),
-    awake: stage(night.awake_time),
-    efficiency: night.efficiency, latency: mins(night.latency),
-    hrv: night.average_hrv, restingHr: night.lowest_heart_rate,
-    breath: typeof night.average_breath === 'number'
-      ? Math.round(night.average_breath * 10) / 10 : night.average_breath,
-    bedtimeStart: night.bedtime_start, bedtimeEnd: night.bedtime_end,
-    hypnogram: night.sleep_phase_5_min,
-  },
 };
 
 writeFileSync(join(ROOT, 'data/last-night.json'), JSON.stringify(out, null, 2));
@@ -180,7 +134,11 @@ writeFileSync(join(ROOT, 'data/series.json'), JSON.stringify({
     t: mn(r.total_sleep_duration), dp: mn(r.deep_sleep_duration),
     rm: mn(r.rem_sleep_duration), lt: mn(r.light_sleep_duration),
     aw: mn(r.awake_time), ef: r.efficiency, la: mn(r.latency),
-    hv: r.average_hrv, hr: r.lowest_heart_rate, br: r.average_breath,
+    hv: r.average_hrv, hr: r.lowest_heart_rate,
+    br: typeof r.average_breath === 'number' ? Math.round(r.average_breath * 10) / 10 : null,
+    // Added so a night chosen in the browser can show what screen 6 shows for
+    // last night. Without these the date picker could render seven screens.
+    ib: mn(r.time_in_bed), bs: r.bedtime_start ?? null, be: r.bedtime_end ?? null,
   })),
 }));
 
@@ -216,6 +174,6 @@ writeFileSync(join(ROOT, 'state/health.json'), `${JSON.stringify({
 console.log(`build-night-data: ${out.date} score ${score} · rank ${out.standing.rank}/${out.population.n} `
   + `· ${out.standing.percentile}th percentile · mean ${out.population.mean} sd ${out.population.sd}`);
 if (out.stale) {
-  console.warn(`build-night-data: WARNING the newest Oura night is ${daysBehind} days old. `
+  console.warn(`build-night-data: WARNING the newest Oura night is ${out.daysBehind} days old. `
     + 'The ring has not synced. Screens will name the date they actually show.');
 }

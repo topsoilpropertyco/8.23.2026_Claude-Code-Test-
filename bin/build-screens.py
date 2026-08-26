@@ -35,8 +35,14 @@ W, H = 390, 844
 #
 # Refusing to run without the file is the point. There is no fallback and no
 # default score, so a stale night is no longer expressible.
+# Overridable so a test can render a known night without touching the real
+# extract or the committed variants. Untestable paths are how the screens ended
+# up being verified by eye for a week.
+NIGHT_PATH = os.environ.get('SLEEPOS_NIGHT', 'data/last-night.json')
+VARIANTS_DIR = os.environ.get('SLEEPOS_VARIANTS', 'variants')
+
 try:
-    NIGHT = json.load(open('data/last-night.json'))
+    NIGHT = json.load(open(NIGHT_PATH))
 except FileNotFoundError:
     sys.exit('build-screens: data/last-night.json missing.\n'
              '  Run: node bin/build-night-data.mjs            (real, needs SLEEPOS_DATA_KEY)\n'
@@ -48,7 +54,12 @@ MEAN, SD, N = NIGHT['population']['mean'], NIGHT['population']['sd'], NIGHT['pop
 BELOW, ABOVE = NIGHT['standing']['below'], NIGHT['standing']['above']
 TIES = NIGHT['standing']['ties']
 RANK, PCT = NIGHT['standing']['rank'], NIGHT['standing']['percentile']
+# z is null when the record has no spread -- one night, or every night the same
+# score. Screen 3 places the marker arithmetically from it and crashed on None.
+# With no spread the night IS the mean, so 0 is the honest z rather than a
+# fabrication, and THIN keeps the screen from claiming the position means much.
 Z = NIGHT['standing']['z']
+Z = 0.0 if Z is None else float(Z)
 NIGHT_DATE = NIGHT['date']
 TRAIL = {t['window']: t for t in NIGHT['trailing']}
 STALE = NIGHT.get('stale', False)
@@ -92,6 +103,18 @@ BAD_L, BAD   = '#EFD3CC', '#B23A2F'
 OK_L,  OK    = '#EFE3C4', '#96761C'
 GOOD_L, GOOD = '#D2E3CC', '#2F7A44'
 
+# A history of one night has no spread, and SD is 0. Two screens fit a normal
+# curve to the record and both divide by it, so day one crashed the generator
+# outright: ZeroDivisionError, no screens at all. A floor of 1 keeps the
+# geometry finite; THIN below is what stops the screens claiming the fit means
+# anything on a sample that cannot support it.
+SAFE_SD = SD if SD and SD > 0 else 1.0
+
+# Below this, a fitted curve is decoration rather than evidence. Seven matches
+# the seeding threshold confidence() already uses in src/stats.js, so the
+# screens and the coach agree about when a comparison starts being worth making.
+THIN = N < 7 or not SD or SD <= 0
+
 def phi(z): return 0.5 * (1 + math.erf(z / math.sqrt(2)))
 def inv_phi(p):
     lo, hi = -6.0, 6.0
@@ -100,12 +123,12 @@ def inv_phi(p):
         if phi(mid) < p: lo = mid
         else: hi = mid
     return (lo + hi) / 2
-def pct_at(score): return phi((score - MEAN) / SD) * 100
+def pct_at(score): return phi((score - MEAN) / SAFE_SD) * 100
 def score_at(z): return MEAN + z * SD
 
 CUT_LO_P, CUT_HI_P = 1/3, 2/3
-CUT_LO_S = MEAN + inv_phi(CUT_LO_P) * SD      # ~75.2
-CUT_HI_S = MEAN + inv_phi(CUT_HI_P) * SD      # ~83.4
+CUT_LO_S = MEAN + inv_phi(CUT_LO_P) * SAFE_SD      # ~75.2
+CUT_HI_S = MEAN + inv_phi(CUT_HI_P) * SAFE_SD      # ~83.4
 def band_of_pct(p):
     if p >= CUT_HI_P * 100: return ('good', GOOD, GOOD_L, 'a good night')
     if p >= CUT_LO_P * 100: return ('decent', OK, OK_L, 'a decent night')
@@ -198,8 +221,8 @@ def page(idx, kicker, title, note, extra, body, right, kind='own'):
             + group(body) + FOOT.format(right=right, daten=DATE_LABEL))
 
 def write(key, html):
-    os.makedirs(f'variants/{key}', exist_ok=True)
-    open(f'variants/{key}/index.html', 'w').write(html)
+    os.makedirs(f'{VARIANTS_DIR}/{key}', exist_ok=True)
+    open(f'{VARIANTS_DIR}/{key}/index.html', 'w').write(html)
 print(f'bands: bad <{CUT_LO_S:.1f}  decent {CUT_LO_S:.1f}-{CUT_HI_S:.1f}  good >{CUT_HI_S:.1f}  -> last night is {BAND}')
 
 # ---------------------------------------------------------------- s1  where am I
@@ -251,7 +274,7 @@ write('s1', page('1 of 8', 'Where am I', 's1 — Where am I',
 GUT = 68
 PW, PH = 342 - GUT, 150
 LO, HI, STEP = 44, 104, 2
-bins = [(lo + STEP/2, math.exp(-((lo + STEP/2 - MEAN)**2)/(2*SD*SD))) for lo in range(LO, HI, STEP)]
+bins = [(lo + STEP/2, math.exp(-((lo + STEP/2 - MEAN)**2)/(2*SAFE_SD*SAFE_SD))) for lo in range(LO, HI, STEP)]
 mxh = max(h for _, h in bins)
 bw = PW/len(bins) - 2.0
 def band_fill(c):
