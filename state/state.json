@@ -429,7 +429,7 @@
       }
     }
   },
-  "inboxOffset": 697606378,
+  "inboxOffset": 697606379,
   "pending": [
     {
       "messageId": 166,
@@ -569,11 +569,9 @@
       0
     ],
     "streak": [
-      3,
       1
     ],
     "stat": [
-      3,
       2,
       0,
       1
@@ -583,6 +581,19 @@
       1
     ],
     "mechanism:elaborative_interrogation": [
+      0
+    ],
+    "identity": [
+      6,
+      3,
+      11,
+      2,
+      4,
+      9,
+      8,
+      5,
+      1,
+      7,
       0
     ]
   },
@@ -641,7 +652,7 @@
   },
   "writtenReplies": {
     "date": "2026-08-27",
-    "count": 1
+    "count": 2
   },
   "coach": {
     "at": "2026-08-26T11:42:34.356Z",
