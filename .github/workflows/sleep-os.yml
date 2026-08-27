@@ -77,6 +77,64 @@ jobs:
         with:
           node-version: '22'
 
+      # Phase 9. THE OUTAGE THIS EXISTS FOR. On 2026-08-26 GitHub's scheduler
+      # stopped creating runs for this workflow and did not resume for 22 hours.
+      # It cost the 9pm shutdown cue, the 10pm bedtime cue, the 6am intake and
+      # the morning deck, and nobody knew for thirteen hours. The workflow was
+      # `active` the whole time and its cron was intact -- the events simply
+      # never arrived.
+      #
+      # The */30 cron above was supposed to make that survivable, on the reading
+      # that any one firing keeps a window open. That reasoning is wrong, and
+      # this step is the correction: the firings are not independent. When the
+      # scheduler stops for a repository it stops for every entry at once, so 48
+      # draws a day is one coin flip, not 48. Forty-four consecutive firings
+      # were dropped.
+      #
+      # So a window now queues its own successor, at the top of the job rather
+      # than the end, and stops trusting anything outside this job to do it.
+      # `concurrency` holds exactly one pending run and starts it the instant
+      # this one exits -- measured at three seconds on the 2026-08-27 handover --
+      # so the chain is continuous and the cron demotes to a cold-start path.
+      # Queueing first also covers the runner being reclaimed mid-window, which
+      # killed the very first window and which an end-of-job step would miss.
+      #
+      # WHY A PAT. The API accepts workflow_dispatch authenticated with
+      # GITHUB_TOKEN and deliberately creates no run from it, precisely to stop
+      # loops like this one. A fine-grained token with Actions read and write on
+      # this repository is the only way to close the chain. Without the secret
+      # the step prints a notice and skips, leaving exactly the cron-dependent
+      # behaviour this file had before it: a missing token degrades the
+      # guarantee, it never breaks the run.
+      #
+      # TO STOP THE CHAIN: disable the workflow (Actions -> Sleep OS Dispatch ->
+      # the "..." menu -> Disable workflow). Cancelling one run is not enough,
+      # because its successor is already queued behind it.
+      - name: Queue the next window
+        if: inputs.oura_action == '' && inputs.dry_run != true && inputs.slot == ''
+        # A failure here must never stop tonight's cues. The window still opens;
+        # only the handover is lost, and the cron is still there to catch that.
+        continue-on-error: true
+        env:
+          GH_DISPATCH_TOKEN: ${{ secrets.SLEEPOS_DISPATCH_TOKEN }}
+        run: |
+          if [ -z "$GH_DISPATCH_TOKEN" ]; then
+            echo "::notice::No SLEEPOS_DISPATCH_TOKEN. This window cannot queue its successor, so delivery depends on GitHub's scheduler -- the failure mode behind the 2026-08-26 outage. See the comment above this step."
+            exit 0
+          fi
+          code=$(curl -sS -o /tmp/dispatch.out -w '%{http_code}' -X POST \
+            -H 'Accept: application/vnd.github+json' \
+            -H "Authorization: Bearer $GH_DISPATCH_TOKEN" \
+            -H 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/sleep-os.yml/dispatches" \
+            -d "{\"ref\":\"${GITHUB_REF_NAME}\"}")
+          if [ "$code" = "204" ]; then
+            echo "Queued the next window. It is pending behind this one and starts when this one exits."
+          else
+            echo "::error::Could not queue the next window (HTTP $code): $(cat /tmp/dispatch.out)"
+            exit 1
+          fi
+
       - name: Oura authorisation
         if: inputs.oura_action != ''
         env:
