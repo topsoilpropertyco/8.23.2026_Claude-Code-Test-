@@ -12,7 +12,6 @@
     "sleep-39",
     "sleep-14",
     "lucid-07",
-    "sleep-08",
     "sleep-16",
     "sleep-35",
     "lucid-06",
@@ -353,10 +352,57 @@
         "targetLabel": "7:30 PM",
         "at": "2026-08-26T23:30:24.315Z"
       }
+    },
+    "2026-08-27": {
+      "intake": {
+        "status": "missed",
+        "at": "2026-08-27T12:18:18.101Z"
+      },
+      "morning_light": {
+        "status": "sent",
+        "kind": "habit",
+        "habit": "morning_light",
+        "whyId": "ml01",
+        "optional": true,
+        "cycle": 1,
+        "targetLabel": "7:15 AM",
+        "at": "2026-08-27T12:18:19.424Z"
+      },
+      "morning_reflection": {
+        "status": "sent",
+        "kind": "fact",
+        "factId": "sleep-08",
+        "library": "sleep",
+        "category": "hormones",
+        "jackpot": true,
+        "cycle": 0,
+        "promptId": "p06",
+        "mechanism": "identity",
+        "targetLabel": "7:53 AM",
+        "at": "2026-08-27T12:18:19.854Z"
+      }
     }
   },
   "inboxOffset": 697606375,
   "pending": [
+    {
+      "messageId": 148,
+      "kind": "fact",
+      "factId": "sleep-08",
+      "promptId": "p06",
+      "mechanism": "identity",
+      "slot": "morning_reflection",
+      "at": "2026-08-27T12:18:19.854Z"
+    },
+    {
+      "messageId": 147,
+      "kind": "habit",
+      "factId": null,
+      "promptId": null,
+      "mechanism": null,
+      "slot": "morning_light",
+      "at": "2026-08-27T12:18:19.424Z"
+    },
     {
       "messageId": 146,
       "kind": "habit",
@@ -445,24 +491,6 @@
       "mechanism": "subtraction",
       "slot": "work_shutdown",
       "at": "2026-08-26T01:07:18.136Z"
-    },
-    {
-      "messageId": 95,
-      "kind": "habit",
-      "factId": null,
-      "promptId": null,
-      "mechanism": null,
-      "slot": "blue_blockers",
-      "at": "2026-08-25T23:30:20.499Z"
-    },
-    {
-      "messageId": 94,
-      "kind": "fact",
-      "factId": "lucid-11",
-      "promptId": "p09",
-      "mechanism": "elaborative_interrogation",
-      "slot": "evening_winddown",
-      "at": "2026-08-25T22:25:07.916Z"
     }
   ],
   "promptCycle": 0,
@@ -471,7 +499,6 @@
     "p16",
     "p10",
     "p23",
-    "p06",
     "p08",
     "p17",
     "p20",
@@ -544,7 +571,6 @@
     "morning_light": {
       "cycle": 1,
       "remaining": [
-        "ml01",
         "ml10",
         "ml20",
         "ml02",
