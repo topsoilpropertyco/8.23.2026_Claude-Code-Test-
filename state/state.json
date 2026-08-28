@@ -495,7 +495,7 @@
       }
     }
   },
-  "inboxOffset": 697606383,
+  "inboxOffset": 697606384,
   "pending": [
     {
       "messageId": 193,
@@ -625,11 +625,8 @@
       0,
       3
     ],
-    "mechanism:attribution": [
-      0
-    ],
+    "mechanism:attribution": [],
     "streak": [
-      1,
       2
     ],
     "stat": [
