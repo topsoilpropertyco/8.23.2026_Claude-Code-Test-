@@ -56,3 +56,17 @@ __pycache__/
 
 # The only file holding mailbox-derived personal data. Never commit it.
 inbox-sweep/config/identity.py
+
+# --- inbox-sweep: deny by default ------------------------------------------
+# Everything under inbox-sweep is assumed to be mailbox-derived until proven
+# otherwise. Listing individual output filenames failed the moment a new export
+# was added (INBOX-SWEEP.csv), so the rule is inverted: ignore the whole tree
+# and re-include only the source files that are known to be generic.
+inbox-sweep/**
+!inbox-sweep/bin/
+!inbox-sweep/bin/sweep.py
+!inbox-sweep/bin/grab.sh
+!inbox-sweep/config/
+!inbox-sweep/config/identity.example.py
+!inbox-sweep/README.md
+!inbox-sweep/CLAUDE.md
