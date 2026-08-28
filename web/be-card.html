@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>B E</title>
+
+<!--
+  THE ANCHOR CARD. The one screen in Sleep OS that never changes.
+
+  Everything else the system sends is computed -- a score, a percentile, a fact
+  drawn from rotation, a paragraph a model wrote. This is the opposite, and
+  deliberately: it carries no data, no date, and no variation, because it is the
+  instruction rather than the report. Reinforcement works by repetition, and
+  anything that varies invites reading instead of obeying.
+
+  WHY IT IS COMMITTED AS A PNG. bin/build-anchor.mjs photographs this file once
+  and the result lands in assets/be-card.png, which is checked in. The eight
+  night screens cannot be committed -- they embed real biometrics and this
+  repository is public -- but this card holds nothing personal, so committing
+  the photograph takes chromium out of the send path entirely. Sending it is
+  then a file read, which cannot fail hours into a window the way a render can.
+
+  Fonts come from fonts.css, the same vendored data-URI faces the published
+  screens use, so this renders identically with no third-party request.
+-->
+
+<link rel="stylesheet" href="fonts.css">
+
+<style>
+  html, body { margin: 0; background: #78756F; }
+
+  .card {
+    --ground: #F4F0E6;
+    --ink: #1A1814;
+    --quiet: #7C7568;
+    --rule: #D5CDBC;
+    --accent: #1F4B8F;
+
+    position: relative;
+    width: 390px;
+    height: 844px;
+    overflow: hidden;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: 'Newsreader', Georgia, serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 46px 24px 26px;
+    box-sizing: border-box;
+  }
+
+  /* The claim. Mono and tracked so it reads as a rule rather than a sentence,
+     but at 21px rather than the 10px label size used elsewhere in the deck --
+     nothing on this card is allowed to need a second look. */
+  .claim {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 21px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .claim .eq { color: var(--accent); padding: 0 2px; }
+
+  /* The mark, given room to be the loudest thing on the card. Each letter
+     carries its own word so the acronym decodes without being read:
+     B is Bed, E is Eyes, and those are the two words bolded below. */
+  .mark {
+    margin-top: 54px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+  .col { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .ltr { font-size: 150px; line-height: .82; font-weight: 500 }
+  .word {
+    font-size: 21px;
+    font-weight: 500;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+  }
+
+  /* auto margins top and bottom, so the slack in the card distributes evenly
+     around the two steps rather than piling up at the foot. */
+  .steps {
+    margin-top: auto;
+    margin-bottom: auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 26px;
+  }
+  .step { display: flex; flex-direction: column; align-items: center; gap: 2px }
+
+  .draw { width: 216px; height: 162px }
+  .draw path, .draw circle {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 2.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .draw .thin { stroke-width: 2.1 }
+  .draw .phone { stroke-width: 2.4 }
+
+  /* The instruction. Full card width, one line each, no wrapping.
+     The bolded word is the one the letter above stands for. */
+  .do {
+    font-size: 41px;
+    line-height: 1.04;
+    font-weight: 400;
+    letter-spacing: -.02em;
+    white-space: nowrap;
+  }
+  .do b { font-weight: 600 }
+  .do .n {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--accent);
+    vertical-align: 4px;
+    margin-right: 9px;
+  }
+
+  .hair { width: 100%; height: 1px; background: var(--rule) }
+
+  .loop {
+    margin-top: 17px;
+    font-size: 24px;
+    font-style: italic;
+    font-weight: 300;
+    color: var(--quiet);
+    white-space: nowrap;
+  }
+  .loop b { font-style: normal; font-weight: 600; color: var(--ink) }
+
+  .ft {
+    margin-top: 18px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--quiet);
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <div class="claim">Two steps <span class="eq">=</span> top 1%</div>
+
+  <div class="mark">
+    <div class="col"><span class="ltr">B</span><span class="word">Bed</span></div>
+    <div class="col"><span class="ltr">E</span><span class="word">Eyes</span></div>
+  </div>
+
+  <div class="steps">
+
+    <div class="step">
+      <!-- Two elements only, figure and bed. An earlier pass also drew a
+           nightstand with the phone already face-down on it, which was a nice
+           idea and illegible at this size -- it photographed as a stool with a
+           lump. On a card whose whole job is to be understood without looking,
+           a detail that needs explaining is a cost. -->
+      <svg class="draw" viewBox="0 0 200 150" aria-label="A figure bending over with one knee on the bed, getting in">
+        <!-- The figure, pitched forward at the hip, one knee onto the mattress.
+             The head is placed so its edge meets the end of the spine: drawn
+             apart, even by three pixels, it reads as a detached balloon. -->
+        <circle cx="90" cy="56" r="11"/>
+        <path d="M48 94 Q58 74 79 64"/>                 <!-- spine, bent forward -->
+        <path d="M79 66 Q95 80 111 96"/>                <!-- arm to the mattress -->
+        <!-- The far arm is deliberately absent. Drawn in, it crossed the
+             raised knee and the pair photographed as an X of noise under the
+             torso; on a bent-over figure the second arm reads as hidden behind
+             the body, which is where it would be. -->
+        <path d="M48 94 Q45 113 44 132"/>               <!-- planted leg -->
+        <!-- The stepping leg needs a real knee. Drawn as a single shallow curve
+             it ran almost horizontally into the mattress, merged with the
+             mattress line, and the figure photographed with no legs at all --
+             a man leaning on a table. Rising to a knee and coming back down
+             keeps it distinct from the horizontal it lands on. -->
+        <path d="M48 94 L72 80 L98 99"/>                <!-- knee up, shin onto the bed -->
+
+        <!-- The bed, side on. Starts at 88 so the knee arrives on it. -->
+        <path d="M88 101 Q142 100.2 196 101"/>
+        <path d="M88 113 Q142 112.4 196 113"/>
+        <path d="M88 101 L88 113"/>
+        <path d="M196 101 Q196.6 84 196 63"/>           <!-- headboard -->
+        <path class="thin" d="M94 113 L94 131"/>
+        <path class="thin" d="M189 113 L189 131"/>
+        <path class="thin" d="M170 101 Q177 87 192 90"/><!-- pillow -->
+      </svg>
+      <div class="do"><span class="n">1</span>Get in <b>bed</b>.</div>
+    </div>
+
+    <div class="step">
+      <!-- The pillow was originally a dome drawn over and around the head,
+           which photographed as a hood, with the blanket floating below it as a
+           detached lens -- a surfboard. Now the pillow is only its two corners
+           peeking out either side of the head, both landing on the blanket's
+           top edge, and the blanket tucks just under the chin. Everything
+           touches something, which is what makes it read as one object. -->
+      <svg class="draw" viewBox="0 0 200 150" aria-label="A head resting on a pillow under a blanket, eyes closed">
+        <!-- Pillow corners, clear of the head on both sides. -->
+        <path class="thin" d="M62 85 Q53 68 64 57"/>
+        <path class="thin" d="M138 85 Q147 68 136 57"/>
+
+        <!-- The head. -->
+        <circle cx="100" cy="56" r="27"/>
+
+        <!-- Closed eyes: lids drawn as lashes falling. -->
+        <path d="M83 52 Q90.5 60 98 52"/>
+        <path d="M102 52 Q109.5 60 117 52"/>
+        <path class="thin" d="M92 70 Q100 72 108 70"/>
+
+        <!-- Blanket, tucked just under the chin. -->
+        <path d="M20 88 Q100 80 180 88"/>
+        <path class="thin" d="M20 100 Q100 94 180 100"/>
+        <path class="thin" d="M20 88 L20 113"/>
+        <path class="thin" d="M180 88 L180 113"/>
+        <path class="thin" d="M20 113 Q100 119 180 113"/>
+      </svg>
+      <div class="do"><span class="n">2</span>Close your <b>eyes</b>.</div>
+    </div>
+
+  </div>
+
+  <div class="hair"></div>
+  <div class="loop">Distracted? Repeat <b>1</b> and <b>2</b>.</div>
+
+  <div class="ft">
+    <span>Sleep OS</span>
+    <span>Everything else is downstream</span>
+  </div>
+
+</div>
+
+</body>
+</html>

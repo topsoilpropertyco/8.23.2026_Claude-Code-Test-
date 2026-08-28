@@ -138,15 +138,34 @@ for (const spec of specs) {
           collapse.push(n.textContent.trim().slice(0, 40)); break;
         }
       }
+      // Family AND weight, because check() needs both. This used to probe the
+      // bare family -- `check('24px "IBM Plex Mono"')` -- which CSS resolves at
+      // weight 400. A page that uses a family only at 600 never downloads its
+      // 400 face, so the check reported a silent fallback that was not
+      // happening, and would equally have missed a real fallback at 600 while
+      // an unused 400 sat loaded. Probe the pairs the page actually asks for.
       const famsWanted = new Set();
+      const wanted = new Set();
       for (const el of document.querySelectorAll('*')) {
-        for (const f of getComputedStyle(el).fontFamily.split(',')) {
+        const cs = getComputedStyle(el);
+        const w = cs.fontWeight || '400';
+        const style = cs.fontStyle === 'italic' ? 'italic ' : '';
+        for (const f of cs.fontFamily.split(',')) {
           const n = f.replace(/["']/g, '').trim();
-          if (n && !/^(serif|sans-serif|monospace|system-ui|ui-sans-serif|ui-serif|ui-monospace|cursive|fantasy|-apple-system|BlinkMacSystemFont|Segoe UI|Roboto|Helvetica Neue|Arial|Times New Roman|Georgia|emoji|math|fangsong)$/i.test(n)) famsWanted.add(n);
+          if (!n || /^(serif|sans-serif|monospace|system-ui|ui-sans-serif|ui-serif|ui-monospace|cursive|fantasy|-apple-system|BlinkMacSystemFont|Segoe UI|Roboto|Helvetica Neue|Arial|Times New Roman|Georgia|emoji|math|fangsong)$/i.test(n)) continue;
+          famsWanted.add(n);
+          // Only the first family in the stack is the one being asked for; the
+          // rest are fallbacks and are supposed to go unloaded.
+          if (n === f.replace(/["']/g, '').trim() && cs.fontFamily.trim().indexOf(f.trim()) === 0) {
+            wanted.add(JSON.stringify([n, style, w]));
+          }
         }
       }
       const fontLoaded = {};
-      for (const n of famsWanted) fontLoaded[n] = document.fonts.check(`24px "${n}"`);
+      for (const key of wanted) {
+        const [n, style, w] = JSON.parse(key);
+        fontLoaded[`${n} ${style}${w}`] = document.fonts.check(`${style}${w} 24px "${n}"`);
+      }
       // The failure this catches: a flex group with justify-content:center and
       // min-height:0 shrinks below its content and spills in BOTH directions,
       // visually overlapping its neighbours -- while the group BOXES still do not
