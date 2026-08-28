@@ -33,3 +33,26 @@ site/
 # The full night history in plaintext. Only ever exists inside the encrypted
 # page; never in the repository.
 data/series.json
+
+# ---------------------------------------------------------------------------
+# Inbox sweep (2026-08). Everything below is derived from Seth's private Gmail:
+# subjects, senders, snippets, bodies, draft text, ROI participant data,
+# family and medical threads. This repo has a GitHub remote. None of it is
+# ever committed. Only the code and the content-free docs are tracked.
+# ---------------------------------------------------------------------------
+inbox-sweep/data/
+inbox-sweep/logs/
+inbox-sweep/docs/*.private.md
+inbox-sweep/FIRE-REPORT.md
+inbox-sweep/READ_DIGEST.md
+inbox-sweep/CALIBRATION_SAMPLE.md
+inbox-sweep/DRAFT_QA.md
+inbox-sweep/FINAL_REPORT.md
+inbox-sweep/drafts/
+
+# Compiled Python: committed by accident, never wanted
+__pycache__/
+*.pyc
+
+# The only file holding mailbox-derived personal data. Never commit it.
+inbox-sweep/config/identity.py
