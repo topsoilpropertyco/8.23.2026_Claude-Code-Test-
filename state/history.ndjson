@@ -42,3 +42,4 @@
 {"date":"2026-08-27","slot":"terminal_bedtime","status":"sent","kind":"fact","factId":"lucid-02","library":"lucid","category":"lucid-neuro","jackpot":false,"cycle":0,"promptId":"p18","mechanism":"self_efficacy","targetLabel":"9:48 PM","at":"2026-08-28T01:48:11.373Z"}
 {"date":"2026-08-28","slot":"intake","status":"sent","kind":"intake","targetLabel":"6:00 AM","at":"2026-08-28T10:00:44.631Z"}
 {"date":"2026-08-28","slot":"morning_light","status":"sent","kind":"habit","habit":"morning_light","whyId":"ml10","optional":false,"cycle":1,"targetLabel":"7:15 AM","at":"2026-08-28T11:15:14.090Z"}
+{"date":"2026-08-28","slot":"morning_reflection","status":"sent","kind":"fact","factId":"sleep-29","library":"sleep","category":"longevity","jackpot":false,"cycle":0,"promptId":"p17","mechanism":"self_efficacy","targetLabel":"7:48 AM","at":"2026-08-28T11:48:22.017Z"}
