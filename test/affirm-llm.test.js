@@ -11,6 +11,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { ANCHOR_TEXT } from '../src/anchor.js';
 
 // Set before any module that resolves a path reads it. journal.js resolves per
 // call now, but the ordering is still the honest thing to do.
@@ -184,7 +185,14 @@ test('a journal entry comes back written, through the real inbound path', async 
       inbox({ text: 'When Slack pings after 9 I will leave the laptop in the kitchen.' }));
 
     assert.equal(sends.length, 1, 'a journal entry must never be met with silence');
-    assert.equal(sends[0], written, 'the written reply should have shipped, not the library line');
+    // Contains rather than equals, because every outbound message now carries
+    // the B E anchor (src/anchor.js). The claim being made here is that the
+    // model's sentence shipped rather than the library's fallback line, so
+    // assert that -- and assert the anchor arrived with it, since "every
+    // message" includes the journal replies.
+    assert.ok(sends[0].startsWith(written),
+      `the written reply should have shipped, not the library line. Got: ${sends[0]}`);
+    assert.ok(sends[0].endsWith(ANCHOR_TEXT), 'the anchor rides out on journal replies too');
     assert.equal(state.writtenReplies.count, 1, 'the daily budget must be counted down');
   } finally {
     if (saved === undefined) delete process.env.GEMINI_API_KEY;

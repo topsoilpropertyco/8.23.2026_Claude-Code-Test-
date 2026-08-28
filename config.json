@@ -102,5 +102,16 @@
     "maxWrittenRepliesPerDay": 40,
     "thinkingBudget": null
   },
-  "pageStyle": "screens"
+  "pageStyle": "screens",
+  "anchor": {
+    "_comment": "The B E card. Text on every message; picture at midday and from the evening wind-down on. See src/anchor.js.",
+    "imageSlots": [
+      "midday_essentialism",
+      "evening_winddown",
+      "blue_blockers",
+      "work_shutdown",
+      "terminal_bedtime"
+    ],
+    "eveningFromHour": 18
+  }
 }

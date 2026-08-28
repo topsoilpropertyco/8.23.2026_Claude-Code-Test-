@@ -5,7 +5,8 @@
 // message is routed to exactly one of three places: a logged night, a journal
 // entry against the card that prompted it, or a command.
 
-import { getUpdates, sendMessage } from './telegram.js';
+import { getUpdates, sendMessage, sendPhoto } from './telegram.js';
+import { anchoredSend, imageDueForReply, sendAnchorCard } from './anchor.js';
 import { parseEntry, buildCoachResponse, buildCoachResponseAsync } from './coach.js';
 import { addJournalEntry, addSleepEntry, sleepSeries, readJournal, journalStreak, logHealth } from './journal.js';
 import { buildAffirmation } from './affirm.js';
@@ -387,7 +388,14 @@ export async function processInbox({
   // Injected so the failure paths can be exercised in tests. Defaults are the
   // real Telegram calls, so every existing call site is unchanged.
   send = sendMessage, fetchUpdates = getUpdates, pollTimeout = 0,
+  sendCard = sendPhoto,
 } = {}) {
+  // "Every message" has to mean every message, and this function sends from
+  // eleven places -- the affirmation, /help, /status, /today, /stats, an unknown
+  // command, a parse failure, the unreadable-log warning. Wrapping the seam
+  // once covers all of them and cannot be forgotten by the next one added.
+  send = anchoredSend(send);
+
   const updates = await fetchUpdates(token, state.inboxOffset ?? 0, { timeout: pollTimeout });
   const dateString = localDateString(now, config.timezone);
   const handled = [];
@@ -532,6 +540,14 @@ export async function processInbox({
         let affirmed = `${affirmation.shape}/${source}`;
         try {
           await send(token, chatId, replyText);
+          // After the evening hour, a message he sends gets the card back.
+          // That is the "Distracted? Repeat 1 and 2" loop made real: writing to
+          // the bot at 11pm is itself the distraction, so the answer is the
+          // instruction rather than a conversation.
+          if (imageDueForReply(now, config)) {
+            const went = await sendAnchorCard({ token, chatId, sendPhoto: sendCard, log });
+            if (went) affirmed += '+card';
+          }
         } catch (err) {
           affirmed = `FAILED (${err.message})`;
         }

@@ -13,7 +13,8 @@ import { selectFact } from './selector.js';
 import { prepareHabit } from './habits.js';
 import { selectPrompt, intakeRequest } from './prompts.js';
 import { renderMessage, renderIntake, renderHabit, renderSummary } from './render.js';
-import { sendMessage } from './telegram.js';
+import { sendMessage, sendPhoto } from './telegram.js';
+import { withAnchor, imageDueForSlot, sendAnchorCard } from './anchor.js';
 import { processInbox, trackPending } from './inbox.js';
 import { loadState, saveState, sentSlotsFor, recordSend } from './state.js';
 import { localDateString, localTimeString } from './time.js';
@@ -45,6 +46,12 @@ export async function dispatch({
   skipInbox = false,
   allowIngest = true,
   log = console.log,
+  // Injected so the live send path can be exercised in tests, matching the
+  // seam processInbox already offers. This exists because a mutation test
+  // deleted the card send outright and nothing went red: the dry-run branch
+  // logs its own marker, so it cannot witness what the live branch does.
+  send = sendMessage,
+  sendCard = sendPhoto,
 } = {}) {
   const config = loadConfig();
   const { facts } = loadLibraries();
@@ -158,10 +165,22 @@ export async function dispatch({
       sent.push({ slot, ...choice, prompt: chosenPrompt.prompt });
     }
 
+    // Every cue carries the anchor. See src/anchor.js for why it never varies.
+    text = withAnchor(text);
+
     if (dryRun) {
       log(`\n${'-'.repeat(64)}\n${text}\n${'-'.repeat(64)}`);
+      if (imageDueForSlot(slot.id, config)) log('[+ the B E card]');
     } else {
-      const result = await sendMessage(token, chatId, text);
+      const result = await send(token, chatId, text);
+
+      // The picture goes as its own message, after the text, and cannot fail
+      // the send. Attaching it as a photo caption instead would cap the cue at
+      // Telegram's 1024-character caption limit and silently truncate the fact
+      // -- and would make the reminder itself dependent on an upload.
+      if (imageDueForSlot(slot.id, config)) {
+        await sendAnchorCard({ token, chatId, sendPhoto: sendCard, log });
+      }
       // Track the sent message so a reply can be matched back to the card
       // that prompted it.
       trackPending(state, {
