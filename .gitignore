@@ -70,3 +70,8 @@ inbox-sweep/**
 !inbox-sweep/config/identity.example.py
 !inbox-sweep/README.md
 !inbox-sweep/CLAUDE.md
+
+# deal extract: no email content in git
+deal-extract/data/
+deal-extract/**/__pycache__/
+deal-extract/config/identity.py
