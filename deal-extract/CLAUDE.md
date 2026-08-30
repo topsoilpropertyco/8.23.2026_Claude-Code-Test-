@@ -156,3 +156,37 @@ RULE: spell the domain as `[\w-]+(?:\.[\w-]+)+` — dot-then-label, repeated —
 it cannot cross a run of dots, and re-validate every stored value after changing
 an extraction pattern. A pattern fix that is not backfilled only protects rows
 that do not exist yet.
+
+## DEALSTP is a different animal from HOTLEAD
+The 2022 Hot Lead Alerts are machine output from a CallTools Zap: one contact
+record, a free-text Notes blob, and a header field that is often wrong. The 2024
+DEALSTP threads are a HUMAN pipeline with a structured form:
+
+    Facility name / Address / Contact number CONFIRMED PHONE NUMBER /
+    Website / Email / Notes / Owner / Mailing address / Email CONFIRMED
+
+Three consequences for extraction:
+
+1. **`Owner:` is the owner of RECORD, not the person on the phone.** H & R Storage
+   lists "Owner: Laveleeta A Hill" while the notes say "Spoke to Eric who is one of
+   the owners." Both go in the row -- `owner_name` for the record owner,
+   `contact_name` for who actually answers -- because writing to the wrong one
+   wastes the lead.
+2. **CONFIRMED is a data-quality flag, and it is load-bearing.** A number or address
+   marked CONFIRMED PHONE NUMBER / CONFIRMED EMAIL ADDRESS has been verified;
+   anything else in the same template has not. Carry the word through.
+3. **The template's own `Asking price:` field is often n/a while the real number
+   arrives in a later reply.** Greenfield Stor-N-Lock reads "Asking price: n/a" in
+   the form and "The price that he is thinking about selling for is 1 Million
+   dollars" in the follow-up. Take the number, and record that the form said n/a.
+
+These threads also carry real underwriting -- gross revenue, expenses, seller NOI
+AND buyer NOI. Record both NOI figures separately: "$8500 every month NET" is what
+the owner earns, "$5,850 on a monthly NET" is what we would earn on the same
+building, and the gap between them is the entire argument about the price.
+
+## Motivation is a field, and low motivation is a finding
+"He does not have a lot of motivation and he would invest in another business if he
+sold this one" is worth as much as the asking price. A fully-occupied, well-kept,
+unmotivated seller at 1M is a worse lead than a tired seller at 1.2M. Record
+`seller_motivation` even -- especially -- when the answer is that there is none.
