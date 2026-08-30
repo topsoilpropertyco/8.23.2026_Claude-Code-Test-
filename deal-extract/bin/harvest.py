@@ -13,9 +13,40 @@ are visible without opening the payload.
 """
 import json, sys, os
 
+# --- scope guard ------------------------------------------------------------
+# A page harvested under the wrong scope key silently corrupts the ledger: the
+# threads are real, the label attribution is not, and nothing downstream can
+# tell. This happened once (a DEALSTP page filed as SWEEP07). So: pin each scope
+# to the Gmail label id that dominates its pages, and refuse a mismatch.
+PINS_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                         "data", "label-pins.json")
+
+def dominant_label(threads):
+    c = {}
+    for t in threads:
+        for m in t.get("messages", []):
+            for l in m.get("labelIds", []):
+                if l.startswith("Label_"): c[l] = c.get(l, 0) + 1
+    return max(c, key=c.get) if c else None
+
+def check_scope(scope, threads):
+    lid = dominant_label(threads)
+    if lid is None:
+        print("warn: no user label on this page; cannot verify scope", file=sys.stderr); return
+    pins = json.load(open(PINS_PATH)) if os.path.exists(PINS_PATH) else {}
+    if scope in pins and pins[scope] != lid:
+        sys.exit("REFUSED: page's dominant label %s does not match the id pinned "
+                 "for %s (%s). Wrong scope key, or wrong page token."
+                 % (lid, scope, pins[scope]))
+    if scope not in pins:
+        pins[scope] = lid
+        json.dump(pins, open(PINS_PATH, "w"), indent=1)
+        print("pinned %s -> %s" % (scope, lid), file=sys.stderr)
+
 src, scope, out = sys.argv[1], sys.argv[2], sys.argv[3]
 d = json.load(open(src))
 threads = d.get("threads", [])
+check_scope(scope, threads)
 rows, multi = [], 0
 with open(out, "w") as f:
     for t in threads:
