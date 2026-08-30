@@ -23,6 +23,16 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB   = os.path.join(ROOT, "data", "ledger", "deals.db")
 now  = lambda: datetime.now(timezone.utc).isoformat(timespec="seconds")
 
+# Contact details are buried in prose: "best to reach him is thru email
+# thomas@p27inc.com", "(423) 483-8330 spoke with Mark". Seth asked for owner
+# emails and phones as DATA, so they are lifted into their own fields. The
+# evidence quote stays the full message body, so the extraction is checkable.
+# The trailing [\w.]+ must not end on a dot: "email him at x@yahoo.com." would
+# otherwise capture the sentence-ending period and yield an address that fails
+# validation on CRM import.
+EMAIL_RX = re.compile(r"[\w.+-]+@[\w-]+\.[\w.]*\w")
+PHONE_RX = re.compile(r"\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}")
+
 def key_for(name, state):
     k = re.sub(r"[^a-z0-9]+", "-", ("%s %s" % (name, state)).lower()).strip("-")
     return k
@@ -65,6 +75,11 @@ for line in sys.stdin:
     if address.strip(): rows.append(("address_raw", address.strip(), "stated"))
     if contact.strip(): rows.append(("contact_raw", contact.strip(), "stated"))
     if notes.strip():   rows.append(("call_notes",  notes.strip(),   "stated"))
+    blob = " ".join((contact, notes))
+    for em in dict.fromkeys(EMAIL_RX.findall(blob)):
+        rows.append(("owner_email", em, "stated"))
+    for ph in dict.fromkeys(PHONE_RX.findall(blob)):
+        rows.append(("owner_phone", ph.strip(), "stated"))
     for field, value, conf in rows:
         c.execute("""INSERT INTO facts(thread_id,msg_id,property_key,field,value,
                      evidence_quote,confidence,created_at) VALUES(?,?,?,?,?,?,?,?)""",
