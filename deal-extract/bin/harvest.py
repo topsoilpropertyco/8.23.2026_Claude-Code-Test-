@@ -43,6 +43,26 @@ def check_scope(scope, threads):
         json.dump(pins, open(PINS_PATH, "w"), indent=1)
         print("pinned %s -> %s" % (scope, lid), file=sys.stderr)
 
+# --- tenant privacy ---------------------------------------------------------
+# Sanford is an EXITED owned facility, and its operational mail names STORAGE
+# UNIT TENANTS -- private individuals with no connection to any acquisition.
+# They have no place in a deal CRM, so names come out at ingest rather than
+# being stored and filtered later. Redaction happens before the write, so an
+# unredacted tenant name never reaches the ledger at all.
+TENANT_PATTERNS = [
+    (re.compile(r"^(.+?) rented (Unit \d+)"),           r"[tenant] rented \2"),
+    (re.compile(r"^Payment failed for (.+?) - "),        "Payment failed for [tenant] - "),
+    (re.compile(r"New Customer .+? From SpareFoot"),     "New Customer [tenant] From SpareFoot"),
+    (re.compile(r"^New Lead: Reply to (.+?)'s "),        "New Lead: Reply to [prospect]'s "),
+    (re.compile(r"^Lien Notice failed to send to .+"),   "Lien Notice failed to send to [tenant]"),
+]
+
+def redact(subject):
+    """Strip tenant identities from an operational subject line."""
+    for rx, rep in TENANT_PATTERNS:
+        subject = rx.sub(rep, subject)
+    return subject
+
 src, scope, out = sys.argv[1], sys.argv[2], sys.argv[3]
 d = json.load(open(src))
 threads = d.get("threads", [])
@@ -58,6 +78,7 @@ with open(out, "w") as f:
         for m in msgs:
             if m.get("subject"): subj = m["subject"]; break
         subj = " ".join(subj.split())          # kill tabs/newlines, keep content
+        subj = redact(subj)                    # tenant names never reach the ledger
         f.write("%s\t%s\t%s\n" % (tid, scope, subj))
         rows.append(tid)
 print("wrote %d rows -> %s" % (len(rows), out), file=sys.stderr)

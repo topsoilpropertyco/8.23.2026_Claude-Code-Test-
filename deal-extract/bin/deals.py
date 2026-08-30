@@ -121,6 +121,13 @@ def cmd_enum(a):
 TIER_RULES = [
   ("T3-confirm", r"^REVA (Start|End) of Day Report"),
   ("T3-confirm", r"^Storage Near Me Stanford Ads Report - "),
+  ("T3-confirm", r"^\[tenant\] rented Unit"),
+  ("T3-confirm", r"^Payment failed for \[tenant\]"),
+  ("T3-confirm", r"^Withdrawal Notice$"),
+  ("T3-confirm", r"^Your Transfer Has Been Scheduled$"),
+  ("T3-confirm", r"^Your Live Oak Bank eStatement$"),
+  ("T3-confirm", r"^Inquiry Report For \d"),
+  ("T3-confirm", r"^Daily Work Progress"),
   ("T1-full",    r"^Hot Lead Alert$"),          # payload is the BODY, per message
 ]
 
