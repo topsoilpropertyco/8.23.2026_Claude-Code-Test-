@@ -59,6 +59,10 @@ TENANT_PATTERNS = [
     (re.compile(r"Incoming Call\s*-\s*[A-Z][\w.]*(?:\s+[A-Z][\w.]*)*\s*-\s*(Unit \\d+)"),
                                                       r"Incoming Call - [tenant] - \\1"),
     (re.compile(r"failed to send to [^.]+"),          "failed to send to [tenant]"),
+    # A facility gate/lock code in a subject line is a live access credential.
+    # It is not deal data and must never sit in a database or a CRM export.
+    (re.compile(r"[Ll]ock code:?\s*\d+"),              "Lock code: [redacted]"),
+    (re.compile(r"[Gg]ate code:?\s*\d+"),              "Gate code: [redacted]"),
 
 ]
 
