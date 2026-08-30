@@ -55,3 +55,31 @@ evidence found in the thread.
 ! SS To Do/3Z Real Estate/B Self-Storage/Self-Storage Deals To Process  153
 ! SS To Do/3Z Real Estate/B Self-Storage/Self-Storage Lead Sources/Software to Test  19
 Threads carry several of these. Dedupe by thread_id.
+
+## Hot Lead message shape — and where it lies
+Verified across ~80 properties:
+    line 1  property name        (sometimes an ADDRESS; sometimes absent entirely)
+    line 2  two-letter state     (sometimes a full ADDRESS; sometimes WRONG)
+    line 3+ website / phone, then freeform call notes
+
+Three exceptions found in real mail, all of which would corrupt a CRM if the
+shape were trusted blindly:
+
+1. Line 2 said `PA` for two properties whose stated addresses are in NC and NY.
+   RULE: when the body states an address, the state comes from the ADDRESS.
+   Record the contradiction in a STATE_CONFLICT field rather than dropping it.
+
+2. A header address named a facility the owner had ALREADY SOLD; the real
+   opportunity was a different address in the body.
+   RULE: line 2 is a strong default, never a guarantee. Read the body.
+
+3. Some messages have no name at all — one carries only a state, a price, and an
+   image attachment holding the identity.
+   RULE: never invent a name. Provisional key, confidence=unsure, review queue.
+
+## One property, many threads
+Facts key on a normalized property key, so the same facility appearing in
+different threads merges with no special case. Real example: 151 Self Storage
+arrived twice a week apart — one message carried acreage, NRSF, unit count and
+building count; the other carried the asking price and the internal view that it
+was too high. Neither message alone was a usable row. Together they are one.
