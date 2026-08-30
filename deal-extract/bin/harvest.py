@@ -55,12 +55,21 @@ TENANT_PATTERNS = [
     (re.compile(r"New Customer .+? From SpareFoot"),     "New Customer [tenant] From SpareFoot"),
     (re.compile(r"^New Lead: Reply to (.+?)'s "),        "New Lead: Reply to [prospect]'s "),
     (re.compile(r"^Lien Notice failed to send to .+"),   "Lien Notice failed to send to [tenant]"),
+    (re.compile(r"^Website contact from .+? - "),     "Website contact from [prospect] - "),
+    (re.compile(r"Incoming Call\s*-\s*[A-Z][\w.]*(?:\s+[A-Z][\w.]*)*\s*-\s*(Unit \\d+)"),
+                                                      r"Incoming Call - [tenant] - \\1"),
+    (re.compile(r"failed to send to [^.]+"),          "failed to send to [tenant]"),
+
 ]
+
+MAX_SUBJECT = 180   # Monday board subjects embed entire tenant call notes
 
 def redact(subject):
     """Strip tenant identities from an operational subject line."""
     for rx, rep in TENANT_PATTERNS:
         subject = rx.sub(rep, subject)
+    if len(subject) > MAX_SUBJECT:
+        subject = subject[:MAX_SUBJECT].rstrip() + " ..."
     return subject
 
 src, scope, out = sys.argv[1], sys.argv[2], sys.argv[3]
