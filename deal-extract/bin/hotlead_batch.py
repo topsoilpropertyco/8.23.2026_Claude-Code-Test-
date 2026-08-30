@@ -37,8 +37,13 @@ EMAIL_RX = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
 PHONE_RX = re.compile(r"\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}")
 
 def key_for(name, state):
-    k = re.sub(r"[^a-z0-9]+", "-", ("%s %s" % (name, state)).lower()).strip("-")
-    return k
+    # Apostrophes are DELETED, not treated as separators: "Taylor's Mini Storage"
+    # must key as taylors-mini-storage, never taylor-s-mini-storage, or a second
+    # pass that spells the name without the apostrophe opens a duplicate row for
+    # a property already in the ledger. Ampersands DO separate -- "G & S" is two
+    # initials -- so they stay in the generic run below.
+    n = ("%s %s" % (name, state)).lower().replace("'", "").replace("\u2019", "")
+    return re.sub(r"[^a-z0-9]+", "-", n).strip("-")
 
 c = sqlite3.connect(DB)
 props = facts = 0
