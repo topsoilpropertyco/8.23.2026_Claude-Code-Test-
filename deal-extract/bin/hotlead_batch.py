@@ -48,6 +48,10 @@ for line in sys.stdin:
     tid, mid, name, state, contact = parts[:5]
     notes   = parts[5] if len(parts) > 5 else ""
     address = parts[6] if len(parts) > 6 else ""
+    # Asking price is NOT auto-extracted. Prose mixes asking prices with rents
+    # ("$800 a month"), monthly revenue and per-unit rates, and a regex cannot
+    # tell them apart. It is filled only where a human read states it plainly.
+    asking  = parts[7] if len(parts) > 7 else ""
     # The evidence quote must be able to stand alone. Falling back to just the
     # state would store "NC" as the proof for an entire property row.
     quote = (notes or " ".join(x for x in (address, name, state, contact) if x.strip())).strip()
@@ -73,6 +77,7 @@ for line in sys.stdin:
     else:             rows.append(("property_name", "UNKNOWN - not stated in message", "unsure"))
     if state.strip(): rows.append(("state", state.strip(), "stated"))
     if address.strip(): rows.append(("address_raw", address.strip(), "stated"))
+    if asking.strip():  rows.append(("asking_price", asking.strip(), "stated"))
     if contact.strip(): rows.append(("contact_raw", contact.strip(), "stated"))
     if notes.strip():   rows.append(("call_notes",  notes.strip(),   "stated"))
     blob = " ".join((contact, notes))
