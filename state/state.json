@@ -707,8 +707,16 @@
       }
     }
   },
-  "inboxOffset": 697606390,
+  "inboxOffset": 697606391,
   "pending": [
+    {
+      "messageId": 257,
+      "kind": "morning-prompt",
+      "promptId": "m06",
+      "mechanism": "episodic_future_thinking",
+      "slot": "intake",
+      "at": "2026-08-30T20:28:52.102Z"
+    },
     {
       "messageId": 255,
       "kind": "fact",
@@ -807,15 +815,6 @@
       "mechanism": "elaborative_interrogation",
       "slot": "midday_essentialism",
       "at": "2026-08-29T15:53:18.125Z"
-    },
-    {
-      "messageId": 218,
-      "kind": "fact",
-      "factId": "sleep-28",
-      "promptId": "p24",
-      "mechanism": "episodic_future_thinking",
-      "slot": "morning_reflection",
-      "at": "2026-08-29T11:59:08.898Z"
     }
   ],
   "promptCycle": 1,
@@ -841,7 +840,7 @@
     "p15",
     "p20"
   ],
-  "coachRotation": 5,
+  "coachRotation": 6,
   "affirmRotation": {
     "mechanism:identity": [
       0
@@ -937,7 +936,7 @@
     "count": 2
   },
   "coach": {
-    "at": "2026-08-28T12:46:08.978Z",
+    "at": "2026-08-30T20:28:52.102Z",
     "written": false,
     "provider": null,
     "model": null,
