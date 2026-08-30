@@ -52,6 +52,11 @@ for line in sys.stdin:
     # ("$800 a month"), monthly revenue and per-unit rates, and a regex cannot
     # tell them apart. It is filled only where a human read states it plainly.
     asking  = parts[7] if len(parts) > 7 else ""
+    # Free-form extras as field=value;field=value. Keeps NOI, property tax,
+    # occupancy, unit counts and broker details as their own fields without
+    # adding a column per concept. Same rule applies: the evidence quote is the
+    # whole message, so each value can be checked against its sentence.
+    extras  = parts[8] if len(parts) > 8 else ""
     # The evidence quote must be able to stand alone. Falling back to just the
     # state would store "NC" as the proof for an entire property row.
     quote = (notes or " ".join(x for x in (address, name, state, contact) if x.strip())).strip()
@@ -85,6 +90,10 @@ for line in sys.stdin:
         rows.append(("owner_email", em, "stated"))
     for ph in dict.fromkeys(PHONE_RX.findall(blob)):
         rows.append(("owner_phone", ph.strip(), "stated"))
+    for pair in extras.split(";"):
+        if "=" in pair:
+            f, _, v = pair.partition("=")
+            if f.strip() and v.strip(): rows.append((f.strip(), v.strip(), "stated"))
     for field, value, conf in rows:
         c.execute("""INSERT INTO facts(thread_id,msg_id,property_key,field,value,
                      evidence_quote,confidence,created_at) VALUES(?,?,?,?,?,?,?,?)""",
