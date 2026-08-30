@@ -86,3 +86,20 @@ different threads merges with no special case. Real example: 151 Self Storage
 arrived twice a week apart — one message carried acreage, NRSF, unit count and
 building count; the other carried the asking price and the internal view that it
 was too high. Neither message alone was a usable row. Together they are one.
+
+## Line 1 is not always the FACILITY
+One message reads "R C Industry" on line 1, and the body says: "they are
+interested in selling their facility, Red Door Mini Storage." R C Industry is the
+operating COMPANY; Red Door Mini Storage is the asset. A CRM keyed on line 1
+would file the deal under a name that appears nowhere on the building.
+
+RULE: when the body names the facility, that is the property name. The line-1
+value is recorded as operating_company, not discarded.
+
+## Cross-label links are recorded, not silently merged
+The same facility recurs under different labels years apart -- a 2023 Hot Lead
+call, an ACQ end-of-day note carrying the asking price and the internal
+valuation, a 2025 REI Reply pipeline nudge. Extraction records a cross_label_link
+fact naming the other thread and what it holds, at confidence=inferred. The
+actual merge happens in property resolution, where it can be reviewed, rather
+than being buried inside the extraction pass.
