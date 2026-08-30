@@ -110,6 +110,36 @@ def cmd_enum(a):
     print("new threads: %d   already known: %d" % (new, seen))
     cmd_stats(a)
 
+# --- read tiers -------------------------------------------------------------
+# Every thread is opened. The tier decides HOW MUCH of it we read, and is set
+# from evidence about the thread class, never to save effort on a deal thread.
+#   T1-full     human deal correspondence -> full get_thread, extract facts
+#   T2-subject  machine nudge whose ONLY payload is the subject line
+#   T3-confirm  boilerplate with a verified-empty body (payload is an image or
+#               an external dashboard link) -> open, confirm empty, log, move on
+# A rule only fires on an exact subject shape. Anything unmatched stays T1.
+TIER_RULES = [
+  ("T3-confirm", r"^REVA (Start|End) of Day Report"),
+  ("T3-confirm", r"^Storage Near Me Stanford Ads Report - "),
+  ("T1-full",    r"^Hot Lead Alert$"),          # payload is the BODY, per message
+]
+
+def cmd_tier(a):
+    c = db(); total = 0
+    for tier, pat in TIER_RULES:
+        rx = re.compile(pat)
+        n = 0
+        for r in c.execute("SELECT thread_id,subject FROM threads WHERE subject IS NOT NULL"):
+            if rx.search(r["subject"] or ""):
+                c.execute("UPDATE threads SET read_tier=? WHERE thread_id=?", (tier, r["thread_id"]))
+                n += 1
+        print("%-11s %-42s %4d" % (tier, pat, n)); total += n
+    c.commit(); logit(c, "tier", "assigned=%d" % total)
+    print("\nby tier:")
+    for r in c.execute("""SELECT COALESCE(read_tier,'(unassigned -> T1 default)') t, COUNT(*) n
+                          FROM threads GROUP BY 1 ORDER BY n DESC"""):
+        print("  %-30s %4d" % (r["t"], r["n"]))
+
 def cmd_stats(a):
     c = db()
     tot = c.execute("SELECT COUNT(*) n FROM threads").fetchone()["n"]
@@ -139,6 +169,7 @@ def main():
     sub = ap.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("init");  s.set_defaults(f=cmd_init)
     s = sub.add_parser("enum");  s.add_argument("files", nargs="+"); s.set_defaults(f=cmd_enum)
+    s = sub.add_parser("tier");  s.set_defaults(f=cmd_tier)
     s = sub.add_parser("stats"); s.set_defaults(f=cmd_stats)
     s = sub.add_parser("pending"); s.add_argument("--limit", type=int, default=40); s.set_defaults(f=cmd_pending)
     a = ap.parse_args(); a.f(a)
