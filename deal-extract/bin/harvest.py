@@ -11,7 +11,7 @@ Prints to stderr: nextPageToken, thread count, and per-thread message counts so
 multi-message threads (Hot Lead Alert bundles several properties in one thread)
 are visible without opening the payload.
 """
-import json, sys, os
+import json, sys, os, re
 
 # --- scope guard ------------------------------------------------------------
 # A page harvested under the wrong scope key silently corrupts the ledger: the
@@ -64,32 +64,65 @@ TENANT_PATTERNS = [
 
 MAX_SUBJECT = 180   # Monday board subjects embed entire tenant call notes
 
+# Task-board notifications (notifications@monday.com) put an entire tenant phone
+# call in the subject: name, unit, what they wanted, what the rep did. Patching
+# name patterns one at a time kept missing shapes ("Incoming call - X - Unit 76",
+# "Friend of X", "Auction Winner X"). So these subjects are NORMALIZED instead of
+# pattern-matched: keep the notification tag, the interaction type and the unit
+# number, discard all free text. Nothing an acquisitions CRM needs lives in the
+# discarded part -- this is an exited facility's day-to-day operations.
+MONDAY_TAG  = re.compile(r"^(\[(?:New update|New mention|You're assigned)\])\s*(?:Re:\s*)?", re.I)
+MONDAY_KIND = re.compile(r"(Incoming Call|Outbound Call|Missed Call|Please ensure|Please cut)", re.I)
+UNIT        = re.compile(r"\b[Uu]nit (\d+)")
+
+def normalize_board(subject):
+    tag = MONDAY_TAG.match(subject)
+    if not tag:
+        return None
+    rest = subject[tag.end():]
+    kind = MONDAY_KIND.search(rest)
+    unit = UNIT.search(rest)
+    parts = [tag.group(1)]
+    parts.append(kind.group(1).title() if kind else "task")
+    parts.append("- [tenant]")
+    if unit: parts.append("- Unit %s" % unit.group(1))
+    parts.append("(task-board notification)")
+    return " ".join(parts)
+
 def redact(subject):
     """Strip tenant identities from an operational subject line."""
+    board = normalize_board(subject)
+    if board is not None:
+        return board
     for rx, rep in TENANT_PATTERNS:
         subject = rx.sub(rep, subject)
     if len(subject) > MAX_SUBJECT:
         subject = subject[:MAX_SUBJECT].rstrip() + " ..."
     return subject
 
-src, scope, out = sys.argv[1], sys.argv[2], sys.argv[3]
-d = json.load(open(src))
-threads = d.get("threads", [])
-check_scope(scope, threads)
-rows, multi = [], 0
-with open(out, "w") as f:
-    for t in threads:
-        tid = t["id"]
-        msgs = t.get("messages", [])
-        if len(msgs) > 1: multi += 1
-        # subject of the OLDEST message present; search previews oldest-first
-        subj = ""
-        for m in msgs:
-            if m.get("subject"): subj = m["subject"]; break
-        subj = " ".join(subj.split())          # kill tabs/newlines, keep content
-        subj = redact(subj)                    # tenant names never reach the ledger
-        f.write("%s\t%s\t%s\n" % (tid, scope, subj))
-        rows.append(tid)
-print("wrote %d rows -> %s" % (len(rows), out), file=sys.stderr)
-print("multi-message threads on this page: %d" % multi, file=sys.stderr)
-print("NEXT=%s" % d.get("nextPageToken", ""), file=sys.stderr)
+def main():
+    src, scope, out = sys.argv[1], sys.argv[2], sys.argv[3]
+    d = json.load(open(src))
+    threads = d.get("threads", [])
+    check_scope(scope, threads)
+    rows, multi = [], 0
+    with open(out, "w") as f:
+        for t in threads:
+            tid = t["id"]
+            msgs = t.get("messages", [])
+            if len(msgs) > 1: multi += 1
+            # subject of the OLDEST message present; search previews oldest-first
+            subj = ""
+            for m in msgs:
+                if m.get("subject"): subj = m["subject"]; break
+            subj = " ".join(subj.split())          # kill tabs/newlines, keep content
+            subj = redact(subj)                    # tenant names never reach the ledger
+            f.write("%s\t%s\t%s\n" % (tid, scope, subj))
+            rows.append(tid)
+    print("wrote %d rows -> %s" % (len(rows), out), file=sys.stderr)
+    print("multi-message threads on this page: %d" % multi, file=sys.stderr)
+    print("NEXT=%s" % d.get("nextPageToken", ""), file=sys.stderr)
+
+
+if __name__ == "__main__":
+    main()
