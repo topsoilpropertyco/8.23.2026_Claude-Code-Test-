@@ -53,6 +53,8 @@ TEMPLATES = [
     r"^(SpareFoot \| Your credit card|Receipt from |\[tenant\]'s Reservation)",
     r"^(Your (external account|mobile check deposit)|Live Oak Bank - Document|We Need Your Help)",
     r"^(Overdue bill|Payment failed for \[tenant\])$",
+    r"^(Your deposit was successful|You're Invited to Join)",
+    r"^(REPLAY LINK|REMINDER|IMPORTANT & TIMELY|See You in|See you in)",
 ]
 TEMPLATES = [re.compile(p) for p in TEMPLATES]
 
