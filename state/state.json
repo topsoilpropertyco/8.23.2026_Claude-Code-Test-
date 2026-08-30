@@ -683,7 +683,7 @@
       }
     }
   },
-  "inboxOffset": 697606388,
+  "inboxOffset": 697606389,
   "pending": [
     {
       "messageId": 240,
@@ -821,7 +821,9 @@
   ],
   "coachRotation": 5,
   "affirmRotation": {
-    "mechanism:identity": [],
+    "mechanism:identity": [
+      0
+    ],
     "mechanism:prospective_regret": [],
     "mechanism:anchoring": [],
     "short": [
