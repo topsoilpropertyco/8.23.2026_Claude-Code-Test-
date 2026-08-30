@@ -50,6 +50,9 @@ TEMPLATES = [
     r"^(Facebook Messenger|Payment$)",
     r"^(Receipt for Payment to|SpareFoot Receipt|New Payment request from)",
     r"^(New Lead: Reply to|\(no subject)",
+    r"^(SpareFoot \| Your credit card|Receipt from |\[tenant\]'s Reservation)",
+    r"^(Your (external account|mobile check deposit)|Live Oak Bank - Document|We Need Your Help)",
+    r"^(Overdue bill|Payment failed for \[tenant\])$",
 ]
 TEMPLATES = [re.compile(p) for p in TEMPLATES]
 

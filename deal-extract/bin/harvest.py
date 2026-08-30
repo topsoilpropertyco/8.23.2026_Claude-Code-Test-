@@ -57,7 +57,9 @@ TENANT_PATTERNS = [
     (re.compile(r"hold the unit for .+"),               "hold the unit for [tenant]"),
     (re.compile(r"^Payment failed for (.+?) - "),        "Payment failed for [tenant] - "),
     (re.compile(r"New Customer .+? From SpareFoot"),     "New Customer [tenant] From SpareFoot"),
-    (re.compile(r"^New Lead: Reply to (.+?)'s "),        "New Lead: Reply to [prospect]'s "),
+    # NOT anchored: these arrive with "Re: " and "Fwd: " prefixes too.
+    (re.compile(r"New Lead: Reply to (.+?)'s "),         "New Lead: Reply to [prospect]'s "),
+    (re.compile(r"^(.+?)'s Reservation Has Changed$"),   "[tenant]'s Reservation Has Changed"),
     (re.compile(r"^Lien Notice failed to send to .+"),   "Lien Notice failed to send to [tenant]"),
     (re.compile(r"^Website contact from .+? - "),     "Website contact from [prospect] - "),
     (re.compile(r"Incoming Call\s*-\s*[A-Z][\w.]*(?:\s+[A-Z][\w.]*)*\s*-\s*(Unit \\d+)"),
