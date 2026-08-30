@@ -66,6 +66,9 @@ Three exceptions found in real mail, all of which would corrupt a CRM if the
 shape were trusted blindly:
 
 1. Line 2 said `PA` for two properties whose stated addresses are in NC and NY.
+   ROOT CAUSE, found later: `PA` is the BROKER's state. Andreas Makris is a
+   Self-Storage Investment Associate in Philadelphia. Line 2 sometimes carries
+   whoever sent the listing, not where the asset is.
    RULE: when the body states an address, the state comes from the ADDRESS.
    Record the contradiction in a STATE_CONFLICT field rather than dropping it.
 
