@@ -50,7 +50,11 @@ def check_scope(scope, threads):
 # being stored and filtered later. Redaction happens before the write, so an
 # unredacted tenant name never reaches the ledger at all.
 TENANT_PATTERNS = [
-    (re.compile(r"^(.+?) rented (Unit \d+)"),           r"[tenant] rented \2"),
+    (re.compile(r"^(.+?) rented (Unit \w+)"),           r"[tenant] rented \2"),
+    (re.compile(r"^(.+?) reserved (Unit \w+)"),         r"[tenant] reserved \2"),
+    (re.compile(r"^(.+?) May Not Move In$"),            "[tenant] May Not Move In"),
+    (re.compile(r"new customer .+? moved in", re.I),    "new customer [tenant] moved in"),
+    (re.compile(r"hold the unit for .+"),               "hold the unit for [tenant]"),
     (re.compile(r"^Payment failed for (.+?) - "),        "Payment failed for [tenant] - "),
     (re.compile(r"New Customer .+? From SpareFoot"),     "New Customer [tenant] From SpareFoot"),
     (re.compile(r"^New Lead: Reply to (.+?)'s "),        "New Lead: Reply to [prospect]'s "),
