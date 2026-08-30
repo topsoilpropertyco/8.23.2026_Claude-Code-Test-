@@ -36,17 +36,22 @@ for line in sys.stdin:
     if len(parts) < 5:
         sys.exit("bad row (need >=5 fields): %r" % line)
     tid, mid, name, state, contact = parts[:5]
-    notes = parts[5] if len(parts) > 5 else ""
-    quote = (notes or "%s %s %s" % (name, state, contact)).strip()
+    notes   = parts[5] if len(parts) > 5 else ""
+    address = parts[6] if len(parts) > 6 else ""
+    # The evidence quote must be able to stand alone. Falling back to just the
+    # state would store "NC" as the proof for an entire property row.
+    quote = (notes or " ".join(x for x in (address, name, state, contact) if x.strip())).strip()
     if not quote:
         sys.exit("refused: no evidence text for %s" % mid)
     # Some Hot Lead messages carry NO property name -- just a state and a phone
     # that rang out. Inventing a name would be the single worst failure mode
     # here, so these get a provisional key tied to the message and are flagged
     # for review rather than guessed at.
-    if not name.strip():
+    if not name.strip() and address.strip():
+        key = key_for(address, "")
+    elif not name.strip():
         key = "unnamed-%s" % mid
-        c.execute("""INSERT INTO review_queue(kind,detail,thread_ids,created_at)
+        if not address.strip(): c.execute("""INSERT INTO review_queue(kind,detail,thread_ids,created_at)
                      VALUES(?,?,?,?)""",
                   ("no property name in Hot Lead message",
                    "msg=%s state=%s contact=%s notes=%s" % (mid, state, contact, notes[:120]),
@@ -57,6 +62,7 @@ for line in sys.stdin:
     if name.strip():  rows.append(("property_name", name, "stated"))
     else:             rows.append(("property_name", "UNKNOWN - not stated in message", "unsure"))
     if state.strip(): rows.append(("state", state.strip(), "stated"))
+    if address.strip(): rows.append(("address_raw", address.strip(), "stated"))
     if contact.strip(): rows.append(("contact_raw", contact.strip(), "stated"))
     if notes.strip():   rows.append(("call_notes",  notes.strip(),   "stated"))
     for field, value, conf in rows:
