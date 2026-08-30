@@ -140,6 +140,20 @@ def cmd_tier(a):
                           FROM threads GROUP BY 1 ORDER BY n DESC"""):
         print("  %-30s %4d" % (r["t"], r["n"]))
 
+def cmd_fact(a):
+    """Record one fact. Refuses without a verbatim evidence quote -- the whole
+    point of the ledger is that every value can be traced back to a real
+    sentence in a real message."""
+    c = db()
+    if not a.quote.strip():
+        sys.exit("refused: a fact with no evidence quote is not a fact")
+    c.execute("""INSERT INTO facts(thread_id,msg_id,property_key,field,value,
+                 evidence_quote,confidence,created_at) VALUES(?,?,?,?,?,?,?,?)""",
+              (a.thread, a.msg, a.key, a.field, a.value, a.quote, a.confidence, now()))
+    c.execute("UPDATE threads SET body_read=1, extracted_at=? WHERE thread_id=?", (now(), a.thread))
+    c.commit(); logit(c, "fact", "%s.%s" % (a.key, a.field))
+    print("recorded: %s / %s = %s  [%s]" % (a.key, a.field, a.value, a.confidence))
+
 def cmd_stats(a):
     c = db()
     tot = c.execute("SELECT COUNT(*) n FROM threads").fetchone()["n"]
@@ -170,6 +184,12 @@ def main():
     s = sub.add_parser("init");  s.set_defaults(f=cmd_init)
     s = sub.add_parser("enum");  s.add_argument("files", nargs="+"); s.set_defaults(f=cmd_enum)
     s = sub.add_parser("tier");  s.set_defaults(f=cmd_tier)
+    s = sub.add_parser("fact")
+    s.add_argument("--thread", required=True); s.add_argument("--msg", default=None)
+    s.add_argument("--key", required=True); s.add_argument("--field", required=True)
+    s.add_argument("--value", required=True); s.add_argument("--quote", required=True)
+    s.add_argument("--confidence", default="stated", choices=["stated","inferred","unsure"])
+    s.set_defaults(f=cmd_fact)
     s = sub.add_parser("stats"); s.set_defaults(f=cmd_stats)
     s = sub.add_parser("pending"); s.add_argument("--limit", type=int, default=40); s.set_defaults(f=cmd_pending)
     a = ap.parse_args(); a.f(a)
