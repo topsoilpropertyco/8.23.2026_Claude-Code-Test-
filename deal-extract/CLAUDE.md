@@ -103,3 +103,56 @@ valuation, a 2025 REI Reply pipeline nudge. Extraction records a cross_label_lin
 fact naming the other thread and what it holds, at confidence=inferred. The
 actual merge happens in property resolution, where it can be reviewed, rather
 than being buried inside the extraction pass.
+
+## A message can be genuinely empty
+Thread 184ed748e0b65426 carries three Hot Lead Alerts. The first has a body. The
+other two return no plaintextBody, no htmlBody and no snippet in any message
+format — the automation fired with nothing in it. Their ~9.3KB sizeEstimate is
+headers alone.
+
+RULE: an empty message is a finding, not a skip. Record it as EMPTY_MESSAGE
+against the thread's property so the gap is visible in the ledger. Re-request in
+FULL_CONTENT before concluding a body is absent; PLAIN_TEXT alone would not
+distinguish "empty" from "HTML only".
+
+## A wrong number is still a lead
+One alert is headed "Penske Truck Rental". The note says the number reached is
+not a storage facility at all — and then hands over two referrals: "Triple A
+Storage is 828-6977772 owner is Dennis Dorn and Save Green Self storage is at
+828-9701112". Filing this under Penske and moving on would throw away two named
+facilities with owner contact details.
+
+RULE: the header names who was CALLED, not necessarily who the lead is. When the
+body refers to other facilities by name, each gets its own property row with
+lead_source recording that it came in as a referral rather than a direct call.
+The header entity gets a NOT_A_PROPERTY fact so the row is not mistaken for an
+acquisition target.
+
+## An appraisal is not an asking price
+Maxey's Self Storage: "He would be willing to sell if offered the right price. It
+was appraised for over a quarter million." Nobody named a number they would
+accept. That figure goes in appraised_value; asking_price stays empty. The same
+discipline that keeps rents and monthly revenue out of asking_price applies to
+appraisals, tax values and broker opinions — with one exception already in the
+data: "willing to sell the facility for a million dollars (based from tax value)"
+IS an ask, because the owner attached himself to the number.
+
+## The website in the header can belong to someone else
+The Ace Mini Storage alert (120 12th St SW, Spencer IA) carries the URL
+southgateselfstorage.com/3350-southgate-ct-sw-cedar-rapids-ia-52404 — a different
+company, a different city, 250 miles away. Storing that as the facility's website
+would send a CRM user to a competitor.
+
+RULE: a URL is only recorded as `website` when its domain or slug corroborates
+the facility. Otherwise it is a URL_MISMATCH fact at confidence=unsure.
+
+## Regex-extracted contact fields need a shape assertion
+`ghgfour@hotmail.com.....willing` sat in the ledger as an owner_email. The note
+read "email is ghgfour@hotmail.com.....willing to sell the facility", and a
+domain pattern of `[\w.]*\w` happily ran through the ellipsis into the next word.
+The address was correctly evidenced, correctly attributed, and undeliverable.
+
+RULE: spell the domain as `[\w-]+(?:\.[\w-]+)+` — dot-then-label, repeated — so
+it cannot cross a run of dots, and re-validate every stored value after changing
+an extraction pattern. A pattern fix that is not backfilled only protects rows
+that do not exist yet.

@@ -30,7 +30,10 @@ now  = lambda: datetime.now(timezone.utc).isoformat(timespec="seconds")
 # The trailing [\w.]+ must not end on a dot: "email him at x@yahoo.com." would
 # otherwise capture the sentence-ending period and yield an address that fails
 # validation on CRM import.
-EMAIL_RX = re.compile(r"[\w.+-]+@[\w-]+\.[\w.]*\w")
+EMAIL_RX = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
+# The domain is spelled as repeated dot-then-label rather than a loose [\w.]* run:
+# a note that reads "ghgfour@hotmail.com.....willing to sell" otherwise swallows the
+# ellipsis and the next word, and the CRM gets an address that will never deliver.
 PHONE_RX = re.compile(r"\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}")
 
 def key_for(name, state):
