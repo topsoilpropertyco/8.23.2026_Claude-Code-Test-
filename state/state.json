@@ -751,10 +751,27 @@
         "targetLabel": "9:53 PM",
         "at": "2026-08-31T01:53:13.760Z"
       }
+    },
+    "2026-08-31": {
+      "intake": {
+        "status": "sent",
+        "kind": "intake",
+        "targetLabel": "6:00 AM",
+        "at": "2026-08-31T10:00:16.230Z"
+      }
     }
   },
   "inboxOffset": 697606391,
   "pending": [
+    {
+      "messageId": 266,
+      "kind": "intake",
+      "factId": null,
+      "promptId": null,
+      "mechanism": null,
+      "slot": "intake",
+      "at": "2026-08-31T10:00:16.230Z"
+    },
     {
       "messageId": 264,
       "kind": "fact",
@@ -852,15 +869,6 @@
       "mechanism": "minimum_viable",
       "slot": "terminal_bedtime",
       "at": "2026-08-30T01:55:08.108Z"
-    },
-    {
-      "messageId": 234,
-      "kind": "fact",
-      "factId": "sleep-09",
-      "promptId": "p10",
-      "mechanism": "prospective_regret",
-      "slot": "work_shutdown",
-      "at": "2026-08-30T00:59:13.223Z"
     }
   ],
   "promptCycle": 1,
