@@ -807,8 +807,16 @@
       }
     }
   },
-  "inboxOffset": 697606393,
+  "inboxOffset": 697606394,
   "pending": [
+    {
+      "messageId": 286,
+      "kind": "morning-prompt",
+      "promptId": "m07",
+      "mechanism": "minimum_viable",
+      "slot": "intake",
+      "at": "2026-08-31T20:29:20.410Z"
+    },
     {
       "messageId": 283,
       "kind": "fact",
@@ -906,15 +914,6 @@
       "mechanism": "implementation_intention",
       "slot": "afternoon_boundary",
       "at": "2026-08-30T19:56:04.277Z"
-    },
-    {
-      "messageId": 251,
-      "kind": "fact",
-      "factId": "sleep-25",
-      "promptId": "p17",
-      "mechanism": "self_efficacy",
-      "slot": "midday_essentialism",
-      "at": "2026-08-30T16:10:17.017Z"
     }
   ],
   "promptCycle": 1,
@@ -934,7 +933,7 @@
     "p15",
     "p20"
   ],
-  "coachRotation": 6,
+  "coachRotation": 7,
   "affirmRotation": {
     "mechanism:identity": [
       0
@@ -1033,11 +1032,11 @@
     "count": 2
   },
   "coach": {
-    "at": "2026-08-30T20:28:52.102Z",
+    "at": "2026-08-31T20:29:20.410Z",
     "written": false,
     "provider": null,
     "model": null,
-    "intensity": "brief",
+    "intensity": "deep",
     "reason": "coach-llm unavailable, using the rule-based coach: HTTP 503: {\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. P"
   }
 }
