@@ -9,7 +9,6 @@
     "sleep-38",
     "lucid-12",
     "sleep-33",
-    "sleep-10",
     "lucid-13",
     "sleep-37",
     "lucid-01",
@@ -792,11 +791,33 @@
         "mechanism": "subtraction",
         "targetLabel": "12:13 PM",
         "at": "2026-08-31T16:13:16.077Z"
+      },
+      "afternoon_boundary": {
+        "status": "sent",
+        "kind": "fact",
+        "factId": "sleep-10",
+        "library": "sleep",
+        "category": "hormones",
+        "jackpot": false,
+        "cycle": 0,
+        "promptId": "p22",
+        "mechanism": "commitment",
+        "targetLabel": "3:48 PM",
+        "at": "2026-08-31T19:48:01.734Z"
       }
     }
   },
   "inboxOffset": 697606393,
   "pending": [
+    {
+      "messageId": 283,
+      "kind": "fact",
+      "factId": "sleep-10",
+      "promptId": "p22",
+      "mechanism": "commitment",
+      "slot": "afternoon_boundary",
+      "at": "2026-08-31T19:48:01.734Z"
+    },
     {
       "messageId": 279,
       "kind": "fact",
@@ -894,15 +915,6 @@
       "mechanism": "self_efficacy",
       "slot": "midday_essentialism",
       "at": "2026-08-30T16:10:17.017Z"
-    },
-    {
-      "messageId": 240,
-      "kind": "fact",
-      "factId": "sleep-04",
-      "promptId": "p06",
-      "mechanism": "identity",
-      "slot": "morning_reflection",
-      "at": "2026-08-30T12:04:12.417Z"
     }
   ],
   "promptCycle": 1,
@@ -912,7 +924,6 @@
     "p05",
     "p04",
     "p16",
-    "p22",
     "p23",
     "p14",
     "p02",
