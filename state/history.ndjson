@@ -76,3 +76,4 @@
 {"date":"2026-08-31","slot":"blue_blockers","status":"sent","kind":"habit","habit":"blue_blockers","whyId":"bb12","optional":false,"cycle":1,"targetLabel":"7:30 PM","at":"2026-08-31T23:30:09.372Z"}
 {"date":"2026-08-31","slot":"work_shutdown","status":"sent","kind":"fact","factId":"lucid-01","library":"lucid","category":"lucid-performance","jackpot":true,"cycle":0,"promptId":"p26","mechanism":"subtraction","targetLabel":"8:47 PM","at":"2026-09-01T00:47:22.873Z"}
 {"date":"2026-08-31","slot":"terminal_bedtime","status":"sent","kind":"fact","factId":"lucid-12","library":"lucid","category":"lucid-induction","jackpot":true,"cycle":0,"promptId":"p05","mechanism":"identity","targetLabel":"9:57 PM","at":"2026-09-01T01:57:13.764Z"}
+{"date":"2026-09-01","slot":"intake","status":"sent","kind":"intake","targetLabel":"6:00 AM","at":"2026-09-01T10:00:18.620Z"}
