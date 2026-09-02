@@ -2,7 +2,6 @@
   "version": 1,
   "cycle": 0,
   "remaining": [
-    "sleep-37",
     "lucid-04"
   ],
   "sends": {
@@ -992,11 +991,33 @@
         "mechanism": "episodic_future_thinking",
         "targetLabel": "11:54 AM",
         "at": "2026-09-02T15:54:01.671Z"
+      },
+      "afternoon_boundary": {
+        "status": "sent",
+        "kind": "fact",
+        "factId": "sleep-37",
+        "library": "sleep",
+        "category": "environment",
+        "jackpot": false,
+        "cycle": 0,
+        "promptId": "p15",
+        "mechanism": "anchoring",
+        "targetLabel": "4:14 PM",
+        "at": "2026-09-02T20:14:08.389Z"
       }
     }
   },
   "inboxOffset": 697606405,
   "pending": [
+    {
+      "messageId": 381,
+      "kind": "fact",
+      "factId": "sleep-37",
+      "promptId": "p15",
+      "mechanism": "anchoring",
+      "slot": "afternoon_boundary",
+      "at": "2026-09-02T20:14:08.389Z"
+    },
     {
       "messageId": 377,
       "kind": "fact",
@@ -1094,21 +1115,11 @@
       "mechanism": "mental_contrasting",
       "slot": "midday_essentialism",
       "at": "2026-09-01T15:59:07.361Z"
-    },
-    {
-      "messageId": 312,
-      "kind": "fact",
-      "factId": "sleep-03",
-      "promptId": "p04",
-      "mechanism": "identity",
-      "slot": "morning_reflection",
-      "at": "2026-09-01T11:51:19.521Z"
     }
   ],
   "promptCycle": 1,
   "promptRemaining": [
     "p13",
-    "p15",
     "p20"
   ],
   "coachRotation": 9,
