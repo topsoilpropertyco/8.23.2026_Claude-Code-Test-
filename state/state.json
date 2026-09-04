@@ -3,7 +3,6 @@
   "cycle": 1,
   "remaining": [
     "lucid-13",
-    "sleep-32",
     "sleep-37",
     "lucid-03",
     "sleep-19",
@@ -1181,11 +1180,33 @@
         "cycle": 1,
         "targetLabel": "7:30 PM",
         "at": "2026-09-03T23:30:23.151Z"
+      },
+      "work_shutdown": {
+        "status": "sent",
+        "kind": "fact",
+        "factId": "sleep-32",
+        "library": "sleep",
+        "category": "circadian",
+        "jackpot": true,
+        "cycle": 1,
+        "promptId": "p10",
+        "mechanism": "prospective_regret",
+        "targetLabel": "8:53 PM",
+        "at": "2026-09-04T00:53:24.927Z"
       }
     }
   },
   "inboxOffset": 697606408,
   "pending": [
+    {
+      "messageId": 430,
+      "kind": "fact",
+      "factId": "sleep-32",
+      "promptId": "p10",
+      "mechanism": "prospective_regret",
+      "slot": "work_shutdown",
+      "at": "2026-09-04T00:53:24.927Z"
+    },
     {
       "messageId": 428,
       "kind": "habit",
@@ -1284,20 +1305,10 @@
       "mechanism": "mental_contrasting",
       "slot": "evening_winddown",
       "at": "2026-09-02T22:12:26.338Z"
-    },
-    {
-      "messageId": 381,
-      "kind": "fact",
-      "factId": "sleep-37",
-      "promptId": "p15",
-      "mechanism": "anchoring",
-      "slot": "afternoon_boundary",
-      "at": "2026-09-02T20:14:08.389Z"
     }
   ],
   "promptCycle": 2,
   "promptRemaining": [
-    "p10",
     "p23",
     "p01",
     "p20",
