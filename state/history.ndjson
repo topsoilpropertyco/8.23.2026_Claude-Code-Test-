@@ -104,3 +104,4 @@
 {"date":"2026-09-03","slot":"work_shutdown","status":"sent","kind":"fact","factId":"sleep-32","library":"sleep","category":"circadian","jackpot":true,"cycle":1,"promptId":"p10","mechanism":"prospective_regret","targetLabel":"8:53 PM","at":"2026-09-04T00:53:24.927Z"}
 {"date":"2026-09-03","slot":"terminal_bedtime","status":"sent","kind":"fact","factId":"lucid-13","library":"lucid","category":"lucid-induction","jackpot":false,"cycle":1,"promptId":"p23","mechanism":"episodic_future_thinking","targetLabel":"9:42 PM","at":"2026-09-04T01:42:11.478Z"}
 {"date":"2026-09-04","slot":"intake","status":"sent","kind":"intake","targetLabel":"6:00 AM","at":"2026-09-04T10:00:16.845Z"}
+{"date":"2026-09-04","slot":"morning_light","status":"sent","kind":"habit","habit":"morning_light","whyId":"ml22","optional":true,"cycle":1,"targetLabel":"7:15 AM","at":"2026-09-04T11:15:03.474Z"}
