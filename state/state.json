@@ -1274,7 +1274,7 @@
       }
     }
   },
-  "inboxOffset": 697606414,
+  "inboxOffset": 697606415,
   "pending": [
     {
       "messageId": 462,
@@ -1426,9 +1426,7 @@
       0,
       1
     ],
-    "mechanism:implementation_intention": [
-      1
-    ],
+    "mechanism:implementation_intention": [],
     "mechanism:commitment": [],
     "mechanism:elaborative_interrogation": [],
     "identity": [
@@ -1489,7 +1487,7 @@
   },
   "writtenReplies": {
     "date": "2026-09-04",
-    "count": 3
+    "count": 4
   },
   "coach": {
     "at": "2026-09-04T12:26:30.447Z",
