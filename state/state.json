@@ -1208,7 +1208,7 @@
       }
     }
   },
-  "inboxOffset": 697606409,
+  "inboxOffset": 697606410,
   "pending": [
     {
       "messageId": 432,
@@ -1388,9 +1388,7 @@
     "mechanism:subtraction": [
       0
     ],
-    "mechanism:episodic_future_thinking": [
-      1
-    ]
+    "mechanism:episodic_future_thinking": []
   },
   "habitRotation": {
     "blue_blockers": {
@@ -1433,7 +1431,7 @@
   },
   "writtenReplies": {
     "date": "2026-09-03",
-    "count": 2
+    "count": 3
   },
   "coach": {
     "at": "2026-09-02T13:34:45.172Z",
