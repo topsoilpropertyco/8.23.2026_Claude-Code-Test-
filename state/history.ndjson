@@ -121,3 +121,4 @@
 {"date":"2026-09-05","slot":"blue_blockers","status":"sent","kind":"habit","habit":"blue_blockers","whyId":"bb08","optional":false,"cycle":1,"targetLabel":"7:30 PM","at":"2026-09-05T23:30:01.250Z"}
 {"date":"2026-09-05","slot":"work_shutdown","status":"sent","kind":"fact","factId":"lucid-06","library":"lucid","category":"lucid-creative","jackpot":false,"cycle":1,"promptId":"p26","mechanism":"subtraction","targetLabel":"8:47 PM","at":"2026-09-06T00:47:11.685Z"}
 {"date":"2026-09-05","slot":"terminal_bedtime","status":"sent","kind":"fact","factId":"sleep-20","library":"sleep","category":"environment","jackpot":false,"cycle":1,"promptId":"p18","mechanism":"self_efficacy","targetLabel":"9:56 PM","at":"2026-09-06T01:56:18.122Z"}
+{"date":"2026-09-06","slot":"intake","status":"sent","kind":"intake","targetLabel":"6:00 AM","at":"2026-09-06T10:00:12.686Z"}
