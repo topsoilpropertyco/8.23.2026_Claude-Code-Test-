@@ -124,3 +124,4 @@
 {"date":"2026-09-06","slot":"intake","status":"sent","kind":"intake","targetLabel":"6:00 AM","at":"2026-09-06T10:00:12.686Z"}
 {"date":"2026-09-06","slot":"morning_light","status":"sent","kind":"habit","habit":"morning_light","whyId":"ml08","optional":true,"cycle":1,"targetLabel":"7:15 AM","at":"2026-09-06T11:15:18.180Z"}
 {"date":"2026-09-06","slot":"morning_reflection","status":"sent","kind":"fact","factId":"sleep-34","library":"sleep","category":"hormones","jackpot":false,"cycle":1,"promptId":"p06","mechanism":"identity","targetLabel":"7:54 AM","at":"2026-09-06T11:54:20.558Z"}
+{"date":"2026-09-06","slot":"midday_essentialism","status":"sent","kind":"fact","factId":"sleep-21","library":"sleep","category":"cognition","jackpot":false,"cycle":1,"promptId":"p17","mechanism":"self_efficacy","targetLabel":"12:20 PM","at":"2026-09-06T16:20:15.641Z"}
