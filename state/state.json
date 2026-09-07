@@ -1538,8 +1538,16 @@
       }
     }
   },
-  "inboxOffset": 697606427,
+  "inboxOffset": 697606428,
   "pending": [
+    {
+      "messageId": 556,
+      "kind": "morning-prompt",
+      "promptId": "m06",
+      "mechanism": "episodic_future_thinking",
+      "slot": "intake",
+      "at": "2026-09-07T13:05:59.841Z"
+    },
     {
       "messageId": 542,
       "kind": "fact",
@@ -1637,15 +1645,6 @@
       "mechanism": "identity",
       "slot": "morning_reflection",
       "at": "2026-09-06T11:54:20.558Z"
-    },
-    {
-      "messageId": 510,
-      "kind": "habit",
-      "factId": null,
-      "promptId": null,
-      "mechanism": null,
-      "slot": "morning_light",
-      "at": "2026-09-06T11:15:18.180Z"
     }
   ],
   "promptCycle": 2,
@@ -1653,7 +1652,7 @@
     "p12",
     "p28"
   ],
-  "coachRotation": 12,
+  "coachRotation": 13,
   "affirmRotation": {
     "mechanism:identity": [
       0
@@ -1743,11 +1742,11 @@
     "count": 2
   },
   "coach": {
-    "at": "2026-09-06T17:11:57.389Z",
+    "at": "2026-09-07T13:05:59.841Z",
     "written": true,
     "provider": "gemini",
     "model": "gemini-3.8-flash",
-    "intensity": "deep",
+    "intensity": "brief",
     "reason": null
   }
 }
