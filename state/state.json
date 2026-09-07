@@ -1538,7 +1538,7 @@
       }
     }
   },
-  "inboxOffset": 697606429,
+  "inboxOffset": 697606430,
   "pending": [
     {
       "messageId": 556,
@@ -1701,7 +1701,9 @@
     ],
     "mechanism:mental_contrasting": [],
     "mechanism:subtraction": [],
-    "mechanism:episodic_future_thinking": []
+    "mechanism:episodic_future_thinking": [
+      0
+    ]
   },
   "habitRotation": {
     "blue_blockers": {
