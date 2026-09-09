@@ -1750,7 +1750,7 @@
       }
     }
   },
-  "inboxOffset": 697606443,
+  "inboxOffset": 697606444,
   "pending": [
     {
       "messageId": 637,
@@ -1902,9 +1902,7 @@
       0,
       1
     ],
-    "mechanism:implementation_intention": [
-      0
-    ],
+    "mechanism:implementation_intention": [],
     "mechanism:commitment": [
       0
     ],
@@ -1961,7 +1959,7 @@
   },
   "writtenReplies": {
     "date": "2026-09-09",
-    "count": 2
+    "count": 3
   },
   "coach": {
     "at": "2026-09-08T13:51:35.314Z",
