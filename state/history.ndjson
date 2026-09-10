@@ -157,3 +157,4 @@
 {"date":"2026-09-09","slot":"blue_blockers","status":"sent","kind":"habit","habit":"blue_blockers","whyId":"bb23","optional":false,"cycle":1,"targetLabel":"7:30 PM","at":"2026-09-09T23:30:10.345Z"}
 {"date":"2026-09-09","slot":"work_shutdown","status":"sent","kind":"fact","factId":"sleep-31","library":"sleep","category":"brain","jackpot":true,"cycle":1,"promptId":"p23","mechanism":"episodic_future_thinking","targetLabel":"8:52 PM","at":"2026-09-10T00:52:05.760Z"}
 {"date":"2026-09-09","slot":"terminal_bedtime","status":"sent","kind":"fact","factId":"sleep-36","library":"sleep","category":"performance","jackpot":true,"cycle":1,"promptId":"p10","mechanism":"prospective_regret","targetLabel":"10:11 PM","at":"2026-09-10T02:11:04.645Z"}
+{"date":"2026-09-10","slot":"intake","status":"sent","kind":"intake","targetLabel":"6:00 AM","at":"2026-09-10T10:00:54.038Z"}
