@@ -1,7 +1,62 @@
 {
   "version": 1,
-  "cycle": 1,
-  "remaining": [],
+  "cycle": 2,
+  "remaining": [
+    "sleep-15",
+    "sleep-22",
+    "sleep-23",
+    "sleep-17",
+    "sleep-07",
+    "lucid-04",
+    "sleep-31",
+    "sleep-13",
+    "lucid-11",
+    "sleep-12",
+    "sleep-18",
+    "sleep-37",
+    "lucid-03",
+    "sleep-26",
+    "sleep-11",
+    "sleep-24",
+    "lucid-10",
+    "sleep-33",
+    "sleep-09",
+    "lucid-05",
+    "sleep-03",
+    "sleep-06",
+    "sleep-34",
+    "lucid-01",
+    "sleep-04",
+    "sleep-02",
+    "sleep-19",
+    "lucid-09",
+    "sleep-38",
+    "sleep-30",
+    "lucid-06",
+    "sleep-32",
+    "sleep-21",
+    "sleep-20",
+    "lucid-15",
+    "sleep-27",
+    "sleep-28",
+    "sleep-35",
+    "lucid-14",
+    "sleep-25",
+    "sleep-05",
+    "lucid-07",
+    "sleep-14",
+    "sleep-39",
+    "sleep-29",
+    "lucid-02",
+    "sleep-40",
+    "sleep-01",
+    "sleep-10",
+    "lucid-13",
+    "sleep-16",
+    "sleep-08",
+    "lucid-12",
+    "sleep-36"
+  ],
   "sends": {
     "2026-08-23": {
       "intake": {
@@ -1992,11 +2047,33 @@
         "mechanism": "anchoring",
         "targetLabel": "8:57 PM",
         "at": "2026-09-12T00:57:07.068Z"
+      },
+      "terminal_bedtime": {
+        "status": "sent",
+        "kind": "fact",
+        "factId": "lucid-08",
+        "library": "lucid",
+        "category": "lucid-induction",
+        "jackpot": false,
+        "cycle": 2,
+        "promptId": "p13",
+        "mechanism": "mental_contrasting",
+        "targetLabel": "9:59 PM",
+        "at": "2026-09-12T01:59:12.076Z"
       }
     }
   },
   "inboxOffset": 697606458,
   "pending": [
+    {
+      "messageId": 739,
+      "kind": "fact",
+      "factId": "lucid-08",
+      "promptId": "p13",
+      "mechanism": "mental_contrasting",
+      "slot": "terminal_bedtime",
+      "at": "2026-09-12T01:59:12.076Z"
+    },
     {
       "messageId": 737,
       "kind": "fact",
@@ -2094,20 +2171,10 @@
       "mechanism": "subtraction",
       "slot": "work_shutdown",
       "at": "2026-09-11T01:09:06.251Z"
-    },
-    {
-      "messageId": 686,
-      "kind": "habit",
-      "factId": null,
-      "promptId": null,
-      "mechanism": null,
-      "slot": "blue_blockers",
-      "at": "2026-09-10T23:30:20.756Z"
     }
   ],
   "promptCycle": 3,
   "promptRemaining": [
-    "p13",
     "p18"
   ],
   "coachRotation": 16,
