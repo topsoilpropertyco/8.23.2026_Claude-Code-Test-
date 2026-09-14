@@ -2329,7 +2329,7 @@
       }
     }
   },
-  "inboxOffset": 697606469,
+  "inboxOffset": 697606471,
   "pending": [
     {
       "messageId": 844,
@@ -2522,7 +2522,7 @@
   },
   "writtenReplies": {
     "date": "2026-09-14",
-    "count": 1
+    "count": 3
   },
   "coach": {
     "at": "2026-09-14T23:27:58.513Z",
