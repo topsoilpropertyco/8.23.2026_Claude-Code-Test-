@@ -2329,7 +2329,7 @@
       }
     }
   },
-  "inboxOffset": 697606471,
+  "inboxOffset": 697606472,
   "pending": [
     {
       "messageId": 844,
@@ -2498,9 +2498,7 @@
     "mechanism:mental_contrasting": [],
     "mechanism:subtraction": [],
     "mechanism:episodic_future_thinking": [],
-    "mechanism:minimum_viable": [
-      0
-    ]
+    "mechanism:minimum_viable": []
   },
   "habitRotation": {
     "blue_blockers": {
@@ -2522,7 +2520,7 @@
   },
   "writtenReplies": {
     "date": "2026-09-14",
-    "count": 3
+    "count": 4
   },
   "coach": {
     "at": "2026-09-14T23:27:58.513Z",
