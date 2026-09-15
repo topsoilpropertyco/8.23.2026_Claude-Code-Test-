@@ -2439,7 +2439,7 @@
       }
     }
   },
-  "inboxOffset": 697606476,
+  "inboxOffset": 697606477,
   "pending": [
     {
       "messageId": 892,
@@ -2561,7 +2561,9 @@
   "coachRotation": 18,
   "affirmRotation": {
     "mechanism:identity": [],
-    "mechanism:prospective_regret": [],
+    "mechanism:prospective_regret": [
+      1
+    ],
     "mechanism:anchoring": [
       0
     ],
@@ -2619,7 +2621,7 @@
   },
   "writtenReplies": {
     "date": "2026-09-15",
-    "count": 1
+    "count": 2
   },
   "coach": {
     "at": "2026-09-15T23:36:25.636Z",
