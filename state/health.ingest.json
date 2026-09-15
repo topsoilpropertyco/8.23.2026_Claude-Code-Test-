@@ -1,22 +1,23 @@
 {
   "_comment": "What the last Oura pull actually saw. Public file: dates and counts only.",
-  "at": "2026-09-15T11:55:59.552Z",
+  "at": "2026-09-15T12:21:35.350Z",
   "requested": {
     "start": "2026-09-12",
     "end": "2026-09-15",
     "periodEnd": "2026-09-16"
   },
   "rows": {
-    "dailySleep": 3,
-    "periods": 3,
-    "readiness": 3,
+    "dailySleep": 4,
+    "periods": 4,
+    "readiness": 4,
     "stress": 4
   },
   "daysWithScoreButNoPeriod": [],
   "periodDays": [
     "2026-09-12",
     "2026-09-13",
-    "2026-09-14"
+    "2026-09-14",
+    "2026-09-15"
   ],
   "periodTypes": [
     "long_sleep"
