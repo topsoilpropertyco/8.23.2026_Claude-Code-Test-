@@ -6,7 +6,6 @@
     "sleep-04",
     "sleep-02",
     "lucid-09",
-    "sleep-38",
     "lucid-06",
     "sleep-32",
     "sleep-21",
@@ -2514,11 +2513,33 @@
         "mechanism": "subtraction",
         "targetLabel": "4:16 PM",
         "at": "2026-09-16T20:16:10.818Z"
+      },
+      "evening_winddown": {
+        "status": "sent",
+        "kind": "fact",
+        "factId": "sleep-38",
+        "library": "sleep",
+        "category": "environment",
+        "jackpot": false,
+        "cycle": 2,
+        "promptId": "p15",
+        "mechanism": "anchoring",
+        "targetLabel": "6:09 PM",
+        "at": "2026-09-16T22:09:23.298Z"
       }
     }
   },
   "inboxOffset": 697606485,
   "pending": [
+    {
+      "messageId": 939,
+      "kind": "fact",
+      "factId": "sleep-38",
+      "promptId": "p15",
+      "mechanism": "anchoring",
+      "slot": "evening_winddown",
+      "at": "2026-09-16T22:09:23.297Z"
+    },
     {
       "messageId": 934,
       "kind": "fact",
@@ -2615,21 +2636,11 @@
       "mechanism": "commitment",
       "slot": "evening_winddown",
       "at": "2026-09-15T22:24:18.339Z"
-    },
-    {
-      "messageId": 881,
-      "kind": "fact",
-      "factId": "sleep-27",
-      "promptId": "p03",
-      "mechanism": "implementation_intention",
-      "slot": "afternoon_boundary",
-      "at": "2026-09-15T19:57:10.804Z"
     }
   ],
   "promptCycle": 4,
   "promptRemaining": [
-    "p05",
-    "p15"
+    "p05"
   ],
   "coachRotation": 19,
   "affirmRotation": {
