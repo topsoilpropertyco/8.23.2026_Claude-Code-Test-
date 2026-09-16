@@ -3,7 +3,6 @@
   "cycle": 2,
   "remaining": [
     "sleep-33",
-    "lucid-01",
     "sleep-04",
     "sleep-02",
     "lucid-09",
@@ -2502,11 +2501,33 @@
         "mechanism": "attribution",
         "targetLabel": "11:49 AM",
         "at": "2026-09-16T15:49:14.286Z"
+      },
+      "afternoon_boundary": {
+        "status": "sent",
+        "kind": "fact",
+        "factId": "lucid-01",
+        "library": "lucid",
+        "category": "lucid-performance",
+        "jackpot": true,
+        "cycle": 2,
+        "promptId": "p25",
+        "mechanism": "subtraction",
+        "targetLabel": "4:16 PM",
+        "at": "2026-09-16T20:16:10.818Z"
       }
     }
   },
-  "inboxOffset": 697606482,
+  "inboxOffset": 697606483,
   "pending": [
+    {
+      "messageId": 934,
+      "kind": "fact",
+      "factId": "lucid-01",
+      "promptId": "p25",
+      "mechanism": "subtraction",
+      "slot": "afternoon_boundary",
+      "at": "2026-09-16T20:16:10.818Z"
+    },
     {
       "messageId": 929,
       "kind": "morning-prompt",
@@ -2603,21 +2624,11 @@
       "mechanism": "implementation_intention",
       "slot": "afternoon_boundary",
       "at": "2026-09-15T19:57:10.804Z"
-    },
-    {
-      "messageId": 877,
-      "kind": "fact",
-      "factId": "sleep-19",
-      "promptId": "p12",
-      "mechanism": "prospective_regret",
-      "slot": "midday_essentialism",
-      "at": "2026-09-15T16:08:22.302Z"
     }
   ],
   "promptCycle": 4,
   "promptRemaining": [
     "p05",
-    "p25",
     "p15"
   ],
   "coachRotation": 19,
@@ -2637,7 +2648,11 @@
     "mechanism:attribution": [
       0
     ],
-    "streak": [],
+    "streak": [
+      0,
+      3,
+      1
+    ],
     "stat": [
       0,
       1
@@ -2661,7 +2676,9 @@
     "mechanism:self_efficacy": [
       1
     ],
-    "mechanism:mental_contrasting": [],
+    "mechanism:mental_contrasting": [
+      1
+    ],
     "mechanism:subtraction": [
       1
     ],
@@ -2683,8 +2700,8 @@
     }
   },
   "writtenReplies": {
-    "date": "2026-09-15",
-    "count": 4
+    "date": "2026-09-16",
+    "count": 1
   },
   "coach": {
     "at": "2026-09-16T17:51:39.138Z",
