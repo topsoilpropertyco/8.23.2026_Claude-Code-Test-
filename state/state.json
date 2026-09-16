@@ -2505,7 +2505,7 @@
       }
     }
   },
-  "inboxOffset": 697606481,
+  "inboxOffset": 697606482,
   "pending": [
     {
       "messageId": 929,
@@ -2622,7 +2622,9 @@
   ],
   "coachRotation": 19,
   "affirmRotation": {
-    "mechanism:identity": [],
+    "mechanism:identity": [
+      1
+    ],
     "mechanism:prospective_regret": [
       1
     ],
@@ -2635,9 +2637,7 @@
     "mechanism:attribution": [
       0
     ],
-    "streak": [
-      2
-    ],
+    "streak": [],
     "stat": [
       0,
       1
