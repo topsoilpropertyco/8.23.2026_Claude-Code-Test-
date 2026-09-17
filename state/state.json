@@ -2626,11 +2626,30 @@
         "mechanism": "anchoring",
         "targetLabel": "6:19 PM",
         "at": "2026-09-17T22:19:17.952Z"
+      },
+      "blue_blockers": {
+        "status": "sent",
+        "kind": "habit",
+        "habit": "blue_blockers",
+        "whyId": "bb17",
+        "optional": false,
+        "cycle": 2,
+        "targetLabel": "7:30 PM",
+        "at": "2026-09-17T23:30:03.778Z"
       }
     }
   },
   "inboxOffset": 697606487,
   "pending": [
+    {
+      "messageId": 979,
+      "kind": "habit",
+      "factId": null,
+      "promptId": null,
+      "mechanism": null,
+      "slot": "blue_blockers",
+      "at": "2026-09-17T23:30:03.778Z"
+    },
     {
       "messageId": 977,
       "kind": "fact",
@@ -2729,14 +2748,6 @@
       "mechanism": "subtraction",
       "slot": "afternoon_boundary",
       "at": "2026-09-16T20:16:10.818Z"
-    },
-    {
-      "messageId": 929,
-      "kind": "morning-prompt",
-      "promptId": "m05",
-      "mechanism": "mental_contrasting",
-      "slot": "intake",
-      "at": "2026-09-16T17:51:39.138Z"
     }
   ],
   "promptCycle": 5,
@@ -2817,8 +2828,32 @@
   },
   "habitRotation": {
     "blue_blockers": {
-      "cycle": 1,
-      "remaining": []
+      "cycle": 2,
+      "remaining": [
+        "bb05",
+        "bb16",
+        "bb04",
+        "bb23",
+        "bb07",
+        "bb15",
+        "bb11",
+        "bb18",
+        "bb01",
+        "bb06",
+        "bb21",
+        "bb12",
+        "bb08",
+        "bb03",
+        "bb22",
+        "bb09",
+        "bb13",
+        "bb02",
+        "bb14",
+        "bb24",
+        "bb10",
+        "bb19",
+        "bb20"
+      ]
     },
     "morning_light": {
       "cycle": 1,
