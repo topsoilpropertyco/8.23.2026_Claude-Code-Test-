@@ -14,7 +14,6 @@
     "sleep-29",
     "lucid-02",
     "sleep-40",
-    "sleep-01",
     "lucid-13",
     "sleep-16",
     "sleep-08",
@@ -2678,11 +2677,41 @@
         "cycle": 2,
         "targetLabel": "7:15 AM",
         "at": "2026-09-18T11:15:02.637Z"
+      },
+      "morning_reflection": {
+        "status": "sent",
+        "kind": "fact",
+        "factId": "sleep-01",
+        "library": "sleep",
+        "category": "stress",
+        "jackpot": true,
+        "cycle": 2,
+        "promptId": "p13",
+        "mechanism": "mental_contrasting",
+        "targetLabel": "8:05 AM",
+        "at": "2026-09-18T12:05:20.795Z"
       }
     }
   },
-  "inboxOffset": 697606493,
+  "inboxOffset": 697606495,
   "pending": [
+    {
+      "messageId": 1017,
+      "kind": "fact",
+      "factId": "sleep-01",
+      "promptId": "p13",
+      "mechanism": "mental_contrasting",
+      "slot": "morning_reflection",
+      "at": "2026-09-18T12:05:20.795Z"
+    },
+    {
+      "messageId": 1015,
+      "kind": "morning-prompt",
+      "promptId": "m06",
+      "mechanism": "episodic_future_thinking",
+      "slot": "intake",
+      "at": "2026-09-18T12:03:00.638Z"
+    },
     {
       "messageId": 1000,
       "kind": "habit",
@@ -2772,29 +2801,10 @@
       "mechanism": null,
       "slot": "morning_light",
       "at": "2026-09-17T11:15:18.560Z"
-    },
-    {
-      "messageId": 952,
-      "kind": "intake",
-      "factId": null,
-      "promptId": null,
-      "mechanism": null,
-      "slot": "intake",
-      "at": "2026-09-17T10:00:09.463Z"
-    },
-    {
-      "messageId": 948,
-      "kind": "fact",
-      "factId": "sleep-35",
-      "promptId": "p07",
-      "mechanism": "elaborative_interrogation",
-      "slot": "terminal_bedtime",
-      "at": "2026-09-17T02:11:11.170Z"
     }
   ],
   "promptCycle": 5,
   "promptRemaining": [
-    "p13",
     "p20",
     "p09",
     "p24",
@@ -2816,7 +2826,7 @@
     "p03",
     "p18"
   ],
-  "coachRotation": 19,
+  "coachRotation": 20,
   "affirmRotation": {
     "mechanism:identity": [],
     "mechanism:prospective_regret": [],
@@ -2860,7 +2870,9 @@
       1
     ],
     "mechanism:subtraction": [],
-    "mechanism:episodic_future_thinking": [],
+    "mechanism:episodic_future_thinking": [
+      1
+    ],
     "mechanism:minimum_viable": []
   },
   "habitRotation": {
@@ -2926,7 +2938,7 @@
     "count": 4
   },
   "coach": {
-    "at": "2026-09-16T17:51:39.138Z",
+    "at": "2026-09-18T12:03:00.638Z",
     "written": false,
     "provider": null,
     "model": null,
