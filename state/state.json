@@ -2817,7 +2817,7 @@
       }
     }
   },
-  "inboxOffset": 697606503,
+  "inboxOffset": 697606504,
   "pending": [
     {
       "messageId": 1069,
@@ -2952,7 +2952,11 @@
       3
     ],
     "mechanism:attribution": [],
-    "streak": [],
+    "streak": [
+      0,
+      3,
+      1
+    ],
     "stat": [
       0,
       1
@@ -2982,7 +2986,9 @@
     "mechanism:episodic_future_thinking": [
       1
     ],
-    "mechanism:minimum_viable": []
+    "mechanism:minimum_viable": [
+      1
+    ]
   },
   "habitRotation": {
     "blue_blockers": {
@@ -3042,7 +3048,7 @@
   },
   "writtenReplies": {
     "date": "2026-09-19",
-    "count": 2
+    "count": 3
   },
   "coach": {
     "at": "2026-09-18T12:03:00.638Z",
