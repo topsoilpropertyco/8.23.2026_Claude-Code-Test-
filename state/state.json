@@ -11,7 +11,6 @@
     "lucid-02",
     "sleep-40",
     "sleep-16",
-    "sleep-08",
     "lucid-12",
     "sleep-36"
   ],
@@ -2778,11 +2777,33 @@
         "cycle": 2,
         "targetLabel": "7:15 AM",
         "at": "2026-09-19T11:15:18.406Z"
+      },
+      "morning_reflection": {
+        "status": "sent",
+        "kind": "fact",
+        "factId": "sleep-08",
+        "library": "sleep",
+        "category": "hormones",
+        "jackpot": true,
+        "cycle": 2,
+        "promptId": "p24",
+        "mechanism": "episodic_future_thinking",
+        "targetLabel": "8:01 AM",
+        "at": "2026-09-19T12:01:12.747Z"
       }
     }
   },
   "inboxOffset": 697606500,
   "pending": [
+    {
+      "messageId": 1053,
+      "kind": "fact",
+      "factId": "sleep-08",
+      "promptId": "p24",
+      "mechanism": "episodic_future_thinking",
+      "slot": "morning_reflection",
+      "at": "2026-09-19T12:01:12.747Z"
+    },
     {
       "messageId": 1052,
       "kind": "habit",
@@ -2880,20 +2901,10 @@
       "mechanism": null,
       "slot": "morning_light",
       "at": "2026-09-18T11:15:02.637Z"
-    },
-    {
-      "messageId": 999,
-      "kind": "intake",
-      "factId": null,
-      "promptId": null,
-      "mechanism": null,
-      "slot": "intake",
-      "at": "2026-09-18T10:00:10.849Z"
     }
   ],
   "promptCycle": 5,
   "promptRemaining": [
-    "p24",
     "p28",
     "p14",
     "p02",
