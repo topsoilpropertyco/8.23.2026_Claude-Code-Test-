@@ -1,9 +1,7 @@
 {
   "version": 1,
   "cycle": 2,
-  "remaining": [
-    "sleep-40"
-  ],
+  "remaining": [],
   "sends": {
     "2026-08-23": {
       "intake": {
@@ -2948,11 +2946,33 @@
         "mechanism": "identity",
         "targetLabel": "8:55 PM",
         "at": "2026-09-21T00:55:06.755Z"
+      },
+      "terminal_bedtime": {
+        "status": "sent",
+        "kind": "fact",
+        "factId": "sleep-40",
+        "library": "sleep",
+        "category": "biometrics",
+        "jackpot": false,
+        "cycle": 2,
+        "promptId": "p18",
+        "mechanism": "self_efficacy",
+        "targetLabel": "10:00 PM",
+        "at": "2026-09-21T02:00:15.753Z"
       }
     }
   },
   "inboxOffset": 697606513,
   "pending": [
+    {
+      "messageId": 1128,
+      "kind": "fact",
+      "factId": "sleep-40",
+      "promptId": "p18",
+      "mechanism": "self_efficacy",
+      "slot": "terminal_bedtime",
+      "at": "2026-09-21T02:00:15.752Z"
+    },
     {
       "messageId": 1123,
       "kind": "fact",
@@ -3050,23 +3070,13 @@
       "mechanism": "prospective_regret",
       "slot": "work_shutdown",
       "at": "2026-09-20T00:55:07.580Z"
-    },
-    {
-      "messageId": 1076,
-      "kind": "habit",
-      "factId": null,
-      "promptId": null,
-      "mechanism": null,
-      "slot": "blue_blockers",
-      "at": "2026-09-19T23:30:17.043Z"
     }
   ],
   "promptCycle": 5,
   "promptRemaining": [
     "p19",
     "p06",
-    "p17",
-    "p18"
+    "p17"
   ],
   "coachRotation": 21,
   "affirmRotation": {
