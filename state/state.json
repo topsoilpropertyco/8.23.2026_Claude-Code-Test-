@@ -3048,7 +3048,7 @@
       }
     }
   },
-  "inboxOffset": 697606514,
+  "inboxOffset": 697606515,
   "pending": [
     {
       "messageId": 1134,
@@ -3260,8 +3260,8 @@
     }
   },
   "writtenReplies": {
-    "date": "2026-09-20",
-    "count": 4
+    "date": "2026-09-21",
+    "count": 1
   },
   "coach": {
     "at": "2026-09-20T12:22:44.921Z",
