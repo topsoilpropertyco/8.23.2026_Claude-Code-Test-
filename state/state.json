@@ -1,7 +1,62 @@
 {
   "version": 1,
-  "cycle": 2,
-  "remaining": [],
+  "cycle": 3,
+  "remaining": [
+    "sleep-39",
+    "sleep-25",
+    "lucid-07",
+    "sleep-03",
+    "sleep-10",
+    "sleep-19",
+    "lucid-14",
+    "sleep-34",
+    "sleep-23",
+    "lucid-10",
+    "sleep-38",
+    "sleep-15",
+    "sleep-37",
+    "sleep-33",
+    "sleep-29",
+    "sleep-40",
+    "lucid-03",
+    "sleep-07",
+    "sleep-31",
+    "lucid-15",
+    "sleep-21",
+    "sleep-06",
+    "sleep-26",
+    "lucid-02",
+    "sleep-11",
+    "sleep-36",
+    "sleep-17",
+    "lucid-11",
+    "sleep-18",
+    "sleep-09",
+    "lucid-08",
+    "sleep-16",
+    "sleep-20",
+    "sleep-01",
+    "lucid-13",
+    "sleep-30",
+    "sleep-14",
+    "sleep-27",
+    "lucid-06",
+    "sleep-05",
+    "sleep-22",
+    "lucid-04",
+    "sleep-13",
+    "sleep-04",
+    "sleep-35",
+    "lucid-09",
+    "sleep-12",
+    "sleep-24",
+    "sleep-28",
+    "lucid-05",
+    "sleep-32",
+    "sleep-02",
+    "lucid-12",
+    "sleep-08"
+  ],
   "sends": {
     "2026-08-23": {
       "intake": {
@@ -2977,11 +3032,33 @@
         "cycle": 2,
         "targetLabel": "7:15 AM",
         "at": "2026-09-21T11:15:22.561Z"
+      },
+      "morning_reflection": {
+        "status": "sent",
+        "kind": "fact",
+        "factId": "lucid-01",
+        "library": "lucid",
+        "category": "lucid-performance",
+        "jackpot": true,
+        "cycle": 3,
+        "promptId": "p19",
+        "mechanism": "attribution",
+        "targetLabel": "7:59 AM",
+        "at": "2026-09-21T11:59:05.077Z"
       }
     }
   },
   "inboxOffset": 697606513,
   "pending": [
+    {
+      "messageId": 1134,
+      "kind": "fact",
+      "factId": "lucid-01",
+      "promptId": "p19",
+      "mechanism": "attribution",
+      "slot": "morning_reflection",
+      "at": "2026-09-21T11:59:05.077Z"
+    },
     {
       "messageId": 1133,
       "kind": "habit",
@@ -3079,20 +3156,10 @@
       "mechanism": null,
       "slot": "morning_light",
       "at": "2026-09-20T11:15:23.551Z"
-    },
-    {
-      "messageId": 1085,
-      "kind": "intake",
-      "factId": null,
-      "promptId": null,
-      "mechanism": null,
-      "slot": "intake",
-      "at": "2026-09-20T10:00:18.514Z"
     }
   ],
   "promptCycle": 5,
   "promptRemaining": [
-    "p19",
     "p06",
     "p17"
   ],
