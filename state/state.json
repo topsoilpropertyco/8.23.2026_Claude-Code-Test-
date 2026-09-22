@@ -3148,8 +3148,16 @@
       }
     }
   },
-  "inboxOffset": 697606521,
+  "inboxOffset": 697606522,
   "pending": [
+    {
+      "messageId": 1193,
+      "kind": "morning-prompt",
+      "promptId": "m02",
+      "mechanism": "identity",
+      "slot": "intake",
+      "at": "2026-09-22T13:26:25.123Z"
+    },
     {
       "messageId": 1181,
       "kind": "fact",
@@ -3247,15 +3255,6 @@
       "mechanism": "attribution",
       "slot": "morning_reflection",
       "at": "2026-09-21T11:59:05.077Z"
-    },
-    {
-      "messageId": 1133,
-      "kind": "habit",
-      "factId": null,
-      "promptId": null,
-      "mechanism": null,
-      "slot": "morning_light",
-      "at": "2026-09-21T11:15:22.561Z"
     }
   ],
   "promptCycle": 6,
@@ -3285,7 +3284,7 @@
     "p15",
     "p26"
   ],
-  "coachRotation": 22,
+  "coachRotation": 23,
   "affirmRotation": {
     "mechanism:identity": [],
     "mechanism:prospective_regret": [
@@ -3386,11 +3385,11 @@
     "count": 3
   },
   "coach": {
-    "at": "2026-09-21T14:33:27.822Z",
-    "written": true,
-    "provider": "gemini",
-    "model": "gemini-3.8-flash",
+    "at": "2026-09-22T13:26:25.123Z",
+    "written": false,
+    "provider": null,
+    "model": null,
     "intensity": "brief",
-    "reason": null
+    "reason": "coach-llm unavailable, using the rule-based coach: HTTP 503: {\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. P"
   }
 }
