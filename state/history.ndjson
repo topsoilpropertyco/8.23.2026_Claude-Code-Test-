@@ -293,3 +293,4 @@
 {"date":"2026-09-24","slot":"work_shutdown","status":"sent","kind":"fact","factId":"sleep-09","library":"sleep","category":"cognition","jackpot":true,"cycle":3,"promptId":"p01","mechanism":"implementation_intention","targetLabel":"9:06 PM","at":"2026-09-25T01:06:16.196Z"}
 {"date":"2026-09-24","slot":"terminal_bedtime","status":"sent","kind":"fact","factId":"lucid-07","library":"lucid","category":"lucid-neuro","jackpot":false,"cycle":3,"promptId":"p05","mechanism":"identity","targetLabel":"9:49 PM","at":"2026-09-25T01:49:19.840Z"}
 {"date":"2026-09-25","slot":"intake","status":"sent","kind":"intake","targetLabel":"6:00 AM","at":"2026-09-25T10:00:01.935Z"}
+{"date":"2026-09-25","slot":"morning_light","status":"sent","kind":"habit","habit":"morning_light","whyId":"ml11","optional":false,"cycle":2,"targetLabel":"7:15 AM","at":"2026-09-25T11:15:16.334Z"}
