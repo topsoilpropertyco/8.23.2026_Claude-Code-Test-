@@ -301,3 +301,4 @@
 {"date":"2026-09-25","slot":"blue_blockers","status":"sent","kind":"habit","habit":"blue_blockers","whyId":"bb18","optional":false,"cycle":2,"targetLabel":"7:30 PM","at":"2026-09-25T23:30:15.034Z"}
 {"date":"2026-09-25","slot":"work_shutdown","status":"sent","kind":"fact","factId":"sleep-26","library":"sleep","category":"cardiometabolic","jackpot":false,"cycle":3,"promptId":"p26","mechanism":"subtraction","targetLabel":"9:11 PM","at":"2026-09-26T01:11:03.556Z"}
 {"date":"2026-09-25","slot":"terminal_bedtime","status":"sent","kind":"fact","factId":"sleep-33","library":"sleep","category":"environment","jackpot":false,"cycle":3,"promptId":"p18","mechanism":"self_efficacy","targetLabel":"9:53 PM","at":"2026-09-26T01:53:08.560Z"}
+{"date":"2026-09-26","slot":"intake","status":"sent","kind":"intake","targetLabel":"6:00 AM","at":"2026-09-26T10:00:33.202Z"}
