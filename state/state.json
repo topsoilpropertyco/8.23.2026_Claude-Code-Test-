@@ -3660,7 +3660,7 @@
       }
     }
   },
-  "inboxOffset": 697606535,
+  "inboxOffset": 697606536,
   "pending": [
     {
       "messageId": 1360,
@@ -3805,9 +3805,7 @@
     "mechanism:anchoring": [],
     "short": [],
     "mechanism:attribution": [],
-    "streak": [
-      0
-    ],
+    "streak": [],
     "stat": [
       0,
       1
@@ -3825,9 +3823,7 @@
       7,
       0
     ],
-    "mechanism:self_efficacy": [
-      1
-    ],
+    "mechanism:self_efficacy": [],
     "mechanism:mental_contrasting": [],
     "mechanism:subtraction": [],
     "mechanism:episodic_future_thinking": [],
@@ -3876,7 +3872,7 @@
     }
   },
   "writtenReplies": {
-    "date": "2026-09-26",
+    "date": "2026-09-27",
     "count": 1
   },
   "coach": {
