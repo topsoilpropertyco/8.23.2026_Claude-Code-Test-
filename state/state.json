@@ -3616,10 +3616,27 @@
         "targetLabel": "10:11 PM",
         "at": "2026-09-27T02:11:10.621Z"
       }
+    },
+    "2026-09-27": {
+      "intake": {
+        "status": "sent",
+        "kind": "intake",
+        "targetLabel": "6:00 AM",
+        "at": "2026-09-27T10:00:32.216Z"
+      }
     }
   },
   "inboxOffset": 697606534,
   "pending": [
+    {
+      "messageId": 1343,
+      "kind": "intake",
+      "factId": null,
+      "promptId": null,
+      "mechanism": null,
+      "slot": "intake",
+      "at": "2026-09-27T10:00:32.216Z"
+    },
     {
       "messageId": 1340,
       "kind": "fact",
@@ -3718,15 +3735,6 @@
       "mechanism": "subtraction",
       "slot": "work_shutdown",
       "at": "2026-09-26T01:11:03.556Z"
-    },
-    {
-      "messageId": 1303,
-      "kind": "habit",
-      "factId": null,
-      "promptId": null,
-      "mechanism": null,
-      "slot": "blue_blockers",
-      "at": "2026-09-25T23:30:15.034Z"
     }
   ],
   "promptCycle": 7,
