@@ -2,7 +2,6 @@
   "version": 1,
   "cycle": 3,
   "remaining": [
-    "lucid-03",
     "lucid-02",
     "sleep-17",
     "lucid-11",
@@ -3603,11 +3602,33 @@
         "mechanism": "prospective_regret",
         "targetLabel": "9:01 PM",
         "at": "2026-09-27T01:01:25.689Z"
+      },
+      "terminal_bedtime": {
+        "status": "sent",
+        "kind": "fact",
+        "factId": "lucid-03",
+        "library": "lucid",
+        "category": "lucid-clinical",
+        "jackpot": false,
+        "cycle": 3,
+        "promptId": "p21",
+        "mechanism": "commitment",
+        "targetLabel": "10:11 PM",
+        "at": "2026-09-27T02:11:10.621Z"
       }
     }
   },
   "inboxOffset": 697606534,
   "pending": [
+    {
+      "messageId": 1340,
+      "kind": "fact",
+      "factId": "lucid-03",
+      "promptId": "p21",
+      "mechanism": "commitment",
+      "slot": "terminal_bedtime",
+      "at": "2026-09-27T02:11:10.621Z"
+    },
     {
       "messageId": 1338,
       "kind": "fact",
@@ -3706,20 +3727,10 @@
       "mechanism": null,
       "slot": "blue_blockers",
       "at": "2026-09-25T23:30:15.034Z"
-    },
-    {
-      "messageId": 1301,
-      "kind": "fact",
-      "factId": "sleep-37",
-      "promptId": "p09",
-      "mechanism": "elaborative_interrogation",
-      "slot": "evening_winddown",
-      "at": "2026-09-25T22:23:16.756Z"
     }
   ],
   "promptCycle": 7,
   "promptRemaining": [
-    "p21",
     "p26",
     "p23",
     "p16",
