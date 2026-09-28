@@ -2,7 +2,6 @@
   "version": 1,
   "cycle": 3,
   "remaining": [
-    "lucid-11",
     "sleep-20",
     "lucid-13",
     "lucid-04",
@@ -3757,11 +3756,33 @@
         "mechanism": "implementation_intention",
         "targetLabel": "11:57 AM",
         "at": "2026-09-28T15:57:02.375Z"
+      },
+      "afternoon_boundary": {
+        "status": "sent",
+        "kind": "fact",
+        "factId": "lucid-11",
+        "library": "lucid",
+        "category": "lucid-psych",
+        "jackpot": false,
+        "cycle": 3,
+        "promptId": "p25",
+        "mechanism": "subtraction",
+        "targetLabel": "4:00 PM",
+        "at": "2026-09-28T20:00:12.563Z"
       }
     }
   },
   "inboxOffset": 697606542,
   "pending": [
+    {
+      "messageId": 1401,
+      "kind": "fact",
+      "factId": "lucid-11",
+      "promptId": "p25",
+      "mechanism": "subtraction",
+      "slot": "afternoon_boundary",
+      "at": "2026-09-28T20:00:12.562Z"
+    },
     {
       "messageId": 1397,
       "kind": "fact",
@@ -3858,15 +3879,6 @@
       "mechanism": "self_efficacy",
       "slot": "intake",
       "at": "2026-09-27T17:56:14.802Z"
-    },
-    {
-      "messageId": 1355,
-      "kind": "fact",
-      "factId": "sleep-22",
-      "promptId": "p17",
-      "mechanism": "self_efficacy",
-      "slot": "midday_essentialism",
-      "at": "2026-09-27T16:04:20.535Z"
     }
   ],
   "promptCycle": 7,
@@ -3876,7 +3888,6 @@
     "p27",
     "p10",
     "p03",
-    "p25",
     "p18",
     "p24",
     "p28",
