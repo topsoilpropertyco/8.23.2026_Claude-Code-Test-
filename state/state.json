@@ -6,7 +6,6 @@
     "sleep-20",
     "lucid-13",
     "lucid-04",
-    "sleep-04",
     "lucid-09",
     "sleep-24",
     "sleep-28",
@@ -3733,11 +3732,33 @@
         "cycle": 2,
         "targetLabel": "7:15 AM",
         "at": "2026-09-28T11:15:22.886Z"
+      },
+      "morning_reflection": {
+        "status": "sent",
+        "kind": "fact",
+        "factId": "sleep-04",
+        "library": "sleep",
+        "category": "cardiometabolic",
+        "jackpot": false,
+        "cycle": 3,
+        "promptId": "p13",
+        "mechanism": "mental_contrasting",
+        "targetLabel": "7:52 AM",
+        "at": "2026-09-28T11:52:02.227Z"
       }
     }
   },
   "inboxOffset": 697606539,
   "pending": [
+    {
+      "messageId": 1392,
+      "kind": "fact",
+      "factId": "sleep-04",
+      "promptId": "p13",
+      "mechanism": "mental_contrasting",
+      "slot": "morning_reflection",
+      "at": "2026-09-28T11:52:02.227Z"
+    },
     {
       "messageId": 1391,
       "kind": "habit",
@@ -3835,15 +3856,6 @@
       "mechanism": null,
       "slot": "morning_light",
       "at": "2026-09-27T11:15:22.588Z"
-    },
-    {
-      "messageId": 1343,
-      "kind": "intake",
-      "factId": null,
-      "promptId": null,
-      "mechanism": null,
-      "slot": "intake",
-      "at": "2026-09-27T10:00:32.216Z"
     }
   ],
   "promptCycle": 7,
@@ -3851,7 +3863,6 @@
     "p16",
     "p05",
     "p27",
-    "p13",
     "p10",
     "p02",
     "p03",
