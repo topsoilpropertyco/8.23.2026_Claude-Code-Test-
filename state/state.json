@@ -3816,10 +3816,27 @@
         "targetLabel": "9:53 PM",
         "at": "2026-09-29T01:53:20.378Z"
       }
+    },
+    "2026-09-29": {
+      "intake": {
+        "status": "sent",
+        "kind": "intake",
+        "targetLabel": "6:00 AM",
+        "at": "2026-09-29T10:00:24.708Z"
+      }
     }
   },
   "inboxOffset": 697606542,
   "pending": [
+    {
+      "messageId": 1412,
+      "kind": "intake",
+      "factId": null,
+      "promptId": null,
+      "mechanism": null,
+      "slot": "intake",
+      "at": "2026-09-29T10:00:24.708Z"
+    },
     {
       "messageId": 1408,
       "kind": "fact",
@@ -3917,15 +3934,6 @@
       "mechanism": "episodic_future_thinking",
       "slot": "terminal_bedtime",
       "at": "2026-09-28T01:42:13.262Z"
-    },
-    {
-      "messageId": 1375,
-      "kind": "fact",
-      "factId": "sleep-12",
-      "promptId": "p26",
-      "mechanism": "subtraction",
-      "slot": "work_shutdown",
-      "at": "2026-09-28T01:08:26.686Z"
     }
   ],
   "promptCycle": 7,
