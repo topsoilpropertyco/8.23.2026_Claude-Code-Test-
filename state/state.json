@@ -4,7 +4,6 @@
   "remaining": [
     "sleep-40",
     "sleep-30",
-    "lucid-14",
     "sleep-22",
     "sleep-18",
     "lucid-15",
@@ -4058,11 +4057,33 @@
         "mechanism": "identity",
         "targetLabel": "8:59 PM",
         "at": "2026-10-01T00:59:21.227Z"
+      },
+      "terminal_bedtime": {
+        "status": "sent",
+        "kind": "fact",
+        "factId": "lucid-14",
+        "library": "lucid",
+        "category": "lucid-induction",
+        "jackpot": false,
+        "cycle": 4,
+        "promptId": "p23",
+        "mechanism": "episodic_future_thinking",
+        "targetLabel": "10:15 PM",
+        "at": "2026-10-01T02:15:21.715Z"
       }
     }
   },
   "inboxOffset": 697606554,
   "pending": [
+    {
+      "messageId": 1497,
+      "kind": "fact",
+      "factId": "lucid-14",
+      "promptId": "p23",
+      "mechanism": "episodic_future_thinking",
+      "slot": "terminal_bedtime",
+      "at": "2026-10-01T02:15:21.715Z"
+    },
     {
       "messageId": 1490,
       "kind": "fact",
@@ -4160,19 +4181,38 @@
       "mechanism": "commitment",
       "slot": "work_shutdown",
       "at": "2026-09-30T00:59:02.280Z"
-    },
-    {
-      "messageId": 1439,
-      "kind": "habit",
-      "factId": null,
-      "promptId": null,
-      "mechanism": null,
-      "slot": "blue_blockers",
-      "at": "2026-09-29T23:30:11.372Z"
     }
   ],
-  "promptCycle": 7,
-  "promptRemaining": [],
+  "promptCycle": 8,
+  "promptRemaining": [
+    "p04",
+    "p02",
+    "p15",
+    "p14",
+    "p11",
+    "p08",
+    "p25",
+    "p05",
+    "p27",
+    "p18",
+    "p07",
+    "p06",
+    "p09",
+    "p24",
+    "p03",
+    "p13",
+    "p22",
+    "p28",
+    "p17",
+    "p10",
+    "p01",
+    "p20",
+    "p21",
+    "p19",
+    "p16",
+    "p26",
+    "p12"
+  ],
   "coachRotation": 28,
   "affirmRotation": {
     "mechanism:identity": [],
