@@ -4049,7 +4049,7 @@
       }
     }
   },
-  "inboxOffset": 697606551,
+  "inboxOffset": 697606553,
   "pending": [
     {
       "messageId": 1479,
@@ -4191,9 +4191,10 @@
       0
     ],
     "mechanism:commitment": [],
-    "mechanism:elaborative_interrogation": [],
+    "mechanism:elaborative_interrogation": [
+      1
+    ],
     "identity": [
-      8,
       5,
       1,
       7,
@@ -4247,7 +4248,7 @@
     }
   },
   "writtenReplies": {
-    "date": "2026-09-29",
+    "date": "2026-09-30",
     "count": 1
   },
   "coach": {
