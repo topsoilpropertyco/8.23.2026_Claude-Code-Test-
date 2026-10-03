@@ -4211,7 +4211,7 @@
       }
     }
   },
-  "inboxOffset": 697606558,
+  "inboxOffset": 697606559,
   "pending": [
     {
       "messageId": 1554,
@@ -4366,7 +4366,9 @@
       0
     ],
     "mechanism:commitment": [],
-    "mechanism:elaborative_interrogation": [],
+    "mechanism:elaborative_interrogation": [
+      0
+    ],
     "identity": [
       5,
       1,
