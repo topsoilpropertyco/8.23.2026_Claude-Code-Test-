@@ -42,79 +42,6 @@
     "sleep-25"
   ],
   "sends": {
-    "2026-08-24": {
-      "intake": {
-        "status": "sent",
-        "kind": "intake",
-        "targetLabel": "6:00 AM",
-        "at": "2026-08-24T10:20:46.199Z"
-      },
-      "morning_reflection": {
-        "status": "missed",
-        "at": "2026-08-24T14:24:47.921Z"
-      },
-      "morning_light": {
-        "status": "missed",
-        "at": "2026-08-24T16:07:36.933Z"
-      },
-      "midday_essentialism": {
-        "status": "sent",
-        "kind": "fact",
-        "factId": "sleep-21",
-        "library": "sleep",
-        "category": "cognition",
-        "jackpot": false,
-        "cycle": 0,
-        "promptId": "p12",
-        "mechanism": "prospective_regret",
-        "targetLabel": "12:02 PM",
-        "at": "2026-08-24T16:07:38.287Z"
-      },
-      "afternoon_boundary": {
-        "status": "sent",
-        "kind": "fact",
-        "factId": "sleep-18",
-        "library": "sleep",
-        "category": "longevity",
-        "jackpot": false,
-        "cycle": 0,
-        "promptId": "p15",
-        "mechanism": "anchoring",
-        "targetLabel": "4:00 PM",
-        "at": "2026-08-24T21:03:28.664Z"
-      },
-      "evening_winddown": {
-        "status": "sent",
-        "kind": "fact",
-        "factId": "sleep-20",
-        "library": "sleep",
-        "category": "environment",
-        "jackpot": false,
-        "cycle": 0,
-        "promptId": "p21",
-        "mechanism": "commitment",
-        "targetLabel": "6:11 PM",
-        "at": "2026-08-24T22:58:33.106Z"
-      },
-      "blue_blockers": {
-        "status": "sent",
-        "kind": "habit",
-        "habit": "blue_blockers",
-        "whyId": "bb04",
-        "optional": false,
-        "cycle": 1,
-        "targetLabel": "7:30 PM",
-        "at": "2026-08-24T23:49:07.957Z"
-      },
-      "work_shutdown": {
-        "status": "missed",
-        "at": "2026-08-25T03:14:43.704Z"
-      },
-      "terminal_bedtime": {
-        "status": "missed",
-        "at": "2026-08-25T03:14:43.704Z"
-      }
-    },
     "2026-08-25": {
       "intake": {
         "status": "sent",
@@ -4221,10 +4148,27 @@
         "targetLabel": "9:54 PM",
         "at": "2026-10-03T01:54:11.106Z"
       }
+    },
+    "2026-10-03": {
+      "intake": {
+        "status": "sent",
+        "kind": "intake",
+        "targetLabel": "6:00 AM",
+        "at": "2026-10-03T10:00:12.273Z"
+      }
     }
   },
   "inboxOffset": 697606559,
   "pending": [
+    {
+      "messageId": 1561,
+      "kind": "intake",
+      "factId": null,
+      "promptId": null,
+      "mechanism": null,
+      "slot": "intake",
+      "at": "2026-10-03T10:00:12.272Z"
+    },
     {
       "messageId": 1559,
       "kind": "fact",
@@ -4323,15 +4267,6 @@
       "mechanism": "prospective_regret",
       "slot": "work_shutdown",
       "at": "2026-10-02T00:56:03.352Z"
-    },
-    {
-      "messageId": 1526,
-      "kind": "habit",
-      "factId": null,
-      "promptId": null,
-      "mechanism": null,
-      "slot": "blue_blockers",
-      "at": "2026-10-01T23:30:18.365Z"
     }
   ],
   "promptCycle": 8,
