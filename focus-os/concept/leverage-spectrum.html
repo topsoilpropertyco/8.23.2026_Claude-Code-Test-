@@ -114,6 +114,31 @@ section { display: flex; flex-direction: column; gap: 18px; }
 ol.qs { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 8px; max-width: 72ch; }
 .foot { font-size: 0.8rem; color: var(--muted); }
 
+/* Friction barbell */
+.bar-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+.bar-wrap svg { display: block; width: 100%; min-width: 600px; height: auto; }
+.bb-grid { stroke: var(--line); stroke-width: 1; }
+.bb-txt { fill: var(--muted); font-family: var(--font-mono); font-size: 11px; }
+.bb-head { fill: var(--fg); font-family: var(--font-display); font-weight: 700; font-size: 14px; }
+.bb-zone-lo { fill: var(--t-neu); opacity: 0.10; }
+.bb-zone-hi { fill: var(--t-ideal); opacity: 0.14; }
+.bb-line { fill: none; stroke: var(--fg); stroke-width: 3.5; stroke-linejoin: round; }
+.bb-bad { fill: var(--t-neg); }
+.bb-badtxt { fill: var(--t-neg); font-family: var(--font-body); font-weight: 600; font-size: 12px; }
+.bb-arrow { stroke: var(--t-neg); stroke-width: 1.5; stroke-dasharray: 4 3; fill: none; }
+.s-sneg { fill: var(--t-sneg); } .s-neg { fill: var(--t-neg); } .s-neu { fill: var(--t-neu); } .s-dec { fill: var(--t-dec); }
+.s-med { fill: var(--t-med); } .s-high { fill: var(--t-high); } .s-ideal { fill: var(--t-ideal); }
+.poles { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+.pole { border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 10px; border: 1px solid var(--line); background: var(--surface); min-width: 0; }
+.pole.lo { border-top: 4px solid var(--t-neu); }
+.pole.hi { border-top: 4px solid var(--t-ideal); }
+.pole ol { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 6px; font-size: 0.9rem; }
+.pole .rule { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); }
+.fails { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+.fail { border-left: 3px solid var(--t-neg); padding: 4px 0 4px 12px; display: flex; flex-direction: column; gap: 4px; }
+.fail p { font-size: 0.9rem; color: var(--muted); }
+.motto { font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; line-height: 1.25; max-width: 40ch; text-wrap: balance; }
+
 @media (max-width: 760px) {
   .spectrum, .axis { grid-template-columns: 1fr; }
   .axis, .brackets { display: none; }
@@ -128,7 +153,7 @@ ol.qs { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; g
 <div class="wrap">
 
   <header class="head">
-    <span class="eyebrow">Focus OS · concept v0.2 · planning loop 1</span>
+    <span class="eyebrow">Focus OS · concept v0.3 · planning loop 1</span>
     <h1>Every moment, one question: what is the hard, high-leverage thing right now?</h1>
     <p class="lede">Focus OS acts like a board of world-class coaches that is always on. At any zoom level, from the next 10 seconds to the next month, it shows where your options sit on a leverage spectrum. It points to the hard thing that matters most, and it calls out the comfortable green options that quietly cost you that.</p>
   </header>
@@ -228,9 +253,93 @@ ol.qs { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; g
     </div>
   </section>
 
+  <section aria-labelledby="s-bar">
+    <div class="head">
+      <span class="eyebrow">04 · The friction barbell</span>
+      <h2 id="s-bar">Zero friction everywhere, except where it builds the moat</h2>
+      <p>Friction isn't good or bad on its own. Where it sits is what matters. Drive it to zero on everything that isn't high leverage. On high-leverage work, go looking for it and count it as a win. The middle, where every task feels a bit hard, is what the app is designed to get rid of.</p>
+    </div>
+
+    <div class="bar-wrap" role="img" aria-label="Chart: target friction is flat at zero from super negative through medium leverage, then jumps to maximum for high leverage and ideal. Two red failure points: friction debt in the low-leverage zone, and moat leak in the high-leverage zone.">
+      <svg viewBox="0 0 720 290" xmlns="http://www.w3.org/2000/svg">
+        <rect class="bb-zone-lo" x="70" y="40" width="442.9" height="180"/>
+        <rect class="bb-zone-hi" x="512.9" y="40" width="177.1" height="180"/>
+        <line class="bb-grid" x1="70" y1="220" x2="690" y2="220"/>
+        <line class="bb-grid" x1="70" y1="40" x2="70" y2="220"/>
+        <text class="bb-txt" x="62" y="56" text-anchor="end">max</text>
+        <text class="bb-txt" x="62" y="218" text-anchor="end">zero</text>
+        <text class="bb-txt" transform="translate(22 130) rotate(-90)" text-anchor="middle">Target friction</text>
+
+        <text class="bb-head" x="84" y="66">Frictionless pole</text>
+        <text class="bb-txt" x="84" y="84">delete · delegate · automate · do fast</text>
+        <text class="bb-head" x="526" y="200">Friction pole</text>
+        <text class="bb-txt" x="526" y="214" style="font-size:10px">lean in · celebrate it</text>
+
+        <polyline class="bb-line" points="70,214 512.9,214 512.9,56 690,56"/>
+
+        <circle class="bb-bad" cx="300" cy="120" r="7"/>
+        <line class="bb-arrow" x1="300" y1="130" x2="300" y2="206"/>
+        <text class="bb-badtxt" x="314" y="116">Friction debt</text>
+        <text class="bb-txt" x="314" y="132">Low leverage, still painful. Kill it.</text>
+
+        <circle class="bb-bad" cx="620" cy="160" r="7"/>
+        <line class="bb-arrow" x1="620" y1="150" x2="620" y2="66"/>
+        <text class="bb-badtxt" x="606" y="150" text-anchor="end">Moat leak</text>
+        <text class="bb-txt" x="606" y="166" text-anchor="end">The hard thing made easy.</text>
+        <text class="bb-txt" x="606" y="180" text-anchor="end">Anyone can copy it now.</text>
+
+        <rect class="s-sneg" x="70" y="232" width="86.6" height="16" rx="3"/>
+        <rect class="s-neg" x="158.6" y="232" width="86.6" height="16" rx="3"/>
+        <rect class="s-neu" x="247.1" y="232" width="86.6" height="16" rx="3"/>
+        <rect class="s-dec" x="335.7" y="232" width="86.6" height="16" rx="3"/>
+        <rect class="s-med" x="424.3" y="232" width="86.6" height="16" rx="3"/>
+        <rect class="s-high" x="512.9" y="232" width="86.6" height="16" rx="3"/>
+        <rect class="s-ideal" x="601.4" y="232" width="86.6" height="16" rx="3"/>
+        <text class="bb-txt" x="113.3" y="266" text-anchor="middle">−3</text>
+        <text class="bb-txt" x="201.9" y="266" text-anchor="middle">−2</text>
+        <text class="bb-txt" x="290.4" y="266" text-anchor="middle">0</text>
+        <text class="bb-txt" x="379" y="266" text-anchor="middle">+1 ⚠</text>
+        <text class="bb-txt" x="467.6" y="266" text-anchor="middle">+1</text>
+        <text class="bb-txt" x="556.1" y="266" text-anchor="middle">+2</text>
+        <text class="bb-txt" x="644.7" y="266" text-anchor="middle">+3</text>
+        <text class="bb-txt" x="380" y="284" text-anchor="middle">Leverage tier (the spectrum above)</text>
+      </svg>
+    </div>
+
+    <div class="poles">
+      <div class="pole lo">
+        <h3>Frictionless pole</h3>
+        <span class="rule">Everything below high leverage · goal: zero effort</span>
+        <ol>
+          <li><b>Delete.</b> Don't do it. Most of this list exists because nobody asked whether it should.</li>
+          <li><b>Delegate.</b> Someone else does it, to their own standard.</li>
+          <li><b>Automate.</b> A script, an agent, a template or a rule. Build it once, never touch it again.</li>
+          <li><b>Do fast.</b> If it has to be you, batch it, timebox it and keep it good enough.</li>
+        </ol>
+      </div>
+      <div class="pole hi">
+        <h3>Friction pole</h3>
+        <span class="rule">High leverage + ideal · goal: maximum useful difficulty</span>
+        <ol>
+          <li><b>Find it.</b> Ask which part you're avoiding. That part is usually the work.</li>
+          <li><b>Protect it.</b> Put it in your best hours. Don't hand it to AI or anyone else when the struggle is how the advantage gets built.</li>
+          <li><b>Raise it.</b> When it starts to feel easy, make it harder: higher bar, bigger ask, tighter deadline.</li>
+          <li><b>Celebrate it.</b> Count reps of hard work, not hours. Each one is something competitors won't do.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="fails">
+      <div class="fail"><h3>Failure mode 1 · Friction debt</h3><p>Pain spent on low-leverage work. It feels like discipline, but it's waste. The app's response is to recommend a delete, delegate or automate move and estimate the hours it would free up.</p></div>
+      <div class="fail"><h3>Failure mode 2 · Moat leak</h3><p>The high-leverage work made comfortable: shortcut, outsourced, or done at the easy level. It feels efficient, but it gives away the edge. The app's response is to ask what the harder version would be.</p></div>
+    </div>
+
+    <p class="motto">Friction is a budget. Spend none of it on busywork. Spend all of it on the moat.</p>
+  </section>
+
   <section aria-labelledby="s-soft">
     <div class="head">
-      <span class="eyebrow">04 · What this means as software</span>
+      <span class="eyebrow">05 · What this means as software</span>
       <h2 id="s-soft">First ideas for the product</h2>
       <p>These are first-pass components to pressure-test in the next research loop. Nothing is decided yet.</p>
     </div>
@@ -250,13 +359,15 @@ ol.qs { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; g
       <div class="mod"><span class="k">GUARDRAILS</span><h3>Foundation floor</h3><p>Sleep window, recovery and day-job commitments are fixed constraints. The engine plans around them and never sacrifices them.</p></div>
       <div class="mod"><span class="k">CONTEXT</span><h3>Goals + data + tasks</h3><p>Long-term goals, current task list, calendar, and body data (sleep, readiness) feed every score. Low readiness changes what counts as ideal.</p></div>
       <div class="mod"><span class="k">LEDGER</span><h3>Where your hours landed</h3><p>A timeline of what you actually did, colored by tier. It shows your share of ideal versus deceptive time, by hour and by week.</p></div>
+      <div class="mod"><span class="k">POLARITY CHECK</span><h3>Friction in the right place</h3><p>Each task gets two numbers: how much it should hurt and how much it actually does. A gap on low-leverage work gets a fix proposed, such as delete, delegate or automate. A gap on high-leverage work gets a challenge to make it harder.</p></div>
+      <div class="mod"><span class="k">MOAT METER</span><h3>Reps of hard, celebrated</h3><p>Two running totals: friction removed (hours automated or deleted) and friction embraced (hard reps on the moat). Both should go up.</p></div>
       <div class="mod"><span class="k">FRICTION LOG</span><h3>Resistance as data</h3><p>When you skip the hard thing, one tap records why. Patterns in those reasons become the coaches' agenda.</p></div>
     </div>
   </section>
 
   <section aria-labelledby="s-q">
     <div class="head">
-      <span class="eyebrow">05 · For the next loop</span>
+      <span class="eyebrow">06 · For the next loop</span>
       <h2 id="s-q">Questions to research next</h2>
     </div>
     <ol class="qs">
