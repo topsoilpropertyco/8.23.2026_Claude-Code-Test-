@@ -1,0 +1,352 @@
+<title>Focus OS Leverage Spectrum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one instrument-panel column. Spectrum bar is the hero; horizon dial drives it; 2x2s and software map follow. */
+:root {
+  --bg: #f3f5f4;
+  --surface: #ffffff;
+  --fg: #16201c;
+  --muted: #5b6862;
+  --line: #d6ddd9;
+  --accent: #0f7a4a;
+
+  --t-sneg: #6e0f1d;
+  --t-neg: #c23b36;
+  --t-neu: #8d9692;
+  --t-dec: #c7b92e;
+  --t-med: #7cbf55;
+  --t-high: #2c9f52;
+  --t-ideal: #0bd174;
+  --on-tier-dark: #ffffff;
+  --on-tier-light: #10201a;
+
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1412; --surface: #151d1a; --fg: #e6ece9; --muted: #95a29c; --line: #2a3531; --accent: #3fdc8f;
+    --t-sneg: #8a1626; --t-neg: #d24a44; --t-neu: #6f7974; --t-dec: #c9bb36; --t-med: #79c254; --t-high: #2fae59; --t-ideal: #19e382;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1412; --surface: #151d1a; --fg: #e6ece9; --muted: #95a29c; --line: #2a3531; --accent: #3fdc8f;
+  --t-sneg: #8a1626; --t-neg: #d24a44; --t-neu: #6f7974; --t-dec: #c9bb36; --t-med: #79c254; --t-high: #2fae59; --t-ideal: #19e382;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 72px; display: flex; flex-direction: column; gap: 56px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(2rem, 5vw, 3.1rem); font-weight: 800; line-height: 1.05; }
+h2 { font-size: 1.55rem; font-weight: 700; }
+h3 { font-size: 1.05rem; font-weight: 700; }
+p { margin: 0; max-width: 65ch; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); }
+.lede { font-size: 1.1rem; color: var(--muted); }
+section { display: flex; flex-direction: column; gap: 18px; }
+.head { display: flex; flex-direction: column; gap: 8px; }
+.mono { font-family: var(--font-mono); }
+
+/* Spectrum */
+.spectrum { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.tier { border-radius: 6px; padding: 12px 10px 14px; min-height: 108px; display: flex; flex-direction: column; gap: 6px; position: relative; }
+.tier .code { font-family: var(--font-mono); font-size: 0.7rem; opacity: 0.85; }
+.tier .name { font-family: var(--font-display); font-weight: 700; font-size: 0.98rem; line-height: 1.15; }
+.tier .gist { font-size: 0.78rem; line-height: 1.35; opacity: 0.92; }
+.sneg { background: var(--t-sneg); color: var(--on-tier-dark); }
+.neg  { background: var(--t-neg);  color: var(--on-tier-dark); }
+.neu  { background: var(--t-neu);  color: var(--on-tier-dark); }
+.dec  { background: repeating-linear-gradient(135deg, var(--t-dec) 0 10px, color-mix(in srgb, var(--t-dec) 78%, #000) 10px 12px); color: var(--on-tier-light); outline: 2px dashed var(--t-neg); outline-offset: 2px; }
+.med  { background: var(--t-med);  color: var(--on-tier-light); }
+.high { background: var(--t-high); color: var(--on-tier-dark); }
+.ideal{ background: var(--t-ideal); color: var(--on-tier-light); box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--t-ideal); }
+
+.axis { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); }
+.axis span { text-align: center; }
+.brackets { display: grid; grid-template-columns: 3fr 1fr 3fr; gap: 4px; font-family: var(--font-mono); font-size: 0.72rem; }
+.brackets div { border-top: 2px solid var(--line); padding-top: 6px; color: var(--muted); }
+.brackets .warn { border-top-color: var(--t-neg); color: var(--t-neg); }
+.brackets .good { border-top-color: var(--accent); color: var(--accent); }
+
+/* Horizon dial */
+.dial { display: flex; flex-wrap: wrap; gap: 6px; }
+.dial button { font-family: var(--font-mono); font-size: 0.8rem; padding: 7px 11px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; }
+.dial button[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.dial button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.lens { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.lens-top { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: baseline; }
+.tag { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; border: 1px solid var(--line); border-radius: 4px; padding: 2px 6px; color: var(--muted); }
+.picks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.pick { border-radius: 8px; padding: 12px; border: 1px solid var(--line); display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.pick .lbl { font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; display: flex; align-items: center; gap: 6px; }
+.dot { width: 10px; height: 10px; border-radius: 2px; flex: none; }
+.pick .what { font-weight: 600; }
+.pick .why { font-size: 0.85rem; color: var(--muted); }
+.serves { font-size: 0.85rem; color: var(--muted); border-top: 1px dashed var(--line); padding-top: 10px; }
+.serves b { color: var(--fg); font-weight: 600; }
+
+/* 2x2s */
+.quads { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 28px; }
+.quad-card { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.quad-frame { display: grid; grid-template-columns: 22px 1fr; grid-template-rows: 1fr 22px; gap: 4px; }
+.yaxis { writing-mode: vertical-rl; transform: rotate(180deg); font-family: var(--font-mono); font-size: 0.68rem; color: var(--muted); text-align: center; }
+.xaxis { grid-column: 2; font-family: var(--font-mono); font-size: 0.68rem; color: var(--muted); text-align: center; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 4px; aspect-ratio: 1 / 1; max-width: 100%; }
+.cell { border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; line-height: 1.3; }
+.cell b { font-family: var(--font-display); font-size: 0.95rem; }
+.cell.target { box-shadow: inset 0 0 0 3px var(--fg); }
+.quad-note { font-size: 0.88rem; color: var(--muted); }
+
+/* Software map */
+.mods { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.mod { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 6px; }
+.mod .k { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent); }
+.mod p { font-size: 0.88rem; color: var(--muted); }
+.flow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-family: var(--font-mono); font-size: 0.8rem; }
+.flow span.step { background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: 6px 9px; }
+.flow span.arrow { color: var(--muted); }
+ol.qs { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 8px; max-width: 72ch; }
+.foot { font-size: 0.8rem; color: var(--muted); }
+
+@media (max-width: 760px) {
+  .spectrum, .axis { grid-template-columns: 1fr; }
+  .axis, .brackets { display: none; }
+  .tier { min-height: 0; }
+  .picks { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .pick { transition: background-color 160ms ease; }
+}
+</style>
+
+<div class="wrap">
+
+  <header class="head">
+    <span class="eyebrow">Focus OS · concept v0.1 · planning loop 1</span>
+    <h1>Every moment, one question: what is the hard, high-leverage thing right now?</h1>
+    <p class="lede">Focus OS acts like a board of world-class coaches that is always on. At any zoom level, from the next 10 seconds to the next month, it shows where your options sit on a leverage spectrum. It points to the hard thing that matters most, and it calls out the comfortable green options that quietly cost you that.</p>
+  </header>
+
+  <section aria-labelledby="s-spec">
+    <div class="head">
+      <span class="eyebrow">01 · The spectrum</span>
+      <h2 id="s-spec">Seven tiers, dark red to bright green</h2>
+      <p>Every candidate action at every time horizon gets placed on this bar. The striped tier is the dangerous one. It shows positive expected value, so it looks green, but choosing it gives up the ideal move.</p>
+    </div>
+    <div class="spectrum" role="list">
+      <div class="tier sneg" role="listitem"><span class="code">−3</span><span class="name">Super negative</span><span class="gist">Actively destroys sleep, health, trust or the goal. Relapse territory.</span></div>
+      <div class="tier neg" role="listitem"><span class="code">−2</span><span class="name">Negative</span><span class="gist">Costs more than it returns. Doomscroll, reactive firefighting.</span></div>
+      <div class="tier neu" role="listitem"><span class="code">0</span><span class="name">Neutral</span><span class="gist">Neither builds nor burns. Idle drift, filler.</span></div>
+      <div class="tier dec" role="listitem"><span class="code">+1 ⚠</span><span class="name">Deceptive</span><span class="gist">In the green, but robs the ideal. Inbox zero instead of the proposal.</span></div>
+      <div class="tier med" role="listitem"><span class="code">+1</span><span class="name">Medium leverage</span><span class="gist">Real value, ordinary returns. Good on a low-energy day.</span></div>
+      <div class="tier high" role="listitem"><span class="code">+2</span><span class="name">High leverage</span><span class="gist">Compounds. Moves a long-term goal or removes future work.</span></div>
+      <div class="tier ideal" role="listitem"><span class="code">+3</span><span class="name">Ideal</span><span class="gist">The single hardest, highest-leverage move available right now.</span></div>
+    </div>
+    <div class="brackets" aria-hidden="true">
+      <div>avoid · the app names these out loud</div>
+      <div class="warn">the trap</div>
+      <div class="good">do · ideal is the default answer</div>
+    </div>
+  </section>
+
+  <section aria-labelledby="s-lens">
+    <div class="head">
+      <span class="eyebrow">02 · The fractal lens</span>
+      <h2 id="s-lens">Same spectrum, any zoom level</h2>
+      <p>Pick a horizon. The app answers at that scale, and each answer has to serve the level above it. The 10-second move feeds the hour, the hour feeds the day, the day feeds the week.</p>
+    </div>
+    <div class="dial" role="group" aria-label="Time horizon" id="dial"></div>
+    <div class="lens" aria-live="polite">
+      <div class="lens-top">
+        <h3 id="lens-title">Next 10 minutes</h3>
+        <span class="tag">Example data · not yours yet</span>
+      </div>
+      <div class="picks" id="picks"></div>
+      <div class="serves" id="serves"></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="s-quads">
+    <div class="head">
+      <span class="eyebrow">03 · The 2x2s</span>
+      <h2 id="s-quads">Three grids that do the sorting</h2>
+      <p>The spectrum is the output. These grids are how an action gets placed on it. The outlined cell in each grid is where the coaches want you.</p>
+    </div>
+    <div class="quads">
+
+      <div class="quad-card">
+        <h3>A · Leverage × Friction</h3>
+        <div class="quad-frame">
+          <div class="yaxis">Leverage → higher</div>
+          <div class="grid2">
+            <div class="cell" style="background:var(--t-med);color:var(--on-tier-light)"><b>Free win</b>High leverage, easy. Do it fast, then move on. Don't mistake it for the work.</div>
+            <div class="cell target" style="background:var(--t-ideal);color:var(--on-tier-light)"><b>The hard thing</b>High leverage, high resistance. Friction max lives here. This is the default answer.</div>
+            <div class="cell" style="background:var(--t-dec);color:var(--on-tier-light)"><b>Comfort zone</b>Low leverage, easy. Feels productive. The main source of deceptive tasks.</div>
+            <div class="cell" style="background:var(--t-neg);color:var(--on-tier-dark)"><b>Grind trap</b>Low leverage, hard. Feels virtuous, but it's martyr work. Cut it or delegate it.</div>
+          </div>
+          <div class="xaxis">Friction / resistance → higher</div>
+        </div>
+        <p class="quad-note">Resistance is a signal. When you're avoiding something important, that's usually where the ideal move is.</p>
+      </div>
+
+      <div class="quad-card">
+        <h3>B · Expected value × Opportunity cost</h3>
+        <div class="quad-frame">
+          <div class="yaxis">Expected value → positive</div>
+          <div class="grid2">
+            <div class="cell target" style="background:var(--t-ideal);color:var(--on-tier-light)"><b>Clean yes</b>Positive, and nothing better is available. Commit.</div>
+            <div class="cell" style="background:var(--t-dec);color:var(--on-tier-light)"><b>Deceptive</b>Positive, but crowds out something far better. The app flags these hardest.</div>
+            <div class="cell" style="background:var(--t-neu);color:var(--on-tier-dark)"><b>Small drag</b>Mildly negative, cheap. Batch it or drop it.</div>
+            <div class="cell" style="background:var(--t-sneg);color:var(--on-tier-dark)"><b>Double loss</b>Negative and blocks the ideal. Super negative.</div>
+          </div>
+          <div class="xaxis">Opportunity cost → higher</div>
+        </div>
+        <p class="quad-note">This grid catches the deceptive tier. A task can be worth doing and still be the wrong thing to do now.</p>
+      </div>
+
+      <div class="quad-card">
+        <h3>C · Obligation × Foundation</h3>
+        <div class="quad-frame">
+          <div class="yaxis">Protects capacity → more</div>
+          <div class="grid2">
+            <div class="cell target" style="background:var(--t-high);color:var(--on-tier-dark)"><b>Foundation</b>Sleep, training, recovery. Scheduled first, never traded away for a hard thing.</div>
+            <div class="cell" style="background:var(--t-med);color:var(--on-tier-light)"><b>Day-job core</b>Required and sustaining. Do it well and on time, then stop.</div>
+            <div class="cell" style="background:var(--t-neu);color:var(--on-tier-dark)"><b>Optional</b>Not required and doesn't restore you. Has to earn its place on leverage.</div>
+            <div class="cell" style="background:var(--t-neg);color:var(--on-tier-dark)"><b>Bleed</b>Required, but draining and low value. Automate it, renegotiate it, or contain it.</div>
+          </div>
+          <div class="xaxis">Externally required → more</div>
+        </div>
+        <p class="quad-note">These are the guardrails. "Friction max" never overrides sleep or the job's non-negotiables. Those set the box the hard thing has to fit inside.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section aria-labelledby="s-soft">
+    <div class="head">
+      <span class="eyebrow">04 · What this means as software</span>
+      <h2 id="s-soft">First ideas for the product</h2>
+      <p>These are first-pass components to pressure-test in the next research loop. Nothing is decided yet.</p>
+    </div>
+    <div class="flow" aria-label="Core loop">
+      <span class="step">Capture</span><span class="arrow">→</span>
+      <span class="step">Score on 2x2s</span><span class="arrow">→</span>
+      <span class="step">Place on spectrum</span><span class="arrow">→</span>
+      <span class="step">Pick ideal at each horizon</span><span class="arrow">→</span>
+      <span class="step">Check-in at horizon end</span><span class="arrow">→</span>
+      <span class="step">Recalibrate</span>
+    </div>
+    <div class="mods">
+      <div class="mod"><span class="k">NOW LENS</span><h3>Always-open strip</h3><p>A thin bar on screen at all times: the ideal move at the current zoom level, a countdown, and the one deceptive option to watch out for.</p></div>
+      <div class="mod"><span class="k">ZOOM DIAL</span><h3>10s ↔ 1 month</h3><p>Scroll through horizons. Each level shows its ideal move and how it connects to the level above, so the moves stay consistent from seconds up to the month.</p></div>
+      <div class="mod"><span class="k">BOARD</span><h3>Advisor council</h3><p>Several AI coach personas (strategist, trainer, operator, recovery coach) score each candidate and argue about it. You see where they agree and where they dissent.</p></div>
+      <div class="mod"><span class="k">TRAP DETECTOR</span><h3>Deception flag</h3><p>Flags green tasks that are crowding out something better. It names what you'd be giving up, in one sentence.</p></div>
+      <div class="mod"><span class="k">GUARDRAILS</span><h3>Foundation floor</h3><p>Sleep window, recovery and day-job commitments are fixed constraints. The engine plans around them and never sacrifices them.</p></div>
+      <div class="mod"><span class="k">CONTEXT</span><h3>Goals + data + tasks</h3><p>Long-term goals, current task list, calendar, and body data (sleep, readiness) feed every score. Low readiness changes what counts as ideal.</p></div>
+      <div class="mod"><span class="k">LEDGER</span><h3>Where your hours landed</h3><p>A timeline of what you actually did, colored by tier. It shows your share of ideal versus deceptive time, by hour and by week.</p></div>
+      <div class="mod"><span class="k">FRICTION LOG</span><h3>Resistance as data</h3><p>When you skip the hard thing, one tap records why. Patterns in those reasons become the coaches' agenda.</p></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="s-q">
+    <div class="head">
+      <span class="eyebrow">05 · For the next loop</span>
+      <h2 id="s-q">Questions to research next</h2>
+    </div>
+    <ol class="qs">
+      <li><b>Scoring:</b> should you place items on the spectrum, should the AI do it, or should the AI propose and you confirm? How fast does that need to be at the 10-second level?</li>
+      <li><b>Surface:</b> where does "always open" live: a browser tab, a desktop menu-bar strip, a phone lock screen, or all three?</li>
+      <li><b>Board:</b> which real coaching frameworks should the advisor personas draw on (e.g. ONE Thing focusing question, Eisenhower, Theory of Constraints, deliberate practice, eat-the-frog)?</li>
+      <li><b>Deception math:</b> how should opportunity cost be estimated for each task: by gap to the current ideal, by goal weight, or by decay over time?</li>
+      <li><b>Data:</b> which sources come first: calendar, task list (Asana), sleep and readiness, or screen time?</li>
+    </ol>
+    <p class="foot">Labels, tiers and examples are a first draft to react to. Tell me what's wrong and the next loop will research it.</p>
+  </section>
+
+</div>
+
+<script>
+const T = {
+  ideal: { label: "Ideal", color: "var(--t-ideal)" },
+  dec:   { label: "Deceptive", color: "var(--t-dec)" },
+  neg:   { label: "Negative", color: "var(--t-neg)" }
+};
+const H = [
+  { k: "10s",  t: "Next 10 seconds", up: "the next minute",
+    p: [["ideal","Close every tab except the draft","Removes the exit routes before resistance starts."],
+        ["dec","Glance at Slack to “clear it quickly”","Harmless on its own, but it hands the next 10 minutes to someone else."],
+        ["neg","Pick up the phone","Starts a scroll loop that usually costs about 20 minutes."]] },
+  { k: "60s",  t: "Next 60 seconds", up: "the next 10 minutes",
+    p: [["ideal","Write the ugly first sentence","Getting started is the hardest part, so do it now."],
+        ["dec","Reorganize the outline headings","Feels like progress while putting off the actual writing."],
+        ["neg","Open email “just to check”","Pulls in other people's priorities."]] },
+  { k: "10m",  t: "Next 10 minutes", up: "this hour's block",
+    p: [["ideal","Draft the pricing section nobody wants to write","It's the riskiest part of the proposal. Uncertainty drops most here."],
+        ["dec","Polish the intro paragraph","Looks good, but it doesn't touch the part that decides the deal."],
+        ["neg","Rewrite yesterday's notes","Reworks finished work and adds nothing."]] },
+  { k: "30m",  t: "Next 30 minutes", up: "this hour",
+    p: [["ideal","Make the hard call you've been avoiding","Resolves a blocker that's holding up three other tasks."],
+        ["dec","Clear 25 easy emails","Positive, but it uses up the best willpower window of the day."],
+        ["neg","Research tools for the task instead of doing it","Feels like work while the real task waits."]] },
+  { k: "1h",   t: "Next hour", up: "this 3-hour block",
+    p: [["ideal","Deep work: ship v1 of the proposal","The single deliverable that moves this week's goal."],
+        ["dec","Attend the optional status meeting","Some value, but it costs your peak hour."],
+        ["neg","Reactive firefighting with no priority filter","Keeps you busy and leaves the hard thing undone."]] },
+  { k: "3h",   t: "Next 3 hours", up: "today",
+    p: [["ideal","Day-job core in one batch, then stop","Protects the afternoon for leverage work."],
+        ["dec","Perfect a low-stakes deliverable","Real output, but far more care than it warrants."],
+        ["neg","Skip lunch and push through","Lowers the quality of every later block."]] },
+  { k: "4h",   t: "Next 4 hours", up: "today",
+    p: [["ideal","Two deep blocks on the #1 goal, with a walk between","Hard work, and you'll still have energy left for tomorrow."],
+        ["dec","Build a new productivity system","Feels like progress, but it's planning instead of doing."],
+        ["neg","Back-to-back calls with no outcome set","Hours spent, nothing decided."]] },
+  { k: "1d",   t: "Next day", up: "this week",
+    p: [["ideal","One shipped outcome + protect the sleep window","Output today and capacity tomorrow."],
+        ["dec","Say yes to a speaking invite","Positive EV, but it eats two prep days."],
+        ["neg","Late night working past the sleep window","Costs more of tomorrow than it gains tonight."]] },
+  { k: "1w",   t: "Next week", up: "this month",
+    p: [["ideal","Close the one deal or launch that changes the month","The keystone. Everything else gets easier or unnecessary."],
+        ["dec","Take on a second side project","Value on paper. In practice it splits your focus."],
+        ["neg","Drift with no weekly ideal named","Busy, scattered, and nothing compounds."]] },
+  { k: "1mo",  t: "Next month", up: "the long-term goal",
+    p: [["ideal","Commit to the hardest milestone of the year","The decision every smaller horizon will serve."],
+        ["dec","A broad, safe plan with ten goals","Nothing in it is wrong, but it sets no single direction."],
+        ["neg","Overcommit and erode sleep and health","Undermines everything else on the list."]] }
+];
+const dial = document.getElementById("dial");
+const picks = document.getElementById("picks");
+const title = document.getElementById("lens-title");
+const serves = document.getElementById("serves");
+function render(i) {
+  const h = H[i];
+  title.textContent = h.t;
+  [...dial.children].forEach((b, j) => b.setAttribute("aria-pressed", j === i ? "true" : "false"));
+  picks.innerHTML = "";
+  h.p.forEach(([tier, what, why]) => {
+    const d = document.createElement("div");
+    d.className = "pick";
+    d.innerHTML = `<span class="lbl"><span class="dot" style="background:${T[tier].color}"></span>${T[tier].label}</span><span class="what"></span><span class="why"></span>`;
+    d.querySelector(".what").textContent = what;
+    d.querySelector(".why").textContent = why;
+    picks.appendChild(d);
+  });
+  serves.innerHTML = `Has to serve <b></b>. If the ideal here doesn't move the level above it, it isn't ideal.`;
+  serves.querySelector("b").textContent = h.up;
+  try { localStorage.setItem("fos-horizon", String(i)); } catch (e) {}
+}
+H.forEach((h, i) => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "h-" + h.k; b.textContent = h.k;
+  b.addEventListener("click", () => render(i));
+  dial.appendChild(b);
+});
+let start = 2;
+try { const s = parseInt(localStorage.getItem("fos-horizon"), 10); if (s >= 0 && s < H.length) start = s; } catch (e) {}
+render(start);
+</script>
