@@ -128,7 +128,7 @@ ol.qs { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; g
 <div class="wrap">
 
   <header class="head">
-    <span class="eyebrow">Focus OS · concept v0.1 · planning loop 1</span>
+    <span class="eyebrow">Focus OS · concept v0.2 · planning loop 1</span>
     <h1>Every moment, one question: what is the hard, high-leverage thing right now?</h1>
     <p class="lede">Focus OS acts like a board of world-class coaches that is always on. At any zoom level, from the next 10 seconds to the next month, it shows where your options sit on a leverage spectrum. It points to the hard thing that matters most, and it calls out the comfortable green options that quietly cost you that.</p>
   </header>
@@ -176,7 +176,7 @@ ol.qs { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; g
     <div class="head">
       <span class="eyebrow">03 · The 2x2s</span>
       <h2 id="s-quads">Three grids that do the sorting</h2>
-      <p>The spectrum is the output. These grids are how an action gets placed on it. The outlined cell in each grid is where the coaches want you.</p>
+      <p>The spectrum is the output. These grids are how an action gets placed on it. The outlined cell in each grid is where the coaches want you, always top right.</p>
     </div>
     <div class="quads">
 
@@ -200,12 +200,12 @@ ol.qs { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; g
         <div class="quad-frame">
           <div class="yaxis">Expected value → positive</div>
           <div class="grid2">
-            <div class="cell target" style="background:var(--t-ideal);color:var(--on-tier-light)"><b>Clean yes</b>Positive, and nothing better is available. Commit.</div>
             <div class="cell" style="background:var(--t-dec);color:var(--on-tier-light)"><b>Deceptive</b>Positive, but crowds out something far better. The app flags these hardest.</div>
-            <div class="cell" style="background:var(--t-neu);color:var(--on-tier-dark)"><b>Small drag</b>Mildly negative, cheap. Batch it or drop it.</div>
+            <div class="cell target" style="background:var(--t-ideal);color:var(--on-tier-light)"><b>Clean yes</b>Positive, and nothing better is available. Commit.</div>
             <div class="cell" style="background:var(--t-sneg);color:var(--on-tier-dark)"><b>Double loss</b>Negative and blocks the ideal. Super negative.</div>
+            <div class="cell" style="background:var(--t-neu);color:var(--on-tier-dark)"><b>Small drag</b>Mildly negative, cheap. Batch it or drop it.</div>
           </div>
-          <div class="xaxis">Opportunity cost → higher</div>
+          <div class="xaxis">Opportunity cost → lower (nothing better waiting)</div>
         </div>
         <p class="quad-note">This grid catches the deceptive tier. A task can be worth doing and still be the wrong thing to do now.</p>
       </div>
@@ -215,12 +215,12 @@ ol.qs { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; g
         <div class="quad-frame">
           <div class="yaxis">Protects capacity → more</div>
           <div class="grid2">
-            <div class="cell target" style="background:var(--t-high);color:var(--on-tier-dark)"><b>Foundation</b>Sleep, training, recovery. Scheduled first, never traded away for a hard thing.</div>
             <div class="cell" style="background:var(--t-med);color:var(--on-tier-light)"><b>Day-job core</b>Required and sustaining. Do it well and on time, then stop.</div>
-            <div class="cell" style="background:var(--t-neu);color:var(--on-tier-dark)"><b>Optional</b>Not required and doesn't restore you. Has to earn its place on leverage.</div>
+            <div class="cell target" style="background:var(--t-high);color:var(--on-tier-dark)"><b>Foundation</b>Sleep, training, recovery. Scheduled first, never traded away for a hard thing.</div>
             <div class="cell" style="background:var(--t-neg);color:var(--on-tier-dark)"><b>Bleed</b>Required, but draining and low value. Automate it, renegotiate it, or contain it.</div>
+            <div class="cell" style="background:var(--t-neu);color:var(--on-tier-dark)"><b>Optional</b>Not required and doesn't restore you. Has to earn its place on leverage.</div>
           </div>
-          <div class="xaxis">Externally required → more</div>
+          <div class="xaxis">Self-chosen → more (less imposed)</div>
         </div>
         <p class="quad-note">These are the guardrails. "Friction max" never overrides sleep or the job's non-negotiables. Those set the box the hard thing has to fit inside.</p>
       </div>
