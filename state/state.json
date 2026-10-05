@@ -4205,7 +4205,7 @@
       }
     }
   },
-  "inboxOffset": 697606563,
+  "inboxOffset": 697606564,
   "pending": [
     {
       "messageId": 1643,
@@ -4330,7 +4330,6 @@
     "short": [],
     "mechanism:attribution": [],
     "streak": [
-      1,
       2
     ],
     "stat": [
@@ -4349,9 +4348,7 @@
       7,
       0
     ],
-    "mechanism:self_efficacy": [
-      0
-    ],
+    "mechanism:self_efficacy": [],
     "mechanism:mental_contrasting": [
       1
     ],
