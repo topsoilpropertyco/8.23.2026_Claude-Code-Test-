@@ -1,10 +1,10 @@
 {
   "_comment": "What the last Oura pull actually saw. Public file: dates and counts only.",
-  "at": "2026-10-05T11:25:14.477Z",
+  "at": "2026-10-06T11:12:11.192Z",
   "requested": {
-    "start": "2026-10-02",
-    "end": "2026-10-05",
-    "periodEnd": "2026-10-06"
+    "start": "2026-10-03",
+    "end": "2026-10-06",
+    "periodEnd": "2026-10-07"
   },
   "rows": {
     "dailySleep": 3,
