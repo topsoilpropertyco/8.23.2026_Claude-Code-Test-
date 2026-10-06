@@ -4201,7 +4201,7 @@
       }
     }
   },
-  "inboxOffset": 697606568,
+  "inboxOffset": 697606569,
   "pending": [
     {
       "messageId": 1690,
@@ -4359,9 +4359,7 @@
     "stat": [
       1
     ],
-    "mechanism:implementation_intention": [
-      0
-    ],
+    "mechanism:implementation_intention": [],
     "mechanism:commitment": [],
     "mechanism:elaborative_interrogation": [
       0
@@ -4407,7 +4405,7 @@
     }
   },
   "writtenReplies": {
-    "date": "2026-10-05",
+    "date": "2026-10-06",
     "count": 1
   },
   "coach": {
