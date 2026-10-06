@@ -5,7 +5,6 @@
     "lucid-09",
     "sleep-39",
     "sleep-11",
-    "sleep-02",
     "lucid-04",
     "sleep-03",
     "lucid-01",
@@ -4236,11 +4235,33 @@
         "cycle": 2,
         "targetLabel": "7:30 PM",
         "at": "2026-10-05T23:30:16.282Z"
+      },
+      "work_shutdown": {
+        "status": "sent",
+        "kind": "fact",
+        "factId": "sleep-02",
+        "library": "sleep",
+        "category": "brain",
+        "jackpot": false,
+        "cycle": 4,
+        "promptId": "p05",
+        "mechanism": "identity",
+        "targetLabel": "9:04 PM",
+        "at": "2026-10-06T01:04:20.794Z"
       }
     }
   },
   "inboxOffset": 697606566,
   "pending": [
+    {
+      "messageId": 1657,
+      "kind": "fact",
+      "factId": "sleep-02",
+      "promptId": "p05",
+      "mechanism": "identity",
+      "slot": "work_shutdown",
+      "at": "2026-10-06T01:04:20.794Z"
+    },
     {
       "messageId": 1655,
       "kind": "habit",
@@ -4338,15 +4359,6 @@
       "mechanism": null,
       "slot": "blue_blockers",
       "at": "2026-10-04T23:30:10.778Z"
-    },
-    {
-      "messageId": 1616,
-      "kind": "fact",
-      "factId": "lucid-03",
-      "promptId": "p01",
-      "mechanism": "implementation_intention",
-      "slot": "evening_winddown",
-      "at": "2026-10-04T22:11:14.760Z"
     }
   ],
   "promptCycle": 9,
@@ -4356,7 +4368,6 @@
     "p17",
     "p28",
     "p24",
-    "p05",
     "p13",
     "p23",
     "p27",
