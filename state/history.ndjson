@@ -401,3 +401,4 @@
 {"date":"2026-10-06","slot":"work_shutdown","status":"sent","kind":"fact","factId":"lucid-01","library":"lucid","category":"lucid-performance","jackpot":false,"cycle":4,"promptId":"p23","mechanism":"episodic_future_thinking","targetLabel":"8:53 PM","at":"2026-10-07T00:53:19.826Z"}
 {"date":"2026-10-06","slot":"terminal_bedtime","status":"sent","kind":"fact","factId":"lucid-13","library":"lucid","category":"lucid-induction","jackpot":true,"cycle":4,"promptId":"p27","mechanism":"minimum_viable","targetLabel":"9:46 PM","at":"2026-10-07T01:46:21.343Z"}
 {"date":"2026-10-07","slot":"intake","status":"sent","kind":"intake","targetLabel":"6:00 AM","at":"2026-10-07T10:00:01.848Z"}
+{"date":"2026-10-07","slot":"morning_light","status":"sent","kind":"habit","habit":"morning_light","whyId":"ml14","optional":true,"cycle":2,"targetLabel":"7:15 AM","at":"2026-10-07T11:15:20.479Z"}
