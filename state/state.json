@@ -4171,8 +4171,16 @@
       }
     }
   },
-  "inboxOffset": 697606571,
+  "inboxOffset": 697606572,
   "pending": [
+    {
+      "messageId": 1783,
+      "kind": "morning-prompt",
+      "promptId": "m03",
+      "mechanism": "implementation_intention",
+      "slot": "intake",
+      "at": "2026-10-09T13:11:32.018Z"
+    },
     {
       "messageId": 1781,
       "kind": "fact",
@@ -4271,15 +4279,6 @@
       "mechanism": null,
       "slot": "morning_light",
       "at": "2026-10-08T11:15:08.683Z"
-    },
-    {
-      "messageId": 1733,
-      "kind": "intake",
-      "factId": null,
-      "promptId": null,
-      "mechanism": null,
-      "slot": "intake",
-      "at": "2026-10-08T10:00:20.794Z"
     }
   ],
   "promptCycle": 9,
@@ -4291,7 +4290,7 @@
     "p08",
     "p19"
   ],
-  "coachRotation": 30,
+  "coachRotation": 31,
   "affirmRotation": {
     "mechanism:identity": [
       1
@@ -4353,11 +4352,11 @@
     "count": 1
   },
   "coach": {
-    "at": "2026-10-07T17:20:41.234Z",
-    "written": false,
-    "provider": null,
-    "model": null,
-    "intensity": "standard",
-    "reason": "coach-llm unavailable, using the rule-based coach: timed out after 30s (ceiling 30s, attempt 3)"
+    "at": "2026-10-09T13:11:32.018Z",
+    "written": true,
+    "provider": "gemini",
+    "model": "gemini-3.8-flash",
+    "intensity": "brief",
+    "reason": null
   }
 }
