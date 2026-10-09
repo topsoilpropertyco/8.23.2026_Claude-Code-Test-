@@ -1,7 +1,62 @@
 {
   "version": 1,
-  "cycle": 4,
-  "remaining": [],
+  "cycle": 5,
+  "remaining": [
+    "sleep-24",
+    "lucid-15",
+    "sleep-22",
+    "sleep-11",
+    "sleep-31",
+    "lucid-10",
+    "sleep-17",
+    "sleep-26",
+    "lucid-01",
+    "sleep-15",
+    "sleep-25",
+    "sleep-07",
+    "lucid-07",
+    "sleep-16",
+    "sleep-30",
+    "sleep-29",
+    "lucid-03",
+    "sleep-35",
+    "sleep-27",
+    "lucid-11",
+    "sleep-38",
+    "sleep-39",
+    "sleep-08",
+    "lucid-08",
+    "sleep-12",
+    "sleep-14",
+    "sleep-13",
+    "lucid-09",
+    "sleep-32",
+    "sleep-18",
+    "lucid-02",
+    "sleep-33",
+    "sleep-04",
+    "sleep-21",
+    "lucid-06",
+    "sleep-23",
+    "sleep-01",
+    "sleep-20",
+    "lucid-12",
+    "sleep-34",
+    "sleep-19",
+    "lucid-05",
+    "sleep-02",
+    "sleep-40",
+    "sleep-09",
+    "lucid-04",
+    "sleep-36",
+    "sleep-37",
+    "sleep-03",
+    "lucid-14",
+    "sleep-10",
+    "sleep-28",
+    "lucid-13",
+    "sleep-05"
+  ],
   "sends": {
     "2026-08-31": {
       "intake": {
@@ -4179,11 +4234,33 @@
         "mechanism": "prospective_regret",
         "targetLabel": "11:47 AM",
         "at": "2026-10-09T15:47:13.044Z"
+      },
+      "afternoon_boundary": {
+        "status": "sent",
+        "kind": "fact",
+        "factId": "sleep-06",
+        "library": "sleep",
+        "category": "cardiometabolic",
+        "jackpot": false,
+        "cycle": 5,
+        "promptId": "p09",
+        "mechanism": "elaborative_interrogation",
+        "targetLabel": "4:20 PM",
+        "at": "2026-10-09T20:20:16.806Z"
       }
     }
   },
   "inboxOffset": 697606573,
   "pending": [
+    {
+      "messageId": 1790,
+      "kind": "fact",
+      "factId": "sleep-06",
+      "promptId": "p09",
+      "mechanism": "elaborative_interrogation",
+      "slot": "afternoon_boundary",
+      "at": "2026-10-09T20:20:16.806Z"
+    },
     {
       "messageId": 1786,
       "kind": "fact",
@@ -4281,22 +4358,12 @@
       "mechanism": "subtraction",
       "slot": "midday_essentialism",
       "at": "2026-10-08T15:53:14.061Z"
-    },
-    {
-      "messageId": 1744,
-      "kind": "fact",
-      "factId": "sleep-29",
-      "promptId": "p20",
-      "mechanism": "attribution",
-      "slot": "morning_reflection",
-      "at": "2026-10-08T12:05:16.879Z"
     }
   ],
   "promptCycle": 9,
   "promptRemaining": [
     "p26",
     "p21",
-    "p09",
     "p08",
     "p19"
   ],
