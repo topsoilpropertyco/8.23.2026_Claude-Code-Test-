@@ -418,3 +418,4 @@
 {"date":"2026-10-08","slot":"blue_blockers","status":"sent","kind":"habit","habit":"blue_blockers","whyId":"bb10","optional":false,"cycle":2,"targetLabel":"7:30 PM","at":"2026-10-08T23:30:03.942Z"}
 {"date":"2026-10-08","slot":"work_shutdown","status":"sent","kind":"fact","factId":"lucid-08","library":"lucid","category":"lucid-induction","jackpot":true,"cycle":4,"promptId":"p16","mechanism":"anchoring","targetLabel":"8:57 PM","at":"2026-10-09T00:57:24.008Z"}
 {"date":"2026-10-08","slot":"terminal_bedtime","status":"sent","kind":"fact","factId":"lucid-02","library":"lucid","category":"lucid-neuro","jackpot":false,"cycle":4,"promptId":"p10","mechanism":"prospective_regret","targetLabel":"9:57 PM","at":"2026-10-09T01:57:10.842Z"}
+{"date":"2026-10-09","slot":"intake","status":"sent","kind":"intake","targetLabel":"6:00 AM","at":"2026-10-09T10:00:43.146Z"}
