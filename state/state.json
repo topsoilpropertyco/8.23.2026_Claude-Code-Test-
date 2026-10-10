@@ -2,7 +2,6 @@
   "version": 1,
   "cycle": 5,
   "remaining": [
-    "lucid-10",
     "sleep-17",
     "sleep-26",
     "lucid-01",
@@ -4241,11 +4240,33 @@
         "mechanism": "subtraction",
         "targetLabel": "3:52 PM",
         "at": "2026-10-10T19:52:21.153Z"
+      },
+      "evening_winddown": {
+        "status": "sent",
+        "kind": "fact",
+        "factId": "lucid-10",
+        "library": "lucid",
+        "category": "lucid-psych",
+        "jackpot": false,
+        "cycle": 5,
+        "promptId": "p27",
+        "mechanism": "minimum_viable",
+        "targetLabel": "6:03 PM",
+        "at": "2026-10-10T22:03:09.033Z"
       }
     }
   },
   "inboxOffset": 697606574,
   "pending": [
+    {
+      "messageId": 1816,
+      "kind": "fact",
+      "factId": "lucid-10",
+      "promptId": "p27",
+      "mechanism": "minimum_viable",
+      "slot": "evening_winddown",
+      "at": "2026-10-10T22:03:09.033Z"
+    },
     {
       "messageId": 1814,
       "kind": "fact",
@@ -4344,19 +4365,10 @@
       "mechanism": "prospective_regret",
       "slot": "midday_essentialism",
       "at": "2026-10-09T15:47:13.044Z"
-    },
-    {
-      "messageId": 1783,
-      "kind": "morning-prompt",
-      "promptId": "m03",
-      "mechanism": "implementation_intention",
-      "slot": "intake",
-      "at": "2026-10-09T13:11:32.018Z"
     }
   ],
   "promptCycle": 10,
   "promptRemaining": [
-    "p27",
     "p24",
     "p09",
     "p01",
