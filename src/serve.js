@@ -81,6 +81,39 @@ function nightFingerprint() {
 }
 
 /**
+ * Last night's sleep score, watched separately from the fingerprint.
+ *
+ * Oura revises a score after the fact. Getting up at 2am with the boys is
+ * counted as a wake and scored on the spot; the sleep that follows raises the
+ * number again, sometimes by a lot. The deck is built the moment the night
+ * lands, so the screens read at breakfast hold the first, harshest figure of a
+ * night Oura itself no longer believes -- and nothing could notice, because the
+ * date had not moved and the night was already 'full'.
+ *
+ * The ingest was never the problem: upsertTelemetry has been correcting the
+ * stored score all along. Only the trigger to rebuild was missing.
+ *
+ * Deliberately NOT persisted. The one file a build leaves behind that outlives
+ * a window is state/health.json, and this repository is public -- that file is
+ * counts and booleans, never a score. Keeping the comparison in memory costs
+ * exactly one thing: a revision landing in the few seconds between one window
+ * ending and the next starting is not seen. /rescore covers that case.
+ */
+function latestScore() {
+  try {
+    const s = scoreSeries();
+    return s.length ? s[s.length - 1].score : null;
+  } catch {
+    return null;
+  }
+}
+
+// A ceiling on resends for one night. Oura normally settles after a single
+// correction; this is here so that a night it keeps nudging cannot turn into a
+// morning of albums.
+const MAX_REVISIONS_PER_NIGHT = 2;
+
+/**
  * Run the engine continuously until the deadline.
  *
  * @param {number}   seconds     how long to stay up
@@ -97,6 +130,12 @@ export async function serve({
   ingestCooldownSeconds = INGEST_COOLDOWN_SECONDS,
   dispatchFn = dispatch,
   listenFn = listen,
+  // Injected for the same reason dispatchFn is: the score watcher below decides
+  // whether to resend a deck, and that decision is worth testing without a
+  // decryption key and 1,074 real nights behind it.
+  builtFn = builtFingerprint,
+  nightFn = nightFingerprint,
+  scoreFn = latestScore,
 } = {}) {
   const deadline = now() + seconds * 1000;
   const started = now();
@@ -113,7 +152,12 @@ export async function serve({
   // would ever correct it until the next night arrived. That is exactly what
   // happened: the period landed at 18:11 and the screens were still the 17:31
   // build hours later.
-  let lastNight = builtFingerprint();
+  let lastNight = builtFn();
+  // Seeded from what telemetry holds right now, not from the deck: a window
+  // opening must not treat the score it inherits as a revision and resend on
+  // its first cycle. Only a change DURING the window is a correction.
+  let lastScore = scoreFn();
+  let revisions = 0;
   let loops = 0;
   // -Infinity, not 0: a window opening must pull on its first cycle. With 0 and a
   // clock at 0 the cooldown reads as already-satisfied-never, and a fresh window
@@ -126,7 +170,7 @@ export async function serve({
 
   log(`serve: up for ${Math.round(seconds / 60)} min, checking every ${sliceSeconds}s`);
   log(`serve: deck was last built from ${lastNight ?? 'nothing'}; `
-    + `telemetry now has ${nightFingerprint() ?? 'nothing'}`);
+    + `telemetry now has ${nightFn() ?? 'nothing'} (score ${lastScore ?? '--'})`);
 
   // A quiet loop prints nothing, which made ten minutes of healthy silence
   // indistinguishable from a hang when the first window was killed. A line every
@@ -157,16 +201,44 @@ export async function serve({
     // 2. A new night means the deck is worth rebuilding and sending. Checked
     //    here rather than once at startup because the ingest happens inside
     //    dispatch, hours into the run.
-    const night = nightFingerprint();
+    const night = nightFn();
     if (night && night !== lastNight) {
       log(`serve: night changed — ${night}`);
       lastNight = night;
+      lastScore = scoreFn();
+      revisions = 0;
       nightsSeen += 1;
       if (onNewNight) {
         try {
           await onNewNight(night);
         } catch (err) {
           log(`serve: deck delivery failed (continuing): ${err.message}`);
+        }
+      }
+    } else if (night && night.endsWith(':full')) {
+      // 2b. Same night, different number -- see latestScore() above. A finished
+      //     night whose score moves is a corrected night, and the screens that
+      //     were already sent are now wrong about it.
+      const score = scoreFn();
+      if (score != null && lastScore != null && score !== lastScore) {
+        const from = lastScore;
+        // Taken before the resend, not after: if the build fails, the window
+        // must not retry it every twenty-five seconds for five hours.
+        lastScore = score;
+        if (revisions >= MAX_REVISIONS_PER_NIGHT) {
+          log(`serve: ${night} revised again (${from} → ${score}); already resent `
+            + `${revisions}× for this night, leaving it`);
+        } else {
+          revisions += 1;
+          log(`serve: Oura revised ${night} — ${from} → ${score}, resending the deck`);
+          nightsSeen += 1;
+          if (onNewNight) {
+            try {
+              await onNewNight(night, { revised: { from, to: score } });
+            } catch (err) {
+              log(`serve: deck resend failed (continuing): ${err.message}`);
+            }
+          }
         }
       }
     }

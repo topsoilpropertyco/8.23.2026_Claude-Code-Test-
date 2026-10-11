@@ -18,6 +18,8 @@ import { morningPrompt, loadPrompts } from './prompts.js';
 import { localDateString, localTimeString, formatClock12 } from './time.js';
 import { buildDaySchedule } from './schedule.js';
 import { loadLibraries, loadConfig } from './facts.js';
+import { ingestRecent } from './ingest.js';
+import { scoreSeries } from './telemetry.js';
 
 const PENDING_KEEP = 12;
 
@@ -114,6 +116,7 @@ function helpText() {
     '/today   today\'s full cadence and what has fired',
     '/stats   library, rotation and journal totals',
     '/log 84  log last night (score, optional hours, optional 1-5 feel)',
+    '/rescore pull Oura again — use it when a night was rescored after a wake',
     '/help    this message',
     '',
     'Any other reply is logged as a journal entry against the last card sent.',
@@ -383,12 +386,69 @@ async function handleSleepEntry({ token, chatId, text, state, dateString, log, s
  * a journal write refuses to fall back to plaintext -- the message stays in
  * Telegram's queue and a later run picks it up, rather than being lost.
  */
+/**
+ * Pull Oura again, and say whether last night's number moved.
+ *
+ * Oura scores a night the moment it thinks the night is over. Getting up with a
+ * child at 2am ends it as far as the ring is concerned, so the score that
+ * arrives -- and the deck built from it -- describes three hours of sleep. The
+ * rest of the night is counted later and the score is revised upward.
+ *
+ * This command does not rebuild anything itself, which is the point. The ingest
+ * has always corrected the stored night; what was missing was a reason to look
+ * again before the next scheduled pull. Forcing the pull here is enough: the
+ * supervisor watches the score and resends the deck on its own within a cycle
+ * (see latestScore in src/serve.js). One mechanism, two ways in.
+ */
+async function handleRescore({ token, chatId, send, log = () => {}, ingest = ingestRecent }) {
+  const newest = () => {
+    try {
+      const s = scoreSeries();
+      return s.length ? s[s.length - 1] : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const before = newest();
+  await send(token, chatId, 'Asking Oura for your night again…');
+
+  try {
+    await ingest({ days: 3, log });
+  } catch (err) {
+    // Named rather than swallowed: he asked for this one deliberately, and
+    // silence after a deliberate request is the failure this layer exists for.
+    await send(token, chatId,
+      `Oura would not answer just now — ${err.message}\n\nTry again in a minute.`);
+    return { type: 'command', cmd: '/rescore', ok: false };
+  }
+
+  const after = newest();
+  if (!after) {
+    await send(token, chatId,
+      'Oura has no scored night on record yet. Open the app to sync the ring, then ask me again.');
+    return { type: 'command', cmd: '/rescore', ok: true, changed: false };
+  }
+
+  const moved = !before || before.date !== after.date || before.score !== after.score;
+  if (moved) {
+    const was = before && before.date === after.date ? ` — was ${before.score}` : '';
+    await send(token, chatId,
+      `${after.date} is now ${after.score}${was}.\n\nRebuilding your screens; they will arrive shortly.`);
+    return { type: 'command', cmd: '/rescore', ok: true, changed: true, score: after.score };
+  }
+
+  await send(token, chatId,
+    `Oura still has ${after.date} at ${after.score}. Your screens are current.`);
+  return { type: 'command', cmd: '/rescore', ok: true, changed: false, score: after.score };
+}
+
 export async function processInbox({
   config, state, token, chatId, now = new Date(), log = console.log,
   // Injected so the failure paths can be exercised in tests. Defaults are the
   // real Telegram calls, so every existing call site is unchanged.
   send = sendMessage, fetchUpdates = getUpdates, pollTimeout = 0,
-  sendCard = sendPhoto,
+  sendCard = sendPhoto, ingest = ingestRecent,
 } = {}) {
   // "Every message" has to mean every message, and this function sends from
   // eleven places -- the affirmation, /help, /status, /today, /stats, an unknown
@@ -435,6 +495,16 @@ export async function processInbox({
     }
 
     try {
+      // He asked for this in plain words -- "recalculate sleep score" -- and a
+      // command whose slash has to be remembered at 6am is a command that does
+      // not get used. Matched at the start of the message only, so a journal
+      // entry that happens to mention rescoring is still a journal entry.
+      if (!text.startsWith('/') && /^(re-?score|re-?calculate|re-?sync)\b/i.test(text)) {
+        handled.push(await handleRescore({ token, chatId, send, log, ingest }));
+        ack();
+        continue;
+      }
+
       if (text.startsWith('/')) {
         const [cmd, ...rest] = text.split(/\s+/);
 
@@ -450,6 +520,8 @@ export async function processInbox({
         } else if (cmd === '/stats') {
           await send(token, chatId, statsText({ state }));
           handled.push({ type: 'command', cmd });
+        } else if (cmd === '/rescore') {
+          handled.push(await handleRescore({ token, chatId, send, log, ingest }));
         } else if (cmd === '/log') {
           handled.push(await handleSleepEntry({ token, chatId, text: rest.join(' '), state, dateString, log, send }));
         } else {

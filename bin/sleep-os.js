@@ -435,9 +435,17 @@ async function cmdServe(seconds) {
   // A fresh night means the dashboard is worth rebuilding and sending. Spawned
   // rather than imported: send-deck drives python builders and a headless
   // browser, and a crash in any of that must not take the supervisor down.
-  const onNewNight = async () => {
+  // `revised` is set when the rebuild was triggered by Oura correcting a score
+  // rather than by a new night arriving. A second album with no explanation
+  // reads like a glitch, so the reason travels with it and lands in the caption.
+  const onNewNight = async (_night, { revised = null } = {}) => {
+    const env = revised
+      ? { ...process.env,
+          SLEEPOS_DECK_NOTE: `CORRECTED — Oura revised this night from ${revised.from} `
+            + `to ${revised.to}. These screens are the updated one.` }
+      : process.env;
     try {
-      execFileSync('node', ['bin/send-deck.mjs'], { cwd: ROOT, stdio: 'inherit' });
+      execFileSync('node', ['bin/send-deck.mjs'], { cwd: ROOT, stdio: 'inherit', env });
     } catch {
       console.log('serve: send-deck exited non-zero; it reports its own reason');
     }

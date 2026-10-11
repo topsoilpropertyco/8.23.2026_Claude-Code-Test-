@@ -195,3 +195,18 @@ test('a sample night writes no health record', () => {
   assert.equal(src.split("state/health.json").length - 1, 1,
     'there must be exactly one health write');
 });
+
+test('a resend says why it is a resend, on both delivery paths', () => {
+  // A second album the same morning with no explanation reads as the engine
+  // sending twice. The supervisor sets SLEEPOS_DECK_NOTE when the rebuild was
+  // triggered by Oura revising a score rather than by a new night arriving, and
+  // it has to reach the message whether the deck goes out as a link or photos.
+  const sender = readFileSync(join(ROOT, 'bin/send-deck.mjs'), 'utf8');
+  assert.ok(sender.includes('SLEEPOS_DECK_NOTE'), 'the note is never read');
+  assert.ok(sender.includes('lastNightText(night, { url, note })'),
+    'the link message must carry it');
+  assert.ok(/const caption = lastNightText\(night, \{[\s\S]*?\bnote,/.test(sender),
+    'the album caption must carry it');
+  const supervisor = readFileSync(join(ROOT, 'bin/sleep-os.js'), 'utf8');
+  assert.ok(supervisor.includes('SLEEPOS_DECK_NOTE'), 'nothing ever sets it');
+});

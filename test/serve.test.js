@@ -238,7 +238,7 @@ test('a night that completed before the window opened still rebuilds', () => {
   // able to correct them until the next night. Seeding from what was last BUILT
   // -- state/health.json, written by the build itself -- closes that.
   const src = readFileSync(join(ROOT, 'src/serve.js'), 'utf8');
-  assert.ok(src.includes('let lastNight = builtFingerprint()'),
+  assert.ok(src.includes('builtFn = builtFingerprint') && src.includes('let lastNight = builtFn()'),
     'the watcher must start from the last build, not from current telemetry');
   assert.ok(src.includes("state/health.json"),
     'the last-built state is read from the health record the build writes');
@@ -249,5 +249,110 @@ test('a night that completed before the window opened still rebuilds', () => {
   for (const f of [built, live]) {
     assert.ok(f.includes("'full'") && f.includes("'partial'"),
       'both fingerprints must use the same full/partial vocabulary');
+  }
+});
+
+/* --------------------------------------------- a score Oura revised afterwards */
+
+// "The deck for this night has already gone out." Every test below starts there,
+// because that is the only state in which a revision is a problem.
+const BUILT = (night) => () => night;
+
+test('a revised score resends the deck, even though the night has not changed', async () => {
+  // Getting up at 2am with the boys ends the night as far as the ring is
+  // concerned, so Oura scores three hours of sleep and the deck is built from
+  // it. The rest of the night is counted later and the score goes up. The
+  // fingerprint cannot see that -- same date, already complete -- so the
+  // screens kept the first, harshest number of a night Oura no longer believed.
+  const c = clock();
+  const seen = [];
+  let score = 62;
+  await serve({
+    seconds: 100, sliceSeconds: 25,
+    dispatchFn: async () => { score = 81; return { sent: [], inbox: { handled: 0 } }; },
+    listenFn: fakeListen(c),
+    builtFn: BUILT('2026-10-11:full'),
+    nightFn: () => '2026-10-11:full',
+    scoreFn: () => score,
+    onNewNight: async (n, opts) => seen.push([n, opts?.revised ?? null]),
+    now: c.now, log: quiet,
+  });
+  assert.equal(seen.length, 1, 'exactly one resend, not one per cycle');
+  assert.deepEqual(seen[0], ['2026-10-11:full', { from: 62, to: 81 }]);
+});
+
+test('the window does not resend on its first cycle just because it restarted', async () => {
+  // The score a window inherits is not a revision. Seeding from telemetry at
+  // startup is what keeps a handover every five and three-quarter hours from
+  // sending the same album again.
+  const c = clock();
+  const seen = [];
+  await serve({
+    seconds: 200, sliceSeconds: 25, dispatchFn: fakeDispatch(),
+    listenFn: fakeListen(c),
+    builtFn: BUILT('2026-10-11:full'), nightFn: () => '2026-10-11:full', scoreFn: () => 81,
+    onNewNight: async (n) => seen.push(n), now: c.now, log: quiet,
+  });
+  assert.deepEqual(seen, []);
+});
+
+test('a night still only partly in does not resend on its score alone', async () => {
+  // The score arrives before the sleep period. Resending on that would send a
+  // deck with a real score and thirteen blank vitals -- the bug the fingerprint
+  // was given its full/partial half to prevent.
+  const c = clock();
+  const seen = [];
+  let score = 62;
+  await serve({
+    seconds: 100, sliceSeconds: 25,
+    dispatchFn: async () => { score = 81; return { sent: [], inbox: { handled: 0 } }; },
+    listenFn: fakeListen(c),
+    builtFn: BUILT('2026-10-11:partial'), nightFn: () => '2026-10-11:partial', scoreFn: () => score,
+    onNewNight: async (n) => seen.push(n), now: c.now, log: quiet,
+  });
+  assert.deepEqual(seen, []);
+});
+
+test('a night Oura keeps nudging cannot turn into a morning of albums', async () => {
+  const c = clock();
+  const seen = [];
+  let score = 60;
+  await serve({
+    seconds: 600, sliceSeconds: 25,
+    dispatchFn: async () => { score += 1; return { sent: [], inbox: { handled: 0 } }; },
+    listenFn: fakeListen(c),
+    builtFn: BUILT('2026-10-11:full'), nightFn: () => '2026-10-11:full', scoreFn: () => score,
+    onNewNight: async (n) => seen.push(n), now: c.now, log: quiet,
+  });
+  assert.equal(seen.length, 2, 'capped at MAX_REVISIONS_PER_NIGHT, not 23');
+});
+
+test('a failed resend is not retried every twenty-five seconds for five hours', async () => {
+  const c = clock();
+  let attempts = 0;
+  let score = 62;
+  await serve({
+    seconds: 600, sliceSeconds: 25,
+    dispatchFn: async () => { score = 81; return { sent: [], inbox: { handled: 0 } }; },
+    listenFn: fakeListen(c),
+    builtFn: BUILT('2026-10-11:full'), nightFn: () => '2026-10-11:full', scoreFn: () => score,
+    onNewNight: async () => { attempts += 1; throw new Error('render died'); },
+    now: c.now, log: quiet,
+  });
+  assert.equal(attempts, 1);
+});
+
+test('the last-built score is never written to the public health record', () => {
+  // state/health.json is committed to a public repository and is counts and
+  // booleans only. The comparison therefore lives in memory, and the price --
+  // a revision landing in the seconds between two windows -- is what /rescore
+  // is for.
+  const src = readFileSync(join(ROOT, 'src/serve.js'), 'utf8');
+  const built = /function builtFingerprint[\s\S]*?\n}/.exec(src)[0];
+  assert.ok(!/score/i.test(built),
+    'builtFingerprint must not read or write a score: health.json is public');
+  const health = JSON.parse(readFileSync(join(ROOT, 'state/health.json'), 'utf8'));
+  for (const k of Object.keys(health)) {
+    assert.ok(!/score/i.test(k), `health.json must not carry ${k}`);
   }
 });

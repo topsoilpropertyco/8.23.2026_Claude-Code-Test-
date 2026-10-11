@@ -34,6 +34,8 @@ const date = process.argv.slice(2).find((a) => /^\d{4}-\d{2}-\d{2}$/.test(a));
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const chatId = process.env.TELEGRAM_CHAT_ID;
+// Set by the supervisor when this rebuild is a correction rather than a new night.
+const note = process.env.SLEEPOS_DECK_NOTE?.trim() || null;
 
 // The workflow runs this with continue-on-error, because a broken screenshot
 // must never stop the reminders going out. That is right, but it also means a
@@ -121,10 +123,15 @@ if (mode === null) {
  * night should say what happened last night, and the link should be the way to
  * go deeper rather than the only place the detail exists.
  */
-function lastNightText(n, { url = null, footer = null } = {}) {
+function lastNightText(n, { url = null, footer = null, note = null } = {}) {
   const v = n.night ?? {};
   const sl = n.standing ?? {};
   const lines = [];
+
+  // Set when the supervisor rebuilt because Oura revised the score, not
+  // because a new night landed. Without it a second album the same morning
+  // looks like the engine sending twice.
+  if (note) { lines.push(note); lines.push(''); }
 
   lines.push(n.stale
     ? `${n.date} — the newest night Oura has (${n.daysBehind} days back)`
@@ -245,7 +252,7 @@ if (mode === 'link') {
   }
   const url = deckUrl();
   if (!url) await bail('delivery is "link" but no dashboard URL could be built.');
-  const text = lastNightText(night, { url });
+  const text = lastNightText(night, { url, note });
   if (dry) {
     console.log('send-deck: --dry, not sending. Would send:');
     console.log(text.split('\n').map((l) => `  ${l}`).join('\n'));
@@ -296,6 +303,7 @@ if (shots.length > MEDIA_GROUP_MAX) {
 // stale-deck bug again.
 const caption = lastNightText(night, {
   url: published ? deckUrl() : null,
+  note,
   footer: night.stale
     ? 'Open the Oura app to sync, and I will resend with the current night.'
     : `Swipe the ${shots.length} screens here, or open the same ${shots.length} in the link above.`,
