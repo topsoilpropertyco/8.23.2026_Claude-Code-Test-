@@ -53,7 +53,13 @@ section { display: flex; flex-direction: column; gap: 18px; }
 .head { display: flex; flex-direction: column; gap: 8px; }
 .mono { font-family: var(--font-mono); }
 
-/* Spectrum */
+/* Spectrum: always horizontal, worst left → best right; scrolls sideways on narrow screens */
+.spec-scroll { overflow-x: auto; padding-block: 6px; }
+.spec-inner { min-width: 760px; display: flex; flex-direction: column; gap: 8px; padding-inline: 6px; }
+.tier .usd { font-family: var(--font-mono); font-weight: 600; font-size: 0.9rem; letter-spacing: -0.02em; }
+.tier .usd small { display: block; font-weight: 400; font-size: 0.68rem; opacity: 0.85; letter-spacing: 0; }
+.swipe { display: none; font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); }
+@media (max-width: 760px) { .swipe { display: block; } }
 .spectrum { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
 .tier { border-radius: 6px; padding: 12px 10px 14px; min-height: 108px; display: flex; flex-direction: column; gap: 6px; position: relative; }
 .tier .code { font-family: var(--font-mono); font-size: 0.7rem; opacity: 0.85; }
@@ -140,9 +146,6 @@ ol.qs { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; g
 .motto { font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; line-height: 1.25; max-width: 40ch; text-wrap: balance; }
 
 @media (max-width: 760px) {
-  .spectrum, .axis { grid-template-columns: 1fr; }
-  .axis, .brackets { display: none; }
-  .tier { min-height: 0; }
   .picks { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: no-preference) {
@@ -153,7 +156,7 @@ ol.qs { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; g
 <div class="wrap">
 
   <header class="head">
-    <span class="eyebrow">Focus OS · concept v0.3 · planning loop 1</span>
+    <span class="eyebrow">Focus OS · concept v0.4 · planning loop 1 · next: <a href="https://claude.ai/artifact/TLVwwoG2xr4LraDmuyjhKw" style="color:var(--accent)">Blueprint →</a></span>
     <h1>Every moment, one question: what is the hard, high-leverage thing right now?</h1>
     <p class="lede">Focus OS acts like a board of world-class coaches that is always on. At any zoom level, from the next 10 seconds to the next month, it shows where your options sit on a leverage spectrum. It points to the hard thing that matters most, and it calls out the comfortable green options that quietly cost you that.</p>
   </header>
@@ -161,23 +164,27 @@ ol.qs { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; g
   <section aria-labelledby="s-spec">
     <div class="head">
       <span class="eyebrow">01 · The spectrum</span>
-      <h2 id="s-spec">Seven tiers, dark red to bright green</h2>
+      <h2 id="s-spec">Seven tiers, dark red to bright green, priced per hour</h2>
       <p>Every candidate action at every time horizon gets placed on this bar. The striped tier is the dangerous one. It shows positive expected value, so it looks green, but choosing it gives up the ideal move.</p>
     </div>
+    <span class="swipe">← swipe: worst on the left, best on the right →</span>
+    <div class="spec-scroll"><div class="spec-inner">
     <div class="spectrum" role="list">
-      <div class="tier sneg" role="listitem"><span class="code">−3</span><span class="name">Super negative</span><span class="gist">Actively destroys sleep, health, trust or the goal. Relapse territory.</span></div>
-      <div class="tier neg" role="listitem"><span class="code">−2</span><span class="name">Negative</span><span class="gist">Costs more than it returns. Doomscroll, reactive firefighting.</span></div>
-      <div class="tier neu" role="listitem"><span class="code">0</span><span class="name">Neutral</span><span class="gist">Neither builds nor burns. Idle drift, filler.</span></div>
-      <div class="tier dec" role="listitem"><span class="code">+1 ⚠</span><span class="name">Deceptive</span><span class="gist">In the green, but robs the ideal. Inbox zero instead of the proposal.</span></div>
-      <div class="tier med" role="listitem"><span class="code">+1</span><span class="name">Medium leverage</span><span class="gist">Real value, ordinary returns. Good on a low-energy day.</span></div>
-      <div class="tier high" role="listitem"><span class="code">+2</span><span class="name">High leverage</span><span class="gist">Compounds. Moves a long-term goal or removes future work.</span></div>
-      <div class="tier ideal" role="listitem"><span class="code">+3</span><span class="name">Ideal</span><span class="gist">The single hardest, highest-leverage move available right now.</span></div>
+      <div class="tier sneg" role="listitem"><span class="code">−3</span><span class="usd">−$1,000/hr</span><span class="name">Super negative</span><span class="gist">Actively destroys sleep, health, trust or the goal. Relapse territory.</span></div>
+      <div class="tier neg" role="listitem"><span class="code">−2</span><span class="usd">−$100/hr</span><span class="name">Negative</span><span class="gist">Costs more than it returns. Doomscroll, reactive firefighting.</span></div>
+      <div class="tier neu" role="listitem"><span class="code">0</span><span class="usd">$0/hr</span><span class="name">Neutral</span><span class="gist">Neither builds nor burns. Idle drift, filler.</span></div>
+      <div class="tier dec" role="listitem"><span class="code">+1 ⚠</span><span class="usd">+$10/hr<small>real: −$990/hr</small></span><span class="name">Deceptive</span><span class="gist">In the green, but robs the ideal. Inbox zero instead of the proposal.</span></div>
+      <div class="tier med" role="listitem"><span class="code">+1</span><span class="usd">$10/hr</span><span class="name">Medium leverage</span><span class="gist">Real value, ordinary returns. Good on a low-energy day.</span></div>
+      <div class="tier high" role="listitem"><span class="code">+2</span><span class="usd">$100/hr</span><span class="name">High leverage</span><span class="gist">Compounds. Moves a long-term goal or removes future work.</span></div>
+      <div class="tier ideal" role="listitem"><span class="code">+3</span><span class="usd">$1,000+/hr</span><span class="name">Ideal</span><span class="gist">The single hardest, highest-leverage move available right now.</span></div>
     </div>
     <div class="brackets" aria-hidden="true">
       <div>avoid · the app names these out loud</div>
       <div class="warn">the trap</div>
       <div class="good">do · ideal is the default answer</div>
     </div>
+    </div></div>
+    <p>The dollar figures are what an hour in each tier is worth to you, as a starting point to tune. The deceptive tier shows two numbers. It earns a little on paper, but the hour could have gone to a $1,000 move. So its real value is what it earns minus what the ideal would have earned: +$10 − $1,000 ≈ −$990 an hour.</p>
   </section>
 
   <section aria-labelledby="s-lens">
@@ -439,7 +446,7 @@ function render(i) {
   title.textContent = h.t;
   [...dial.children].forEach((b, j) => b.setAttribute("aria-pressed", j === i ? "true" : "false"));
   picks.innerHTML = "";
-  h.p.forEach(([tier, what, why]) => {
+  h.p.slice().reverse().forEach(([tier, what, why]) => {
     const d = document.createElement("div");
     d.className = "pick";
     d.innerHTML = `<span class="lbl"><span class="dot" style="background:${T[tier].color}"></span>${T[tier].label}</span><span class="what"></span><span class="why"></span>`;
