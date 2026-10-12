@@ -445,3 +445,4 @@
 {"date":"2026-10-11","slot":"blue_blockers","status":"sent","kind":"habit","habit":"blue_blockers","whyId":"bb17","optional":false,"cycle":3,"targetLabel":"7:30 PM","at":"2026-10-11T23:30:21.004Z"}
 {"date":"2026-10-11","slot":"work_shutdown","status":"sent","kind":"fact","factId":"sleep-07","library":"sleep","category":"immunity","jackpot":false,"cycle":5,"promptId":"p26","mechanism":"subtraction","targetLabel":"8:51 PM","at":"2026-10-12T00:51:15.111Z"}
 {"date":"2026-10-11","slot":"terminal_bedtime","status":"sent","kind":"fact","factId":"lucid-07","library":"lucid","category":"lucid-neuro","jackpot":false,"cycle":5,"promptId":"p23","mechanism":"episodic_future_thinking","targetLabel":"10:14 PM","at":"2026-10-12T02:14:20.840Z"}
+{"date":"2026-10-12","slot":"intake","status":"sent","kind":"intake","targetLabel":"6:00 AM","at":"2026-10-12T10:00:12.421Z"}
