@@ -4208,7 +4208,7 @@
       }
     }
   },
-  "inboxOffset": 697606575,
+  "inboxOffset": 697606576,
   "pending": [
     {
       "messageId": 1861,
@@ -4369,7 +4369,9 @@
       7,
       0
     ],
-    "mechanism:self_efficacy": [],
+    "mechanism:self_efficacy": [
+      1
+    ],
     "mechanism:mental_contrasting": [
       1
     ],
