@@ -227,7 +227,7 @@ ol.next { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column;
           <ul>
             <li>Off the computer. The only exception is pure learning.</li>
             <li>Focus OS goes quiet: no pill, no nudges, no task list.</li>
-            <li>Opening a work tool counts as −$100/hr. It eats into recovery.</li>
+            <li>Opening a work tool counts as −$10/hr. It eats into recovery.</li>
             <li>Foundation (sleep, sauna, family, play) is the win.</li>
           </ul>
         </div>
@@ -248,7 +248,7 @@ ol.next { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column;
           <span class="pole">Barbell: friction pole</span>
           <ul>
             <li>Only $1,000/hr work. Top 3 comes first, before email or Slack.</li>
-            <li>The pill flags anything below +2 in red.</li>
+            <li>The pill flags anything below +1 in red.</li>
             <li>Low-leverage tasks get pushed to the next Buffer day automatically.</li>
             <li>A win is all three of the Top 3 done.</li>
           </ul>
@@ -308,17 +308,15 @@ ol.next { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column;
       <div class="ledger" aria-label="This week's 52 tracked hours by tier, worst to best">
         <div style="flex:3;background:var(--t-sneg);color:var(--on-dark)">3h</div>
         <div style="flex:6;background:var(--t-neg);color:var(--on-dark)">6h</div>
-        <div style="flex:5;background:var(--t-neu);color:var(--on-dark)">5h</div>
-        <div style="flex:9;background:var(--t-dec);color:var(--on-light)">9h</div>
-        <div style="flex:14;background:var(--t-med);color:var(--on-light)">14h</div>
+        <div style="flex:28;background:var(--t-dec);color:var(--on-light)">28h neutral trap</div>
         <div style="flex:10;background:var(--t-high);color:var(--on-dark)">10h</div>
         <div style="flex:5;background:var(--t-ideal);color:var(--on-light)">5h</div>
       </div>
-      <div class="ledger-key"><span>−$1,000/hr · worst</span><span>This week: 52 tracked hours</span><span>best · $1,000+/hr</span></div>
+      <div class="ledger-key"><span>−$100/hr · worst</span><span>This week: 52 tracked hours</span><span>best · $1,000+/hr</span></div>
     </div>
     <div class="insights">
-      <div class="card ins bad"><span class="k">What you're wasting</span><span class="big">−$3,600</span><p>9 hours in the red tiers this week: 3h super negative at −$1,000 plus 6h negative at −$100.</p></div>
-      <div class="card ins warn"><span class="k">What's robbing your time</span><span class="big">9h deceptive</span><p>Mostly inbox triage and optional meetings, between 9 and 11am. That's your best hours spent on +$10/hr work.</p></div>
+      <div class="card ins bad"><span class="k">What you're wasting</span><span class="big">−$360</span><p>9 hours in the red tiers this week: 3h super negative at −$100 plus 6h negative at −$10.</p></div>
+      <div class="card ins warn"><span class="k">What's robbing your time</span><span class="big">28h neutral trap</span><p>More than half your week. Mostly inbox triage, optional meetings and admin, much of it between 9 and 11am. Each hour is small on paper and costs you a $1,000 hour. Most of it could be delegated.</p></div>
       <div class="card ins good"><span class="k">What you should be doing</span><span class="big">5h → 12h</span><p>Ideal-tier hours this week, and a target for next week. Move Tuesday and Thursday mornings onto Top 3 only.</p></div>
       <div class="card ins bad"><span class="k">Your triggers</span><p><b>After a sales call</b>, you open email within 2 minutes 8 times out of 10. <b>After 3pm on low readiness</b>, drift doubles.</p></div>
       <div class="card ins warn"><span class="k">Your cues</span><p>"Too tired" was your top skip reason, all on days with readiness under 70. That's a sleep problem, not a willpower problem.</p></div>
@@ -338,15 +336,15 @@ ol.next { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column;
     </div>
     <div class="pills" aria-label="Pill mockups">
       <div class="pill-row">
-        <div class="pill"><span class="chip" style="background:var(--t-ideal);color:var(--on-light)">+3 IDEAL</span>Pricing proposal<span class="sep">·</span>$1,000/hr<span class="sep">·</span>0:42<span class="sep">·</span>Top 3: 1/3</div>
+        <div class="pill"><span class="chip" style="background:var(--t-ideal);color:var(--on-light)">+2 IDEAL</span>Pricing proposal<span class="sep">·</span>$1,000/hr<span class="sep">·</span>0:42<span class="sep">·</span>Top 3: 1/3</div>
         <span class="note">On track. Quiet, green, nothing to do.</span>
       </div>
       <div class="pill-row">
-        <div class="pill"><span class="chip" style="background:var(--t-dec);color:var(--on-light)">⚠ DECEPTIVE</span>Inbox<span class="sep">·</span>real −$990/hr<span class="sep">·</span>0:18<span class="sep">·</span>Who, not how?</div>
-        <span class="note">Green on paper, so the pill turns yellow and shows the prompt that applies.</span>
+        <div class="pill"><span class="chip" style="background:var(--t-dec);color:var(--on-light)">0 ⚠ NEUTRAL TRAP</span>Inbox<span class="sep">·</span>costs the $1,000 hour<span class="sep">·</span>0:18<span class="sep">·</span>Who, not how?</div>
+        <span class="note">Harmless-looking, so the pill turns yellow and asks who could do it instead.</span>
       </div>
       <div class="pill-row">
-        <div class="pill"><span class="chip" style="background:var(--t-neg);color:var(--on-dark)">−2 NEGATIVE</span>No timer running<span class="sep">·</span>11 min drift<span class="sep">·</span>What are you avoiding?</div>
+        <div class="pill"><span class="chip" style="background:var(--t-neg);color:var(--on-dark)">−1 NEGATIVE</span>No timer running<span class="sep">·</span>11 min drift<span class="sep">·</span>What are you avoiding?</div>
         <span class="note">No timer running on a Focus day means drift. One tap to start the Top 3 item or log why you skipped it.</span>
       </div>
     </div>
@@ -389,7 +387,7 @@ ol.next { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column;
     <div class="roles">
       <div class="card"><h3>Decisions only you can make</h3>
         <ul class="decide">
-          <li>Are the $/hr anchors right: −$1,000 / −$100 / $0 / $10 / $100 / $1,000?</li>
+          <li>Are the $/hr anchors right: −$100 / −$10 / $0 / $100 / $1,000?</li>
           <li>Your weekly pattern of Focus, Buffer and Free days</li>
           <li>Mac only, or Windows too?</li>
           <li>Should Focus OS ever write back to Toggl and Asana (tier tags, priorities), or only read?</li>
