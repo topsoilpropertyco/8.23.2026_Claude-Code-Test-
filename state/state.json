@@ -2,7 +2,6 @@
   "version": 1,
   "cycle": 5,
   "remaining": [
-    "sleep-30",
     "sleep-29",
     "lucid-03",
     "sleep-35",
@@ -4205,11 +4204,33 @@
         "mechanism": "self_efficacy",
         "targetLabel": "8:00 AM",
         "at": "2026-10-12T12:00:20.120Z"
+      },
+      "midday_essentialism": {
+        "status": "sent",
+        "kind": "fact",
+        "factId": "sleep-30",
+        "library": "sleep",
+        "category": "cognition",
+        "jackpot": false,
+        "cycle": 5,
+        "promptId": "p08",
+        "mechanism": "elaborative_interrogation",
+        "targetLabel": "12:13 PM",
+        "at": "2026-10-12T16:13:14.179Z"
       }
     }
   },
   "inboxOffset": 697606576,
   "pending": [
+    {
+      "messageId": 1872,
+      "kind": "fact",
+      "factId": "sleep-30",
+      "promptId": "p08",
+      "mechanism": "elaborative_interrogation",
+      "slot": "midday_essentialism",
+      "at": "2026-10-12T16:13:14.179Z"
+    },
     {
       "messageId": 1861,
       "kind": "fact",
@@ -4308,15 +4329,6 @@
       "mechanism": null,
       "slot": "morning_light",
       "at": "2026-10-11T11:15:12.805Z"
-    },
-    {
-      "messageId": 1826,
-      "kind": "intake",
-      "factId": null,
-      "promptId": null,
-      "mechanism": null,
-      "slot": "intake",
-      "at": "2026-10-11T10:00:08.509Z"
     }
   ],
   "promptCycle": 10,
@@ -4328,7 +4340,6 @@
     "p13",
     "p19",
     "p03",
-    "p08",
     "p06",
     "p02",
     "p15",
