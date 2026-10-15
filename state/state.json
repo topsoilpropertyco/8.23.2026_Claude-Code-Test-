@@ -4190,8 +4190,16 @@
       }
     }
   },
-  "inboxOffset": 697606582,
+  "inboxOffset": 697606583,
   "pending": [
+    {
+      "messageId": 1981,
+      "kind": "morning-prompt",
+      "promptId": "m04",
+      "mechanism": "self_efficacy",
+      "slot": "intake",
+      "at": "2026-10-15T12:18:45.886Z"
+    },
     {
       "messageId": 1977,
       "kind": "fact",
@@ -4290,15 +4298,6 @@
       "mechanism": null,
       "slot": "morning_light",
       "at": "2026-10-14T11:15:08.814Z"
-    },
-    {
-      "messageId": 1930,
-      "kind": "intake",
-      "factId": null,
-      "promptId": null,
-      "mechanism": null,
-      "slot": "intake",
-      "at": "2026-10-14T10:00:22.228Z"
     }
   ],
   "promptCycle": 11,
@@ -4330,7 +4329,7 @@
     "p12",
     "p10"
   ],
-  "coachRotation": 31,
+  "coachRotation": 32,
   "affirmRotation": {
     "mechanism:identity": [
       1
@@ -4435,11 +4434,11 @@
     "count": 1
   },
   "coach": {
-    "at": "2026-10-09T13:11:32.018Z",
-    "written": true,
-    "provider": "gemini",
-    "model": "gemini-3.8-flash",
-    "intensity": "brief",
-    "reason": null
+    "at": "2026-10-15T12:18:45.886Z",
+    "written": false,
+    "provider": null,
+    "model": null,
+    "intensity": "deep",
+    "reason": "coach-llm unavailable, using the rule-based coach: HTTP 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more infor"
   }
 }
