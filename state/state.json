@@ -4184,8 +4184,16 @@
       }
     }
   },
-  "inboxOffset": 697606583,
+  "inboxOffset": 697606584,
   "pending": [
+    {
+      "messageId": 2007,
+      "kind": "morning-prompt",
+      "promptId": "m05",
+      "mechanism": "mental_contrasting",
+      "slot": "intake",
+      "at": "2026-10-16T12:00:02.600Z"
+    },
     {
       "messageId": 2005,
       "kind": "fact",
@@ -4283,15 +4291,6 @@
       "mechanism": "identity",
       "slot": "morning_reflection",
       "at": "2026-10-15T12:00:09.421Z"
-    },
-    {
-      "messageId": 1976,
-      "kind": "habit",
-      "factId": null,
-      "promptId": null,
-      "mechanism": null,
-      "slot": "morning_light",
-      "at": "2026-10-15T11:15:04.307Z"
     }
   ],
   "promptCycle": 11,
@@ -4317,7 +4316,7 @@
     "p12",
     "p10"
   ],
-  "coachRotation": 32,
+  "coachRotation": 33,
   "affirmRotation": {
     "mechanism:identity": [
       1
@@ -4420,11 +4419,11 @@
     "count": 1
   },
   "coach": {
-    "at": "2026-10-15T12:18:45.886Z",
+    "at": "2026-10-16T12:00:02.600Z",
     "written": false,
     "provider": null,
     "model": null,
-    "intensity": "deep",
+    "intensity": "brief",
     "reason": "coach-llm unavailable, using the rule-based coach: HTTP 429: {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"You exceeded your current quota, please check your plan and billing details. For more infor"
   }
 }
