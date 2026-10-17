@@ -4211,11 +4211,30 @@
         "mechanism": "commitment",
         "targetLabel": "6:01 PM",
         "at": "2026-10-17T22:01:19.979Z"
+      },
+      "blue_blockers": {
+        "status": "sent",
+        "kind": "habit",
+        "habit": "blue_blockers",
+        "whyId": "bb02",
+        "optional": false,
+        "cycle": 3,
+        "targetLabel": "7:30 PM",
+        "at": "2026-10-17T23:30:21.154Z"
       }
     }
   },
   "inboxOffset": 697606585,
   "pending": [
+    {
+      "messageId": 2040,
+      "kind": "habit",
+      "factId": null,
+      "promptId": null,
+      "mechanism": null,
+      "slot": "blue_blockers",
+      "at": "2026-10-17T23:30:21.154Z"
+    },
     {
       "messageId": 2038,
       "kind": "fact",
@@ -4314,15 +4333,6 @@
       "mechanism": "elaborative_interrogation",
       "slot": "afternoon_boundary",
       "at": "2026-10-16T19:43:05.056Z"
-    },
-    {
-      "messageId": 2010,
-      "kind": "fact",
-      "factId": "lucid-05",
-      "promptId": "p25",
-      "mechanism": "subtraction",
-      "slot": "midday_essentialism",
-      "at": "2026-10-16T16:03:09.298Z"
     }
   ],
   "promptCycle": 11,
@@ -4389,7 +4399,6 @@
     "blue_blockers": {
       "cycle": 3,
       "remaining": [
-        "bb02",
         "bb07",
         "bb24",
         "bb21",
