@@ -1,9 +1,7 @@
 {
   "version": 1,
   "cycle": 5,
-  "remaining": [
-    "lucid-13"
-  ],
+  "remaining": [],
   "sends": {
     "2026-09-09": {
       "intake": {
@@ -4181,11 +4179,33 @@
         "mechanism": "elaborative_interrogation",
         "targetLabel": "11:56 AM",
         "at": "2026-10-18T15:56:20.503Z"
+      },
+      "afternoon_boundary": {
+        "status": "sent",
+        "kind": "fact",
+        "factId": "lucid-13",
+        "library": "lucid",
+        "category": "lucid-induction",
+        "jackpot": true,
+        "cycle": 5,
+        "promptId": "p12",
+        "mechanism": "prospective_regret",
+        "targetLabel": "4:08 PM",
+        "at": "2026-10-18T20:08:26.029Z"
       }
     }
   },
   "inboxOffset": 697606585,
   "pending": [
+    {
+      "messageId": 2060,
+      "kind": "fact",
+      "factId": "lucid-13",
+      "promptId": "p12",
+      "mechanism": "prospective_regret",
+      "slot": "afternoon_boundary",
+      "at": "2026-10-18T20:08:26.029Z"
+    },
     {
       "messageId": 2058,
       "kind": "fact",
@@ -4284,15 +4304,6 @@
       "mechanism": "episodic_future_thinking",
       "slot": "morning_reflection",
       "at": "2026-10-17T12:20:16.331Z"
-    },
-    {
-      "messageId": 2025,
-      "kind": "habit",
-      "factId": null,
-      "promptId": null,
-      "mechanism": null,
-      "slot": "morning_light",
-      "at": "2026-10-17T11:15:03.274Z"
     }
   ],
   "promptCycle": 11,
@@ -4302,7 +4313,6 @@
     "p23",
     "p13",
     "p06",
-    "p12",
     "p10"
   ],
   "coachRotation": 33,
