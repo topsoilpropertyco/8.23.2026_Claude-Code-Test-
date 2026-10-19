@@ -17,23 +17,37 @@ import { sendMessage, sendPhoto } from './telegram.js';
 import { withAnchor, imageDueForSlot, sendAnchorCard } from './anchor.js';
 import { processInbox, trackPending } from './inbox.js';
 import { loadState, saveState, sentSlotsFor, recordSend } from './state.js';
-import { localDateString, localTimeString } from './time.js';
+import { localDateString, localTimeString, parseClock } from './time.js';
 import { ingestRecent } from './ingest.js';
 import { isAuthorised } from './oura.js';
 import { nightComplete } from './telemetry.js';
 
 /**
+ * The local clock time from which an Oura pull is worth attempting.
+ *
+ * This is the lever that decides when the deck goes out, because the deck is
+ * built the moment a night lands -- so the first pull of the day IS the send
+ * time. It needs minute resolution: the point is to clear the end of sleep,
+ * and the gap between "probably still asleep" and "certainly awake" is finer
+ * than an hour. ouraPullFromHour is the older whole-hour spelling, kept so an
+ * old config still parses.
+ */
+export function pullFromMinutes(config) {
+  if (config.ouraPullFrom) return parseClock(config.ouraPullFrom);
+  return (config.ouraPullFromHour ?? 11) * 60;
+}
+
+/**
  * Whether this run should attempt an Oura pull.
  *
- * Three conditions, all cheap: Oura is connected, the local hour has reached
+ * Three conditions, all cheap: Oura is connected, the local clock has reached
  * the configured pull time, and last night is not already on record. The last
  * one is what makes retrying free -- once the night lands, no request is made
  * for the rest of the day.
  */
 export function shouldIngest({ config, now, dateString, connected = isAuthorised(), settled = null }) {
   if (!connected) return false;
-  const hour = Number(localTimeString(now, config.timezone).slice(0, 2));
-  if (hour < (config.ouraPullFromHour ?? 11)) return false;
+  if (parseClock(localTimeString(now, config.timezone)) < pullFromMinutes(config)) return false;
   // nightComplete, not hasNight: a night with a score but no sleep period is not
   // finished, and treating it as finished is what left every vital blank.
   return !(settled ?? nightComplete(dateString));

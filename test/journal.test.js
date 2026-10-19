@@ -302,34 +302,49 @@ test('the coach falls back to the manual log when Oura has no record', async () 
 
 /* ----------------------------------------------------------- ingest gating */
 
-test('the Oura pull waits until the configured hour, then retries until the night lands', async () => {
-  const { shouldIngest } = await import('../src/dispatch.js');
-  const { zonedWallTimeToDate, parseClock } = await import('../src/time.js');
-  const at = (hhmm) => zonedWallTimeToDate('2026-08-24', parseClock(hhmm), config.timezone);
+test('the Oura pull waits until the configured time, then retries until the night lands', async () => {
+  const { shouldIngest, pullFromMinutes } = await import('../src/dispatch.js');
+  const { zonedWallTimeToDate, parseClock, formatClock12 } = await import('../src/time.js');
+  const at = (minutes) => zonedWallTimeToDate('2026-08-24', minutes, config.timezone);
   const base = { config, dateString: '2026-08-24', connected: true, settled: false };
 
-  // Driven by the configured hour rather than a literal, so lowering it is a
-  // config decision and not a test rewrite. It was 11, which cost three hours of
-  // latency: the morning message went out around 08:00 and the deck waited for a
-  // pull that had not been attempted yet.
-  const hour = config.ouraPullFromHour ?? 11;
-  const hh = (h) => `${String(h).padStart(2, '0')}:00`;
+  // Driven by the configured time rather than a literal, so moving it is a
+  // config decision and not a test rewrite. It was 11:00, which cost three hours
+  // of latency; then 06:00, which was the opposite mistake -- the pull landed
+  // mid-sleep and the deck reported a night that was not over.
+  const gate = pullFromMinutes(config);
 
-  // Before the hour, no pull.
-  for (const h of [0, Math.max(0, hour - 2), hour - 1]) {
-    if (h < 0 || h >= hour) continue;
-    assert.equal(shouldIngest({ ...base, now: at(hh(h)) }), false, `should not pull at ${hh(h)}`);
-  }
-  assert.equal(shouldIngest({ ...base, now: at(`${String(hour - 1).padStart(2, '0')}:59`) }), false);
-
-  // From the hour it tries, and keeps trying every cycle until the night lands.
-  for (const h of [hour, hour + 1, 14, 22].filter((h) => h >= hour && h <= 23)) {
-    assert.equal(shouldIngest({ ...base, now: at(hh(h)) }), true, `should pull at ${hh(h)}`);
+  // Before the time, no pull. The minute before included: the whole point of a
+  // minute-resolution gate is that the last minute before it still counts.
+  for (const m of [0, Math.max(0, gate - 120), gate - 1]) {
+    if (m < 0 || m >= gate) continue;
+    assert.equal(shouldIngest({ ...base, now: at(m) }), false, `should not pull at ${formatClock12(m)}`);
   }
 
-  // A settled night stops the retrying, whatever the hour. Without this the pull
+  // From the time it tries, and keeps trying every cycle until the night lands.
+  for (const m of [gate, gate + 1, gate + 60, 22 * 60].filter((m) => m >= gate && m < 1440)) {
+    assert.equal(shouldIngest({ ...base, now: at(m) }), true, `should pull at ${formatClock12(m)}`);
+  }
+
+  // A settled night stops the retrying, whatever the time. Without this the pull
   // would keep going out all day for a night already on record.
-  assert.equal(shouldIngest({ ...base, settled: true, now: at(hh(hour + 1)) }), false);
+  assert.equal(shouldIngest({ ...base, settled: true, now: at(gate + 60) }), false);
+});
+
+test('the pull gate reads minutes, and still understands the old whole-hour key', async () => {
+  const { pullFromMinutes } = await import('../src/dispatch.js');
+
+  // The live setting. Stated as a literal on purpose: this is the one number
+  // that decides what time the morning deck lands, and a silent drift back
+  // towards sunrise is the bug this whole change exists to prevent.
+  assert.equal(pullFromMinutes(config), 8 * 60 + 55, 'the deck must wait until 8:55 AM');
+
+  assert.equal(pullFromMinutes({ ouraPullFrom: '08:55' }), 535);
+  assert.equal(pullFromMinutes({ ouraPullFromHour: 6 }), 360);
+  // ouraPullFrom wins when both are present, so a stale legacy key cannot drag
+  // the deck back to dawn.
+  assert.equal(pullFromMinutes({ ouraPullFrom: '08:55', ouraPullFromHour: 6 }), 535);
+  assert.equal(pullFromMinutes({}), 11 * 60);
 });
 
 test('once the night is on record the pull stops making requests', async () => {
