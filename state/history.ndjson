@@ -519,3 +519,4 @@
 {"date":"2026-10-19","slot":"terminal_bedtime","status":"sent","kind":"fact","factId":"sleep-37","library":"sleep","category":"environment","jackpot":false,"cycle":6,"promptId":"p04","mechanism":"identity","targetLabel":"9:49 PM","at":"2026-10-20T01:49:17.006Z"}
 {"date":"2026-10-20","slot":"intake","status":"sent","kind":"intake","targetLabel":"6:00 AM","at":"2026-10-20T10:00:54.357Z"}
 {"date":"2026-10-20","slot":"morning_light","status":"sent","kind":"habit","habit":"morning_light","whyId":"ml24","optional":false,"cycle":3,"targetLabel":"7:15 AM","at":"2026-10-20T11:15:06.399Z"}
+{"date":"2026-10-20","slot":"morning_reflection","status":"sent","kind":"fact","factId":"sleep-08","library":"sleep","category":"hormones","jackpot":true,"cycle":6,"promptId":"p06","mechanism":"identity","targetLabel":"8:11 AM","at":"2026-10-20T12:11:10.038Z"}
