@@ -536,3 +536,4 @@
 {"date":"2026-10-21","slot":"work_shutdown","status":"sent","kind":"fact","factId":"sleep-26","library":"sleep","category":"cardiometabolic","jackpot":false,"cycle":6,"promptId":"p10","mechanism":"prospective_regret","targetLabel":"8:55 PM","at":"2026-10-22T00:55:24.840Z"}
 {"date":"2026-10-21","slot":"terminal_bedtime","status":"sent","kind":"fact","factId":"sleep-36","library":"sleep","category":"performance","jackpot":false,"cycle":6,"promptId":"p21","mechanism":"commitment","targetLabel":"9:40 PM","at":"2026-10-22T01:40:10.173Z"}
 {"date":"2026-10-22","slot":"intake","status":"sent","kind":"intake","targetLabel":"6:00 AM","at":"2026-10-22T10:00:25.628Z"}
+{"date":"2026-10-22","slot":"morning_light","status":"sent","kind":"habit","habit":"morning_light","whyId":"ml08","optional":true,"cycle":3,"targetLabel":"7:15 AM","at":"2026-10-22T11:15:03.002Z"}
