@@ -4188,6 +4188,10 @@
         "mechanism": "implementation_intention",
         "targetLabel": "7:58 AM",
         "at": "2026-10-24T11:58:21.787Z"
+      },
+      "midday_essentialism": {
+        "status": "missed",
+        "at": "2026-10-24T18:43:15.070Z"
       }
     }
   },
