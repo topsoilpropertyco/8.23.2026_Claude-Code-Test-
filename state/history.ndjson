@@ -643,3 +643,4 @@
 {"date":"2026-11-02","slot":"blue_blockers","status":"sent","kind":"habit","habit":"blue_blockers","whyId":"bb16","optional":false,"cycle":3,"targetLabel":"7:30 PM","at":"2026-11-03T00:30:19.997Z"}
 {"date":"2026-11-02","slot":"work_shutdown","status":"sent","kind":"fact","factId":"lucid-15","library":"lucid","category":"lucid-clinical","jackpot":false,"cycle":7,"promptId":"p09","mechanism":"elaborative_interrogation","targetLabel":"8:50 PM","at":"2026-11-03T01:50:12.986Z"}
 {"date":"2026-11-02","slot":"terminal_bedtime","status":"sent","kind":"fact","factId":"sleep-33","library":"sleep","category":"environment","jackpot":false,"cycle":7,"promptId":"p04","mechanism":"identity","targetLabel":"10:09 PM","at":"2026-11-03T03:09:17.472Z"}
+{"date":"2026-11-03","slot":"intake","status":"sent","kind":"intake","targetLabel":"6:00 AM","at":"2026-11-03T11:00:07.598Z"}
