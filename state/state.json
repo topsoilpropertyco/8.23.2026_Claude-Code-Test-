@@ -1,9 +1,7 @@
 {
   "version": 1,
   "cycle": 7,
-  "remaining": [
-    "sleep-36"
-  ],
+  "remaining": [],
   "sends": {
     "2026-09-27": {
       "intake": {
@@ -4221,11 +4219,33 @@
         "mechanism": "subtraction",
         "targetLabel": "9:05 PM",
         "at": "2026-11-06T02:05:06.272Z"
+      },
+      "terminal_bedtime": {
+        "status": "sent",
+        "kind": "fact",
+        "factId": "sleep-36",
+        "library": "sleep",
+        "category": "performance",
+        "jackpot": true,
+        "cycle": 7,
+        "promptId": "p05",
+        "mechanism": "identity",
+        "targetLabel": "10:08 PM",
+        "at": "2026-11-06T03:08:22.214Z"
       }
     }
   },
   "inboxOffset": 697606585,
   "pending": [
+    {
+      "messageId": 2587,
+      "kind": "fact",
+      "factId": "sleep-36",
+      "promptId": "p05",
+      "mechanism": "identity",
+      "slot": "terminal_bedtime",
+      "at": "2026-11-06T03:08:22.214Z"
+    },
     {
       "messageId": 2585,
       "kind": "fact",
@@ -4324,20 +4344,10 @@
       "mechanism": null,
       "slot": "blue_blockers",
       "at": "2026-11-05T00:30:11.386Z"
-    },
-    {
-      "messageId": 2555,
-      "kind": "fact",
-      "factId": "sleep-26",
-      "promptId": "p27",
-      "mechanism": "minimum_viable",
-      "slot": "evening_winddown",
-      "at": "2026-11-04T23:34:10.654Z"
     }
   ],
   "promptCycle": 15,
   "promptRemaining": [
-    "p05",
     "p19",
     "p25",
     "p13",
