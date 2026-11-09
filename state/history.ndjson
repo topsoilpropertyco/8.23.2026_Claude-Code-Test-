@@ -700,3 +700,4 @@
 {"date":"2026-11-09","slot":"intake","status":"sent","kind":"intake","targetLabel":"6:00 AM","at":"2026-11-09T11:00:08.069Z"}
 {"date":"2026-11-09","slot":"morning_light","status":"sent","kind":"habit","habit":"morning_light","whyId":"ml21","optional":true,"cycle":4,"targetLabel":"7:15 AM","at":"2026-11-09T12:15:05.976Z"}
 {"date":"2026-11-09","slot":"morning_reflection","status":"sent","kind":"fact","factId":"sleep-40","library":"sleep","category":"biometrics","jackpot":false,"cycle":8,"promptId":"p06","mechanism":"identity","targetLabel":"7:54 AM","at":"2026-11-09T12:57:45.751Z"}
+{"date":"2026-11-09","slot":"midday_essentialism","status":"sent","kind":"fact","factId":"sleep-30","library":"sleep","category":"cognition","jackpot":true,"cycle":8,"promptId":"p07","mechanism":"elaborative_interrogation","targetLabel":"12:10 PM","at":"2026-11-09T17:10:14.281Z"}
