@@ -706,3 +706,4 @@
 {"date":"2026-11-09","slot":"blue_blockers","status":"sent","kind":"habit","habit":"blue_blockers","whyId":"bb24","optional":false,"cycle":4,"targetLabel":"7:30 PM","at":"2026-11-10T00:30:08.879Z"}
 {"date":"2026-11-09","slot":"work_shutdown","status":"sent","kind":"fact","factId":"lucid-01","library":"lucid","category":"lucid-performance","jackpot":false,"cycle":8,"promptId":"p27","mechanism":"minimum_viable","targetLabel":"9:05 PM","at":"2026-11-10T02:05:12.539Z"}
 {"date":"2026-11-09","slot":"terminal_bedtime","status":"sent","kind":"fact","factId":"lucid-02","library":"lucid","category":"lucid-neuro","jackpot":false,"cycle":8,"promptId":"p04","mechanism":"identity","targetLabel":"10:10 PM","at":"2026-11-10T03:10:12.137Z"}
+{"date":"2026-11-10","slot":"intake","status":"sent","kind":"intake","targetLabel":"6:00 AM","at":"2026-11-10T11:00:40.451Z"}
