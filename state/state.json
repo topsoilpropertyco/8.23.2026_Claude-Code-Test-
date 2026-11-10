@@ -6,7 +6,6 @@
     "lucid-07",
     "sleep-28",
     "lucid-08",
-    "lucid-01",
     "sleep-17",
     "lucid-03",
     "sleep-21",
@@ -4240,11 +4239,33 @@
         "cycle": 4,
         "targetLabel": "7:30 PM",
         "at": "2026-11-10T00:30:08.879Z"
+      },
+      "work_shutdown": {
+        "status": "sent",
+        "kind": "fact",
+        "factId": "lucid-01",
+        "library": "lucid",
+        "category": "lucid-performance",
+        "jackpot": false,
+        "cycle": 8,
+        "promptId": "p27",
+        "mechanism": "minimum_viable",
+        "targetLabel": "9:05 PM",
+        "at": "2026-11-10T02:05:12.539Z"
       }
     }
   },
   "inboxOffset": 697606585,
   "pending": [
+    {
+      "messageId": 2713,
+      "kind": "fact",
+      "factId": "lucid-01",
+      "promptId": "p27",
+      "mechanism": "minimum_viable",
+      "slot": "work_shutdown",
+      "at": "2026-11-10T02:05:12.539Z"
+    },
     {
       "messageId": 2711,
       "kind": "habit",
@@ -4343,15 +4364,6 @@
       "mechanism": "commitment",
       "slot": "evening_winddown",
       "at": "2026-11-08T22:58:10.201Z"
-    },
-    {
-      "messageId": 2675,
-      "kind": "fact",
-      "factId": "sleep-34",
-      "promptId": "p03",
-      "mechanism": "implementation_intention",
-      "slot": "afternoon_boundary",
-      "at": "2026-11-08T20:57:06.165Z"
     }
   ],
   "promptCycle": 16,
@@ -4360,7 +4372,6 @@
     "p04",
     "p02",
     "p19",
-    "p27",
     "p05",
     "p25",
     "p09",
