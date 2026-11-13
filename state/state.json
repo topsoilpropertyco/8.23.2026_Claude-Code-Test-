@@ -4170,6 +4170,10 @@
         "mechanism": "attribution",
         "targetLabel": "8:05 AM",
         "at": "2026-11-13T13:05:04.103Z"
+      },
+      "midday_essentialism": {
+        "status": "missed",
+        "at": "2026-11-13T19:42:50.628Z"
       }
     }
   },
