@@ -739,3 +739,4 @@
 {"date":"2026-11-13","slot":"midday_essentialism","status":"missed","at":"2026-11-13T19:42:50.628Z"}
 {"date":"2026-11-13","slot":"afternoon_boundary","status":"sent","kind":"fact","factId":"sleep-16","library":"sleep","category":"circadian","jackpot":false,"cycle":8,"promptId":"p12","mechanism":"prospective_regret","targetLabel":"4:14 PM","at":"2026-11-13T21:14:24.260Z"}
 {"date":"2026-11-13","slot":"evening_winddown","status":"sent","kind":"fact","factId":"sleep-20","library":"sleep","category":"environment","jackpot":false,"cycle":8,"promptId":"p07","mechanism":"elaborative_interrogation","targetLabel":"6:16 PM","at":"2026-11-13T23:16:17.245Z"}
+{"date":"2026-11-13","slot":"blue_blockers","status":"sent","kind":"habit","habit":"blue_blockers","whyId":"bb15","optional":false,"cycle":4,"targetLabel":"7:30 PM","at":"2026-11-14T00:30:06.075Z"}
