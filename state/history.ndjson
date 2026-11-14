@@ -744,3 +744,4 @@
 {"date":"2026-11-13","slot":"terminal_bedtime","status":"sent","kind":"fact","factId":"lucid-11","library":"lucid","category":"lucid-psych","jackpot":false,"cycle":8,"promptId":"p10","mechanism":"prospective_regret","targetLabel":"10:06 PM","at":"2026-11-14T03:06:21.581Z"}
 {"date":"2026-11-14","slot":"intake","status":"sent","kind":"intake","targetLabel":"6:00 AM","at":"2026-11-14T11:00:20.704Z"}
 {"date":"2026-11-14","slot":"morning_light","status":"sent","kind":"habit","habit":"morning_light","whyId":"ml15","optional":false,"cycle":4,"targetLabel":"7:15 AM","at":"2026-11-14T12:15:25.437Z"}
+{"date":"2026-11-14","slot":"morning_reflection","status":"sent","kind":"fact","factId":"sleep-01","library":"sleep","category":"stress","jackpot":true,"cycle":8,"promptId":"p08","mechanism":"elaborative_interrogation","targetLabel":"8:13 AM","at":"2026-11-14T13:13:15.961Z"}
