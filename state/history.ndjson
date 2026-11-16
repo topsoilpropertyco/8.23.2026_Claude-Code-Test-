@@ -762,3 +762,4 @@
 {"date":"2026-11-15","slot":"terminal_bedtime","status":"sent","kind":"fact","factId":"lucid-12","library":"lucid","category":"lucid-induction","jackpot":true,"cycle":9,"promptId":"p04","mechanism":"identity","targetLabel":"10:17 PM","at":"2026-11-16T03:17:02.560Z"}
 {"date":"2026-11-16","slot":"intake","status":"sent","kind":"intake","targetLabel":"6:00 AM","at":"2026-11-16T11:00:22.764Z"}
 {"date":"2026-11-16","slot":"morning_light","status":"sent","kind":"habit","habit":"morning_light","whyId":"ml14","optional":false,"cycle":4,"targetLabel":"7:15 AM","at":"2026-11-16T12:15:26.510Z"}
+{"date":"2026-11-16","slot":"morning_reflection","status":"sent","kind":"fact","factId":"sleep-04","library":"sleep","category":"cardiometabolic","jackpot":false,"cycle":9,"promptId":"p06","mechanism":"identity","targetLabel":"7:49 AM","at":"2026-11-16T12:49:22.807Z"}
