@@ -49,112 +49,6 @@
     "sleep-11"
   ],
   "sends": {
-    "2026-10-08": {
-      "intake": {
-        "status": "sent",
-        "kind": "intake",
-        "targetLabel": "6:00 AM",
-        "at": "2026-10-08T10:00:20.795Z"
-      },
-      "morning_light": {
-        "status": "sent",
-        "kind": "habit",
-        "habit": "morning_light",
-        "whyId": "ml24",
-        "optional": true,
-        "cycle": 2,
-        "targetLabel": "7:15 AM",
-        "at": "2026-10-08T11:15:08.683Z"
-      },
-      "morning_reflection": {
-        "status": "sent",
-        "kind": "fact",
-        "factId": "sleep-29",
-        "library": "sleep",
-        "category": "longevity",
-        "jackpot": false,
-        "cycle": 4,
-        "promptId": "p20",
-        "mechanism": "attribution",
-        "targetLabel": "8:05 AM",
-        "at": "2026-10-08T12:05:16.879Z"
-      },
-      "midday_essentialism": {
-        "status": "sent",
-        "kind": "fact",
-        "factId": "sleep-25",
-        "library": "sleep",
-        "category": "performance",
-        "jackpot": false,
-        "cycle": 4,
-        "promptId": "p25",
-        "mechanism": "subtraction",
-        "targetLabel": "11:53 AM",
-        "at": "2026-10-08T15:53:14.061Z"
-      },
-      "afternoon_boundary": {
-        "status": "sent",
-        "kind": "fact",
-        "factId": "sleep-23",
-        "library": "sleep",
-        "category": "cardiometabolic",
-        "jackpot": false,
-        "cycle": 4,
-        "promptId": "p15",
-        "mechanism": "anchoring",
-        "targetLabel": "3:55 PM",
-        "at": "2026-10-08T19:55:24.186Z"
-      },
-      "evening_winddown": {
-        "status": "sent",
-        "kind": "fact",
-        "factId": "lucid-10",
-        "library": "lucid",
-        "category": "lucid-psych",
-        "jackpot": false,
-        "cycle": 4,
-        "promptId": "p11",
-        "mechanism": "prospective_regret",
-        "targetLabel": "6:23 PM",
-        "at": "2026-10-08T22:23:20.198Z"
-      },
-      "blue_blockers": {
-        "status": "sent",
-        "kind": "habit",
-        "habit": "blue_blockers",
-        "whyId": "bb10",
-        "optional": false,
-        "cycle": 2,
-        "targetLabel": "7:30 PM",
-        "at": "2026-10-08T23:30:03.942Z"
-      },
-      "work_shutdown": {
-        "status": "sent",
-        "kind": "fact",
-        "factId": "lucid-08",
-        "library": "lucid",
-        "category": "lucid-induction",
-        "jackpot": true,
-        "cycle": 4,
-        "promptId": "p16",
-        "mechanism": "anchoring",
-        "targetLabel": "8:57 PM",
-        "at": "2026-10-09T00:57:24.008Z"
-      },
-      "terminal_bedtime": {
-        "status": "sent",
-        "kind": "fact",
-        "factId": "lucid-02",
-        "library": "lucid",
-        "category": "lucid-neuro",
-        "jackpot": false,
-        "cycle": 4,
-        "promptId": "p10",
-        "mechanism": "prospective_regret",
-        "targetLabel": "9:57 PM",
-        "at": "2026-10-09T01:57:10.842Z"
-      }
-    },
     "2026-10-09": {
       "intake": {
         "status": "sent",
@@ -4270,10 +4164,27 @@
         "targetLabel": "10:20 PM",
         "at": "2026-11-17T03:20:17.643Z"
       }
+    },
+    "2026-11-17": {
+      "intake": {
+        "status": "sent",
+        "kind": "intake",
+        "targetLabel": "6:00 AM",
+        "at": "2026-11-17T11:00:14.181Z"
+      }
     }
   },
   "inboxOffset": 697606585,
   "pending": [
+    {
+      "messageId": 2937,
+      "kind": "intake",
+      "factId": null,
+      "promptId": null,
+      "mechanism": null,
+      "slot": "intake",
+      "at": "2026-11-17T11:00:14.180Z"
+    },
     {
       "messageId": 2933,
       "kind": "fact",
@@ -4372,15 +4283,6 @@
       "mechanism": "episodic_future_thinking",
       "slot": "work_shutdown",
       "at": "2026-11-16T02:12:23.223Z"
-    },
-    {
-      "messageId": 2898,
-      "kind": "habit",
-      "factId": null,
-      "promptId": null,
-      "mechanism": null,
-      "slot": "blue_blockers",
-      "at": "2026-11-16T00:30:21.619Z"
     }
   ],
   "promptCycle": 18,
