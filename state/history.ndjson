@@ -789,3 +789,4 @@
 {"date":"2026-11-18","slot":"terminal_bedtime","status":"sent","kind":"fact","factId":"lucid-13","library":"lucid","category":"lucid-induction","jackpot":false,"cycle":9,"promptId":"p13","mechanism":"mental_contrasting","targetLabel":"9:56 PM","at":"2026-11-19T02:56:09.692Z"}
 {"date":"2026-11-19","slot":"intake","status":"sent","kind":"intake","targetLabel":"6:00 AM","at":"2026-11-19T11:00:54.354Z"}
 {"date":"2026-11-19","slot":"morning_light","status":"sent","kind":"habit","habit":"morning_light","whyId":"ml06","optional":true,"cycle":4,"targetLabel":"7:15 AM","at":"2026-11-19T12:15:10.242Z"}
+{"date":"2026-11-19","slot":"morning_reflection","status":"sent","kind":"fact","factId":"sleep-29","library":"sleep","category":"longevity","jackpot":false,"cycle":9,"promptId":"p19","mechanism":"attribution","targetLabel":"8:08 AM","at":"2026-11-19T13:08:22.276Z"}
