@@ -798,3 +798,4 @@
 {"date":"2026-11-19","slot":"terminal_bedtime","status":"sent","kind":"fact","factId":"lucid-07","library":"lucid","category":"lucid-neuro","jackpot":false,"cycle":9,"promptId":"p23","mechanism":"episodic_future_thinking","targetLabel":"9:58 PM","at":"2026-11-20T02:58:25.157Z"}
 {"date":"2026-11-20","slot":"intake","status":"sent","kind":"intake","targetLabel":"6:00 AM","at":"2026-11-20T11:00:53.079Z"}
 {"date":"2026-11-20","slot":"morning_light","status":"sent","kind":"habit","habit":"morning_light","whyId":"ml09","optional":true,"cycle":4,"targetLabel":"7:15 AM","at":"2026-11-20T12:15:03.423Z"}
+{"date":"2026-11-20","slot":"morning_reflection","status":"sent","kind":"fact","factId":"sleep-28","library":"sleep","category":"circadian","jackpot":true,"cycle":9,"promptId":"p06","mechanism":"identity","targetLabel":"7:55 AM","at":"2026-11-20T12:55:21.899Z"}
