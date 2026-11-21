@@ -807,3 +807,4 @@
 {"date":"2026-11-20","slot":"terminal_bedtime","status":"sent","kind":"fact","factId":"lucid-08","library":"lucid","category":"lucid-induction","jackpot":false,"cycle":9,"promptId":"p10","mechanism":"prospective_regret","targetLabel":"10:18 PM","at":"2026-11-21T03:18:16.628Z"}
 {"date":"2026-11-21","slot":"intake","status":"sent","kind":"intake","targetLabel":"6:00 AM","at":"2026-11-21T11:00:24.547Z"}
 {"date":"2026-11-21","slot":"morning_light","status":"sent","kind":"habit","habit":"morning_light","whyId":"ml11","optional":true,"cycle":4,"targetLabel":"7:15 AM","at":"2026-11-21T12:15:22.804Z"}
+{"date":"2026-11-21","slot":"morning_reflection","status":"sent","kind":"fact","factId":"sleep-40","library":"sleep","category":"biometrics","jackpot":false,"cycle":9,"promptId":"p04","mechanism":"identity","targetLabel":"8:07 AM","at":"2026-11-21T13:07:02.384Z"}
