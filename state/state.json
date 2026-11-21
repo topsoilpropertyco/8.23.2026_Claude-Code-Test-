@@ -4147,11 +4147,30 @@
         "kind": "intake",
         "targetLabel": "6:00 AM",
         "at": "2026-11-21T11:00:24.547Z"
+      },
+      "morning_light": {
+        "status": "sent",
+        "kind": "habit",
+        "habit": "morning_light",
+        "whyId": "ml11",
+        "optional": true,
+        "cycle": 4,
+        "targetLabel": "7:15 AM",
+        "at": "2026-11-21T12:15:22.804Z"
       }
     }
   },
   "inboxOffset": 697606585,
   "pending": [
+    {
+      "messageId": 3052,
+      "kind": "habit",
+      "factId": null,
+      "promptId": null,
+      "mechanism": null,
+      "slot": "morning_light",
+      "at": "2026-11-21T12:15:22.804Z"
+    },
     {
       "messageId": 3050,
       "kind": "intake",
@@ -4250,15 +4269,6 @@
       "mechanism": "episodic_future_thinking",
       "slot": "terminal_bedtime",
       "at": "2026-11-20T02:58:25.157Z"
-    },
-    {
-      "messageId": 3022,
-      "kind": "fact",
-      "factId": "sleep-32",
-      "promptId": "p26",
-      "mechanism": "subtraction",
-      "slot": "work_shutdown",
-      "at": "2026-11-20T02:13:08.556Z"
     }
   ],
   "promptCycle": 18,
@@ -4329,7 +4339,6 @@
     "morning_light": {
       "cycle": 4,
       "remaining": [
-        "ml11",
         "ml05",
         "ml08",
         "ml22",
