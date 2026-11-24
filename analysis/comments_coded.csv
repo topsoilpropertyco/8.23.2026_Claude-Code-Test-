@@ -1,0 +1,168 @@
+id,name,position,sector,affiliation,district,tags
+1,Marvin Johnson,For,Organized labor,Laborers 1191,,JOBS|UNION|RESIDENT_OPPORTUNITY
+2,Wayne Chambers,For,Organized labor,Union member,,JOBS|UNION
+3,Brent White,For,Organized labor,Laborers 1191,,JOBS|WAGES
+4,Antoine Bell,For,Organized labor,Union (implied),,JOBS|WAGES|SEIZE_MOMENT
+5,Kylie Cobra Woods,For,Organized labor,Laborers 1191,,JOBS|FAMILIES
+6,Nicole McCall,For,Organized labor,Laborers 1191,,JOBS|UNION
+7,Lance Metis,For,Organized labor,Laborers 1191,,JOBS
+8,John Ford,For,Organized labor,Laborers 1191,,JOBS|WAGES
+9,Marvin Watts,For,Organized labor,Laborers 1191,,JOBS|WAGES
+10,Theo Hill,For,Organized labor,Laborers 1191,,JOBS|RIVERFRONT_UPGRADE
+11,Dana Hill,For,Organized labor,Construction worker,,JOBS|YOUTH_PIPELINE
+12,Reggie Kearney,For,Organized labor,Union leader,,JOBS|JOB_SECURITY
+13,Brittany Howard,For,Organized labor,Laborers 1191,,JOBS|CAREERS
+14,Terrence Ellison,For,Organized labor,Laborers 1191,,JOBS
+15,Dennis Agury,For,Organized labor,Ironworkers 25 president,,LEGACY_OF_TRADES
+16,John Jammion,For,Elected/government,Detroit Wayne County Port Authority,,PUBLIC_RIVERFRONT_ACCESS
+17,Brian Frazier,For,Farrell Group,Farrell Group,,LOCAL_CONTRACTOR|JOBS
+18,David Long,For,Farrell Group,Farrell Group,,LOCAL_CONTRACTOR
+19,David Shepherd,For,Farrell Group,Farrell Group,,LOCAL_CONTRACTOR|PUBLIC_SPACE
+20,DeSean Swift,For,Farrell Group,Farrell Group,,LOCAL_CONTRACTOR|JOBS
+21,Michelle Daniels,For,Farrell Group,Farrell Group,,LOCAL_CONTRACTOR|BLACK_BUSINESS
+22,Leah Gordon,For,Organized labor,Carpenters,,WAGES|TRAINING|BEDROCK_PARTNERSHIP
+23,John Perkins,For,Organized labor,Carpenters,,WAGES|MIDDLE_CLASS
+24,Anthony Smith,For,Resident/individual,,,GENERAL_SUPPORT
+25,Tierra Se,For,Farrell Group,Farrell Group,,LOCAL_CONTRACTOR|JOBS
+26,Bjula Walker,Mixed,Organized labor,Laborers 1191,,WEAK_CBA|YOUTH_PIPELINE
+27,Christopher Pompei,For,Workforce/education,Carpenters + Randolph Career Tech,,YOUTH_PIPELINE|TRADES
+28,Carol Picken,For,Civic/neighborhood,Littlefield Community Assoc,D7,BEDROCK_ENGAGEMENT
+29,Sandra Picken,For,Civic/neighborhood,Littlefield Community Assoc,D7,GENERAL_SUPPORT
+30,James Torrance,For,Faith,Reverend,D7,YOUTH|JOBS|INCLUSION
+31,Horace Sheffield,For,Faith,Pastor,,OPEN_UP_RENCEN|JOBS
+32,Tammy Stafford,Off-topic,Resident/individual,,D5,
+33,Loretta Stafford,Off-topic,Resident/individual,,,STOP_DEMOLITION
+34,Gussie Robertson,For,Resident/individual,,D5,GENERAL_SUPPORT
+35,Carol Durham,For,Resident/individual,,D5,JOBS|YOUTH
+36,Eugene Marshall,For,Resident/individual,,D5,GENERAL_SUPPORT
+37,Emilio Dean,For,Resident/individual,,,YOUTH|TRADES
+38,Thomas Bassi,For,Organized labor,UAW member,,DEMOLITION_JOBS|DOWNTOWN_IMAGE
+39,Johnny Cannon,For,Business/employer,Joe Louis Southern Kitchen,,TOURISM|FOOT_TRAFFIC
+40,Brother Cunningham,Off-topic,Resident/individual,,,
+41,Marvin Dean,For,Business/employer,Developer (Greektown Casino),,JOBS|PAST_RESISTANCE_WRONG
+42,Kelvin Tally,For,Workforce/education,Google Career Academy,,TRAINING|LOCAL_HIRING
+43,Cedric Tulse,For,Faith,Individual,,JOBS|MOMENTUM
+44,Michael Wimbush,For,Resident/individual,,D7,ENTERTAINMENT|HOUSING|BEAUTIFY
+45,James Floyd,Against,Resident/individual,,,SUBSIDY_TO_BILLIONAIRE|SCHOOLS_HOUSING_PRIORITY
+46,GC Cameron,Off-topic,Arts/media,R&B music advocate,,
+47,Indy Bailey,Off-topic,Arts/media,R&B Hall of Fame,D7,RNB_HALL_OF_FAME
+48,Lamont Robinson,Off-topic,Arts/media,R&B Hall of Fame,,RNB_HALL_OF_FAME
+49,Cheryl Ruffin Robinson,Off-topic,Arts/media,R&B Hall of Fame,,RNB_HALL_OF_FAME
+50,Claude Molinaire,For,Business/employer,Visit Detroit,,NAC_PROCESS|CBA|BEST_OUTCOME
+51,James Steer,For,Resident/individual,,,TOURISM|JOBS
+52,Ron Haynes,Against,Resident/individual,,,SUBSIDY_TO_BILLIONAIRE|TAX_ABATEMENTS|CAMPAIGN_FUNDS
+53,Steven Pride,Against,Organized labor,Union member,,PUBLIC_OWNERSHIP|COMPLEXITY|RUSHED
+54,William Miller,For,Organized labor,Operating Engineers,,JOBS|SKYLINE
+55,Maggie Leonard,For,Organized labor,Operating Engineers 324,,JOBS|PERMANENT_JOBS
+56,Congresswoman,Against,Elected/government,Member of Congress,,NO_WRITTEN_JOBS|PRECEDENT_OF_BROKEN_PROMISES
+57,Sylvester Hester,For,Business/employer,Ella Manufacturing,,TOURISM|TALENT_RETENTION
+58,Mike Dubas,Against,Resident/individual,,,COUNTERPROPOSAL|KEEP_TOWERS
+59,Deirdre Jackson,For,Resident/individual,,,EQUITY_BEYOND_REVENUE_SHARING
+60,Joel Batterman,Against,Resident/individual,,D5,SCHOOLS_HOUSING_PRIORITY
+61,Tanya Wells,Off-topic,Resident/individual,,,
+62,Annie Holt,For,Resident/individual,,D1,JOBS|RIVERFRONT
+63,Herb Strather,Against,Resident/individual,,,PRESERVE_TOWERS|VOTE_ON_DEMOLITION|DELAY_90_DAYS
+64,James Taylor,Against,Resident/individual,,,PRESERVE_TOWERS|HIDDEN_TERMS
+65,Rodney Pearson,Against,Resident/individual,,,LEGAL_ELIGIBILITY|PRESERVE_TOWERS
+66,Lynn Wiggins,Mixed,Resident/individual,,D4,UNCLEAR_CUT_OFF
+67,Bryant English,For,Resident/individual,,,REVENUE|TOURISM|JOBS
+68,Francois Moore,For,Resident/individual,,D2,GROWTH|FUTURE_GENERATIONS
+69,Marie Velegas,Off-topic,Business/employer,G&M Contracting,,SIDEWALK_PAYMENT
+70,Michael Velegas,Off-topic,Business/employer,G&M Contracting,,SIDEWALK_PAYMENT
+71,Vern Sanders,For,Resident/individual,,,AVOID_BLIGHT|DELAY_COSTS
+72,Russ Blanche,Against,Resident/individual,,,SUBSIDY_TO_BILLIONAIRE|SCHOOLS_HOUSING_PRIORITY
+73,Peku Attara,For,Resident/individual,,D5,GENERAL_SUPPORT
+74,Jeff Lewis,For,Organized labor,Pipefitters 636,,JOBS|MEMBERSHIP_SUPPORT
+75,Josh Ellien,For,Civic/neighborhood,Jefferson East,,VOTE_NOW|NEIGHBORHOOD_BENEFITS
+76,Dwayne Hoffman,Mixed,Resident/individual,,,CAMPAIGN_FUNDS|NO_DEMOLITION
+77,Tyrone Wolfort,For,Organized labor,Retired Chrysler worker,D7,UNION_JOBS
+78,Everett Cunningham,For,Civic/neighborhood,Community Coalition,,JOBS|COMPETE_WITH_OTHER_CITIES
+79,Samuel Thomas,For,Resident/individual,,,TOURISM|ECONOMY
+80,Susan Seidel,Against,Resident/individual,,,DELAY_2027|NO_CITY_CONTROL|NO_ENFORCEABLE_GUARANTEES
+81,Kenneth Gayetsky,Against,Resident/individual,Wayne State student,D1,SEPARATES_DOWNTOWN|TEMP_JOBS|SCHOOLS_HOUSING_PRIORITY
+82,Rome Scott,Against,Organized labor,Union worker,,JOBS_NOT_IN_CONTRACT|DEVELOPER_CAN_PAY
+83,Chris Milner-Gill,Against,Elected/government,State rep-elect + CWA,D2,KEEP_PROMISES|PUBLIC_OWNERSHIP|TRANSIT|REVENUE_SHARING
+84,Myron Mayberry,For,Farrell Group,Farrell Group,,LOCAL_CONTRACTOR|LIVING_WAGES
+85,Leila Zaidi,Against,Activist/advocacy,Organizer,D5,COUNCIL_POWER|PARTICIPATORY_BUDGET|DELAY
+86,Josh Mann,Against,Resident/individual,,,TEMP_JOBS|DISPLACEMENT
+87,David Alada,For,Business/employer,REED Black developers,D5,BLACK_DEVELOPERS
+88,Anthony Scannell,Against,Resident/individual,,D6,UNDERUSED_SPACES|DEMOLITION
+89,Ryan Sullivan,For,Civic/neighborhood,Detroit Riverfront Conservancy,D5,RIVERFRONT_AMENITIES
+90,Carrie Turner,For,Civic/neighborhood,Coleman Young Foundation,,STATUE|EDUCATION|JOBS
+91,Victoria Tamil,Against,Elected/government,County commissioner,D7,DELAY_2027|NO_NDAS|PUBLIC_OWNERSHIP|SUBSIDY_TO_BILLIONAIRE
+92,Elena Harada,Against,Resident/individual,,D6,DELAY|SCHOOLS_HOUSING_PRIORITY
+93,Gregory Nobles,For,Resident/individual,,,OPPORTUNITY|RIVERWALK
+94,Clara DeCastro,Against,Activist/advocacy,Organizer,,DELAY|BETTER_CONTRACT|COUNCIL_ROLE
+95,Daniel Kelly,Off-topic,Resident/individual,,,KRATOM
+96,Richard Clay,Against,Resident/individual,,,DELAY|PRIVATE_POLICE|SUBSIDY_TO_BILLIONAIRE
+97,Stephanie Austerlin,Mixed,Civic/neighborhood,Habitat for Humanity Detroit,,AFFORDABLE_HOUSING
+98,Danny Harani,For,Business/employer,Investor,,MODERNIZATION|RESPECT_UNIONS
+99,Aisha Tilby,For,Workforce/education,SEM Metro Detroit,,YOUTH_PIPELINE|LIVING_WAGE
+100,James Johnson,Against,Resident/individual,,D5,NO_INDEPENDENT_REVIEW|CONFLICTS|PUBLIC_OWNERSHIP|RUSHED
+101,Lindsay Case Calderon,Off-topic,Resident/individual,,,KRATOM
+102,Hilary Tesley,Off-topic,Activist/advocacy,End Kratom Addiction,,KRATOM
+103,Darnell Abuwani,For,Resident/individual,,D5,DELAY_COSTS|AVOID_ABANDONMENT
+104,Andre Gulger,For,Business/employer,Ecoline,,TECH_JOBS|TRAINING
+105,Joanne Adams,Against,Resident/individual,,D5,DELAY|TRANSPARENCY|EQUITABLE_AGREEMENT
+106,Pat McCloskey,For,Business/employer,Local electrical contractor,,LOCAL_CONTRACTORS
+107,Betty Lyons,Off-topic,Resident/individual,,,
+108,Gail Turk,For,Business/employer,Blaze Contracting,,UNION_HIRING|LOCAL_CONTRACTORS
+109,Biving,For,Resident/individual,,D4,MOVE_FORWARD
+110,Charles Ellis,For,Faith,Pastor,,DELAY_COSTS|AVOID_BLIGHT
+111,Darryl Woods,For,Resident/individual,,,BILLION_INVESTMENT|MOVE_FORWARD
+112,Lindo Anthony,For,Faith,Reverend,,NO_DELAY|BROAD_COALITION
+113,Ken Allen,For,Resident/individual,,,NAC_PROCESS_DONE
+114,John Mooks,Against,Activist/advocacy,DSA Detroit,,PUBLIC_MONEY_TO_PRIVATE|SCHOOLS_HOUSING_PRIORITY
+115,Michelle Robinson,For,Resident/individual,,D6,OPPORTUNITY|CHANGE_IS_GOOD
+116,Excel Richardson,For,Organized labor,IBEW Local 58 apprentice,,UNION_JOBS|LABOR_STANDARDS
+117,Edward George,For,Resident/individual,,,GENERAL_SUPPORT
+118,Carmen Carter,For,Workforce/education,National Motor Sports Assoc,D1,YOUTH_TRAINING
+119,Nicole Hernandez,For,Organized labor,Laborers 1191,,JOBS|KEEP_UNION_WORK
+120,George Burns,For,Business/employer,Longtime businessperson,,GM_AND_GILBERT_STAYED
+121,Ella Sanders,Neutral,Resident/individual,,D4,
+122,Chef Gabriel,For,Business/employer,Restaurant owner,,GENERAL_SUPPORT
+123,Evans Denise,For,Business/employer,REA Black developers,,BLACK_DEVELOPERS
+124,Van Thomas,For,Resident/individual,,,CHANGE_IS_GOOD
+125,Mary Carmen Munoz,For,Civic/neighborhood,LASED,D6,JOBS|TRADES|EDUCATION
+126,Alejandro Navarez,Against,Activist/advocacy,Organizer,,RUSHED|EAST_PARCELS_NOT_IN_WRITING|PARTICIPATORY_BUDGET
+127,Francesca Stevenson,Against,Resident/individual,,D5,FINANCIAL_TRANSPARENCY|SUBSIDY_TO_BILLIONAIRE
+128,Ray Smith,Neutral,Arts/media,Black Bible Movie Art,,
+129,Jaylen Nicholson,For,Faith,New Light Baptist + MI Black Business Alliance,D5,BLACK_BUSINESS|WEALTH_GAP
+130,Adrian Thomas,Off-topic,Resident/individual,,,HOUSING_COMPLAINT
+131,Alicia Weaver,For,Organized labor,Unite Here Local 24,,WORKERS|INVEST_IN_PEOPLE
+132,Tony Prince,Against,Resident/individual,,,DESIGN_UNFINISHED|WHAT_DOES_PUBLIC_GET
+133,Salvador Vargas,Mixed,Business/employer,Small business owner,D6,ENFORCEABLE_REQUIREMENTS|TRANSPARENCY
+134,Paul Chenon,Off-topic,Civic/neighborhood,Civil council,D6,
+135,Alicia Hinojosa,For,Business/employer,Southwest Detroit Business Assoc,,SMALL_BUSINESS|NEIGHBORHOODS
+136,William Griegsby,Against,Arts/media,Black Label Detroit,,SCALE_OF_PUBLIC_MONEY
+137,Alexander Scheinfeld,For,Resident/individual,Age 18,,YOUTH|TRADES
+138,Eden Bloom,Against,Activist/advocacy,Organizer,,DELAY|PUBLIC_MONEY|PUBLIC_OWNERSHIP|LAW_MEMO
+139,Adam Barrett,Against,Resident/individual,,D6,TAX_BREAK_NOT_PROJECT|SCHOOLS_HOUSING_PRIORITY
+140,Paul Burke,Against,Resident/individual,,,NDA|RUSHED|SUBSIDY_TO_BILLIONAIRE
+141,Ernest Lamar,For,Resident/individual,,D5,VOTE_TODAY
+142,Rick Proust,For,Organized labor,IBEW + Building Trades + AFL-CIO,,GENERATIONAL_INVESTMENT|JOBS
+143,Jim Jenkins,For,Business/employer,Jenkins Construction,D5,TAX_BASE|JOBS
+144,Ernest Johnson,For,Resident/individual,,,NO_DELAY|TIGER_STADIUM_PRECEDENT
+145,Renex Jackson,For,Resident/individual,,,NO_DELAY|YOUTH_RETENTION
+146,Melody Wolfe,Off-topic,Resident/individual,,,KRATOM
+147,David Wolfe,Off-topic,Resident/individual,,,KRATOM
+148,Gary Hunter,Off-topic,Business/employer,Print publisher,,CONTRACT_COMPLAINT
+149,Joe Louis Barrow,For,Business/employer,Joe Louis family,,GILBERT_COMMITMENT
+150,Nicole Small,Against,Activist/advocacy,Organizer,,WEAK_CBA|NO_WRITTEN_JOBS|ENVIRONMENTAL_PLAN
+151,Justin Robinson,For,Business/employer,Detroit Regional Partnership,,NAC_PROCESS|HOUSING_PUBLIC_SPACE
+152,Lamisha Williams,Neutral,Resident/individual,,,LISTEN_TO_ALL_SIDES
+153,Butch Hollowell,Off-topic,Business/employer,Kronos Concrete attorney,,KRONOS_ZONING
+154,Frank Johnson,Off-topic,Resident/individual,,,DOWNZONING
+155,Charles Gray,Off-topic,Business/employer,Industry advocate,,DOWNZONING
+156,Tyson Gersh,Off-topic,Resident/individual,,,ZONING_TEXT_AMENDMENTS
+157,Cassie Connolly,For,Resident/individual,,,COST_OF_INACTION
+158,Ronald Faulkster,Neutral,Resident/individual,,,
+159,Mike Worton,Against,Resident/individual,,,PRESERVE_SIGN_SYMBOL
+160,Paul Corbett,For,Business/employer,Detroit Regional Chamber,,COUNCIL_DILIGENCE_DONE
+161,Brittany Moore,Off-topic,Business/employer,Kronos Concrete employee,,KRONOS_ZONING
+162,Eric Larsen,For,Business/employer,Downtown Detroit Partnership,,GENERATIONAL_CHANGE
+163,Michelle Jackson,Against,Civic/neighborhood,Channel Park Neighborhood Assoc,,UNFULFILLED_NAC_PROMISES|DELAY
+164,Deirdreon Mahomes,Off-topic,Workforce/education,Men in Blue,D3,DOWNZONING
+165,Juan Jones,Off-topic,Workforce/education,Men in Blue,D3,DOWNZONING
+166,Stephen Grady,Neutral,Resident/individual,,,
+167,Caller (unnamed),Off-topic,Resident/individual,,,ZONING_TEXT_AMENDMENTS
