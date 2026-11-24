@@ -833,3 +833,4 @@
 {"date":"2026-11-23","slot":"work_shutdown","status":"sent","kind":"fact","factId":"lucid-03","library":"lucid","category":"lucid-clinical","jackpot":false,"cycle":9,"promptId":"p16","mechanism":"anchoring","targetLabel":"9:06 PM","at":"2026-11-24T02:06:07.357Z"}
 {"date":"2026-11-23","slot":"terminal_bedtime","status":"sent","kind":"fact","factId":"lucid-02","library":"lucid","category":"lucid-neuro","jackpot":false,"cycle":9,"promptId":"p04","mechanism":"identity","targetLabel":"9:41 PM","at":"2026-11-24T02:41:20.606Z"}
 {"date":"2026-11-24","slot":"intake","status":"sent","kind":"intake","targetLabel":"6:00 AM","at":"2026-11-24T11:00:12.363Z"}
+{"date":"2026-11-24","slot":"morning_light","status":"sent","kind":"habit","habit":"morning_light","whyId":"ml22","optional":false,"cycle":4,"targetLabel":"7:15 AM","at":"2026-11-24T12:15:19.328Z"}
