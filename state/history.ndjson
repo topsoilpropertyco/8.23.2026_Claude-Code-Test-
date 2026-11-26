@@ -853,3 +853,4 @@
 {"date":"2026-11-26","slot":"intake","status":"sent","kind":"intake","targetLabel":"6:00 AM","at":"2026-11-26T11:00:03.840Z"}
 {"date":"2026-11-26","slot":"morning_light","status":"sent","kind":"habit","habit":"morning_light","whyId":"ml03","optional":false,"cycle":4,"targetLabel":"7:15 AM","at":"2026-11-26T12:15:24.092Z"}
 {"date":"2026-11-26","slot":"morning_reflection","status":"sent","kind":"fact","factId":"sleep-03","library":"sleep","category":"cardiometabolic","jackpot":false,"cycle":10,"promptId":"p20","mechanism":"attribution","targetLabel":"7:54 AM","at":"2026-11-26T12:54:24.351Z"}
+{"date":"2026-11-26","slot":"midday_essentialism","status":"sent","kind":"fact","factId":"sleep-14","library":"sleep","category":"cognition","jackpot":false,"cycle":10,"promptId":"p17","mechanism":"self_efficacy","targetLabel":"12:12 PM","at":"2026-11-26T17:12:10.428Z"}
